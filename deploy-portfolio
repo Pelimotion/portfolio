@@ -1,0 +1,19 @@
+#!/bin/bash
+# Auto-update portfolio with Bunny.net synced data and push to Github/Vercel
+
+echo "Starting synchronization with Bunny.net..."
+python3 sync_bunny.py
+
+if [ $? -ne 0 ]; then
+    echo "Synchronization failed. Aborting deploy."
+    exit 1
+fi
+
+echo "Sync successful. Preparing git commit..."
+
+git add .
+git commit -m "Auto-update: Sync with Bunny.net"
+echo "Pushing to origin main..."
+git push origin main
+
+echo "Deploy pipeline to Vercel triggered successfully!"
