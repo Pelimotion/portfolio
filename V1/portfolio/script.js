@@ -8,15 +8,22 @@ const ST = {
 };
 
 const DOM = {
-    curtain: document.getElementById('radial-curtain'),
-    logo: document.getElementById('main-logo'),
-    modal: document.getElementById('modal'),
-    modalContent: document.getElementById('modal-content'),
-    galleryContent: document.getElementById('gallery-content'),
-    cursor: document.getElementById('cursor'),
-    contactPopover: document.getElementById('contact-popover'),
-    contactBtn: document.getElementById('contact-btn')
+    curtain: null, logo: null, modal: null, modalContent: null,
+    galleryContent: null, cursor: null, contactPopover: null, contactBtn: null,
+    clientsGrid: null
 };
+
+function initDOM() {
+    DOM.curtain = document.getElementById('radial-curtain');
+    DOM.logo = document.getElementById('main-logo');
+    DOM.modal = document.getElementById('modal');
+    DOM.modalContent = document.getElementById('modal-content');
+    DOM.galleryContent = document.getElementById('gallery-content');
+    DOM.cursor = document.getElementById('cursor');
+    DOM.contactPopover = document.getElementById('contact-popover');
+    DOM.contactBtn = document.getElementById('contact-btn');
+    DOM.clientsGrid = document.getElementById('clients-grid');
+}
 
 /* ORCHESTRATOR */
 function openView(viewId, params = {}) {
@@ -65,14 +72,32 @@ function openView(viewId, params = {}) {
 
 /* RENDERING */
 function renderHomeGrid() {
-    const container = document.getElementById('clients-grid');
-    if(!container) return;
+    console.log("Rendering Home Grid...", { clientsDataLength: Object.keys(clientsData).length });
+    if(!DOM.clientsGrid) {
+        DOM.clientsGrid = document.getElementById('clients-grid');
+    }
+    if(!DOM.clientsGrid) {
+        console.error("Clients grid container not found!");
+        return;
+    }
+    
     let html = '';
     Object.keys(clientsData).forEach(name => {
         const client = clientsData[name];
         // Ensure at least one work exists to display the card
-        let representativeWork = client.root?.[0] || Object.values(client.categories || {})[0]?.[0];
-        if (!representativeWork) return; // Skip if no works are found for this client
+        let worksList = client.root || [];
+        if (worksList.length === 0 && client.categories) {
+            const firstCat = Object.values(client.categories)[0];
+            if (firstCat && firstCat.length > 0) {
+                worksList = firstCat;
+            }
+        }
+        
+        let representativeWork = worksList[0];
+        if (!representativeWork) {
+            console.warn("No works for client:", name);
+            return; 
+        }
 
         const poster = representativeWork.mosaic?.[1] || representativeWork.poster_url || '';
         const tagline = clientDescriptions[name] || '';
@@ -251,6 +276,9 @@ window.onpopstate = (e) => {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
+    initDOM();
+    console.log("DOM Initialized. Clients Data:", !!window.clientsData);
+    
     // Apply initial state
     document.documentElement.setAttribute('data-theme', ST.theme);
     applyLanguage();
