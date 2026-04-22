@@ -31,11 +31,16 @@ def main():
     log("Iniciando ciclo de otimização e deploy...")
 
     # 1. Otimizar Mídias (FFMPEG -> Bunny.net)
-    # Usamos o script da raiz para processar a pasta Medias Portfolio
     run_python("optimize_portfolio.py", ROOT_DIR)
 
-    # 2. Sincronizar Index V1 Portfolio
+    # 2. Build portfolio from source template
+    run_python("build_portfolio.py", ROOT_DIR)
+
+    # 3. Sincronizar Index V1 Portfolio (injeta clientsData fresco)
     run_python("sync_bunny.py", ROOT_DIR)
+
+    # 4. Aplicar patches UX/UI
+    run_python("patch_portfolio.py", ROOT_DIR)
     
     # 4. Verificar mudanças no Git
     status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True).stdout.strip()
