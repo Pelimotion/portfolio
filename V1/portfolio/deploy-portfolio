@@ -1,0 +1,29 @@
+#!/bin/bash
+# Auto-update portfolio with Bunny.net synced data and push to Github/Vercel
+
+echo "Starting synchronization with Bunny.net..."
+python3 sync_bunny.py
+
+if [ $? -ne 0 ]; then
+    echo "Synchronization failed. Aborting deploy."
+    exit 1
+fi
+
+echo "Sync successful. Preparing git commit..."
+
+# ─── SELECTIVE STAGING (Professional Way) ───
+# We only track code, data and manifest. Never binaries.
+git add index.html
+git add sync_bunny.py
+git add optimize_portfolio.py
+git add media_manifest.json
+git add .gitignore
+git add task.md
+git add implementation_plan.md
+git add deploy-portfolio
+
+git commit -m "Auto-update: Sync with Bunny.net and Manifest Update"
+echo "Pushing to origin main..."
+git push origin main --force # Force needed because we purged history
+
+echo "Deploy pipeline to Vercel triggered successfully!"

@@ -1,0 +1,31 @@
+.DS_Store
+index_backup_*.html
+Medias Portfolio/
+__pycache__/
+*.pyc
+.venv/
+env/
+.env
+node_modules/
+.vscode/
+.idea/
+*.log
+
+# Strict Binary Exclusions
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.m4v
+*.jpg
+*.png
+*.jpeg
+*.gif
+*.zip
+*.tar
+*.gz
+*.pdf
+ *.psd
+ *.ai
+ *.prproj
+ *.aep
