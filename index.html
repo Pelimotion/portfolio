@@ -69,18 +69,26 @@
         }
 
         /* Logo Animation */
-        .logo-box {
-            width: 80px;
-            height: 80px;
-            background-image: url('/V1/portfolio/logo.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: invert(1);
-            transition: transform 0.6s var(--ease);
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .logo-box:hover {
-            transform: scale(1.1) rotate(5deg);
+
+        .main-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: invert(1);
+            animation: logoPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); filter: invert(1) brightness(1); }
+            50% { transform: scale(1.05); filter: invert(1) brightness(1.5) drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         }
 
         header {
@@ -193,21 +201,23 @@
     </div>
 
     <main class="container">
-        <div class="logo-box"></div>
+        <div class="logo-container">
+            <img src="logo.png" class="main-logo-img" alt="Pelimotion Logo">
+        </div>
         
         <header>
-            <h1 class="title">Felipe Conceição</h1>
             <p class="subtitle">Select Destination</p>
         </header>
-
-        <nav class="nav-grid">
-            <a href="/v1" class="nav-card">
-                <span class="label">Portfolio Hub</span>
-                <span class="desc">Motion Systems & Selection</span>
+        
+        <nav class="navigation">
+            <a href="V1/portfolio/index.html" class="nav-card">
+                <span class="nav-title">Portfolio Hub</span>
+                <span class="nav-desc">Brutalist Motion Systems & Reel</span>
             </a>
-            <a href="/curriculum" class="nav-card">
-                <span class="label">Curriculum</span>
-                <span class="desc">Professional Path & Experience</span>
+            
+            <a href="Curriculum/index.html" class="nav-card">
+                <span class="nav-title">Curriculum</span>
+                <span class="nav-desc">Experience & Creative Direction</span>
             </a>
         </nav>
 
