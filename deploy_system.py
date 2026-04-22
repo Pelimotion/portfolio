@@ -34,12 +34,8 @@ def main():
     # Usamos o script da raiz para processar a pasta Medias Portfolio
     run_python("optimize_portfolio.py", ROOT_DIR)
 
-    # 2. Sincronizar Index Principal (Raiz)
+    # 2. Sincronizar Index V1 Portfolio
     run_python("sync_bunny.py", ROOT_DIR)
-
-    # 3. Sincronizar Index V1
-    if os.path.exists(V1_DIR):
-        run_python("sync_bunny.py", V1_DIR)
     
     # 4. Verificar mudanças no Git
     status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True).stdout.strip()

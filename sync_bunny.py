@@ -11,7 +11,7 @@ ZONE_NAME = "pelimotion-assets"
 BASE_URL = f"https://storage.bunnycdn.com/{ZONE_NAME}/Medias Portfolio/"
 CDN_BASE = "https://pelimotion.b-cdn.net/Medias%20Portfolio"
 
-HTML_FILE = "index.html"
+HTML_FILE = "V1/portfolio/index.html"
 
 def clean_title(filename):
     """
@@ -154,9 +154,28 @@ if __name__ == "__main__":
         
     # Replace clientsData safely using match method
     json_data = json.dumps(clients_data, separators=(',', ':'))
+    
+    client_desc = {
+        "BC MAPPING FESTIVAL": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
+        "EQI": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
+        "FAST SHIPPING": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
+        "FUNKY ROOM": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
+        "FURB": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
+        "HEO": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
+        "ISLA": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+        "LSLA": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+        "NEXTRON": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
+        "PIANISSIMO": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
+        "PLAYA": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
+        "RIO CARNAVAL": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
+        "SUZANO": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
+        "VARIADOS": "Selected personal and experimental motion work — reels, explorations, and cross-discipline projects.",
+    }
+    
     def _repl(match):
-        return f'const clientsData = {json_data};'
-    new_html = re.sub(r'const clientsData = \{.*?\};', _repl, html, flags=re.DOTALL)
+        return f'const clientsData = {json_data};\nconst clientDescriptions = {json.dumps(client_desc)};'
+    
+    new_html = re.sub(r'const clientsData = \{.*?\}\;\s*(?:const clientDescriptions = \{.*?\}\;)?', _repl, html, flags=re.DOTALL)
     
     if new_html != html:
         with open(HTML_FILE, 'w', encoding='utf-8') as f:
