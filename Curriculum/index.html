@@ -15,7 +15,17 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
 
-    <!-- Custom Style -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+
+    <!-- Custom Style (overrides Tailwind where needed) -->
     <link rel="stylesheet" href="style.css">
 </head>
 
