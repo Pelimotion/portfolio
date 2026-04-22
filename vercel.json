@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/v1", "destination": "/V1/portfolio/index.html" },
+    { "source": "/v1/(.*)", "destination": "/V1/portfolio/$1" },
+    { "source": "/Curriculum", "destination": "/Curriculum/index.html" }
+  ]
+}

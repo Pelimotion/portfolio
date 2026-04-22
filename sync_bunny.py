@@ -158,7 +158,9 @@ if __name__ == "__main__":
         return f'const clientsData = {json_data};'
     new_html = re.sub(r'const clientsData = \{.*?\};', _repl, html, flags=re.DOTALL)
     
-    with open(HTML_FILE, 'w', encoding='utf-8') as f:
-        f.write(new_html)
-        
-    print(f"Updated index.html with {len(clients_data)} clients.")
+    if new_html != html:
+        with open(HTML_FILE, 'w', encoding='utf-8') as f:
+            f.write(new_html)
+        print(f"Updated {HTML_FILE} with {len(clients_data)} clients.")
+    else:
+        print(f"No data changes for {HTML_FILE}. Skipping write.")

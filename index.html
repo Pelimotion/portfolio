@@ -1,851 +1,220 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://pelimotion.b-cdn.net">
-    <title>PLM — Pelimotion</title>
-    <meta name="description" content="Pelimotion — Premium motion design studio by Felipe Conceição. Kinetic visual experiences.">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Felipe Conceição | Creative Director & Motion Designer</title>
+    <meta name="description" content="Portfolio Hub and Curriculum of Felipe Conceição. Creative Director specializing in Motion Branding and Visual Systems.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg: #f5f5f5; --fg: #050505; --fg2: #444; --fg3: #999;
-            --border: #050505; --card-bg: #ececec;
-            --overlay: rgba(245,245,245,0.94); --modal-bg: rgba(245,245,245,0.97);
-            --img-filter: grayscale(100%) contrast(1.1);
-            --img-hover-filter: grayscale(0%) contrast(1);
-            --pattern-bg: #fff; --pattern-fg: #000;
-        }
-        [data-theme="dark"] {
-            --bg: #080808; --fg: #f0f0f0; --fg2: #999; --fg3: #444;
-            --border: #2a2a2a; --card-bg: #111;
-            --overlay: rgba(8,8,8,0.94); --modal-bg: rgba(8,8,8,0.97);
-            --img-filter: grayscale(100%) brightness(.65) contrast(1.15);
-            --img-hover-filter: grayscale(0%) brightness(1) contrast(1);
-            --pattern-bg: #000; --pattern-fg: #fff;
-        }
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        html{background:var(--bg);color:var(--fg);transition:background .4s,color .4s}
-        body{
-            background:var(--bg);color:var(--fg);
-            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-            margin:0;cursor:none;overscroll-behavior:none;
-            -webkit-tap-highlight-color:transparent;
-            transition:background .4s,color .4s;
-            overflow:hidden;height:100vh;width:100vw;
-        }
-        @media(max-width:767px){body{cursor:auto;overflow-x:hidden;overflow-y:auto;height:auto}}
-        a,button,.interactive{cursor:none;text-decoration:none;color:inherit}
-        @media(max-width:767px){a,button,.interactive{cursor:auto}}
-        
-        /* ═══ CURSOR ═══ */
-        #cursor-dot{position:fixed;top:0;left:0;width:6px;height:6px;background:var(--fg);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s}
-        #cursor-ring{position:fixed;top:0;left:0;width:14px;height:14px;border:1.5px solid var(--fg);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .12s,height .12s}
-        body.is-hovering #cursor-ring{width:11px;height:11px}
-        body.is-hovering #cursor-dot{width:6.6px;height:6.6px}
-        body.is-moving #cursor-ring{width:15.4px;height:15.4px}
-
-        /* ═══ STRIPS ═══ */
-        .ca-stripe{position:fixed;top:0;height:100vh;width:24px;pointer-events:none;z-index:800;overflow:hidden;filter:url(#turing-thresh);background:var(--pattern-bg)}
-        .ca-stripe canvas{display:block;width:100%;height:100%;filter:blur(3px)}
-        .ca-stripe-left{left:0;border-right:1.5px solid var(--border)}
-        .ca-stripe-right{right:0;border-left:1.5px solid var(--border)}
-        @media(max-width:900px){.ca-stripe{display:none}}
-
-        /* ═══ THEME TOGGLE ═══ */
-        .theme-toggle{position:fixed;top:1.6rem;right:1.6rem;z-index:960;width:34px;height:34px;border:1.5px solid var(--fg);background:transparent;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--fg);transition:background .2s,color .2s}
-        .theme-toggle:hover{background:var(--fg);color:var(--bg)}
-        @media(max-width:767px){.theme-toggle{top:1rem;right:1rem}}
-
-        /* ═══ CONTACT BUTTON ═══ */
-        .contact-trigger{
-            position:fixed;top:1.6rem;right:4.2rem;z-index:960;
-            padding:6px 14px;border:1.5px solid var(--fg);background:transparent;
-            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-            font-size:9px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;
-            color:var(--fg);transition:background .2s,color .2s;
-        }
-        .contact-trigger:hover{background:var(--fg);color:var(--bg)}
-        @media(max-width:767px){.contact-trigger{top:1rem;right:3.6rem;padding:7px 10px;font-size:8px;letter-spacing:.2em}}
-
-        /* ═══ CONTACT POPOVER ═══ */
-        .contact-popover{
-            position:fixed;top:4.4rem;right:1.6rem;z-index:970;
-            background:var(--bg);border:1.5px solid var(--border);
-            padding:0;width:280px;
-            opacity:0;visibility:hidden;transform:translateY(-8px);
-            transition:opacity .3s,visibility .3s,transform .3s;
-            box-shadow:0 8px 32px rgba(0,0,0,.08);
-        }
-        .contact-popover.open{opacity:1;visibility:visible;transform:translateY(0)}
-        .contact-popover-header{
-            padding:16px 20px 12px;border-bottom:1.5px solid var(--border);
-            font-size:8px;font-weight:900;letter-spacing:.4em;text-transform:uppercase;color:var(--fg3);
-        }
-        .contact-popover a{
-            display:flex;align-items:center;gap:12px;
-            padding:16px 20px;border-bottom:1px solid var(--border);
-            font-size:13px;font-weight:500;color:var(--fg);
-            transition:background .2s,padding-left .2s;
-        }
-        .contact-popover a:last-child{border-bottom:none}
-        .contact-popover a:hover{background:var(--fg);color:var(--bg);padding-left:26px}
-        .contact-popover a span.contact-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center}
-        .contact-popover a span.contact-label{font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2)}
-        .contact-popover a:hover span.contact-label{color:var(--bg)}
-
-        /* ═══ VIEW SYSTEM ═══ */
-        .view-wrapper{
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            overflow-y:auto;overflow-x:hidden;
-            opacity:0;pointer-events:none;visibility:hidden;z-index:10;
-            transition:opacity .6s,visibility .6s;
-            -webkit-overflow-scrolling:touch;
-            scrollbar-width:none;-ms-overflow-style:none;
-        }
-        .view-wrapper::-webkit-scrollbar{display:none}
-        .view-wrapper.active{opacity:1;pointer-events:all;visibility:visible;z-index:20}
-        @media(max-width:767px){
-            .view-wrapper{position:relative;display:none;height:auto;overflow:visible}
-            .view-wrapper.active{display:block;opacity:1;pointer-events:all;visibility:visible}
+            --bg: #080808;
+            --fg: #f5f5f5;
+            --accent: #fff;
+            --border: rgba(255,255,255,0.1);
+            --card-bg: rgba(255,255,255,0.03);
+            --card-hover: rgba(255,255,255,0.08);
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* ═══ FLOATING NAV ═══ */
-        .floating-nav{
-            position:fixed;z-index:990;opacity:0;pointer-events:none;
-            transition:opacity .4s,transform .4s;
-            background:var(--overlay);backdrop-filter:blur(12px);
-            padding:9px 20px;border:1.5px solid var(--border);
-            font-size:9px;font-weight:900;letter-spacing:.35em;
-            text-transform:uppercase;color:var(--fg);
-            display:flex;align-items:center;gap:8px;
-        }
-        .floating-nav.active{opacity:1;pointer-events:all}
-        .floating-nav:hover{background:var(--fg);color:var(--bg)}
-        @media(min-width:768px){
-            .floating-nav{top:1.6rem;left:1.6rem;transform:translateY(-16px)}
-            .floating-nav.active{transform:translateY(0)}
-        }
-        @media(max-width:767px){
-            .floating-nav{bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(16px)}
-            .floating-nav.active{transform:translateX(-50%) translateY(0)}
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ═══ HERO ═══ */
-        .hero-section{position:relative;width:100%;height:100vh;overflow:hidden;background:#000}
-        .hero-mosaic{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:0;will-change:transform}
-        .hero-mosaic img{width:100%;height:100%;object-fit:cover;filter:contrast(1.2) saturate(1.1)}
-        .hero-overlay-left{display:none}
-        .hero-overlay-right{position:absolute;top:0;right:0;width:50%;height:100%;background:transparent;z-index:2;pointer-events:none}
-        .hero-content{
-            position:relative;z-index:3;width:100%;height:100%;
-            padding:0 8vw;
-            display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
-        }
-        /* White bg panel that hugs the text/logo block with ≥20px right overhang */
-        .hero-content::before{
-            content:'';
-            position:absolute;
-            top:0;left:0;bottom:0;
-            /* fallback: left-padding + max text width + 20px; overridden by JS via --hero-panel-w */
-            width:var(--hero-panel-w, calc(8vw + 520px + 20px));
-            max-width:100%;
-            background:var(--bg);
-            transition:background .4s, width .1s;
-            z-index:-1;
-        }
-        @media(max-width:767px){
-            .hero-content::before{width:100%;max-width:100%}
-        }
-
-        /* Logo */
-        .plm-master-logo{position:relative;width:min(50vw,440px);aspect-ratio:1;transform-origin:left center;animation:initialZoom 3s cubic-bezier(.9,0,0,1) forwards;will-change:transform,opacity;margin-bottom:3vh}
-        @keyframes initialZoom{0%{transform:scale(1);opacity:0}8%{opacity:1}100%{transform:scale(.66);opacity:1}}
-        .logo-part{position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('logo.png');background-size:contain;background-repeat:no-repeat;background-position:left center;will-change:transform,opacity}
-        [data-theme="light"] .logo-part{filter:none}
-        [data-theme="dark"] .logo-part{filter:invert(1) brightness(2)}
-        #logo-p{clip-path:polygon(0% 0%,50% 0%,50% 62%,0% 62%)}
-        #logo-l{clip-path:polygon(50% 0%,100% 0%,100% 62%,50% 62%)}
-        #logo-m{clip-path:polygon(0% 62%,100% 62%,100% 100%,0% 100%)}
-
-        /* Hero Typography — Brutalist hierarchy */
-        .hero-text{max-width:520px;will-change:transform,opacity;padding-right:20px}
-        .hero-text .hero-name{
-            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-            font-size:clamp(28px,5vw,56px);font-weight:900;
-            letter-spacing:-.04em;line-height:.95;
-            text-transform:uppercase;color:var(--fg);
-            margin-bottom:6px;
-        }
-        .hero-text .hero-role{
-            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-            font-size:clamp(11px,1.4vw,16px);font-weight:400;
-            letter-spacing:.15em;text-transform:uppercase;
-            color:var(--fg2);margin-bottom:24px;
-        }
-        .hero-text .hero-body{
-            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-            font-size:clamp(13px,1.2vw,16px);font-weight:400;
-            line-height:1.65;color:var(--fg2);
-        }
-        .hero-text .hero-tagline{
-            display:block;margin-top:16px;
-            font-size:clamp(10px,1vw,13px);font-weight:900;
-            letter-spacing:.2em;text-transform:uppercase;
-            color:var(--fg);
-        }
-
-        .scroll-hint{position:absolute;bottom:3vh;left:8vw;z-index:4;font-size:9px;font-weight:900;letter-spacing:.3em;text-transform:uppercase;color:var(--fg3);animation:fadeBlink 2s ease-in-out infinite}
-        @keyframes fadeBlink{0%,100%{opacity:.4}50%{opacity:1}}
-
-        /* ═══ CONTENT ═══ */
-        .content-section{padding:7vw 96px 20vh 96px}
-        @media(max-width:1100px){.content-section{padding:7vw 60px 20vh 60px}}
-        @media(max-width:767px){.content-section{padding:48px 18px 90px 18px}}
-
-        .section-label{font-size:8px;font-weight:900;letter-spacing:.55em;text-transform:uppercase;color:var(--fg3);margin-bottom:48px;padding-bottom:12px;border-bottom:1.5px solid var(--border);transition:color .4s,border-color .4s}
-
-        /* ═══ GRID ═══ */
-        .grid-brutal{display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:60px;align-items:start}
-        @media(max-width:767px){.grid-brutal{grid-template-columns:1fr;gap:40px}}
-        
-        .client-card-wrap{border:1.5px solid var(--border);background:var(--card-bg);transition:background .4s,border-color .4s;overflow:clip;height:100%}
-        .client-card-img-wrap{position:relative;width:100%;overflow:hidden;aspect-ratio:16/9;background:#111}
-        .client-card-img-wrap.vertical{aspect-ratio:9/16}
-        .client-card-img-wrap.wide{aspect-ratio:21/9}
-        .client-card-img-wrap.square{aspect-ratio:1/1}
-
-        .client-card-img{width:100%;height:100%;display:block;object-fit:cover;filter:var(--img-filter);transition:filter .7s,transform .55s}
-        .work-card-wrap:hover .client-card-img{filter:var(--img-hover-filter);transform:scale(1.04)}
-        
-        .card-hover-tagline{position:absolute;inset:0;padding:18px 22px;font-size:11px;color:var(--fg2);line-height:1.65;opacity:0;transform:translateY(-6px);transition:opacity .4s,transform .4s;pointer-events:none;background:linear-gradient(to bottom,rgba(245,245,245,.88) 0%,transparent 60%)}
-        [data-theme="dark"] .card-hover-tagline{background:linear-gradient(to bottom,rgba(8,8,8,.88) 0%,transparent 60%)}
-        .card-float:hover .card-hover-tagline{opacity:1;transform:translateY(0)}
-        @media(max-width:767px){.card-hover-tagline{position:static;opacity:1;transform:none;background:none}}
-        
-        .client-card-footer{padding:18px 22px;border-top:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:border-color .4s,background .25s;background:var(--card-bg)}
-        .client-name{font-size:clamp(18px,2.5vw,32px);font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1.1;color:var(--fg);transition:color .25s;word-break:break-word;flex:1;padding-right:10px}
-        .client-count{font-size:8px;font-weight:900;letter-spacing:.3em;text-transform:uppercase;color:var(--fg3);white-space:nowrap;border:1.5px solid var(--border);padding:3px 7px;transition:color .25s,border-color .25s;flex-shrink:0}
-        .card-float:hover .client-card-footer, .work-card-wrap:hover .client-card-footer{background:var(--fg)}
-        .card-float:hover .client-name, .card-float:hover .client-count, .work-card-wrap:hover .client-name, .work-card-wrap:hover .client-count{color:var(--bg);border-color:var(--bg)}
-
-        .entrance-mask{opacity:0;transform:translateY(40px);transition:opacity .8s,transform .8s}
-        .entrance-mask.visible{opacity:1;transform:translateY(0)}
-
-        /* ═══ GALLERY INNER ═══ */
-        .gallery-hero{margin-bottom:60px}
-        .gallery-title{font-size:clamp(36px,8vw,120px);font-weight:900;text-transform:uppercase;letter-spacing:-.025em;line-height:.9;color:var(--fg);word-break:break-word}
-        .gallery-desc{font-size:14px;line-height:1.7;color:var(--fg2);max-width:560px;margin-top:20px}
-        .gallery-meta{font-size:8px;font-weight:900;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3);margin-top:16px;padding-top:14px;border-top:1.5px solid var(--border);max-width:260px}
-
-        /* Featured hero video */
-        .gallery-featured{
-            display:grid;grid-template-columns:1fr;gap:2px;margin-bottom:48px;
-        }
-        @media(min-width:768px){.gallery-featured{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}}
-        .gallery-featured .work-card-wrap{border-width:2px}
-        .gallery-featured .work-card-img{aspect-ratio:16/9}
-
-        /* Category section */
-        .category-section{margin-top:64px}
-        .category-header{
-            display:flex;align-items:baseline;gap:16px;
-            margin-bottom:6px;padding-bottom:8px;
-            border-bottom:1.5px solid var(--border);
-        }
-        .category-name{font-size:clamp(14px,2vw,22px);font-weight:900;text-transform:uppercase;letter-spacing:-.01em;color:var(--fg)}
-        .category-count{font-size:8px;font-weight:900;letter-spacing:.3em;color:var(--fg3);text-transform:uppercase}
-        .category-desc{font-size:12px;line-height:1.6;color:var(--fg3);margin-bottom:20px;max-width:480px}
-
-        .grid-works{display:grid;grid-template-columns:1fr;gap:20px}
-        @media(min-width:768px){.grid-works{grid-template-columns:1fr 1fr}}
-        .work-card-wrap{border:none;overflow:hidden;transition:none;background:none}
-        .work-card-img{width:100%;height:100%;object-fit:cover;display:block;filter:var(--img-filter);transition:filter .7s}
-        .work-card-wrap:hover .work-card-img{filter:var(--img-hover-filter)}
-        .work-card-foot{padding:12px 0;border-top:1.5px solid var(--border);transition:border-color .4s}
-        .work-title{font-size:8px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;color:var(--fg)}
-
-        /* ═══ MODAL ═══ */
-        #modal{display:none;position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:none;z-index:1000;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;padding:2vh}
-        #modal.active{display:flex;opacity:1}
-        .player-container{
-            position:relative;
-            width:100%;
-            height:auto;
-            max-width:min(95vw, 1600px);
-            max-height:92vh;
-            background:var(--bg);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            border:none;
-        }
-        .player-container video{width:100%;height:auto;max-height:92vh;border:none;object-fit:contain}
-        .close-modal{position:fixed;top:1rem;right:1rem;z-index:1010;font-size:8px;font-weight:900;letter-spacing:.4em;text-transform:uppercase;color:var(--fg);border:1.5px solid var(--border);padding:7px 14px;background:var(--bg);transition:none}
-        .close-modal:hover{background:var(--fg);color:var(--bg)}
-
-        /* ═══ MOSAIC PREVIEW ═══ */
-        .mosaic-preview {
-            position: relative;
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            display: flex; gap: 2px;
-            background: #111;
-        }
-        .mosaic-item {
-            flex: 1; height: 100%;
-            background-size: cover; background-position: center;
-            transition: transform 0.5s ease;
-            filter: grayscale(1);
-        }
-        .client-card-img-wrap:hover .mosaic-item {
-            filter: grayscale(0);
-        }
-        .client-card-img-wrap:hover .mosaic-item:nth-child(1) { transform: translateY(-5px); }
-        .client-card-img-wrap:hover .mosaic-item:nth-child(2) { transform: translateY(5px); }
-        .client-card-img-wrap:hover .mosaic-item:nth-child(3) { transform: translateY(-3px); }
-
-        /* ═══ LOADING & PLAYER ═══ */
-        .player-loader {
-            position: absolute; top:50%; left:50%;
-            transform: translate(-50%, -50%);
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-            z-index: 5; pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--fg); border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .player-loader.hidden { opacity: 0; }
-
-        .progress-bar-wrap {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
-            background: rgba(255,255,255,0.1); z-index: 6;
-        }
-        .progress-bar-fill {
-            height: 100%; width: 0%; background: var(--fg);
-            transition: width 0.1s linear;
-        }
-
-        .skip-link{position:fixed;top:-100px;left:1rem;z-index:9999;background:var(--fg);color:var(--bg);padding:8px 16px;font-size:9px;font-weight:900;letter-spacing:.2em;transition:top .2s}
-        .skip-link:focus{top:1rem}
-
-        /* ─── CELLULAR AUTOMATA STRIPS ─── */
-        .strip-left, .strip-right {
-            position: fixed; top: 0; bottom: 0; width: 24px;
-            background: var(--bg); border-right: 1.5px solid var(--border);
-            z-index: 1000; overflow: hidden; pointer-events: none;
-            transition: background .4s, border-color .4s;
-        }
-        .strip-right { left: auto; right: 0; border-right: none; border-left: 1.5px solid var(--border); }
-        .automata-canvas { width: 100%; height: 100%; image-rendering: pixelated; opacity: 0.15; }
-
-        /* ─── CUSTOM CURSOR ─── */
-        #cursor {
-            position: fixed; width: 12px; height: 12px;
-            background: var(--fg); border-radius: 50%;
-            pointer-events: none; z-index: 9999;
-            mix-blend-mode: difference; transition: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1);
-            transform: translate(-50%, -50%);
-        }
-        #cursor.hover { transform: translate(-50%, -50%) scale(4); }
-        body:active #cursor { transform: translate(-50%, -50%) scale(0.8); }
-        @media (hover: none) { #cursor { display: none; } }
-
-        /* ─── MODAL PLAYER REFINEMENT ─── */
-        #modal-player {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 5000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.4s ease;
-        }
-        #modal-player.active { opacity: 1; }
-        .close-modal {
-            position: absolute; top: 30px; right: 30px;
-            font-size: 10px; font-weight: 900; letter-spacing: 0.3em;
-            color: var(--fg); background: var(--bg); border: 1.5px solid var(--fg);
-            padding: 10px 20px; cursor: pointer; text-transform: uppercase;
-            z-index: 5010;
-        }
-        .player-outer { width: 92%; max-width: 1600px; }
-        .player-container {
-            position: relative; width: 100%; background: #000;
-            border: 1.5px solid var(--fg);
-            box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        .player-controls {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            height: 50px; background: var(--bg); border-top: 1.5px solid var(--fg);
-            display: flex; align-items: center; padding: 0 15px; gap: 15px;
-            z-index: 10; opacity: 0; transition: opacity 0.3s;
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
         }
-        .player-container:hover .player-controls { opacity: 1; }
-        .play-btn {
-            background: none; border: none; color: var(--fg); font-weight: 900; 
-            cursor: pointer; font-size: 12px; letter-spacing: 0.1em;
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: move 20s infinite alternate var(--ease);
         }
-        .player-seek {
-            flex-grow: 1; height: 4px; background: rgba(0,0,0,0.1);
-            position: relative; cursor: pointer;
+        .blob-1 { width: 400px; height: 400px; background: #333; top: -100px; left: -100px; }
+        .blob-2 { width: 500px; height: 500px; background: #222; bottom: -150px; right: -150px; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, 50px) scale(1.1); }
         }
-        [data-theme="dark"] .player-seek { background: rgba(255,255,255,0.1); }
-        .player-seek-fill {
-            position: absolute; top: 0; left: 0; height: 100%;
-            background: var(--fg); width: 0%;
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
         }
-        .player-hd-toggle {
-            font-size: 9px; font-weight: 900;
-            padding: 4px 8px; background: none;
-            color: var(--fg); border: 1.2px solid var(--fg);
-            cursor: pointer; text-transform: uppercase;
+
+        /* Logo Animation */
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            background-image: url('/V1/portfolio/logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: invert(1);
+            transition: transform 0.6s var(--ease);
         }
-        .player-hd-toggle.active { background: var(--fg); color: var(--bg); }
-        
-        /* ─── SINGLE VIDEO CASE ─── */
-        .single-work-container {
-            width: 100%; max-width: 1000px; margin: 0 auto;
+        .logo-box:hover {
+            transform: scale(1.1) rotate(5deg);
         }
-        .medium-player {
-            width: 100%; border: 1.5px solid var(--fg); margin-bottom: 30px;
-            cursor: zoom-in; position: relative;
+
+        header {
+            text-align: center;
+        }
+
+        .title {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        /* Destination Grid */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .nav-grid { grid-template-columns: 1fr; }
+            .container { gap: 40px; }
+        }
+
+        .nav-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--fg);
+            transition: all 0.5s var(--ease);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s var(--ease);
+        }
+
+        .nav-card:hover {
+            background: var(--card-hover);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-5px);
+        }
+
+        .nav-card:hover::before {
+            opacity: 1;
+        }
+
+        .nav-card .label {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .nav-card .desc {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: color 0.5s var(--ease);
+            position: relative;
+        }
+
+        .nav-card:hover .desc {
+            color: #aaa;
+        }
+
+        /* Footer Info */
+        footer {
+            margin-top: 20px;
+            font-size: 10px;
+            color: #444;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
 
     </style>
 </head>
-<body data-theme="light">
-    <svg style="position:absolute;width:0;height:0" aria-hidden="true">
-        <filter id="turing-thresh"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"/></filter>
-    </svg>
-    <a class="skip-link" href="#clients-container">Skip to content</a>
-    <div id="cursor"></div>
-    <div class="strip-left"><canvas id="automata-left" class="automata-canvas"></canvas></div>
-    <div class="strip-right"><canvas id="automata-right" class="automata-canvas"></canvas></div>
+<body>
 
-    <button class="theme-toggle interactive" onclick="toggleTheme()" aria-label="Toggle light/dark mode">◧</button>
-    <button class="contact-trigger interactive" id="contact-btn" onclick="toggleContact()" aria-label="Contact">CONTACT</button>
-    <div class="contact-popover" id="contact-popover">
-        <div class="contact-popover-header">Get in touch</div>
-        <a href="https://wa.me/5547999664274" target="_blank" rel="noopener" class="interactive">
-            <span class="contact-icon">💬</span>
-            <div><strong>WhatsApp</strong><br><span class="contact-label">Chat now</span></div>
-        </a>
-        <a href="mailto:conceicao.felipe@gmail.com" class="interactive">
-            <span class="contact-icon">✉</span>
-            <div><strong>Email</strong><br><span class="contact-label">conceicao.felipe@gmail.com</span></div>
-        </a>
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
     </div>
 
-    <nav class="floating-nav" id="floating-back" role="navigation" aria-label="Back to home">
-        <span onclick="goHome()" tabindex="0" role="button" aria-label="Go to home" class="interactive">← BACK</span>
-    </nav>
-
-    <div id="view-home" class="view-wrapper active" role="main">
-        <section class="hero-section" id="hero-section" aria-label="Hero">
-            <div class="hero-mosaic" id="hero-mosaic" aria-hidden="true"><img src="https://drive.google.com/thumbnail?id=1qo8sAAWeO2nZoLPiytnPzZikITGUCuS0&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1wpQudGW3Kqd6tUWo2B4zwBDrG7YnS4l6&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1Lk4PJYqVZIdWYIDDs_OuH7sXbjHLh6ZW&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1Ar7WkoQ0LcOzjpJsppRYYP1fvmQm6Lud&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1h4d3inwgxq15Bk3asUTl5k1JH00tTxWB&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1pOQgnyNyCZas4IpXVYUdEZLEXpIq2T5n&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1tpX1wdU_DVoNSy8PFF_xgSP0UFGaKTGI&sz=w600" alt="" loading="eager">
-<img src="https://drive.google.com/thumbnail?id=1092gVEeHYgsi-xLz7JclM8FasA2sDCCZ&sz=w600" alt="" loading="eager">
-</div>
-            <div class="hero-overlay-left"></div>
-            <div class="hero-overlay-right"></div>
-            <div class="hero-content">
-                <div class="plm-master-logo" id="hero-logo-wrap" aria-label="Pelimotion PLM logo">
-                    <div class="logo-part" id="logo-p" aria-hidden="true"></div>
-                    <div class="logo-part" id="logo-l" aria-hidden="true"></div>
-                    <div class="logo-part" id="logo-m" aria-hidden="true"></div>
-                </div>
-                <div class="hero-text" id="hero-release">
-                    <div class="hero-name">Felipe<br>Conceição</div>
-                    <div class="hero-role">Motion Branding &amp; Creative Direction</div>
-                    <p class="hero-body">A creative hub focused on giving body and movement to bold ideas. We blend design, technology, and narrative to build rhythmic identities and high-impact content across diverse industries.</p>
-                    <span class="hero-tagline">If your brand moves, we design the system.</span>
-                </div>
-            </div>
-            <div class="scroll-hint" aria-hidden="true">SCROLL ↓</div>
-        </section>
-        <div class="content-section">
-            <p class="section-label entrance-mask" aria-label="Section: Select Collection">SELECT COLLECTION</p>
-            <div class="grid-brutal" id="clients-container" role="list">
-                <!-- Dynamic collection items injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- VIEW: GALLERY -->
-    <div id="view-gallery" class="view-wrapper" role="main">
-        <div id="gallery-header-sticky">
-            <button class="back-btn interactive" onclick="goHome()" aria-label="Back to home">BACK</button>
-            <div id="gallery-title-main"></div>
-        </div>
-        <div class="content-section" style="padding-top:120px">
-            <div id="gallery-meta" class="entrance-mask"></div>
-            <div id="gallery-content"></div>
-            <div style="margin-top:100px;text-align:center" class="entrance-mask">
-                <button class="return-btn interactive" onclick="goHome()">BACK TO COLLECTIONS</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL -->
-    <div id="modal" role="dialog" aria-modal="true" aria-label="Video player">
-        <button class="close-modal interactive" onclick="closeModal()" aria-label="Close video">CLOSE ✕</button>
-        <div id="modal-content" style="width:100%;height:100%;position:relative"></div>
-    </div>
-
-    <script>
-    /* ─── GLOBAL REFS ─── */
-    const viewHome = document.getElementById('view-home');
-    const viewGallery = document.getElementById('view-gallery');
-    const contactPopover = document.getElementById('contact-popover');
-    const contactBtn = document.getElementById('contact-btn');
-    const cursor = document.getElementById('cursor');
-    const modal = document.getElementById('modal');
-    const modalContent = document.getElementById('modal-content');
-    const floatingBack = document.getElementById('floating-back');
-    const galleryContent = document.getElementById('gallery-content');
-
-    /* ─── CUSTOM CURSOR ─── */
-    if(!('ontouchstart' in window)){
-        let mouseX = 0, mouseY = 0;
-        let curX = 0, curY = 0;
-        window.addEventListener('mousemove', e => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            if(e.target.closest('.interactive')) cursor.classList.add('hover');
-            else cursor.classList.remove('hover');
-        });
-        function animCursor(){
-            curX += (mouseX - curX) * 0.2;
-            curY += (mouseY - curY) * 0.2;
-            cursor.style.left = curX + 'px';
-            cursor.style.top = curY + 'px';
-            requestAnimationFrame(animCursor);
-        }
-        animCursor();
-    }
-
-    /* ─── CELLULAR AUTOMATA ─── */
-    function initAutomata(canvasId){
-        const canvas = document.getElementById(canvasId);
-        if(!canvas) return;
-        const ctx = canvas.getContext('2d');
-        let w, h, rows, cols, grid;
-        function resize(){
-            w = canvas.width = canvas.offsetWidth;
-            h = canvas.height = canvas.offsetHeight;
-            cols = 12; rows = Math.ceil(h / (w/cols));
-            grid = Array.from({length:rows*cols}, ()=>Math.random()>.85?1:0);
-        }
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim();
-            const cw = w/cols;
-            for(let i=0; i<rows; i++){
-                for(let j=0; j<cols; j++){
-                    if(grid[i*cols+j]) ctx.fillRect(j*cw, i*cw, cw-1, cw-1);
-                }
-            }
-            let next = [...grid];
-            for(let i=1; i<rows; i++){
-                for(let j=0; j<cols; j++){
-                    const prevRow = (i-1)*cols;
-                    const left = grid[prevRow + (j-1+cols)%cols];
-                    const mid = grid[prevRow + j];
-                    const right = grid[prevRow + (j+1)%cols];
-                    next[i*cols+j] = (left ^ right);
-                }
-            }
-            grid = [...next.slice(cols), ...Array.from({length:cols}, ()=>Math.random()>.95?1:0)];
-        }
-        resize(); window.addEventListener('resize', resize);
-        setInterval(draw, 120);
-    }
-    initAutomata('automata-left'); initAutomata('automata-right');
-
-    /* ─── SCROLL & INTERSECTION ─── */
-    const maskObs = new IntersectionObserver(entries=>{
-        entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
-    },{threshold:.1});
-
-    let isMobile = window.innerWidth < 768;
-    window.addEventListener('resize', ()=>{isMobile = window.innerWidth < 768});
-
-    function updateHeroPanelWidth(){
-        const wrap = document.getElementById('hero-logo-wrap');
-        const release = document.getElementById('hero-release');
-        if(wrap && release){
-            const rect = wrap.getBoundingClientRect();
-            const releaseRect = release.getBoundingClientRect();
-            const panelW = Math.max(rect.width, releaseRect.width) + 40;
-            document.documentElement.style.setProperty('--hero-panel-w', panelW + 'px');
-        }
-    }
-    if(window.ResizeObserver){
-        const heroObs = new ResizeObserver(updateHeroPanelWidth);
-        const heroContent = document.querySelector('.hero-content');
-        if(heroContent) heroObs.observe(heroContent);
-    }
-    // also update on animation frame as logo animates its size
-    let heroPanelRaf = 0, heroPanelFrames = 0;
-    function trackHeroPanelDuringAnim(){
-        updateHeroPanelWidth();
-        heroPanelFrames++;
-        if(heroPanelFrames < 200) requestAnimationFrame(trackHeroPanelDuringAnim); // track for ~3s
-    }
-    requestAnimationFrame(trackHeroPanelDuringAnim);
-    window.addEventListener('resize', updateHeroPanelWidth, {passive:true});
-
-/* ─── RENDER HOME ─── */
-    function renderHome(){
-        const container = document.getElementById('clients-container');
-        if(!container) return;
-        let html = '';
-        Object.keys(clientsData).forEach(name => {
-            const client = clientsData[name];
-            // Get representative work (first from root or first category)
-            let rep = client.root && client.root[0] ? client.root[0] : null;
-            if(!rep && client.categories) {
-                const firstCat = Object.keys(client.categories)[0];
-                if(firstCat) rep = client.categories[firstCat][0];
-            }
-            
-            const aspectClass = rep ? rep.format : 'default';
-            // Use middle frame of mosaic as poster if available, better chance of being ready than the auto-poster
-            const poster = (rep && rep.mosaic && rep.mosaic[1]) ? rep.mosaic[1] : (rep ? rep.poster_url : '');
-            const tagline = clientDescriptions[name] || '';
-
-            html += `
-                <div role="listitem" class="card-float interactive entrance-mask" onclick="openClient('${name}')" tabindex="0">
-                    <div class="client-card-wrap">
-                        <div class="client-card-img-wrap ${aspectClass}">
-                            <img class="client-card-img" src="${poster}" alt="${name}" loading="lazy" onerror="this.src='https://via.placeholder.com/600.png?text=Preview+Loading...'">
-                            <div class="card-hover-tagline" aria-hidden="true">${tagline}</div>
-                        </div>
-                        <div class="client-card-footer">
-                            <span class="client-name">${name}</span>
-                            <span class="client-count">${String(client.total).padStart(2,'0')} WORKS</span>
-                        </div>
-                    </div>
-                </div>`;
-        });
-        container.innerHTML = html;
-        container.querySelectorAll('.entrance-mask').forEach(m => maskObs.observe(m));
-    }
-    // Call renderHome after data is loaded (which is hardcoded for now, but script updates it)
-    setTimeout(renderHome, 100);
-
-    /* ─── DATA ─── */
-    const clientDescriptions = {"BC MAPPING FESTIVAL": "Visual identity and motion system for BC Mapping Festival \u2014 a large-scale projection mapping event celebrating art, light, and urban architecture.", "EQI": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.", "FAST SHIPPING": "Living rebranding concept \u2014 a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.", "FUNKY ROOM": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.", "FURB": "Broadcast and institutional campaign work for FURB university \u2014 motion design for TV, digital, and event formats including accessible LIBRAS versions.", "HEO": "Complete rebranding motion package for HEO \u2014 logo animation, visual system, and brand guidelines in motion.", "ISLA": "Motion branding, manifesto films, and campaign material for Isla \u2014 a beachside venue blending gastronomy, nightlife, and coastal aesthetics.", "LSLA": "Motion branding, manifesto films, and campaign material for Isla \u2014 a beachside venue blending gastronomy, nightlife, and coastal aesthetics.", "NEXTRON": "Logo animation and brand signature update for Nextron \u2014 clean, technical motion design for a tech brand.", "PIANISSIMO": "Stage visuals and real-time visualizers for Pianissimo \u2014 ambient, generative motion for live performance environments.", "PLAYA": "Comprehensive motion branding for Playa Beach Club \u2014 manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.", "RIO CARNAVAL": "App visualizer and release film for Rio Carnaval \u2014 capturing the kinetic energy of Brazil's biggest cultural event through motion design.", "SUZANO": "Institutional and event motion design for Suzano \u2014 including innovation center presentations, award ceremonies, and internal culture films.", "VARIADOS": "Selected personal and experimental motion work \u2014 reels, explorations, and cross-discipline projects."};
-    const categoryDescriptions = {"Media Kit": "Brand assets in motion \u2014 color palettes, patterns, and transitions for digital and print application.", "Motion Campaign": "Campaign-ready deliverables \u2014 social media, OOH, digital ad, and event-specific motion pieces.", "FUNKY 6 - FUNKED UP": "Edition 06 \u2014 Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.", "FUNKY ROOM 1": "Edition 01 \u2014 The original. First Room, After Party, and the birth of the visual language.", "FUNKY ROOM 2": "Edition 02 \u2014 Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.", "FUNKY ROOM 3": "Edition 03 \u2014 Full social media campaign. Multi-format content for feed, stories, and OOH.", "FUNKY ROOM 4": "Edition 04 \u2014 Blue Edition. Turntable visuals, headline reveals, and artist-specific content.", "FUNKY ROOM 5": "Edition 05 \u2014 Evolved social media system with refined grid and content hierarchy.", "Broadcast Campaign - FURB": "TV-ready spots and institutional films \u2014 multi-format broadcast campaign with LIBRAS accessibility.", "ETEVI": "Event-specific campaign for ETEVI \u2014 multi-resolution adaptations for screens, social, and outdoor.", "Motion Campaign - ETEVI": "Extended motion deliverables for the ETEVI event series.", "MANIFESTO": "Brand manifesto and concept films \u2014 high-production narrative pieces that define the brand's soul.", "IA Genenerated": "AI-assisted visual explorations \u2014 experimental food and lifestyle content generated with creative AI tools."};
-    const clientsData = {"BC MAPPING FESTIVAL":{"root":[],"categories":{"Media Kit":[{"title":"CORES VERDE E AZUL","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_85.jpg"]},{"title":"CORES 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_85.jpg"]},{"title":"CORES","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_85.jpg"]},{"title":"ONDA PADROES","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_85.jpg"]},{"title":"TRANSICAO CORES 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_85.jpg"]},{"title":"TRANSICAO CORES","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_85.jpg"]}],"Motion Campaign":[{"title":"BC MAPPING BOARD","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_85.jpg"]},{"title":"BC MAPPING INFOS 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_85.jpg"]},{"title":"BC MAPPING LED 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_85.jpg"]},{"title":"BC MAPPING LED 02","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_85.jpg"]},{"title":"BC MAPPING TEMPLATE PEIXE 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_85.jpg"]}]},"total":11},"EQI":{"root":[{"title":"EQI MAKING OF CIRQUE DU SOLEIL","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_85.jpg"]}],"categories":{},"total":1},"FAST SHIPPING":{"root":[{"title":"FAST SHIPPING LIVING REBRANDING","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_85.jpg"]}],"categories":{},"total":1},"FUNKY ROOM":{"root":[{"title":"FUNKY ROOM 3 OVERVIEW","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_85.jpg"]},{"title":"MEDIA KIT EDI\u00c7\u00c3O ESPECIAL FNKD UP","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_85.jpg"]},{"title":"SOCIAL MEDIA FUNKY WEEKEND","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_85.jpg"]}],"categories":{"FUNKY 6 - FUNKED UP":[{"title":"BTS CENA 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_85.jpg"]},{"title":"FUNKED UP LOGO","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_85.jpg"]},{"title":"FUNKED UP BTS","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_85.jpg"]},{"title":"FUNKED UP CRIATIVO 01 LOGO REVEAL","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_85.jpg"]},{"title":"FUNKED UP CRIATIVO 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_85.jpg"]},{"title":"FUNKED UP CRIATIVO 02 LIE 3 SLOGAN","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_85.jpg"]},{"title":"FUNKED UP CRIATIVO 02 LINE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_85.jpg"]},{"title":"FUNKED UP CRIATIVO 03 CONCECITO + SLOGAN","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_85.jpg"]},{"title":"FUNKED UP CRIATIVO 03 ISNT JUST A PARTY","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_85.jpg"]},{"title":"SLOGAN","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_85.jpg"]}],"FUNKY ROOM 1":[{"title":"FUNKY ROOM 1ST ROOM 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_85.jpg"]},{"title":"FUNKY ROOM 1ST ROOM 02","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_85.jpg"]},{"title":"FUNKY ROOM ROOM AFTER PARTY","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_85.jpg"]}],"FUNKY ROOM 2":[{"title":"DROP 01 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_85.jpg"]},{"title":"DROP 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_85.jpg"]},{"title":"FUNKY 2 DRIP E TICKET","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_85.jpg"]},{"title":"FUNKY 2 HEADLINE ULTIMOS INGRESSOS 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_85.jpg"]},{"title":"LOTE 80%","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_85.jpg"]}],"FUNKY ROOM 3":[{"title":"OOH FUNKY 3","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_85.jpg"]},{"title":"SOCIAL MEDIA 01 20.09","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_85.jpg"]},{"title":"SOCIAL MEDIA 02 19.09","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_85.jpg"]},{"title":"SOCIAL MEDIA 03 20.09","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_85.jpg"]}],"FUNKY ROOM 4":[{"title":"FUNKY 4 HEADLINE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_85.jpg"]},{"title":"FUNKY 4 MC CAVERINHA","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_85.jpg"]},{"title":"FUNKY BLUE EDITION 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_85.jpg"]},{"title":"FUNKY TOCA DISCO V2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_85.jpg"]}],"FUNKY ROOM 5":[{"title":"FUNKY ROOM 5","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_85.jpg"]},{"title":"SOCIAL MEDIA 01 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_85.jpg"]},{"title":"SOCIAL MEDIA 02 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_85.jpg"]},{"title":"SOCIAL MEDIA 02","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_85.jpg"]},{"title":"SOCIAL MEDIA 03","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_85.jpg"]}]},"total":34},"FURB":{"root":[],"categories":{"Broadcast Campaign - FURB":[{"title":"FURB CARTAO 10 1920 1080 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_85.jpg"]},{"title":"FURB PONTO 1080 1920 LIBRAS 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_85.jpg"]},{"title":"FURB PONTO V3 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_85.jpg"]}],"OOH Campaign - ETEVI":[{"title":"ETEVI VT 10 1152 640 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_85.jpg"]},{"title":"ETEVI VT 15 1080 1920 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_85.jpg"]},{"title":"ETEVI VT 15 1920 1080 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_85.jpg"]}]},"total":6},"HEO":{"root":[{"title":"HEO REBRANDING 720","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_85.jpg"]}],"categories":{},"total":1},"LSLA":{"root":[{"title":"CHAMADA 07 03 26 L CIO","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_85.jpg"]}],"categories":{"IA Genenerated":[{"title":"PRATOS E DRINKS 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_85.jpg"]},{"title":"PRATOS E DRINKS 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_85.jpg"]},{"title":"PRATOS E DRINKS 5","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_85.jpg"]},{"title":"PRATOS E DRINKS","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_85.jpg"]}],"MANIFESTO":[{"title":"ISLA AFTERMOVIE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_85.jpg"]},{"title":"ISLA BRAVA LUA CONCEPT","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_85.jpg"]},{"title":"ISLA NAO VIRE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_85.jpg"]},{"title":"POST MARE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_85.jpg"]}],"Motion Campaign":[{"title":"CHAMADA 24 01 26 CHELINA MANUHUTU","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_85.jpg"]},{"title":"CHAMADA 25 10 25 MARCEL COELHO 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_85.jpg"]},{"title":"ISLA 01 VIRADA LOTE 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_85.jpg"]},{"title":"ISLA LINE BALIMOON 12 11 1080 1920","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_85.jpg"]},{"title":"ISLA NEGRONI WEEK","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_85.jpg"]},{"title":"ISLA RESTAURANTE VIRADA DE LOTE SLIDE01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_85.jpg"]},{"title":"ISLA RESTAURENTE SALMAO VIDEO","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_85.jpg"]},{"title":"LINE BLUE 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_85.jpg"]},{"title":"LINE UP 08 11 1080 1920 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_85.jpg"]},{"title":"LINE UP 23 10 1080 1920 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_85.jpg"]},{"title":"PROGRAMACAO SEMANAL RESTAURANTE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_85.jpg"]}]},"total":20},"NEXTRON":{"root":[{"title":"NEXTRON ALTERACAO ASSINATURA","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_85.jpg"]}],"categories":{},"total":1},"PIANISSIMO":{"root":[{"title":"STAGE PIANISSIMO VISUALIZER 3","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_85.jpg"]},{"title":"STAGE PIANISSIMO VISUALIZER 4","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_85.jpg"]},{"title":"STAGE PIANISSIMO VISUALIZER 1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_85.jpg"]}],"categories":{},"total":3},"PLAYA":{"root":[],"categories":{"MANIFESTO":[{"title":"BEACH TENIS DO PLAYA","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_85.jpg"]},{"title":"CRIATIVO CONCEITO OPS ACERTEI NA PLAYA","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_85.jpg"]},{"title":"PLAYA CONCEITO BOIAS AO MAR","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_85.jpg"]},{"title":"PLAYA CONCEITO CARNAVAL","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_85.jpg"]},{"title":"PLAYA CONCEITO MODELO RESPIRE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_85.jpg"]},{"title":"PLAYA CONCEITO RUNNING CAIPIRINHA","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_85.jpg"]},{"title":"SURFISTA VIVA INTENSAMENTE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_85.jpg"]}],"Motion Campaign":[{"title":"AGENDA JANEIRO OOH 16.01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_85.jpg"]},{"title":"CHAMADA CARNAPLAYA ABADAS 02","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_85.jpg"]},{"title":"CHAMADA CARNAPLAYA COMECOU","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_85.jpg"]},{"title":"CHAMADA CARNAPLAYA TER\u00c7A 03","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_85.jpg"]},{"title":"CHAMADA DUBDOGZ 29 01 26 V1","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_85.jpg"]},{"title":"DOM 21.12 MOTION","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_85.jpg"]},{"title":"LINE UP VERAO 19 12 25 1080 1920","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_85.jpg"]},{"title":"PLAYA CHAMADA 20 04 26 MEGA BAILE DO PETROSKI FUNKY","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_85.jpg"]},{"title":"PLAYA CHAMADA SUNDAY SUNSET 01 02 26","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_85.jpg"]},{"title":"PLAYA LINE 15 16 17 18","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_85.jpg"]},{"title":"PLAYA PROMOCAO 20 OFF 04 26","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_85.jpg"]},{"title":"PLAYA PROMOCAO LINE UP GERAL 2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_85.jpg"]},{"title":"PLAYACHAMADA 19 04 26 KVSH 01","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_85.jpg"]},{"title":"SEG 22.12 MOTION","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_85.jpg"]}]},"total":21},"PREFEITURA TIMBO\u0301":{"root":[],"categories":{},"total":0},"RIO CARNAVAL":{"root":[{"title":"RIO CARNAVAL APP RELEASE","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_85.jpg"]},{"title":"RIO CARNAVAL APP VISUALIZER","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_85.jpg"]}],"categories":{},"total":2},"SUZANO":{"root":[{"title":"SUZANO CENTRO INOVACAO V5","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_85.jpg"]},{"title":"SUZANO LETRAS QUE TRANSFORMAM ALTA2","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_85.jpg"]},{"title":"SUZANO PREMIO 2022","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_85.jpg"]},{"title":"SUZANO RIR ABETURA PREVIA3","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_85.jpg"]},{"title":"TEMPO DE CASA 04 23 PT","video_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt.mp4","preview_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_preview.mp4","poster_url":"https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt.jpg","format":"default","aspect":"16/9","mosaic":["https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_15.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_50.jpg","https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_85.jpg"]}],"categories":{},"total":5},"WOLFGARTEN":{"root":[],"categories":{},"total":0}};
-    function openClient(name, pushState=true){
-        viewHome.classList.remove('active');floatingBack.classList.add('active');
-        const client=clientsData[name];if(!client)return;
+    <main class="container">
+        <div class="logo-box"></div>
         
-        if(pushState) history.pushState({view:'gallery', client:name}, '', '#'+name.replace(/\s+/g,'-'));
+        <header>
+            <h1 class="title">Felipe Conceição</h1>
+            <p class="subtitle">Select Destination</p>
+        </header>
 
-        let html='<div class="gallery-hero entrance-mask"><h1 class="gallery-title">'+name+'</h1>';
-        if(clientDescriptions[name])html+='<p class="gallery-desc">'+clientDescriptions[name]+'</p>';
-        html+='<p class="gallery-meta"><span>'+String(client.total).padStart(2,'0')+'</span> EXECUTIONS</p></div>';
-        
-        // Root Videos & Special Layout for Single Work
-        const rootWorks = (client.root||[]).filter(w=>w.video_url);
-        const cats = Object.keys(client.categories||{});
-        const totalWorksInCats = cats.reduce((sum,c)=>sum+(client.categories[c].filter(w=>w.video_url).length), 0);
-        const isSingleWork = rootWorks.length === 1 && totalWorksInCats === 0;
+        <nav class="nav-grid">
+            <a href="/v1" class="nav-card">
+                <span class="label">Portfolio Hub</span>
+                <span class="desc">Motion Systems & Selection</span>
+            </a>
+            <a href="/Curriculum" class="nav-card">
+                <span class="label">Curriculum</span>
+                <span class="desc">Professional Path & Experience</span>
+            </a>
+        </nav>
 
-        if(isSingleWork){
-            const w = rootWorks[0];
-            const poster = (w.mosaic && w.mosaic[1]) ? w.mosaic[1] : (w.poster_url || '');
-            html += `<div class="single-work-container entrance-mask">
-                <div class="interactive medium-player" style="aspect-ratio:${w.aspect || '16/9'}" onclick="openModal('${w.video_url}', '${w.preview_url || ''}', '${w.aspect || '16/9'}')">
-                    <img src="${poster}" class="work-card-img" loading="lazy">
-                    <video class="work-card-img" style="position:absolute;top:0;left:0;opacity:0" width="100%" height="100%" preload="none" muted loop playsinline
-                        onmouseenter="this.style.opacity=1;this.play()" 
-                        onmouseleave="this.style.opacity=0;this.pause();this.currentTime=0;">
-                        <source src="${w.preview_url || w.video_url}" type="video/mp4">
-                    </video>
-                    <div style="position:absolute;bottom:15px;right:15px;font-size:9px;font-weight:900;color:var(--bg);background:var(--fg);padding:4px 8px">VIEW FULLSCREEN</div>
-                </div>
-                <div class="work-card-foot" style="border:none;padding:0"><div class="work-title" style="font-size:18px">${w.title}</div></div>
-            </div>`;
-        } else if(rootWorks.length>0){
-            html+='<div class="gallery-featured entrance-mask">';
-            rootWorks.forEach(w=>{
-                const aspectClass = w.format || 'default';
-                const poster = (w.mosaic && w.mosaic[1]) ? w.mosaic[1] : (w.poster_url || '');
-                html+=`<div class="interactive work-card-wrap" tabindex="0" onclick="openModal('${w.video_url}', '${w.preview_url || ''}', '${w.aspect || '16/9'}')">
-                    <div class="client-card-img-wrap ${aspectClass}">
-                        <img src="${poster}" class="work-card-img" loading="lazy">
-                        <video class="work-card-img" style="position:absolute;top:0;left:0;opacity:0" width="100%" height="100%" preload="none" muted loop playsinline
-                            onmouseenter="this.style.opacity=1;this.play()" 
-                            onmouseleave="this.style.opacity=0;this.pause();this.currentTime=0;">
-                            <source src="${w.preview_url || w.video_url}" type="video/mp4">
-                        </video>
-                    </div>
-                    <div class="work-card-foot"><div class="work-title">${w.title}</div></div>
-                </div>`;
-            });
-            html+='</div>';
-        }
-        
-        // Categories
-        if(client.categories && !isSingleWork){
-            cats.sort().forEach(cat=>{
-                const works=client.categories[cat].filter(w=>w.video_url);
-                if(works.length===0)return; 
+        <footer>
+            &copy; 2024 Pelimotion. All Rights Reserved.
+        </footer>
+    </main>
 
-                html+='<div class="category-section entrance-mask">';
-                html+='<div class="category-header"><span class="category-name">'+cat+'</span><span class="category-count">'+String(works.length).padStart(2,'0')+' pieces</span></div>';
-                if(categoryDescriptions[cat])html+='<p class="category-desc">'+categoryDescriptions[cat]+'</p>';
-                html+='<div class="grid-works">';
-                works.forEach(w=>{
-                    const aspectClass = w.format || 'default';
-                    const poster = (w.mosaic && w.mosaic[1]) ? w.mosaic[1] : (w.poster_url || '');
-                    html+=`<div class="interactive work-card-wrap entrance-mask" tabindex="0" onclick="openModal('${w.video_url}', '${w.preview_url || ''}', '${w.aspect || '16/9'}')">
-                        <div class="client-card-img-wrap ${aspectClass}">
-                            <img src="${poster}" class="work-card-img" loading="lazy">
-                            <video class="work-card-img" style="position:absolute;top:0;left:0;opacity:0" width="100%" height="100%" preload="none" muted loop playsinline
-                                onmouseenter="this.style.opacity=1;this.play()" 
-                                onmouseleave="this.style.opacity=0;this.pause();this.currentTime=0;">
-                                <source src="${w.preview_url || w.video_url}" type="video/mp4">
-                            </video>
-                        </div>
-                        <div class="work-card-foot"><div class="work-title">${w.title}</div></div>
-                    </div>`;
-                });
-                html+='</div></div>';
-            });
-        }
-        
-        html+='<div style="margin-top:80px;text-align:center" class="entrance-mask"><button class="return-btn interactive" onclick="goHome()">RETURN</button></div>';
-        galleryContent.innerHTML=html;
-        
-        setTimeout(()=>{
-            if(isMobile){viewHome.style.display='none';viewGallery.style.display='block';window.scrollTo(0,0)}
-            viewGallery.classList.add('active');viewGallery.scrollTop=0;
-            viewGallery.querySelectorAll('.entrance-mask').forEach(m=>maskObs.observe(m));
-        },460);
-    }
-
-    function goHome(pushState=true){
-        viewGallery.classList.remove('active');floatingBack.classList.remove('active');
-        if(pushState) history.pushState({view:'home'}, '', window.location.pathname);
-        setTimeout(()=>{
-            if(isMobile){viewGallery.style.display='none';viewHome.style.display='block';window.scrollTo(0,0)}
-            viewHome.classList.add('active');
-        },460);
-    }
-
-    // Browser Back Button Support
-    window.onpopstate = function(e){
-        if(e.state && e.state.view === 'gallery'){
-            openClient(e.state.client, false);
-        } else {
-            goHome(false);
-        }
-    };
-
-    let currentVideoData = { hd: '', preview: '' };
-    function openModal(hdUrl, previewUrl, aspect){
-        currentVideoData = { hd: hdUrl, preview: previewUrl || hdUrl };
-        modal.style.display='flex';
-        modalContent.innerHTML=`
-            <div class="player-outer">
-                <div class="player-container" style="aspect-ratio:${aspect || '16/9'}">
-                    <div class="player-loader" id="modal-loader">
-                        <div class="spinner"></div>
-                        <div style="font-size:9px; letter-spacing:0.2em; font-weight:900">BUFFERING</div>
-                    </div>
-                    <video id="modal-video" autoplay playsinline style="width:100%;height:100%;object-fit:contain;background:#000">
-                        <source src="${hdUrl}" type="video/mp4">
-                    </video>
-                    <div class="player-controls">
-                        <button class="play-btn" id="player-play-pause">PAUSE</button>
-                        <div class="player-seek" id="player-seek-bar"><div class="player-seek-fill" id="player-seek-fill"></div></div>
-                        <div id="player-time" style="font-size:9px;font-weight:900;letter-spacing:0.1em;color:var(--fg)">0:00 / 0:00</div>
-                        <button class="player-hd-toggle active" id="hd-toggle" onclick="toggleHD()">HD</button>
-                    </div>
-                </div>
-            </div>`;
-            
-        setTimeout(()=>modal.classList.add('active'),10);
-
-        const v = document.getElementById('modal-video');
-        const l = document.getElementById('modal-loader');
-        const fill = document.getElementById('player-seek-fill');
-        const seek = document.getElementById('player-seek-bar');
-        const playBtn = document.getElementById('player-play-pause');
-        const timeBox = document.getElementById('player-time');
-
-        v.oncanplay = () => l.classList.add('hidden');
-        v.onwaiting = () => l.classList.remove('hidden');
-        v.onplaying = () => { l.classList.add('hidden'); playBtn.textContent = 'PAUSE'; };
-        v.onpause = () => { playBtn.textContent = 'PLAY'; };
-
-        v.ontimeupdate = () => {
-            const pct = (v.currentTime / v.duration) * 100;
-            if(fill) fill.style.width = pct + '%';
-            if(timeBox){
-                const cur = formatTime(v.currentTime);
-                const dur = formatTime(v.duration || 0);
-                timeBox.textContent = `${cur} / ${dur}`;
-            }
-        };
-
-        playBtn.onclick = () => { if(v.paused) v.play(); else v.pause(); };
-        seek.onclick = (e) => {
-            const rect = seek.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            v.currentTime = pos * v.duration;
-        };
-
-        v.onerror = () => {
-            modalContent.innerHTML = `<div style="padding:40px; text-align:center; font-size:12px; font-weight:900; letter-spacing:0.2em; color:var(--fg)">VIDEO FAILED TO LOAD.</div>`;
-        };
-        document.querySelector('.close-modal').focus();
-    }
-    function formatTime(s){
-        const m = Math.floor(s/60);
-        const ss = Math.floor(s%60);
-        return m + ':' + (ss<10?'0':'') + ss;
-    }
-    function toggleHD(){
-        const v = document.getElementById('modal-video');
-        const btn = document.getElementById('hd-toggle');
-        if(!v) return;
-        const time = v.currentTime;
-        const isHD = btn.classList.toggle('active');
-        v.src = isHD ? currentVideoData.hd : currentVideoData.preview;
-        v.currentTime = time;
-        v.play();
-    }
-    function closeModal(){
-        const v = document.getElementById('modal-video');
-        if(v) v.pause();
-        modal.classList.remove('active');
-        setTimeout(()=>{modal.style.display='none';modalContent.innerHTML=''},420);
-    }
-
-    /* ─── THEME & CONTACT ─── */
-    function toggleTheme(){
-        const b = document.body;
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-    }
-    function toggleContact(){
-        contactPopover.classList.toggle('open');
-    }
-    window.addEventListener('click', e=>{
-        if(!contactPopover.contains(e.target) && e.target !== contactBtn) contactPopover.classList.remove('open');
-    });
-    </script>
 </body>
 </html>

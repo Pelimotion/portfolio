@@ -8,20 +8,26 @@ echo "🚀 Iniciando o Autopilot de Deploy da Pelimotion..."
 echo "👀 O script está agora vigiando a pasta:" $(pwd)
 echo "--------------------------------------------------------"
 
+LAST_MEDIA_COUNT=$(find "Medias Portfolio" -type f 2>/dev/null | wc -l)
+
 while true; do
-  # O comando abaixo verifica se existe algum arquivo modificado ou novo
-  if [[ -n $(git status --porcelain) ]]; then
+  # O comando abaixo verifica se existe algum arquivo modificado no git
+  GIT_CHANGES=$(git status --porcelain)
+  
+  # Verifica se foram adicionados/removidos arquivos de mídia (ignorados pelo git)
+  CURRENT_MEDIA_COUNT=$(find "Medias Portfolio" -type f 2>/dev/null | wc -l)
+  
+  if [[ -n "$GIT_CHANGES" ]] || [[ "$CURRENT_MEDIA_COUNT" != "$LAST_MEDIA_COUNT" ]]; then
     echo ""
-    echo "⚡ Alteração detectada no código!"
-    echo "📦 Preparando pacote..."
+    echo "⚡ Alteração detectada no repositório ou na pasta de Mídias!"
+    echo "📦 Iniciando pipeline de deploy completo (Bunny -> GitHub -> Vercel)..."
     
-    git add .
-    git commit -m "Auto-update: $(date +'%Y-%m-%d %H:%M:%S')"
+    LAST_MEDIA_COUNT=$CURRENT_MEDIA_COUNT
     
-    echo "🚀 Lançando para a Vercel (Push)..."
-    git push origin main
+    # Executa o sistema de deploy que já faz a otimização, sync e git push
+    python3 deploy_system.py
     
-    echo "✅ Deploy disparado com sucesso! Voltando a patrulhar..."
+    echo "✅ Pipeline executado! Voltando a patrulhar..."
     echo "--------------------------------------------------------"
   fi
   

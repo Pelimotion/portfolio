@@ -1,0 +1,46 @@
+name: Deploy V1 Portfolio to Vercel
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'V1/portfolio/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies (if any)
+        run: |
+          # Adicione aqui quaisquer dependências Python que sync_bunny.py possa ter
+          # Por exemplo: pip install requests
+          echo "No Python dependencies to install for now."
+
+      - name: Run sync_bunny.py and commit changes
+        env:
+          BUNNY_API_KEY: ${{ secrets.BUNNY_API_KEY }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          python V1/portfolio/sync_bunny.py
+          git add V1/portfolio/index.html
+          git commit -m "Auto-update V1: Sync with Bunny.net and update index.html" || echo "No changes to commit"
+          git push origin main
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: 'V1/portfolio' # Este é o diretório que Vercel irá deployar para o path /v1
+          prod: true # Fazer deploy para produção
