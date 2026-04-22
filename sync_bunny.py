@@ -171,12 +171,48 @@ if __name__ == "__main__":
         "SUZANO": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
         "VARIADOS": "Selected personal and experimental motion work — reels, explorations, and cross-discipline projects.",
     }
-    
-    def _repl(match):
-        return f'const clientsData = {json_data};\nconst clientDescriptions = {json.dumps(client_desc)};'
-    
-    new_html = re.sub(r'const clientsData = \{.*?\}\;\s*(?:const clientDescriptions = \{.*?\}\;)?', _repl, html, flags=re.DOTALL)
-    
+
+    category_desc = {
+        "Media Kit": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application.",
+        "Motion Campaign": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces.",
+        "FUNKY 6 - FUNKED UP": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.",
+        "FUNKY ROOM 1": "Edition 01 — The original. First Room, After Party, and the birth of the visual language.",
+        "FUNKY ROOM 2": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.",
+        "FUNKY ROOM 3": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH.",
+        "FUNKY ROOM 4": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content.",
+        "FUNKY ROOM 5": "Edition 05 — Evolved social media system with refined grid and content hierarchy.",
+        "Broadcast Campaign - FURB": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility.",
+        "OOH Campaign - ETEVI": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor.",
+        "MANIFESTO": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul.",
+        "IA Genenerated": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools.",
+    }
+
+    client_desc_json  = json.dumps(client_desc,    separators=(',', ':'))
+    cat_desc_json     = json.dumps(category_desc,  separators=(',', ':'))
+    replacement_block = (
+        f'const clientDescriptions = {client_desc_json};\n'
+        f'    const categoryDescriptions = {cat_desc_json};\n'
+        f'    const clientsData = {json_data};'
+    )
+
+    # Pattern 1: pre-hub format (clientDescriptions, categoryDescriptions, clientsData)
+    pat1 = re.compile(
+        r'const clientDescriptions = \{.*?\};\s*'
+        r'const categoryDescriptions = \{.*?\};\s*'
+        r'const clientsData = \{.*?\};',
+        re.DOTALL
+    )
+    new_html = pat1.sub(lambda m: replacement_block, html, count=1)
+
+    # Pattern 2: old format (clientsData only or clientsData + clientDescriptions)
+    if new_html == html:
+        pat2 = re.compile(
+            r'const clientsData = \{.*?\};\s*(?:const clientDescriptions = \{.*?\};)?',
+            re.DOTALL
+        )
+        simple_block = f'const clientsData = {json_data};\nconst clientDescriptions = {client_desc_json};'
+        new_html = pat2.sub(lambda m: simple_block, html, count=1)
+
     if new_html != html:
         with open(HTML_FILE, 'w', encoding='utf-8') as f:
             f.write(new_html)
