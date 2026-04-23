@@ -58,7 +58,7 @@
     </div>
 
     <div class="z-10 flex flex-col sm:flex-row gap-6 w-full max-w-3xl px-6 reveal-mech visible" style="transition-delay: 100ms">
-        <a href="cv.html" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
+        <a href="cv.html" onclick="navTo(event, 'cv.html')" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
             <div class="font-mono text-[10px] tracking-widest text-white/40 mb-8">DOC_01</div>
             <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform">Curriculum Vitae</h2>
             <p class="serif italic text-white/50 mb-10 group-hover:-translate-y-1 transition-transform">Full professional experience, education, and toolkit.</p>
@@ -68,7 +68,7 @@
             </div>
         </a>
 
-        <a href="cl.html" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
+        <a href="cl.html" onclick="navTo(event, 'cl.html')" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
             <div class="font-mono text-[10px] tracking-widest text-white/40 mb-8">DOC_02</div>
             <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform">Cover Letter</h2>
             <p class="serif italic text-white/50 mb-10 group-hover:-translate-y-1 transition-transform">Personal introduction and strategic alignment.</p>
@@ -85,6 +85,14 @@
     
     <script src="/Curriculum/script.js"></script>
     <script>
+        function navTo(e, file) {
+            e.preventDefault();
+            let p = window.location.pathname;
+            if (p.endsWith('private')) p += '/';
+            else if (!p.endsWith('/') && !p.endsWith('.html')) p = p.substring(0, p.lastIndexOf('/') + 1);
+            else if (p.endsWith('.html')) p = p.substring(0, p.lastIndexOf('/') + 1);
+            window.location.href = p + file;
+        }
         document.querySelectorAll('.reveal-mech').forEach(el => setTimeout(() => el.classList.add('visible'), 50));
     </script>
 </body>

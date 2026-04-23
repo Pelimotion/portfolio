@@ -50,7 +50,7 @@
     <div id="priv-bar" class="sticky top-0 z-[100] bg-black border-b border-white/10 flex items-center px-4 sm:px-8">
       <span class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block">[PRIVATE_ACCESS]</span>
       <div class="flex">
-          <a href="./index.html" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">← BACK</a>
+          <a href="index.html" onclick="navTo(event, \'index.html\')" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">← BACK</a>
       </div>
     </div>
 
@@ -350,5 +350,17 @@ window.showCL = function() {
 };
 
 </script>
+
+<script>
+function navTo(e, file) {
+    e.preventDefault();
+    let p = window.location.pathname;
+    if (p.endsWith('private')) p += '/';
+    else if (!p.endsWith('/') && !p.endsWith('.html')) p = p.substring(0, p.lastIndexOf('/') + 1);
+    else if (p.endsWith('.html')) p = p.substring(0, p.lastIndexOf('/') + 1);
+    window.location.href = p + file;
+}
+</script>
 </body>
+
 
