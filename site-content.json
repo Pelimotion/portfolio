@@ -1,0 +1,227 @@
+{
+  "_note": "Unified content layer for the entire Pelimotion site. Edit via admin/index.html or directly here.",
+  "_version": "2.0",
+  "landing": {
+    "brandName": "Pelimotion",
+    "brandSub": "Motion Branding & Creative Direction",
+    "navButtons": [
+      {"label": "Portfolio", "sub": "Motion Works", "href": "V1/portfolio/index.html"},
+      {"label": "Curriculum", "sub": "Creative Direction", "href": "Curriculum/index.html"}
+    ],
+    "footerText": "© 2026 Pelimotion"
+  },
+  "portfolio": {
+    "heroName": "PELIMOTION",
+    "heroTitle": "MOTION BRANDING & CREATIVE DIRECTION",
+    "heroRelease": "Visual systems built for those who set the pace, not just follow it.",
+    "contactWhatsApp": "5547999664274",
+    "contactEmail": "conceicao.felipe@gmail.com",
+    "socialInstagram": "pelimotion",
+    "socialLinkedIn": "pelife",
+    "socialBehance": "pelimotion",
+    "footerQuote1": "Visual systems built for those who set the pace, not just follow it.",
+    "footerQuote2": "Systemize the motion, elevate the branding.",
+    "footerStudioLocation": "Florianópolis, Brasil"
+  },
+  "clients": {
+    "BC MAPPING FESTIVAL": {
+      "description": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
+      "release": "A full motion branding system developed for one of the south's largest projection mapping festivals. Every asset was engineered to feel kinetic in both digital and outdoor contexts.",
+      "deliverables": ["Brand Identity Motion", "Media Kit", "Social Media Campaign", "LED Visuals", "OOH Signage"]
+    },
+    "EQI": {
+      "description": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
+      "release": "Exclusive making-of content produced for EQI's high-end brand activation at Cirque du Soleil. Captures the intersection of luxury finance and world-class live performance.",
+      "deliverables": ["Making Of", "Institutional Film"]
+    },
+    "FAST SHIPPING": {
+      "description": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
+      "release": "A concept-driven rebranding exploration for Fast Shipping, translating the brand's core promise of speed and reliability into a living, modular motion identity.",
+      "deliverables": ["Brand Manifesto", "Identity Animation", "Digital Campaign"]
+    },
+    "FUNKY ROOM": {
+      "description": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
+      "release": "Six editions. One consistent visual language that grows bolder with each release. Funky Room's motion identity was built to live on every screen — from stories to street panels.",
+      "deliverables": ["Event Identity", "Social Media Campaign", "OOH Visuals", "Brand Animation", "BTS Content", "Motion Kit"]
+    },
+    "FURB": {
+      "description": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
+      "release": "A comprehensive broadcast campaign for FURB, designed to reach across channels — from primetime TV to digital platforms — while maintaining full LIBRAS accessibility compliance.",
+      "deliverables": ["TV Spot", "Broadcast Campaign", "LIBRAS Accessible Version", "OOH Campaign", "Event Motion"]
+    },
+    "HEO": {
+      "description": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
+      "release": "A precise, minimal logo reveal and brand motion system built for HEO's identity relaunch. Clean execution, maximum brand recall.",
+      "deliverables": ["Logo Animation", "Brand Identity Motion", "Visual System"]
+    },
+    "LSLA": {
+      "description": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+      "release": "From campaign posts to AI-generated food content and cinematic manifesto films, this project spans the full creative spectrum of Isla's coastal brand universe.",
+      "deliverables": ["Brand Manifesto", "Social Media Campaign", "AI Generated Content", "Event Promotion", "Weekly Campaign"]
+    },
+    "NEXTRON": {
+      "description": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
+      "release": "A refined brand signature update for Nextron, expressing precision and forward motion through minimal animation language.",
+      "deliverables": ["Logo Animation", "Brand Signature"]
+    },
+    "PIANISSIMO": {
+      "description": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
+      "release": "Generative stage visuals designed to breathe with the music. Built for live performance, Pianissimo's visualizers shift between ambient and reactive modes in real time.",
+      "deliverables": ["Stage Visuals", "Live Visualizer", "Generative Motion"]
+    },
+    "PLAYA": {
+      "description": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
+      "release": "An ongoing creative partnership with Playa Beach Club — building a cohesive visual language across every touchpoint, from high-concept manifesto films to weekly social activations.",
+      "deliverables": ["Brand Manifesto", "Social Media Campaign", "Event Promotion", "OOH Signage", "Weekly Content", "Seasonal Campaign"]
+    },
+    "RIO CARNAVAL": {
+      "description": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
+      "release": "Two films for the Rio Carnaval app launch — one a full release film, one a kinetic visualizer. Both designed to capture the rhythm and spectacle of the world's greatest carnival.",
+      "deliverables": ["App Release Film", "Motion Visualizer"]
+    },
+    "SUZANO": {
+      "description": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
+      "release": "A series of institutional pieces for Suzano spanning innovation, culture, and recognition — designed to communicate impact at scale across digital and event environments.",
+      "deliverables": ["Institutional Film", "Innovation Center Presentation", "Award Ceremony Visuals", "Internal Culture Film"]
+    },
+    "WOLFGARTEN": {
+      "description": "Motion branding and signature animation for Wolfgarten — a premium European outdoor living brand entering the Brazilian market.",
+      "release": "Brand motion assets for Wolfgarten's Brazilian launch — precise, premium, and built to communicate quality craftsmanship through fluid, confident animation.",
+      "deliverables": ["Brand Signature Animation", "Preview Reel"]
+    },
+    "PREFEITURA TIMBÓ": {
+      "description": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
+      "release": "Public sector motion design for Prefeitura de Timbó, balancing institutional clarity with modern visual language to reach the full breadth of the community.",
+      "deliverables": ["Institutional Campaign", "Social Media Motion"]
+    }
+  },
+  "categories": {
+    "Media Kit": {
+      "description": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application.",
+      "deliverables": ["Pattern Animation", "Color System", "Transition Kit"]
+    },
+    "Motion Campaign": {
+      "description": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces.",
+      "deliverables": ["Social Media Post", "Story / Reel", "OOH Animation", "Digital Ad"]
+    },
+    "FUNKY 6 - FUNKED UP": {
+      "description": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.",
+      "deliverables": ["BTS Film", "Logo Animation", "Social Media Campaign", "Conceptual Creatives"]
+    },
+    "FUNKY ROOM 1": {
+      "description": "Edition 01 — The original. First Room, After Party, and the birth of the visual language.",
+      "deliverables": ["Event Promo", "After Party Promo"]
+    },
+    "FUNKY ROOM 2": {
+      "description": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.",
+      "deliverables": ["Ticket Drop Animation", "Headline Reveal", "Social Media Promo"]
+    },
+    "FUNKY ROOM 3": {
+      "description": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH.",
+      "deliverables": ["Feed Post", "OOH Adaptation", "Social Media Campaign"]
+    },
+    "FUNKY ROOM 4": {
+      "description": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content.",
+      "deliverables": ["Artist Promo", "Turntable Visual", "Headline Animation"]
+    },
+    "FUNKY ROOM 5": {
+      "description": "Edition 05 — Evolved social media system with refined grid and content hierarchy.",
+      "deliverables": ["Social Media System", "Grid Content", "Reels"]
+    },
+    "Broadcast Campaign - FURB": {
+      "description": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility.",
+      "deliverables": ["TV Spot", "LIBRAS Version", "Broadcast Adaptation"]
+    },
+    "OOH Campaign - ETEVI": {
+      "description": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor.",
+      "deliverables": ["LED Screen", "Digital OOH", "Social Media Adaptation"]
+    },
+    "MANIFESTO": {
+      "description": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul.",
+      "deliverables": ["Brand Manifesto Film", "Concept Film", "Narrative Piece"]
+    },
+    "IA Genenerated": {
+      "description": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools.",
+      "deliverables": ["AI Generated Content", "Food & Lifestyle Visual"]
+    }
+  },
+  "curriculum": {
+    "name": "Felipe Conceição",
+    "title": "Creative Director, motion branding and artistic direction.",
+    "subtitle": "Eight years translating brand strategy into rhythm, light and image — from generative pipelines to projection mapping.",
+    "basedIn": "Rio de Janeiro, BR",
+    "disciplines": "Motion · Direction · Branding · CGI",
+    "yearsRange": "2017 → Now",
+    "profileParagraph1": "I work where strategy meets motion. Over eight years I've built visual systems for global brands across automotive, finance and culture — designing how a brand moves, not only how it looks.",
+    "profileParagraph2": "My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion Hub, where we develop AI-integrated motion pipelines and direct immersive experiences — combining motion design with light and projection for theater and live performances.",
+    "stats": [
+      {"value": "08+", "label": "Years of Practice"},
+      {"value": "40+", "label": "Brand Campaigns"},
+      {"value": "12", "label": "Countries Reached"},
+      {"value": "∞", "label": "Frames Per Second"}
+    ],
+    "clientMarquee": ["BMW", "Subaru", "Hyundai", "EQI", "Movida", "Motul", "CAOA Tiggo", "Suzano", "O Boticário", "Colcci", "Pelimotion Hub", "Rockset"],
+    "experience": [
+      {
+        "period": "2022 — PRE",
+        "role": "Creative Director & Artistic Director",
+        "company": "Pelimotion Hub",
+        "items": [
+          "Systems lead for modular motion pipelines (digital/retail).",
+          "AI-integrated generative video workflow R&D.",
+          "Immersive artistic direction (light/projection).",
+          "Brand strategy alignment for high-ticket positioning."
+        ],
+        "tags": ["DIRECTION", "SYSTEMS", "AI_R&D", "LIVE"]
+      },
+      {
+        "period": "2024 — 2025",
+        "role": "Artistic Collaboration — Duo Sirius",
+        "company": "Interdisciplinary Visual Artist",
+        "items": ["Generative motion merging fine art with digital media."],
+        "tags": ["GENERATIVE", "FINE_ART"]
+      },
+      {
+        "period": "2019 — 2022",
+        "role": "Motion Designer & Post-Producer",
+        "company": "Rockset",
+        "items": [
+          "CGI/Motion content for BMW, Subaru, Hyundai, Motul, EQI.",
+          "Owned post-production pipeline for aesthetic excellence.",
+          "Broadcast / Digital Signage assets for financial sectors."
+        ],
+        "tags": ["CGI", "POST_PROD", "BROADCAST"]
+      },
+      {
+        "period": "2018 — PRE",
+        "role": "Freelance Motion Designer",
+        "company": "SP / South Brazil / Remote",
+        "items": [
+          "Strategic brands: Suzano, O Boticário, Colcci.",
+          "Full-cycle conceptualization to final export."
+        ],
+        "tags": ["RETAIL", "SOCIAL", "EVENTS"]
+      }
+    ],
+    "education": [
+      {"period": "2014 — 2017", "title": "Audiovisual Production", "institution": "UNIVALI — Itajaí / Brazil"},
+      {"period": "2025", "title": "AI & Generative Workflows", "institution": "Self-directed R&D"}
+    ],
+    "languages": [
+      {"name": "Portuguese", "level": "Native"},
+      {"name": "English", "level": "Professional / B2+"},
+      {"name": "Spanish", "level": "Conversational / B1"}
+    ],
+    "skills": {
+      "Motion & Post": ["After Effects", "Cinema 4D", "Premiere Pro", "DaVinci Resolve", "Nuke"],
+      "Design & 3D": ["Illustrator", "Photoshop", "Figma", "Blender", "Redshift"],
+      "Code & AI": ["Python Automation", "ComfyUI / Stable Diffusion", "TouchDesigner", "Generative Pipelines"],
+      "Strategy": ["Brand Systems", "Creative Direction", "Project Management", "Client Relations"]
+    },
+    "contactEmail": "conceicao.felipe@gmail.com",
+    "contactWhatsApp": "5547999664274",
+    "socialInstagram": "pelimotion",
+    "socialLinkedIn": "pelife",
+    "socialBehance": "pelimotion"
+  }
+}
