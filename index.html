@@ -1,230 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felipe Conceição | Creative Director & Motion Designer</title>
-    <meta name="description" content="Portfolio Hub and Curriculum of Felipe Conceição. Creative Director specializing in Motion Branding and Visual Systems.">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg: #080808;
-            --fg: #f5f5f5;
-            --accent: #fff;
-            --border: rgba(255,255,255,0.1);
-            --card-bg: rgba(255,255,255,0.03);
-            --card-hover: rgba(255,255,255,0.08);
-            --ease: cubic-bezier(0.23, 1, 0.32, 1);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelimotion — Motion Branding & Creative Direction</title>
+<meta name="description" content="Pelimotion — Premium motion design studio. Kinetic visual experiences, brand systems, and creative direction.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ease:cubic-bezier(.23,1,.32,1)}
+body{background:#080808;color:#f0f0f0;font-family:'Space Grotesk','Helvetica Neue',sans-serif;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═══ MOSAIC BG ═══ */
+.mosaic-bg{position:fixed;inset:0;z-index:0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr);gap:0;opacity:.22;pointer-events:none}
+.mosaic-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.1);transition:filter .6s}
+@media(max-width:768px){.mosaic-bg{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr)}}
 
-        body {
-            background: var(--bg);
-            color: var(--fg);
-            font-family: 'Inter', sans-serif;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+/* ═══ DISTORTION CANVAS ═══ */
+#distortion-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.6}
 
-        /* Ambient Background */
-        .ambient-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.15;
-            animation: move 20s infinite alternate var(--ease);
-        }
-        .blob-1 { width: 400px; height: 400px; background: #333; top: -100px; left: -100px; }
-        .blob-2 { width: 500px; height: 500px; background: #222; bottom: -150px; right: -150px; }
+/* ═══ OVERLAY ═══ */
+.overlay{position:fixed;inset:0;z-index:2;background:radial-gradient(ellipse at center,rgba(8,8,8,.65) 0%,rgba(8,8,8,.92) 100%);pointer-events:none}
 
-        @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(50px, 50px) scale(1.1); }
-        }
+/* ═══ HUB CONTENT ═══ */
+.hub{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100%;gap:48px;padding:40px}
 
-        .container {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 800px;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 60px;
-        }
+/* Logo */
+.hub-logo{width:100px;height:100px;animation:float 6s ease-in-out infinite}
+.hub-logo img{width:100%;height:100%;object-fit:contain;filter:invert(1);opacity:.9}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 
-        /* Logo Animation */
-        .logo-container {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* Subtitle */
+.hub-label{font-size:10px;font-weight:700;letter-spacing:.6em;text-transform:uppercase;color:rgba(255,255,255,.35);text-align:center}
 
-        .main-logo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: invert(1);
-            animation: logoPulse 4s ease-in-out infinite;
-        }
+/* Nav Cards */
+.hub-nav{display:flex;gap:24px;margin-top:8px}
+@media(max-width:600px){.hub-nav{flex-direction:column;gap:16px;width:100%;max-width:340px}}
 
-        @keyframes logoPulse {
-            0%, 100% { transform: scale(1); filter: invert(1) brightness(1); }
-            50% { transform: scale(1.05); filter: invert(1) brightness(1.5) drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
-        }
+.hub-card{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:240px;height:160px;
+    border:1.5px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    text-decoration:none;color:#f0f0f0;
+    transition:all .5s var(--ease);
+    position:relative;overflow:hidden;
+}
+.hub-card::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.06) 0%,transparent 60%);
+    opacity:0;transition:opacity .4s;
+}
+.hub-card:hover{
+    border-color:rgba(255,255,255,.4);
+    transform:translateY(-6px);
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.hub-card:hover::before{opacity:1}
+.hub-card .card-title{font-size:18px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;position:relative}
+.hub-card .card-desc{font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);position:relative;transition:color .4s}
+.hub-card:hover .card-desc{color:rgba(255,255,255,.6)}
+@media(max-width:600px){.hub-card{width:100%;height:120px}}
 
-        header {
-            text-align: center;
-        }
+/* Footer */
+.hub-footer{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.15);margin-top:16px}
 
-        .title {
-            font-size: clamp(28px, 5vw, 48px);
-            font-weight: 900;
-            letter-spacing: -0.04em;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 12px;
-            color: #888;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-        }
-
-        /* Destination Grid */
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            width: 100%;
-        }
-
-        @media (max-width: 600px) {
-            .nav-grid { grid-template-columns: 1fr; }
-            .container { gap: 40px; }
-        }
-
-        .nav-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            text-decoration: none;
-            color: var(--fg);
-            transition: all 0.5s var(--ease);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.5s var(--ease);
-        }
-
-        .nav-card:hover {
-            background: var(--card-hover);
-            border-color: rgba(255,255,255,0.3);
-            transform: translateY(-5px);
-        }
-
-        .nav-card:hover::before {
-            opacity: 1;
-        }
-
-        .nav-card .label {
-            font-size: 20px;
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        .nav-card .desc {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 10px;
-            color: #666;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            transition: color 0.5s var(--ease);
-            position: relative;
-        }
-
-        .nav-card:hover .desc {
-            color: #aaa;
-        }
-
-        /* Footer Info */
-        footer {
-            margin-top: 20px;
-            font-size: 10px;
-            color: #444;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-        }
-
-    </style>
+/* ═══ CURSOR ═══ */
+#plm-cursor{position:fixed;z-index:99999;pointer-events:none;width:12px;height:12px;border-radius:50%;background:#f0f0f0;transform:translate(-50%,-50%);top:0;left:0;transition:width .12s,height .12s}
+#plm-cursor.hover{width:22px;height:22px;opacity:.6}
+@media(hover:none),(pointer:coarse){#plm-cursor{display:none}}
+*,*::before,*::after{cursor:none !important}
+@media(hover:none),(pointer:coarse){*,*::before,*::after{cursor:auto !important}}
+</style>
 </head>
 <body>
 
-    <div class="ambient-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-    </div>
+<!-- MOSAIC BACKGROUND (15 images, one per client) -->
+<div class="mosaic-bg" id="mosaic-bg" aria-hidden="true"></div>
 
-    <main class="container">
-        <div class="logo-container">
-            <img src="logo.png" class="main-logo-img" alt="Pelimotion Logo">
-        </div>
-        
-        <header>
-            <p class="subtitle">Select Destination</p>
-        </header>
-        
-        <nav class="navigation">
-            <a href="V1/portfolio/index.html" class="nav-card">
-                <span class="nav-title">Portfolio Hub</span>
-                <span class="nav-desc">Brutalist Motion Systems & Reel</span>
-            </a>
-            
-            <a href="Curriculum/index.html" class="nav-card">
-                <span class="nav-title">Curriculum</span>
-                <span class="nav-desc">Experience & Creative Direction</span>
-            </a>
-        </nav>
+<!-- DISTORTION CANVAS -->
+<canvas id="distortion-canvas"></canvas>
 
-        <footer>
-            &copy; 2024 Pelimotion. All Rights Reserved.
-        </footer>
-    </main>
+<!-- OVERLAY -->
+<div class="overlay"></div>
 
+<!-- HUB -->
+<main class="hub">
+    <div class="hub-logo"><img src="logo.png" alt="Pelimotion"></div>
+    <p class="hub-label">Select Destination</p>
+    <nav class="hub-nav">
+        <a href="V1/portfolio/index.html" class="hub-card interactive" id="card-portfolio">
+            <span class="card-title">Portfolio</span>
+            <span class="card-desc">Brutalist Motion Systems</span>
+        </a>
+        <a href="Curriculum/index.html" class="hub-card interactive" id="card-curriculum">
+            <span class="card-title">Curriculum</span>
+            <span class="card-desc">Experience & Direction</span>
+        </a>
+    </nav>
+    <p class="hub-footer">&copy; 2026 Pelimotion. All Rights Reserved.</p>
+</main>
+
+<!-- CURSOR -->
+<div id="plm-cursor" aria-hidden="true"></div>
+
+<script>
+// ─── Mosaic: collect 15 unique poster images from Bunny CDN ───────────────────
+const mosaicImages = [
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_50.jpg',
+    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_50.jpg'
+];
+const mosaicEl = document.getElementById('mosaic-bg');
+mosaicImages.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src; img.alt = ''; img.loading = 'eager';
+    mosaicEl.appendChild(img);
+});
+
+// ─── Liquid distortion canvas ─────────────────────────────────────────────────
+const canvas = document.getElementById('distortion-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, mouseX = 0, mouseY = 0, prevX = 0, prevY = 0;
+const ripples = [];
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Ripple {
+    constructor(x, y, vx, vy) {
+        this.x = x; this.y = y;
+        this.r = 0; this.maxR = 80 + Math.random() * 60;
+        this.life = 1;
+        this.speed = 2.5 + Math.random();
+        this.vx = vx * 0.3; this.vy = vy * 0.3;
+    }
+    update() {
+        this.r += this.speed;
+        this.life = Math.max(0, 1 - this.r / this.maxR);
+        this.x += this.vx * this.life;
+        this.y += this.vy * this.life;
+    }
+    draw(ctx) {
+        if (this.life <= 0) return;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,255,255,${this.life * 0.12})`;
+        ctx.lineWidth = 1.5 * this.life;
+        ctx.stroke();
+    }
+}
+
+let frame = 0;
+function animate() {
+    ctx.clearRect(0, 0, W, H);
+    
+    const dx = mouseX - prevX;
+    const dy = mouseY - prevY;
+    const speed = Math.sqrt(dx * dx + dy * dy);
+    
+    if (speed > 3 && frame % 2 === 0) {
+        ripples.push(new Ripple(mouseX, mouseY, dx, dy));
+    }
+    
+    for (let i = ripples.length - 1; i >= 0; i--) {
+        ripples[i].update();
+        ripples[i].draw(ctx);
+        if (ripples[i].life <= 0) ripples.splice(i, 1);
+    }
+    
+    // Glow at cursor position
+    if (speed > 1) {
+        const grad = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 120);
+        grad.addColorStop(0, `rgba(255,255,255,${Math.min(speed * 0.003, 0.08)})`);
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.fillRect(mouseX - 140, mouseY - 140, 280, 280);
+    }
+    
+    prevX = mouseX; prevY = mouseY;
+    frame++;
+    requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+}, { passive: true });
+
+// ─── Card hover glow follow ──────────────────────────────────────────────────
+document.querySelectorAll('.hub-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+    });
+});
+
+// ─── Cursor ──────────────────────────────────────────────────────────────────
+const cursor = document.getElementById('plm-cursor');
+if (cursor && window.matchMedia('(hover:hover)').matches) {
+    window.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursor.classList.toggle('hover', !!e.target.closest('.interactive'));
+    }, { passive: true });
+}
+</script>
 </body>
 </html>

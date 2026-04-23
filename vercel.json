@@ -7,6 +7,8 @@
     { "source": "/v1/", "destination": "/V1/portfolio/index.html" },
     { "source": "/v1/:path*", "destination": "/V1/portfolio/:path*" },
     { "source": "/curriculum", "destination": "/Curriculum/index.html" },
-    { "source": "/curriculum/:path*", "destination": "/Curriculum/:path*" }
+    { "source": "/curriculum/:path*", "destination": "/Curriculum/:path*" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/:path*", "destination": "/admin/:path*" }
   ]
 }
