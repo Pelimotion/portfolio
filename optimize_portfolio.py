@@ -103,8 +103,18 @@ def process_video(local_path, manifest):
     subprocess.run([FFMPEG_PATH, "-y", "-ss", str(duration/2), "-i", local_path, "-vframes", "1", poster_path], capture_output=True)
     artifacts.append(poster_path)
 
-    # 3. Upload Artifacts to Bunny
+    # 3. Upload Artifacts + Main Video to Bunny
     success = True
+    
+    # Upload main video first
+    main_name = os.path.basename(local_path)
+    main_remote_path = f"{remote_dir_path}/{main_name}"
+    print(f"    -> Uploading Main Video: {main_name}...")
+    with open(local_path, "rb") as fd:
+        if not api_call(main_remote_path, "PUT", data=fd.read()):
+            success = False
+
+    # Upload generated artifacts
     for artifact in artifacts:
         name = os.path.basename(artifact)
         remote_path = f"{remote_dir_path}/{name}"

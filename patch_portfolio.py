@@ -18,13 +18,10 @@ except:
 content_js = json.dumps(content, ensure_ascii=False, separators=(',', ':'))
 
 # ── 1. CURSOR: remove old CSS + inject solid-fill no-lag cursor ───────────────
-# Remove duplicate cursor CSS blocks (keep only one)
-html = re.sub(r'/\* .*?CURSOR.*?\*/.*?@media \(hover: none\) \{ #cursor \{ display: none; \} \}',
-              '', html, flags=re.DOTALL)
-# Remove #cursor-dot / #cursor-ring legacy CSS
-html = re.sub(r'#cursor-dot\{[^}]+\}\s*#cursor-ring\{[^}]+\}\s*body\.is-hovering[^}]+\}\s*body\.is-hovering[^}]+\}\s*body\.is-moving[^}]+\}', '', html)
-# Remove #plm-cursor block if already added
-html = re.sub(r'/\* ═══ CUSTOM CURSOR.*?coarse\) \{ #plm-cursor \{ display: none; \} \}', '', html, flags=re.DOTALL)
+# Remove duplicate cursor CSS blocks safely
+html = re.sub(r'/\*\s*═══\s*CURSOR\s*═══\s*\*/\s*#cursor-dot\{.*?\s*body\.is-moving #cursor-ring\{[^}]+\}', '', html, flags=re.DOTALL)
+html = re.sub(r'/\*\s*───\s*CUSTOM CURSOR\s*───\s*\*/\s*#cursor\s*\{.*?@media\s*\(hover:\s*none\)\s*\{\s*#cursor\s*\{\s*display:\s*none;\s*\}\s*\}', '', html, flags=re.DOTALL)
+html = re.sub(r'/\*\s*═══\s*CUSTOM CURSOR\s*.*?(?=\/\* ═══)', '', html, flags=re.DOTALL)
 
 cursor_css = """
         /* ═══ CURSOR ═══ */
