@@ -648,20 +648,27 @@
   }
 
   // ── Cover Letter injection ──
-  if(C.name) setText('cl-name', C.name);
-  setText('cl-subtitle', (CL.targetRole||'Creative Director')+(CL.targetCompany?' — '+CL.targetCompany:''));
-  setText('cl-role', 'For: '+(CL.targetRole||'Creative Director'));
-  setText('cl-location', C.basedIn||'');
+  if(C.name) {
+    setText('cl-name', C.name);
+    setText('cl-sname', C.name);
+  }
+  if(C.title) setText('cl-stitle', C.title);
+  
+  if(CL.targetRole || CL.targetCompany) {
+    setText('cl-subtitle', (CL.targetRole||'Creative Director')+(CL.targetCompany?' — '+CL.targetCompany:''));
+    setText('cl-role', 'For: '+(CL.targetRole||'Creative Director'));
+  }
+  
+  if(C.basedIn) setText('cl-location', C.basedIn);
   setText('cl-date', new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}));
-  setText('cl-greeting', CL.greeting||'Dear Hiring Team,');
-  setText('cl-opening', CL.opening||'');
-  setText('cl-body1', CL.body1||'');
-  setText('cl-body2', CL.body2||'');
-  setText('cl-body3', CL.body3||'');
-  setText('cl-closing', CL.closing||'');
-  setText('cl-signoff', CL.signoff||'');
-  setText('cl-sname', C.name||'');
-  setText('cl-stitle', C.title||'');
+
+  if(CL.greeting) setText('cl-greeting', CL.greeting);
+  if(CL.opening) setText('cl-opening', CL.opening);
+  if(CL.body1) setText('cl-body1', CL.body1);
+  if(CL.body2) setText('cl-body2', CL.body2);
+  if(CL.body3) setText('cl-body3', CL.body3);
+  if(CL.closing) setText('cl-closing', CL.closing);
+  if(CL.signoff) setText('cl-signoff', CL.signoff);
   const linksEl = document.getElementById('cl-links');
   if(linksEl){
     linksEl.innerHTML = [
