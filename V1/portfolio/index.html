@@ -521,30 +521,20 @@
     const viewGallery = document.getElementById('view-gallery');
     const contactPopover = document.getElementById('contact-popover');
     const contactBtn = document.getElementById('contact-btn');
-    const cursor = document.getElementById('cursor');
     const modal = document.getElementById('modal');
     const modalContent = document.getElementById('modal-content');
-    
     const galleryContent = document.getElementById('gallery-content');
 
-    /* ─── CUSTOM CURSOR ─── */
-    if(!('ontouchstart' in window)){
-        let mouseX = 0, mouseY = 0;
-        let curX = 0, curY = 0;
-        window.addEventListener('mousemove', e => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            if(e.target.closest('.interactive')) cursor.classList.add('hover');
-            else cursor.classList.remove('hover');
-        });
-        function animCursor(){
-            curX += (mouseX - curX) * 0.2;
-            curY += (mouseY - curY) * 0.2;
-            cursor.style.left = curX + 'px';
-            cursor.style.top = curY + 'px';
-            requestAnimationFrame(animCursor);
-        }
-        animCursor();
-    }
+    /* ─── CURSOR (solid fill, instant, no delay) ─── */
+    (function(){
+        const c = document.getElementById('plm-cursor');
+        if(!c || !window.matchMedia('(hover:hover)').matches) return;
+        window.addEventListener('mousemove', function(e){
+            c.style.left = e.clientX + 'px';
+            c.style.top  = e.clientY + 'px';
+            c.classList.toggle('hover', !!e.target.closest('a,button,[role="button"],.interactive,.card-float'));
+        }, {passive:true});
+    })();
 
     /* ─── CELLULAR AUTOMATA ─── */
     function initAutomata(canvasId){
