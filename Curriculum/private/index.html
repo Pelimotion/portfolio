@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Felipe Conceição — CV & Cover Letter (Private)</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<!-- Tab Navigation -->
+<nav class="tab-bar">
+  <div class="tab-logo">[FC] Private</div>
+  <button class="tab-btn active" onclick="switchTab('cv')">Curriculum Vitae</button>
+  <button class="tab-btn" onclick="switchTab('cl')">Cover Letter</button>
+  <div class="tab-actions">
+    <button class="dl-btn" onclick="downloadPDF('cv')">↓ CV PDF</button>
+    <button class="dl-btn" onclick="downloadPDF('cl')">↓ CL PDF</button>
+  </div>
+</nav>
+
+<!-- CV PAGE -->
+<div class="page active" id="page-cv">
+  <header class="cv-header">
+    <h1 class="cv-name" id="cv-name"></h1>
+    <p class="cv-title" id="cv-title"></p>
+    <div class="cv-meta">
+      <span id="cv-based"></span>
+      <span id="cv-disc"></span>
+      <span id="cv-years"></span>
+    </div>
+  </header>
+
+  <!-- Summary -->
+  <section class="cv-section">
+    <div class="cv-section-head">
+      <span class="cv-section-num">01</span>
+      <h2 class="cv-section-title">Professional Summary</h2>
+    </div>
+    <div class="cv-summary" id="cv-summary"></div>
+    <div class="cv-stats" id="cv-stats"></div>
+  </section>
+
+  <!-- Experience -->
+  <section class="cv-section">
+    <div class="cv-section-head">
+      <span class="cv-section-num">02</span>
+      <h2 class="cv-section-title">Professional Experience</h2>
+    </div>
+    <div id="cv-experience"></div>
+  </section>
+
+  <!-- Education -->
+  <section class="cv-section">
+    <div class="cv-section-head">
+      <span class="cv-section-num">03</span>
+      <h2 class="cv-section-title">Education</h2>
+    </div>
+    <div id="cv-education"></div>
+  </section>
+
+  <!-- Languages -->
+  <section class="cv-section">
+    <div class="cv-section-head">
+      <span class="cv-section-num">04</span>
+      <h2 class="cv-section-title">Languages</h2>
+    </div>
+    <div id="cv-languages"></div>
+  </section>
+
+  <!-- Skills -->
+  <section class="cv-section">
+    <div class="cv-section-head">
+      <span class="cv-section-num">05</span>
+      <h2 class="cv-section-title">Skills & Toolset</h2>
+    </div>
+    <div class="skills-grid" id="cv-skills"></div>
+  </section>
+
+  <!-- Contact -->
+  <section class="cv-section">
+    <div class="cv-section-head">
+      <span class="cv-section-num">06</span>
+      <h2 class="cv-section-title">Contact</h2>
+    </div>
+    <div class="contact-grid" id="cv-contact"></div>
+  </section>
+</div>
+
+<!-- COVER LETTER PAGE -->
+<div class="page" id="page-cl">
+  <header class="cl-header">
+    <div class="cl-from">Cover Letter</div>
+    <h1 class="cl-name" id="cl-name"></h1>
+    <p class="cl-subtitle" id="cl-subtitle"></p>
+    <div class="cl-meta-bar">
+      <span id="cl-role"></span>
+      <span id="cl-location"></span>
+      <span id="cl-date"></span>
+    </div>
+  </header>
+
+  <div class="cl-body">
+    <div class="cl-greeting" id="cl-greeting"></div>
+    <p class="cl-para" id="cl-opening"></p>
+    <p class="cl-para" id="cl-body1"></p>
+    <p class="cl-para" id="cl-body2"></p>
+    <p class="cl-para" id="cl-body3"></p>
+    <p class="cl-para" id="cl-closing"></p>
+
+    <div class="cl-signoff">
+      <div class="cl-signoff-text" id="cl-signoff"></div>
+      <div class="cl-signoff-name" id="cl-sname"></div>
+      <div class="cl-signoff-title" id="cl-stitle"></div>
+      <div class="cl-links" id="cl-links"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let D = null;
+
+async function loadData(){
+  try {
+    const r = await fetch('../../site-content.json?t='+Date.now());
+    if(!r.ok) throw new Error();
+    D = await r.json();
+  } catch(e){
+    // Prompt import
+    const input = document.createElement('input');
+    input.type='file'; input.accept='.json';
+    input.onchange = ev => {
+      const reader = new FileReader();
+      reader.onload = e2 => { D = JSON.parse(e2.target.result); render(); };
+      reader.readAsText(ev.target.files[0]);
+    };
+    document.body.innerHTML = '<div style="text-align:center;padding:100px 20px;font-family:sans-serif;color:#fff"><h2>Import site-content.json</h2><p style="color:#888;margin:16px 0">Local mode — select your JSON file.</p></div>';
+    document.body.querySelector('div').appendChild(input);
+    return;
+  }
+  render();
+}
+
+function render(){
+  const C = D.curriculum || {};
+  const CL = D.coverLetter || {};
+
+  // CV
+  document.getElementById('cv-name').textContent = C.name || '';
+  document.getElementById('cv-title').textContent = C.title || '';
+  document.getElementById('cv-based').textContent = C.basedIn || '';
+  document.getElementById('cv-disc').textContent = C.disciplines || '';
+  document.getElementById('cv-years').textContent = C.yearsRange || '';
+
+  // Summary
+  const sum = document.getElementById('cv-summary');
+  sum.innerHTML = `<p>${C.profileParagraph1||''}</p><p style="margin-top:12px;font-size:.9rem;color:rgba(255,255,255,.6)">${C.profileParagraph2||''}</p>`;
+
+  // Stats
+  const stats = document.getElementById('cv-stats');
+  stats.innerHTML = (C.stats||[]).map(s=>`<div class="cv-stat"><div class="cv-stat-val">${s.value}</div><div class="cv-stat-label">${s.label}</div></div>`).join('');
+
+  // Experience
+  const exp = document.getElementById('cv-experience');
+  exp.innerHTML = (C.experience||[]).map(e=>`
+    <div class="exp-entry">
+      <div class="exp-top"><div class="exp-role">${e.role}</div><div class="exp-period">${e.period}</div></div>
+      <div class="exp-company">${e.company}</div>
+      <ul class="exp-items">${(e.items||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+      <div class="exp-tags">${(e.tags||[]).map(t=>`<span class="exp-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+
+  // Education
+  const edu = document.getElementById('cv-education');
+  edu.innerHTML = (C.education||[]).map(e=>`
+    <div class="edu-entry"><div class="edu-period">${e.period}</div><div><div class="edu-title">${e.title}</div><div class="edu-inst">${e.institution}</div></div></div>`).join('');
+
+  // Languages
+  const lang = document.getElementById('cv-languages');
+  lang.innerHTML = (C.languages||[]).map(l=>`
+    <div class="lang-entry"><span class="lang-name">${l.name}</span><span class="lang-level">${l.level}</span></div>`).join('');
+
+  // Skills
+  const skills = document.getElementById('cv-skills');
+  const sk = C.skills||{};
+  skills.innerHTML = Object.keys(sk).map(cat=>`
+    <div><div class="skill-cat-title">${cat}</div><ul class="skill-cat-list">${sk[cat].map(s=>`<li>${s}</li>`).join('')}</ul></div>`).join('');
+
+  // Contact
+  const contact = document.getElementById('cv-contact');
+  contact.innerHTML = `
+    <div><div class="contact-item-label">Email</div><div class="contact-item-value"><a href="mailto:${C.contactEmail||''}">${C.contactEmail||''}</a></div></div>
+    <div><div class="contact-item-label">WhatsApp</div><div class="contact-item-value"><a href="https://wa.me/${C.contactWhatsApp||''}">${C.contactWhatsApp||''}</a></div></div>
+    <div><div class="contact-item-label">Instagram</div><div class="contact-item-value"><a href="https://instagram.com/${C.socialInstagram||''}">@${C.socialInstagram||''}</a></div></div>
+    <div><div class="contact-item-label">LinkedIn</div><div class="contact-item-value"><a href="https://linkedin.com/in/${C.socialLinkedIn||''}">/in/${C.socialLinkedIn||''}</a></div></div>
+    <div><div class="contact-item-label">Behance</div><div class="contact-item-value"><a href="https://behance.net/${C.socialBehance||''}">${C.socialBehance||''}</a></div></div>
+    <div><div class="contact-item-label">Portfolio</div><div class="contact-item-value"><a href="https://pelimotion.com">pelimotion.com</a></div></div>`;
+
+  // Cover Letter
+  document.getElementById('cl-name').textContent = C.name || '';
+  document.getElementById('cl-subtitle').textContent = (CL.targetRole||'Creative Director') + (CL.targetCompany ? ' — '+CL.targetCompany : '');
+  document.getElementById('cl-role').textContent = 'Applying for: '+(CL.targetRole||'Creative Director');
+  document.getElementById('cl-location').textContent = C.basedIn||'';
+  const now = new Date();
+  document.getElementById('cl-date').textContent = now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  document.getElementById('cl-greeting').textContent = CL.greeting||'Dear Hiring Team,';
+  document.getElementById('cl-opening').textContent = CL.opening||'';
+  document.getElementById('cl-body1').textContent = CL.body1||'';
+  document.getElementById('cl-body2').textContent = CL.body2||'';
+  document.getElementById('cl-body3').textContent = CL.body3||'';
+  document.getElementById('cl-closing').textContent = CL.closing||'';
+  document.getElementById('cl-signoff').textContent = CL.signoff||'';
+  document.getElementById('cl-sname').textContent = C.name||'';
+  document.getElementById('cl-stitle').textContent = C.title||'';
+
+  const links = document.getElementById('cl-links');
+  links.innerHTML = `
+    <a class="cl-link" href="https://pelimotion.com">Portfolio</a>
+    <a class="cl-link" href="https://linkedin.com/in/${C.socialLinkedIn||''}">LinkedIn</a>
+    <a class="cl-link" href="https://instagram.com/${C.socialInstagram||''}">Instagram</a>
+    <a class="cl-link" href="mailto:${C.contactEmail||''}">${C.contactEmail||''}</a>`;
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function downloadPDF(which){
+  const el = document.getElementById('page-'+which);
+  const name = which==='cv' ? 'Felipe_Conceicao_CV' : 'Felipe_Conceicao_CoverLetter';
+
+  // Temporarily show the page if hidden
+  const wasHidden = !el.classList.contains('active');
+  if(wasHidden) el.style.display='block';
+
+  const opt = {
+    margin: [12, 14, 12, 14],
+    filename: name+'.pdf',
+    image: {type:'jpeg', quality:.98},
+    html2canvas: {scale:2, useCORS:true, backgroundColor:'#000000'},
+    jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
+    pagebreak: {mode:['avoid-all','css','legacy']}
+  };
+
+  html2pdf().set(opt).from(el).save().then(()=>{
+    if(wasHidden) el.style.display='';
+  });
+}
+
+// Keyboard: Backspace to go back
+document.addEventListener('keydown', e=>{
+  if(e.key==='Backspace' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){
+    e.preventDefault();
+    window.history.back();
+  }
+});
+
+loadData();
+</script>
+</body>
+</html>

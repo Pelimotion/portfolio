@@ -139,7 +139,7 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
   const C = D.curriculum || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">CURRICULUM PAGE</div><h1 class="page-title">Curriculum Vitae</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> Curriculum/index.html — Your CV page with profile, experience, education, skills and contact.</div>
+    <div class="preview-ref">📍 <strong>Public:</strong> Curriculum/index.html — <strong>Private:</strong> Curriculum/private/index.html (CV + Cover Letter with PDF download)</div>
     <div class="card"><div class="card-title"><span class="icon">👤</span> Profile</div>
       <div class="field"><label>Full Name</label><input id="f-cvName" value="${esc(C.name||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Title Line</label><input id="f-cvTitle" value="${esc(C.title||'')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director, motion branding and artistic direction."</div></div>
@@ -149,18 +149,58 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
       <div class="field"><label>Years Range</label><input id="f-cvYears" value="${esc(C.yearsRange||'')}" oninput="markUnsaved()"></div>
     </div>
     <div class="card"><div class="card-title"><span class="icon">📝</span> Profile Text</div>
-      <div class="field"><label>Paragraph 1</label><textarea id="f-cvP1" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph1||'')}</textarea></div>
-      <div class="field"><label>Paragraph 2</label><textarea id="f-cvP2" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph2||'')}</textarea></div>
+      <div class="field"><label>Paragraph 1 (main summary — shown in bold)</label><textarea id="f-cvP1" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph1||'')}</textarea><div class="hint">Your elevator pitch. Focus on what you do and your value proposition.</div></div>
+      <div class="field"><label>Paragraph 2 (supporting detail)</label><textarea id="f-cvP2" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph2||'')}</textarea><div class="hint">Your background, unique differentiator, current focus.</div></div>
     </div>
-    <div class="card"><div class="card-title"><span class="icon">📊</span> Stats (4 boxes in hero)</div>
+    <div class="card"><div class="card-title"><span class="icon">📊</span> Stats (4 metric boxes)</div>
       ${(C.stats||[{value:'',label:''},{value:'',label:''},{value:'',label:''},{value:'',label:''}]).map((s,i)=>`
         <div style="display:flex;gap:10px;margin-bottom:10px">
           <div class="field" style="flex:1;margin:0"><label>Value ${i+1}</label><input id="f-stat${i}v" value="${esc(s.value)}" oninput="markUnsaved()"></div>
           <div class="field" style="flex:2;margin:0"><label>Label ${i+1}</label><input id="f-stat${i}l" value="${esc(s.label)}" oninput="markUnsaved()"></div>
         </div>`).join('')}
     </div>
+    <div class="card"><div class="card-title"><span class="icon">💼</span> Experience (${(C.experience||[]).length} entries)</div>
+      <div class="hint" style="margin-bottom:14px">Each entry = one job/role. Edit inline below. To add/remove entries, use the buttons.</div>
+      ${(C.experience||[]).map((e,i)=>`
+        <div class="exp-block"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="exp-block-title">Experience ${i+1}</div>
+          <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeExp(${i})">Remove</button>
+        </div>
+          <div style="display:flex;gap:10px;margin-bottom:8px">
+            <div class="field" style="flex:1;margin:0"><label>Period</label><input id="f-exp${i}-period" value="${esc(e.period)}" oninput="markUnsaved()"></div>
+            <div class="field" style="flex:2;margin:0"><label>Role</label><input id="f-exp${i}-role" value="${esc(e.role)}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field"><label>Company</label><input id="f-exp${i}-company" value="${esc(e.company)}" oninput="markUnsaved()"></div>
+          <div class="field"><label>Bullet points (one per line)</label><textarea id="f-exp${i}-items" rows="3" oninput="markUnsaved()">${(e.items||[]).join('\n')}</textarea><div class="hint">Each line becomes a bullet point. Focus on achievements and impact.</div></div>
+          <div class="field"><label>Tags (comma-separated)</label><input id="f-exp${i}-tags" value="${(e.tags||[]).join(', ')}" oninput="markUnsaved()"><div class="hint">e.g. DIRECTION, SYSTEMS, AI_R&D</div></div>
+        </div>`).join('')}
+      <button class="btn" style="margin-top:10px" onclick="addExp()">+ Add Experience</button>
+    </div>
+    <div class="card"><div class="card-title"><span class="icon">🎓</span> Education (${(C.education||[]).length} entries)</div>
+      ${(C.education||[]).map((e,i)=>`
+        <div class="exp-block"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="exp-block-title">Education ${i+1}</div>
+          <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeEdu(${i})">Remove</button>
+        </div>
+          <div style="display:flex;gap:10px">
+            <div class="field" style="flex:1;margin:0"><label>Period</label><input id="f-edu${i}-period" value="${esc(e.period)}" oninput="markUnsaved()"></div>
+            <div class="field" style="flex:2;margin:0"><label>Title</label><input id="f-edu${i}-title" value="${esc(e.title)}" oninput="markUnsaved()"></div>
+            <div class="field" style="flex:2;margin:0"><label>Institution</label><input id="f-edu${i}-inst" value="${esc(e.institution)}" oninput="markUnsaved()"></div>
+          </div>
+        </div>`).join('')}
+      <button class="btn" style="margin-top:10px" onclick="addEdu()">+ Add Education</button>
+    </div>
+    <div class="card"><div class="card-title"><span class="icon">🌐</span> Languages (${(C.languages||[]).length} entries)</div>
+      ${(C.languages||[]).map((l,i)=>`
+        <div style="display:flex;gap:10px;margin-bottom:8px">
+          <div class="field" style="flex:1;margin:0"><label>Language</label><input id="f-lang${i}-name" value="${esc(l.name)}" oninput="markUnsaved()"></div>
+          <div class="field" style="flex:1;margin:0"><label>Level</label><input id="f-lang${i}-level" value="${esc(l.level)}" oninput="markUnsaved()"></div>
+          <button class="btn danger" style="font-size:8px;padding:4px 8px;align-self:flex-end" onclick="removeLang(${i})">✕</button>
+        </div>`).join('')}
+      <button class="btn" style="margin-top:6px" onclick="addLang()">+ Add Language</button>
+    </div>
     <div class="card"><div class="card-title"><span class="icon">🏢</span> Client Marquee</div>
-      <div class="field"><label>Brands (comma-separated)</label><textarea id="f-cvMarquee" rows="2" oninput="markUnsaved()">${esc((C.clientMarquee||[]).join(', '))}</textarea><div class="hint">These scroll horizontally on the CV page. Separate with commas.</div></div>
+      <div class="field"><label>Brands (comma-separated)</label><textarea id="f-cvMarquee" rows="2" oninput="markUnsaved()">${esc((C.clientMarquee||[]).join(', '))}</textarea><div class="hint">Scrolling brand names on the CV page.</div></div>
     </div>
     <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social</div>
       <div class="field"><label>Email</label><input id="f-cvEmail" value="${esc(C.contactEmail||'')}" oninput="markUnsaved()"></div>
@@ -240,6 +280,7 @@ function autoSave(){
   if(currentSection==='landing') saveLandingToMem();
   else if(currentSection==='portfolio') savePortfolioToMem();
   else if(currentSection==='curriculum') saveCurriculumToMem();
+  else if(currentSection==='coverLetter') saveCoverLetterToMem();
   else if(currentKey) saveEntryToMem();
 }
 function saveEntryToMem(){
@@ -279,8 +320,72 @@ function saveCurriculumToMem(){
   const mq=v('f-cvMarquee'); C.clientMarquee=mq?mq.split(',').map(s=>s.trim()).filter(Boolean):[];
   C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA');
   C.socialInstagram=v('f-cvIG'); C.socialLinkedIn=v('f-cvLI'); C.socialBehance=v('f-cvBE');
+  // Save experience entries
+  const expCount = (C.experience||[]).length;
+  for(let i=0;i<expCount;i++){
+    const e = C.experience[i];
+    e.period=v(`f-exp${i}-period`); e.role=v(`f-exp${i}-role`); e.company=v(`f-exp${i}-company`);
+    const items=v(`f-exp${i}-items`); e.items=items?items.split('\n').map(s=>s.trim()).filter(Boolean):[];
+    const tags=v(`f-exp${i}-tags`); e.tags=tags?tags.split(',').map(s=>s.trim()).filter(Boolean):[];
+  }
+  // Save education
+  const eduCount = (C.education||[]).length;
+  for(let i=0;i<eduCount;i++){
+    const e = C.education[i];
+    e.period=v(`f-edu${i}-period`); e.title=v(`f-edu${i}-title`); e.institution=v(`f-edu${i}-inst`);
+  }
+  // Save languages
+  const langCount = (C.languages||[]).length;
+  for(let i=0;i<langCount;i++){
+    const l = C.languages[i];
+    l.name=v(`f-lang${i}-name`); l.level=v(`f-lang${i}-level`);
+  }
 }
 function saveCurriculum(){ saveCurriculumToMem(); saveAll(); }
+
+// ─── Experience/Education/Language management ─────────────────────────────
+function addExp(){ saveCurriculumToMem(); const C=D.curriculum; C.experience=C.experience||[];
+  C.experience.push({period:'',role:'',company:'',items:[],tags:[]}); showCurriculum(); markUnsaved(); }
+function removeExp(i){ saveCurriculumToMem(); D.curriculum.experience.splice(i,1); showCurriculum(); markUnsaved(); }
+function addEdu(){ saveCurriculumToMem(); const C=D.curriculum; C.education=C.education||[];
+  C.education.push({period:'',title:'',institution:''}); showCurriculum(); markUnsaved(); }
+function removeEdu(i){ saveCurriculumToMem(); D.curriculum.education.splice(i,1); showCurriculum(); markUnsaved(); }
+function addLang(){ saveCurriculumToMem(); const C=D.curriculum; C.languages=C.languages||[];
+  C.languages.push({name:'',level:''}); showCurriculum(); markUnsaved(); }
+function removeLang(i){ saveCurriculumToMem(); D.curriculum.languages.splice(i,1); showCurriculum(); markUnsaved(); }
+
+// ─── Cover Letter editor ──────────────────────────────────────────────────
+function showCoverLetter(){ autoSave(); currentSection='coverLetter'; currentKey=null; highlightSb(null);
+  const CL = D.coverLetter || {};
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-header"><div class="page-label">COVER LETTER</div><h1 class="page-title">Cover Letter Editor</h1></div>
+    <div class="preview-ref">📍 <strong>File:</strong> Curriculum/private/index.html (Cover Letter tab) — Customizable per application. Download as PDF from the private page.</div>
+    <div class="card"><div class="card-title"><span class="icon">🎯</span> Target</div>
+      <div class="hint" style="margin-bottom:14px">Customize these for each application. Leave company blank for a generic version.</div>
+      <div class="field"><label>Target Role</label><input id="f-clRole" value="${esc(CL.targetRole||'Creative Director')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director", "Senior Motion Designer"</div></div>
+      <div class="field"><label>Target Company (optional)</label><input id="f-clCompany" value="${esc(CL.targetCompany||'')}" oninput="markUnsaved()"><div class="hint">Leave blank for a generic cover letter.</div></div>
+    </div>
+    <div class="card"><div class="card-title"><span class="icon">✍️</span> Letter Content</div>
+      <div class="hint" style="margin-bottom:14px">Best practice: Don't repeat your CV. Tell the story behind your achievements. Show personality and strategic thinking.</div>
+      <div class="field"><label>Greeting</label><input id="f-clGreeting" value="${esc(CL.greeting||'Dear Hiring Team,')}" oninput="markUnsaved()"><div class="hint">Address a specific person if possible.</div></div>
+      <div class="field"><label>Opening Paragraph (the hook)</label><textarea id="f-clOpening" rows="3" oninput="markUnsaved()">${esc(CL.opening||'')}</textarea><div class="hint">State who you are, why you're applying, and your main value proposition. This is your first impression.</div></div>
+      <div class="field"><label>Body 1 — Experience & Impact</label><textarea id="f-clBody1" rows="4" oninput="markUnsaved()">${esc(CL.body1||'')}</textarea><div class="hint">Pick 1-2 major achievements and tell the story. Focus on leadership and results.</div></div>
+      <div class="field"><label>Body 2 — Unique Differentiator</label><textarea id="f-clBody2" rows="4" oninput="markUnsaved()">${esc(CL.body2||'')}</textarea><div class="hint">What makes you different? Technical depth, artistic background, strategic thinking.</div></div>
+      <div class="field"><label>Body 3 — Cultural Fit & Motivation</label><textarea id="f-clBody3" rows="3" oninput="markUnsaved()">${esc(CL.body3||'')}</textarea><div class="hint">Show you've researched the company. Why them? Why now?</div></div>
+      <div class="field"><label>Closing (call to action)</label><textarea id="f-clClosing" rows="2" oninput="markUnsaved()">${esc(CL.closing||'')}</textarea><div class="hint">Propose next steps. Be confident but polite.</div></div>
+      <div class="field"><label>Sign-off</label><input id="f-clSignoff" value="${esc(CL.signoff||'Looking forward to connecting,')}" oninput="markUnsaved()"></div>
+    </div>
+    <div class="actions-bar"><button class="btn primary" onclick="saveCoverLetterAction()">Apply Changes</button></div>`;
+}
+function saveCoverLetterToMem(){
+  const CL = D.coverLetter = D.coverLetter||{};
+  const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  CL.targetRole=v('f-clRole'); CL.targetCompany=v('f-clCompany');
+  CL.greeting=v('f-clGreeting'); CL.opening=v('f-clOpening');
+  CL.body1=v('f-clBody1'); CL.body2=v('f-clBody2'); CL.body3=v('f-clBody3');
+  CL.closing=v('f-clClosing'); CL.signoff=v('f-clSignoff');
+}
+function saveCoverLetterAction(){ saveCoverLetterToMem(); saveAll(); }
 
 // ─── Save / Export ────────────────────────────────────────────────────────
 function saveAll(){
