@@ -7,24 +7,40 @@ let hasUnsaved = false;
 async function loadData(){
   try {
     const r = await fetch('../site-content.json?t='+Date.now());
-    if(!r.ok) throw new Error();
+    if(!r.ok) throw new Error('Not found');
     D = await r.json();
     setStatus('site-content.json loaded');
+    buildSidebar();
+    showLanding(); // Auto-open landing
   } catch(e){
     // fallback: try old content.json
     try {
       const r2 = await fetch('../content.json?t='+Date.now());
+      if(!r2.ok) throw new Error('Not found');
       D = await r2.json();
       D.landing = D.landing || {};
       D.portfolio = D.portfolio || {};
       D.curriculum = D.curriculum || {};
       setStatus('content.json loaded (legacy)', true);
+      buildSidebar();
+      showLanding();
     } catch(e2){
       D = {landing:{},portfolio:{},clients:{},categories:{},curriculum:{}};
-      setStatus('No data file found — starting empty', true);
+      setStatus('Local mode: Please click Import JSON', true);
+      buildSidebar();
+      document.getElementById('main-content').innerHTML = `
+        <div style="text-align:center;padding:100px 20px">
+          <div style="font-size:40px;margin-bottom:20px">⚠️</div>
+          <h2 style="font-size:24px;margin-bottom:10px;color:var(--fg)">Local File Mode Detected</h2>
+          <p style="color:var(--fg2);max-width:400px;margin:0 auto 30px;line-height:1.6">
+            Browsers block local files from loading data automatically. <br><br>
+            Please click <strong>Import JSON</strong> and select your <code>site-content.json</code> file to begin editing.
+          </p>
+          <button class="btn primary" onclick="importJSON()">📂 Import JSON</button>
+        </div>
+      `;
     }
   }
-  buildSidebar();
 }
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────
@@ -315,13 +331,22 @@ function handleImport(input){
       if(imp.curriculum) D.curriculum={...D.curriculum,...imp.curriculum};
       buildSidebar();
       toast('JSON imported and merged');
+      
+      // Refresh current view
+      if(currentSection === 'landing') showLanding();
+      else if(currentSection === 'portfolio') showPortfolio();
+      else if(currentSection === 'curriculum') showCurriculum();
+      else if(currentSection === 'client' || currentSection === 'category') openEditor(currentSection, currentKey);
+      else showLanding(); // default
+
+      setStatus('Loaded from imported file', false);
     } catch(err){ toast('Invalid JSON file',true); }
   };
   reader.readAsText(file);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
-function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function esc(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function markUnsaved(){ hasUnsaved=true; document.getElementById('unsaved-label').classList.add('visible'); }
 function toast(msg, isErr=false){
   const el=document.getElementById('toast');
