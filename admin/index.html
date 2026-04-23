@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLM Admin — Content Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --fg: #f0f0f0; --fg2: #888; --fg3: #444;
+    --border: #222; --card: #111; --accent: #f0f0f0;
+    --green: #00d084; --red: #ff4757; --yellow: #ffa502;
+  }
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+
+  /* LAYOUT */
+  .shell { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar {
+    width: 260px; min-width: 220px; background: var(--card); border-right: 1px solid var(--border);
+    overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column;
+  }
+  .main { flex: 1; overflow-y: auto; padding: 40px 48px; }
+  @media(max-width:768px) { .shell { flex-direction: column; } .sidebar { width: 100%; height: auto; max-height: 240px; } .main { padding: 24px 20px; } }
+
+  /* SIDEBAR */
+  .sidebar-header { padding: 28px 24px 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo { font-size: 11px; font-weight: 700; letter-spacing: .4em; text-transform: uppercase; color: var(--fg3); margin-bottom: 6px; }
+  .sidebar-title { font-size: 18px; font-weight: 700; color: var(--fg); }
+  .sidebar-section { padding: 16px 16px 8px; font-size: 9px; font-weight: 700; letter-spacing: .4em; text-transform: uppercase; color: var(--fg3); }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+    font-size: 12px; font-weight: 500; color: var(--fg2); cursor: pointer;
+    transition: all .2s; border-left: 2px solid transparent;
+  }
+  .sidebar-item:hover { color: var(--fg); background: rgba(255,255,255,.04); }
+  .sidebar-item.active { color: var(--fg); background: rgba(255,255,255,.06); border-left-color: var(--fg); }
+  .sidebar-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg3); flex-shrink: 0; }
+  .sidebar-item.has-content .dot { background: var(--green); }
+  .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
+
+  /* STATUS BAR */
+  .status-bar {
+    position: fixed; bottom: 0; left: 260px; right: 0; height: 36px;
+    background: var(--card); border-top: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 24px; gap: 16px; z-index: 50;
+    font-size: 11px; color: var(--fg3);
+  }
+  @media(max-width:768px) { .status-bar { left: 0; } }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .status-dot.warn { background: var(--yellow); }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+    padding: 10px 20px; border: 1.5px solid var(--border); background: transparent;
+    color: var(--fg); cursor: pointer; transition: all .2s; font-family: inherit;
+  }
+  .btn:hover { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .btn.primary:hover { background: transparent; color: var(--fg); }
+  .btn.danger { border-color: var(--red); color: var(--red); }
+  .btn.danger:hover { background: var(--red); color: #fff; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* FORM ELEMENTS */
+  .field { margin-bottom: 24px; }
+  .field label { display: block; font-size: 9px; font-weight: 700; letter-spacing: .35em; text-transform: uppercase; color: var(--fg3); margin-bottom: 8px; }
+  .field input, .field textarea, .field select {
+    width: 100%; background: var(--card); border: 1.5px solid var(--border);
+    color: var(--fg); padding: 12px 14px; font-family: inherit; font-size: 13px;
+    outline: none; transition: border-color .2s; resize: vertical;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--fg2); }
+  .field textarea { min-height: 80px; }
+  .field .hint { font-size: 11px; color: var(--fg3); margin-top: 6px; }
+
+  /* CHIPS (deliverables) */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    padding: 5px 10px; border: 1px solid var(--border); color: var(--fg2);
+  }
+  .chip .remove { cursor: pointer; color: var(--fg3); line-height: 1; }
+  .chip .remove:hover { color: var(--red); }
+  .add-chip { display: flex; gap: 8px; margin-top: 8px; }
+  .add-chip input { flex: 1; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .page-label { font-size: 9px; font-weight: 700; letter-spacing: .5em; text-transform: uppercase; color: var(--fg3); margin-bottom: 8px; }
+  .page-title { font-size: clamp(24px,3vw,40px); font-weight: 700; letter-spacing: -.02em; color: var(--fg); }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); padding: 28px; margin-bottom: 24px; }
+  .card-title { font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg2); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: 24px; right: 24px; z-index: 9999;
+    padding: 14px 24px; background: var(--fg); color: var(--bg);
+    font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+    transform: translateY(-80px); opacity: 0; transition: all .3s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: var(--red); color: #fff; }
+
+  /* SEPARATOR */
+  .sep { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* DOWNLOAD BUTTON AREA */
+  .actions-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+
+  /* MAIN PB for status bar */
+  .main { padding-bottom: 60px; }
+
+  /* UNSAVED indicator */
+  .unsaved { display: none; font-size: 10px; font-weight: 700; letter-spacing: .2em; color: var(--yellow); }
+  .unsaved.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Pelimotion</div>
+      <div class="sidebar-title">Content Admin</div>
+    </div>
+
+    <div class="sidebar-section">Clients</div>
+    <div id="sidebar-clients"></div>
+
+    <div class="sidebar-section">Categories</div>
+    <div id="sidebar-categories"></div>
+
+    <div class="sidebar-footer">
+      <button class="btn primary" style="width:100%" onclick="saveAll()">Save & Export JSON</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main-content">
+    <div class="page-header">
+      <div class="page-label">PLM Admin Panel</div>
+      <h1 class="page-title">Content Editor</h1>
+    </div>
+
+    <div class="actions-bar">
+      <button class="btn primary" onclick="saveAll()">💾 Save & Export JSON</button>
+      <button class="btn" onclick="importJSON()">📂 Import JSON</button>
+      <button class="btn" onclick="copyJSON()">📋 Copy JSON</button>
+      <span class="unsaved" id="unsaved-label">● Unsaved changes</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">How to use</div>
+      <p style="font-size:13px;line-height:1.7;color:var(--fg2)">
+        1. Select a <strong style="color:var(--fg)">client</strong> or <strong style="color:var(--fg)">category</strong> from the sidebar.<br>
+        2. Edit the <strong style="color:var(--fg)">Description</strong>, <strong style="color:var(--fg)">Release text</strong>, and <strong style="color:var(--fg)">Deliverables</strong>.<br>
+        3. Click <strong style="color:var(--fg)">Save &amp; Export JSON</strong> to download the updated <code style="color:var(--fg)">content.json</code>.<br>
+        4. Replace the <code style="color:var(--fg)">content.json</code> in the portfolio folder.<br>
+        5. Run <code style="color:var(--fg)">python3 deploy_system.py</code> to publish changes live.
+      </p>
+    </div>
+
+    <div id="editor-area" style="display:none">
+      <div class="page-header" id="editor-header"></div>
+      <div class="card">
+        <div class="card-title">Description</div>
+        <div class="field">
+          <label>Short description (shown on client card hover + gallery header)</label>
+          <textarea id="f-description" rows="3" oninput="markUnsaved()"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Release Text</div>
+        <div class="field">
+          <label>Release text (shown below the player when viewing a video, and on the client gallery)</label>
+          <textarea id="f-release" rows="4" oninput="markUnsaved()"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Deliverables</div>
+        <div class="field">
+          <label>Types of work delivered for this client / category</label>
+          <div class="chips" id="chips-container"></div>
+          <div class="add-chip">
+            <input type="text" id="chip-input" placeholder="e.g. Social Media Campaign" onkeydown="if(event.key==='Enter'){addChip();event.preventDefault()}">
+            <button class="btn" onclick="addChip()">+ Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="actions-bar" style="margin-top:0">
+        <button class="btn primary" onclick="saveAll()">Save & Export JSON</button>
+        <button class="btn danger" onclick="clearCurrent()">Clear This Entry</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">content.json loaded</span>
+  <span style="margin-left:auto;font-size:10px;letter-spacing:.1em">PLM ADMIN v1.0</span>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HIDDEN FILE INPUT -->
+<input type="file" id="file-input" accept=".json" style="display:none" onchange="handleImport(this)">
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let contentData = null;
+let currentKey  = null;
+let currentType = null; // 'client' or 'category'
+let hasUnsaved  = false;
+
+// ─── Load embedded content.json (fetched relative) ───────────────────────────
+async function loadContent() {
+  try {
+    const r = await fetch('../content.json?t=' + Date.now());
+    if (!r.ok) throw new Error('Could not fetch content.json');
+    contentData = await r.json();
+    setStatus('content.json loaded', false);
+  } catch(e) {
+    // Fallback: empty structure
+    contentData = { _note: '', clients: {}, categories: {} };
+    setStatus('content.json not found — starting empty', true);
+  }
+  buildSidebar();
+}
+
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+function buildSidebar() {
+  const cEl = document.getElementById('sidebar-clients');
+  const catEl = document.getElementById('sidebar-categories');
+  cEl.innerHTML = '';
+  catEl.innerHTML = '';
+
+  Object.keys(contentData.clients || {}).sort().forEach(name => {
+    const c = contentData.clients[name];
+    const hasCont = !!(c.description || c.release || (c.deliverables||[]).length);
+    const div = document.createElement('div');
+    div.className = 'sidebar-item' + (hasCont ? ' has-content' : '');
+    div.setAttribute('data-key', name);
+    div.setAttribute('data-type', 'client');
+    div.innerHTML = `<div class="dot"></div><span>${name}</span>`;
+    div.addEventListener('click', () => openEditor('client', name));
+    cEl.appendChild(div);
+  });
+
+  Object.keys(contentData.categories || {}).sort().forEach(name => {
+    const c = contentData.categories[name];
+    const hasCont = !!(c.description || c.release || (c.deliverables||[]).length);
+    const div = document.createElement('div');
+    div.className = 'sidebar-item' + (hasCont ? ' has-content' : '');
+    div.setAttribute('data-key', name);
+    div.setAttribute('data-type', 'category');
+    div.innerHTML = `<div class="dot"></div><span style="font-size:11px">${name}</span>`;
+    div.addEventListener('click', () => openEditor('category', name));
+    catEl.appendChild(div);
+  });
+}
+
+// ─── Editor ──────────────────────────────────────────────────────────────────
+function openEditor(type, key) {
+  if (hasUnsaved && currentKey) {
+    saveCurrentToMemory(); // auto-save to memory before switching
+  }
+
+  currentKey  = key;
+  currentType = type;
+
+  // Sidebar highlight
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const activeEl = document.querySelector(`.sidebar-item[data-key="${CSS.escape(key)}"][data-type="${type}"]`);
+  if (activeEl) activeEl.classList.add('active');
+
+  const data = contentData[type + 's'][key] || {};
+  document.getElementById('editor-area').style.display = 'block';
+  document.getElementById('editor-header').innerHTML =
+    `<div class="page-label">${type === 'client' ? 'CLIENT' : 'CATEGORY'}</div>
+     <div class="page-title">${key}</div>`;
+
+  document.getElementById('f-description').value = data.description || '';
+  document.getElementById('f-release').value = data.release || '';
+  renderChips(data.deliverables || []);
+  document.getElementById('chip-input').value = '';
+
+  hasUnsaved = false;
+  document.getElementById('unsaved-label').classList.remove('visible');
+  document.getElementById('main-content').scrollTo(0, 0);
+}
+
+function renderChips(deliverables) {
+  const container = document.getElementById('chips-container');
+  container.innerHTML = '';
+  deliverables.forEach((d, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${d}<span class="remove" onclick="removeChip(${i})">✕</span>`;
+    container.appendChild(chip);
+  });
+}
+
+function addChip() {
+  const input = document.getElementById('chip-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const key = currentKey;
+  const type = currentType;
+  const data = contentData[type + 's'][key] || {};
+  data.deliverables = data.deliverables || [];
+  data.deliverables.push(val);
+  contentData[type + 's'][key] = data;
+  renderChips(data.deliverables);
+  input.value = '';
+  markUnsaved();
+}
+
+function removeChip(i) {
+  const data = contentData[currentType + 's'][currentKey] || {};
+  data.deliverables = data.deliverables || [];
+  data.deliverables.splice(i, 1);
+  renderChips(data.deliverables);
+  markUnsaved();
+}
+
+function saveCurrentToMemory() {
+  if (!currentKey || !currentType) return;
+  const data = contentData[currentType + 's'][currentKey] || {};
+  data.description = document.getElementById('f-description').value.trim();
+  data.release = document.getElementById('f-release').value.trim();
+  contentData[currentType + 's'][currentKey] = data;
+}
+
+function clearCurrent() {
+  if (!currentKey) return;
+  if (!confirm(`Clear all content for "${currentKey}"?`)) return;
+  contentData[currentType + 's'][currentKey] = { description: '', release: '', deliverables: [] };
+  openEditor(currentType, currentKey);
+  markUnsaved();
+}
+
+function markUnsaved() {
+  hasUnsaved = true;
+  document.getElementById('unsaved-label').classList.add('visible');
+}
+
+// ─── Save / Import / Export ───────────────────────────────────────────────────
+function saveAll() {
+  saveCurrentToMemory();
+  const json = JSON.stringify(contentData, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'content.json';
+  a.click();
+  hasUnsaved = false;
+  document.getElementById('unsaved-label').classList.remove('visible');
+  buildSidebar();
+  toast('✓ content.json exported — replace the file in your portfolio folder and run deploy_system.py');
+}
+
+function copyJSON() {
+  saveCurrentToMemory();
+  const json = JSON.stringify(contentData, null, 2);
+  navigator.clipboard.writeText(json).then(() => toast('JSON copied to clipboard'));
+}
+
+function importJSON() {
+  document.getElementById('file-input').click();
+}
+
+function handleImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      // Merge: keep existing keys, add new ones
+      contentData.clients = { ...contentData.clients, ...imported.clients };
+      contentData.categories = { ...contentData.categories, ...imported.categories };
+      buildSidebar();
+      toast('JSON imported successfully');
+    } catch(err) {
+      toast('Invalid JSON file', true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ─── UI Helpers ───────────────────────────────────────────────────────────────
+function toast(msg, isError=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => el.className = 'toast', 3500);
+}
+
+function setStatus(msg, warn=false) {
+  document.getElementById('status-text').textContent = msg;
+  document.getElementById('status-dot').className = 'status-dot' + (warn ? ' warn' : '');
+}
+
+// ─── Keyboard ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    saveAll();
+  }
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+loadContent();
+</script>
+</body>
+</html>
