@@ -57,7 +57,7 @@
         <h1 class="hero-title text-5xl sm:text-7xl">Select Document<span class="text-white/30">.</span></h1>
     </div>
 
-    <div class="z-10 flex flex-col sm:flex-row gap-6 w-full max-w-3xl px-6 reveal-mech visible" style="transition-delay: 100ms">
+    <div class="z-10 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl px-6 reveal-mech visible" style="transition-delay: 100ms">
         <a href="cv.html" onclick="navTo(event, 'cv.html')" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
             <div class="font-mono text-[10px] tracking-widest text-white/40 mb-8">DOC_01</div>
             <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform">Curriculum Vitae</h2>
@@ -68,12 +68,22 @@
             </div>
         </a>
 
-        <a href="cl.html" onclick="navTo(event, 'cl.html')" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
+        <a href="cl.html" onclick="navTo(event, 'cl.html')" class="group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
             <div class="font-mono text-[10px] tracking-widest text-white/40 mb-8">DOC_02</div>
             <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform">Cover Letter</h2>
             <p class="serif italic text-white/50 mb-10 group-hover:-translate-y-1 transition-transform">Personal introduction and strategic alignment.</p>
             <div class="flex justify-between items-center font-mono text-[10px] uppercase tracking-widest text-white/70">
                 <span>Read Letter</span>
+                <span class="group-hover:translate-x-2 transition-transform">→</span>
+            </div>
+        </a>
+
+        <a href="near.html" onclick="navTo(event, 'near.html')" class="group relative overflow-hidden border border-[#34d399]/40 bg-[#34d399]/[0.02] p-10 hover:bg-[#34d399]/[0.05] hover:border-[#34d399] transition-all duration-500">
+            <div class="font-mono text-[10px] tracking-widest text-[#34d399]/70 mb-8">DOC_03_PRIVATE</div>
+            <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform text-white">Near App.</h2>
+            <p class="serif italic text-white/50 mb-10 group-hover:-translate-y-1 transition-transform">Custom curriculum and cover letter for Near.</p>
+            <div class="flex justify-between items-center font-mono text-[10px] uppercase tracking-widest text-[#34d399]">
+                <span>View Application</span>
                 <span class="group-hover:translate-x-2 transition-transform">→</span>
             </div>
         </a>
