@@ -34,25 +34,40 @@ function buildSidebar(){
   sc.innerHTML = '';
   scat.innerHTML = '';
 
+  // Count missing for status
+  let missing = 0;
+
   Object.keys(D.clients||{}).sort().forEach(name => {
     const c = D.clients[name];
-    const has = !!(c.description || c.release || (c.deliverables||[]).length);
+    const hasDesc = !!(c.description && c.description.trim());
+    const hasAny  = !!(c.description || c.release || (c.deliverables||[]).length);
+    if(!hasDesc) missing++;
     const div = document.createElement('div');
-    div.className = 'sidebar-item'+(has?' has-content':'');
-    div.innerHTML = `<div class="dot"></div><span>${name}</span>`;
+    div.className = 'sidebar-item'+(hasAny?' has-content':'');
+    div.innerHTML = `<div class="dot"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>`
+      + (!hasDesc ? `<span class="warn-badge" title="Missing description">!</span>` : '');
     div.onclick = () => openEditor('client', name);
     sc.appendChild(div);
   });
 
   Object.keys(D.categories||{}).sort().forEach(name => {
     const c = D.categories[name];
-    const has = !!(c.description || (c.deliverables||[]).length);
+    const hasDesc = !!(c.description && c.description.trim());
+    const hasAny  = !!(c.description || (c.deliverables||[]).length);
     const div = document.createElement('div');
-    div.className = 'sidebar-item'+(has?' has-content':'');
-    div.innerHTML = `<div class="dot"></div><span style="font-size:10px">${name}</span>`;
+    div.className = 'sidebar-item'+(hasAny?' has-content':'');
+    div.innerHTML = `<div class="dot"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px">${name}</span>`
+      + (!hasDesc ? `<span class="warn-badge" title="Missing description">!</span>` : '');
     div.onclick = () => openEditor('category', name);
     scat.appendChild(div);
   });
+
+  // Update status bar
+  if(missing > 0){
+    setStatus(`${missing} client${missing>1?'s':''} missing description`, true);
+  } else {
+    setStatus('All content complete ✓');
+  }
 }
 
 // ─── Section openers ──────────────────────────────────────────────────────
