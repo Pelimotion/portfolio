@@ -199,6 +199,18 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
         </div>`).join('')}
       <button class="btn" style="margin-top:6px" onclick="addLang()">+ Add Language</button>
     </div>
+    <div class="card"><div class="card-title"><span class="icon">🛠️</span> Skills & Toolset (${Object.keys(C.skills||{}).length} categories)</div>
+      <div class="hint" style="margin-bottom:14px">Each category = one column in the Skills section. Items are comma-separated. Edit category names and tools below.</div>
+      ${Object.keys(C.skills||{}).map((cat,i)=>`
+        <div class="exp-block"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="exp-block-title">Category ${i+1}</div>
+          <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeSkillCat(${i})">Remove</button>
+        </div>
+          <div class="field"><label>Category Name</label><input id="f-scat${i}-name" value="${esc(cat)}" oninput="markUnsaved()"><div class="hint">e.g. "Motion & Post", "Design & 3D", "AI & Code"</div></div>
+          <div class="field"><label>Tools (comma-separated)</label><input id="f-scat${i}-items" value="${esc((C.skills[cat]||[]).join(', '))}" oninput="markUnsaved()"></div>
+        </div>`).join('')}
+      <button class="btn" style="margin-top:10px" onclick="addSkillCat()">+ Add Category</button>
+    </div>
     <div class="card"><div class="card-title"><span class="icon">🏢</span> Client Marquee</div>
       <div class="field"><label>Brands (comma-separated)</label><textarea id="f-cvMarquee" rows="2" oninput="markUnsaved()">${esc((C.clientMarquee||[]).join(', '))}</textarea><div class="hint">Scrolling brand names on the CV page.</div></div>
     </div>
@@ -320,6 +332,12 @@ function saveCurriculumToMem(){
   const mq=v('f-cvMarquee'); C.clientMarquee=mq?mq.split(',').map(s=>s.trim()).filter(Boolean):[];
   C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA');
   C.socialInstagram=v('f-cvIG'); C.socialLinkedIn=v('f-cvLI'); C.socialBehance=v('f-cvBE');
+  // Save skills
+  const skillKeys = Object.keys(C.skills||{}); const newSkills = {};
+  skillKeys.forEach((_,i)=>{
+    const catName=v(`f-scat${i}-name`); const items=v(`f-scat${i}-items`);
+    if(catName) newSkills[catName]=items?items.split(',').map(s=>s.trim()).filter(Boolean):[];
+  }); C.skills=newSkills;
   // Save experience entries
   const expCount = (C.experience||[]).length;
   for(let i=0;i<expCount;i++){
@@ -353,6 +371,11 @@ function removeEdu(i){ saveCurriculumToMem(); D.curriculum.education.splice(i,1)
 function addLang(){ saveCurriculumToMem(); const C=D.curriculum; C.languages=C.languages||[];
   C.languages.push({name:'',level:''}); showCurriculum(); markUnsaved(); }
 function removeLang(i){ saveCurriculumToMem(); D.curriculum.languages.splice(i,1); showCurriculum(); markUnsaved(); }
+function addSkillCat(){ saveCurriculumToMem(); const C=D.curriculum; C.skills=C.skills||{};
+  C.skills[`New Category ${Object.keys(C.skills).length+1}`] = []; showCurriculum(); markUnsaved(); }
+function removeSkillCat(i){ saveCurriculumToMem(); const C=D.curriculum;
+  const keys = Object.keys(C.skills||{}); if(keys[i]) delete C.skills[keys[i]];
+  showCurriculum(); markUnsaved(); }
 
 // ─── Cover Letter editor ──────────────────────────────────────────────────
 function showCoverLetter(){ autoSave(); currentSection='coverLetter'; currentKey=null; highlightSb(null);

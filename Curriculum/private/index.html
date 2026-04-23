@@ -1,269 +1,673 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Felipe Conceição — CV & Cover Letter (Private)</title>
-<meta name="robots" content="noindex, nofollow">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felipe Conceição — CV & Cover Letter (Private)</title>
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="description" content="Private CV and Cover Letter — Felipe Conceicao">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+
+    <!-- Custom Style (overrides Tailwind where needed) -->
+    <link rel="stylesheet" href="../style.css">
+<style>
+@media print{
+  #priv-bar{display:none!important}
+  #page-cl{display:block!important}
+  body{background:#fff!important;color:#000!important}
+  .hero-title,.section-title,.exp-title,.contact-cta{color:#000!important}
+  .text-white\/85,.text-white\/65,.text-white\/70{color:#333!important}
+  .text-white\/40,.text-white\/30,.text-white\/20,.mono-label,.label-tiny{color:#666!important}
+  .hairline{border-color:#ddd!important}
+}
+#page-cl a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
+#page-cl a:hover{border-color:rgba(255,255,255,.6)}
+</style>
 </head>
-<body>
 
-<!-- Tab Navigation -->
-<nav class="tab-bar">
-  <div class="tab-logo">[FC] Private</div>
-  <button class="tab-btn active" onclick="switchTab('cv')">Curriculum Vitae</button>
-  <button class="tab-btn" onclick="switchTab('cl')">Cover Letter</button>
-  <div class="tab-actions">
-    <button class="dl-btn" onclick="downloadPDF('cv')">↓ CV PDF</button>
-    <button class="dl-btn" onclick="downloadPDF('cl')">↓ CL PDF</button>
-  </div>
-</nav>
-
-<!-- CV PAGE -->
-<div class="page active" id="page-cv">
-  <header class="cv-header">
-    <h1 class="cv-name" id="cv-name"></h1>
-    <p class="cv-title" id="cv-title"></p>
-    <div class="cv-meta">
-      <span id="cv-based"></span>
-      <span id="cv-disc"></span>
-      <span id="cv-years"></span>
+<body class="bg-black text-white selection:bg-white/20">
+    <!-- Private Tab Bar -->
+    <div id="priv-bar" style="position:sticky;top:0;z-index:100;background:rgba(0,0,0,.96);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 clamp(1rem,4vw,3rem);gap:0">
+      <span style="font-family:monospace;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-right:auto">[PRIVATE]</span>
+      <button onclick="showCV()" id="btn-cv" style="font-family:monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:#fff;background:none;border:none;border-bottom:2px solid #34d399;padding:12px 18px;cursor:pointer">CV</button>
+      <button onclick="showCL()" id="btn-cl" style="font-family:monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);background:none;border:none;border-bottom:2px solid transparent;padding:12px 18px;cursor:pointer">COVER LETTER</button>
+      <button onclick="window.print()" style="font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);background:none;border:1px solid rgba(255,255,255,.15);padding:8px 14px;margin-left:16px;cursor:pointer" id="btn-pdf">↓ PDF</button>
     </div>
-  </header>
+    <!-- CV Page -->
+    <div id="page-cv">
 
-  <!-- Summary -->
-  <section class="cv-section">
-    <div class="cv-section-head">
-      <span class="cv-section-num">01</span>
-      <h2 class="cv-section-title">Professional Summary</h2>
+    <main class="min-h-screen">
+        <header class="hairline border-b sticky top-0 z-50 bg-black/90 backdrop-blur-md">
+            <div class="progress-bar-container">
+                <div id="scroll-progress" class="progress-bar"></div>
+            </div>
+            <div class="container-custom flex items-center justify-between py-3">
+                <a href="/" class="nav-label flex-1 font-mono hover:opacity-70 transition-opacity">
+                    <span class="text-white/40">[</span>FC.CV<span class="text-white/40">]</span>
+                    <span class="hidden lg:inline text-white/20">— MT_PH_01.2025</span>
+                </a>
+                <nav class="hidden md:flex flex-1 justify-center gap-10 nav-label text-white/55">
+                    <a href="#profile" class="nav-link">01.Profile</a>
+                    <a href="#experience" class="nav-link">02.Exp</a>
+                    <a href="#education" class="nav-link">03.Edu</a>
+                    <a href="#skills" class="nav-link">04.Skill</a>
+                    <a href="#contact" class="nav-link">05.Liaise</a>
+                </nav>
+                <div class="nav-label flex-1 flex justify-end items-center gap-4 font-mono">
+                    <div id="section-indicator"
+                        class="text-white/30 text-[9px] uppercase tracking-widest hidden sm:block">STATUS_IDLE</div>
+                    <div class="flex items-center gap-2">
+                        <span class="status-dot"></span>
+                        <span class="hidden sm:inline">LIVE</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden hairline border-b">
+            <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+                <div class="hero-bg-text left animate-drift-x">FC</div>
+                <div class="hero-bg-text-cv right animate-float-slow">cv</div>
+            </div>
+
+            <div class="container-custom grid grid-cols-12 pt-20 pb-10 sm:pt-28">
+                <div class="col-span-12 lg:col-span-8 reveal-mech">
+                    <div class="label-tiny">Curriculum Vitae — Edition 01 / 2025</div>
+                    <h1 class="hero-title mt-6" id="dyn-name">Felipe<br>Conceição<span class="text-white/30">.</span></h1>
+                    <div class="mt-8 max-w-xl">
+                        <p class="hero-sub">
+                            Creative Director, <span class="serif">motion branding</span> and <span
+                                class="serif">artistic direction</span>.
+                            Eight years translating brand strategy into rhythm, light and image — from generative
+                            pipelines to projection mapping.
+                        </p>
+                    </div>
+                </div>
+                <aside class="col-span-12 mt-12 grid grid-cols-2 gap-y-8 lg:col-span-4 lg:mt-0 lg:pl-10">
+                    <div>
+                        <div class="label-tiny">Based in</div>
+                        <div class="info-text mt-2" id="dyn-based">Rio de Janeiro, BR</div>
+                    </div>
+                    <div>
+                        <div class="label-tiny">Local time</div>
+                        <div id="local-time" class="info-text mt-2 font-mono">—</div>
+                    </div>
+                    <div>
+                        <div class="label-tiny">Discipline</div>
+                        <div class="info-text mt-2" id="dyn-disc">Motion · Direction<br>Branding · CGI</div>
+                    </div>
+                    <div>
+                        <div class="label-tiny">Years</div>
+                        <div class="info-text mt-2" id="dyn-years">2017 → Now</div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="hairline border-t">
+                <div class="container-custom-flush grid grid-cols-2 sm:grid-cols-4" id="dyn-stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Creative Director</div>
+                        <div class="stat-sub">Pelimotion Hub</div>
+                    </div>
+                    <div class="stat-card border-l">
+                        <div class="stat-label">Motion Branding</div>
+                        <div class="stat-sub">Brand Systems</div>
+                    </div>
+                    <div class="stat-card border-l border-t sm:border-t-0">
+                        <div class="stat-label">Artistic Direction</div>
+                        <div class="stat-sub">Live & Theater</div>
+                    </div>
+                    <div class="stat-card border-l border-t sm:border-t-0">
+                        <div class="stat-label">Generative R&D</div>
+                        <div class="stat-sub">AI Pipelines</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marquee Section -->
+        <section class="hairline border-b overflow-hidden py-5">
+            <div class="marquee" id="dyn-marquee">
+                <div class="marquee-content">
+                    <span>BMW</span> <span>Subaru</span> <span>Hyundai</span> <span>EQI</span>
+                    <span>Movida</span> <span>Motul</span> <span>CAOA Tiggo</span> <span>Suzano</span>
+                    <span>O Boticário</span> <span>Colcci</span> <span>Pelimotion Hub</span> <span>Rockset</span>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="marquee-content" aria-hidden="true">
+                    <span>BMW</span> <span>Subaru</span> <span>Hyundai</span> <span>EQI</span>
+                    <span>Movida</span> <span>Motul</span> <span>CAOA Tiggo</span> <span>Suzano</span>
+                    <span>O Boticário</span> <span>Colcci</span> <span>Pelimotion Hub</span> <span>Rockset</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="hairline border-b">
+            <div class="section-header">
+                <div class="container-custom flex items-end justify-between py-7">
+                    <div class="flex items-end gap-6">
+                        <span class="section-number">01</span>
+                        <h2 class="section-title">Profile</h2>
+                    </div>
+                    <div class="serif text-white/55 italic">A short letter</div>
+                </div>
+                <div class="container-custom">
+                    <div class="hairline border-b w-full"></div>
+                </div>
+            </div>
+
+            <div class="container-custom-flush grid grid-cols-12">
+                <div class="col-span-12 lg:col-span-7 lg:border-r border-white/10 p-6 sm:p-10 reveal-mech">
+                    <p id="dyn-p1" class="text-xl sm:text-2xl leading-relaxed text-white/85">
+                        I work where <span class="serif italic">strategy</span> meets <span
+                            class="serif italic">motion</span>.
+                        Over eight years I've built visual systems for global brands across automotive, finance and
+                        culture —
+                        designing how a brand <em class="serif italic not-italic">moves</em>, not only how it looks.
+                    </p>
+                    <p class="mt-6 text-base text-white/65 leading-relaxed max-w-2xl">
+                        My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion
+                        Hub,
+                        where we develop AI-integrated motion pipelines and direct immersive experiences — combining
+                        motion
+                        design with light and projection for theater and live performances.
+                    </p>
+                </div>
+                <div class="col-span-12 lg:col-span-5 grid grid-cols-2">
+                    <div
+                        class="breathe-card border-t sm:border-l border-white/10 group hover:bg-white/[0.02] transition-colors">
+                        <div class="font-mono text-[9px] text-white/20 mb-2">VAL_EXP_01</div>
+                        <div class="breathe-val font-mono">08<span class="text-white/20">+</span></div>
+                        <div class="label-tiny mt-4 font-mono text-[8px]">Years of Practice</div>
+                    </div>
+                    <div
+                        class="breathe-card border-t border-l border-white/10 group hover:bg-white/[0.02] transition-colors">
+                        <div class="font-mono text-[9px] text-white/20 mb-2">VAL_CAM_01</div>
+                        <div class="breathe-val font-mono">40<span class="text-white/20">+</span></div>
+                        <div class="label-tiny mt-4 font-mono text-[8px]">Brand Campaigns</div>
+                    </div>
+                    <div
+                        class="breathe-card border-t sm:border-l border-white/10 group hover:bg-white/[0.02] transition-colors">
+                        <div class="font-mono text-[9px] text-white/20 mb-2">VAL_GLB_01</div>
+                        <div class="breathe-val font-mono">12</div>
+                        <div class="label-tiny mt-4 font-mono text-[8px]">Countries Reached</div>
+                    </div>
+                    <div
+                        class="breathe-card border-t border-l border-white/10 group hover:bg-white/[0.02] transition-colors">
+                        <div class="font-mono text-[9px] text-white/20 mb-2">VAL_FRM_01</div>
+                        <div class="breathe-val font-mono">∞</div>
+                        <div class="label-tiny mt-4 font-mono text-[8px]">Frames Per Second</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="hairline border-b">
+            <div class="section-header">
+                <div class="container-custom flex items-end justify-between py-7">
+                    <div class="flex items-end gap-6">
+                        <span class="section-number">02</span>
+                        <h2 class="section-title">Professional Experience</h2>
+                    </div>
+                    <div class="serif text-white/55 italic">2017 → Now</div>
+                </div>
+                <div class="container-custom">
+                    <div class="hairline border-b w-full"></div>
+                </div>
+            </div>
+
+            <div class="container-custom-flush" id="dyn-exp"></div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="hairline border-b">
+            <div class="section-header">
+                <div class="container-custom flex items-end justify-between py-7">
+                    <div class="flex items-end gap-6">
+                        <span class="section-number">03</span>
+                        <h2 class="section-title">Education & Languages</h2>
+                    </div>
+                    <div class="serif text-white/55 italic">Foundations</div>
+                </div>
+                <div class="container-custom">
+                    <div class="hairline border-b w-full"></div>
+                </div>
+            </div>
+
+            <div class="container-custom-flush grid grid-cols-12">
+                <div id="dyn-edu" class="col-span-12 lg:col-span-8 lg:border-r border-white/10 px-5 sm:px-8">
+                    <div class="edu-item reveal-mech grid grid-cols-12 py-7 border-b border-white/5 group hover:bg-white/[0.01] transition-colors">
+                        <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_01</div>
+                        <div class="col-span-8 sm:col-span-3 mono-label">2014 — 2017</div>
+                        <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
+                            <div class="text-white font-mono text-sm uppercase tracking-tight">Audiovisual Production</div>
+                            <div class="serif text-[11px] text-white/30 italic">UNIVALI — Itajaí / Brazil</div>
+                        </div>
+                    </div>
+                    <div class="edu-item reveal-mech grid grid-cols-12 py-7 border-b border-white/5 group hover:bg-white/[0.01] transition-colors">
+                        <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_02</div>
+                        <div class="col-span-8 sm:col-span-3 mono-label">2021</div>
+                        <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
+                            <div class="text-white font-mono text-sm uppercase tracking-tight">Audio Post-Production</div>
+                            <div class="serif text-[11px] text-white/30 italic">Estúdio Café Maestro</div>
+                        </div>
+                    </div>
+                    <div class="edu-item reveal-mech grid grid-cols-12 py-7 group hover:bg-white/[0.01] transition-colors border-b border-white/5 lg:border-b-0">
+                        <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_03</div>
+                        <div class="col-span-8 sm:col-span-3 mono-label">2010 — 2016</div>
+                        <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
+                            <div class="text-white font-mono text-sm uppercase tracking-tight">Music Formation — Double Bass</div>
+                            <div class="serif text-[11px] text-white/30 italic">Conservatório de Música</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="dyn-lang" class="col-span-12 lg:col-span-4 p-6 sm:p-8">
+                    <div class="label-tiny mb-6">Languages</div>
+                    <div class="space-y-6">
+                        <div class="lang-bar" data-val="100">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>Portuguese</span>
+                                <span class="label-tiny">Native</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill"></div>
+                            </div>
+                        </div>
+                        <div class="lang-bar" data-val="85">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>English</span>
+                                <span class="label-tiny">Professional</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill"></div>
+                            </div>
+                        </div>
+                        <div class="lang-bar" data-val="55">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>Spanish</span>
+                                <span class="label-tiny">Conversational</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="hairline border-b">
+            <div class="section-header">
+                <div class="container-custom flex items-end justify-between py-7">
+                    <div class="flex items-end gap-6">
+                        <span class="section-number">04</span>
+                        <h2 class="section-title">Skills & Toolset</h2>
+                    </div>
+                    <div class="serif text-white/55 italic">Craft</div>
+                </div>
+                <div class="container-custom">
+                    <div class="hairline border-b w-full"></div>
+                </div>
+            </div>
+
+            <div id="dyn-skills" class="container-custom-flush grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-white/10">
+                <!-- Group A -->
+                <div class="skill-group reveal-mech lg:border-r border-white/10 p-10">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="label-tiny font-mono">TOOLS_PRIMARY</div>
+                        <div class="mono-label text-white/10">SW_CORE</div>
+                    </div>
+                    <ul class="skill-list font-mono text-[11px] uppercase space-y-4">
+                        <li class="flex justify-between"><span>After Effects</span><span
+                                class="text-accent-color opacity-30">#PRO</span></li>
+                        <li class="flex justify-between"><span>Premiere Pro</span><span
+                                class="text-accent-color opacity-30">#PRO</span></li>
+                        <li class="flex justify-between"><span>Photoshop</span><span
+                                class="text-accent-color opacity-30">#PRO</span></li>
+                        <li class="flex justify-between"><span>Illustrator</span><span
+                                class="text-accent-color opacity-30">#PRO</span></li>
+                        <li class="flex justify-between"><span>Blender</span><span class="text-white/20">#3D_EXP</span>
+                        </li>
+                        <li class="flex justify-between"><span>Logic / Ableton</span><span
+                                class="text-white/20">#AUDIO</span></li>
+                    </ul>
+                </div>
+                <!-- Group B -->
+                <div class="skill-group reveal-mech lg:border-r border-white/10 p-10 sm:border-l lg:sm:border-l-0">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="label-tiny font-mono">SPECIALTIES</div>
+                        <div class="mono-label text-white/10">CORE_DIRECTIONS</div>
+                    </div>
+                    <ul class="skill-list font-mono text-[11px] uppercase space-y-4">
+                        <li>Motion Branding</li>
+                        <li>Design Systems</li>
+                        <li>Short-Form Logic</li>
+                        <li>Projection Map</li>
+                        <li>Art Direction</li>
+                        <li>Audio Post</li>
+                    </ul>
+                </div>
+                <!-- Group C -->
+                <div class="skill-group reveal-mech lg:border-r border-white/10 p-10 border-t lg:border-t-0">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="label-tiny font-mono">AI_GENERATIVE</div>
+                        <div class="mono-label text-white/10">NEW_PIPELINES</div>
+                    </div>
+                    <ul class="skill-list font-mono text-[11px] uppercase space-y-4">
+                        <li>Generative R&D</li>
+                        <li>Video Pipelines</li>
+                        <li>Latent Workflow</li>
+                        <li>Sora / Veo / Kling</li>
+                        <li>Diffusion Model</li>
+                    </ul>
+                </div>
+                <!-- Group D -->
+                <div class="skill-group reveal-mech p-10 border-t lg:border-t-0 sm:border-l border-white/10">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="label-tiny font-mono">SOFT_EXECUTION</div>
+                        <div class="mono-label text-white/10">DIRECTION_CORE</div>
+                    </div>
+                    <ul class="skill-list font-mono text-[11px] uppercase space-y-4">
+                        <li>Creative Direction</li>
+                        <li>Problem Solver</li>
+                        <li>Rhythmic Percussion</li>
+                        <li>Team Leadership</li>
+                        <li>Strategic IA</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="hairline border-b relative overflow-hidden">
+            <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+                <div class="bg-arrow">→</div>
+            </div>
+
+            <div class="section-header">
+                <div class="container-custom flex items-end justify-between py-7">
+                    <div class="flex items-end gap-6">
+                        <span class="section-number">05</span>
+                        <h2 class="section-title">Contact</h2>
+                    </div>
+                    <div class="serif text-white/55 italic">2025 / ∞</div>
+                </div>
+                <div class="container-custom">
+                    <div class="hairline border-b w-full"></div>
+                </div>
+            </div>
+
+            <div class="container-custom-flush grid grid-cols-12">
+                <div class="col-span-12 lg:col-span-8 py-14 sm:py-20 lg:border-r border-white/10">
+                    <h3 class="contact-cta">
+                        Open to direction,<br>
+                        <span class="serif text-white/70">collaborations</span> and<br>
+                        long-form briefs<span class="text-white/30">.</span>
+                    </h3>
+                    <div class="flex flex-col sm:flex-row gap-6 mt-12">
+                        <a id="dyn-email" href="mailto:conceicao.felipe@gmail.com" class="email-link">conceicao.felipe@gmail.com</a>
+                        <div class="flex gap-6">
+                            <a href="#" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[INSTAGRAM]</a>
+                            <a href="#" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[LINKEDIN]</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-12 lg:col-span-4 grid grid-cols-2">
+                    <div class="contact-card border-t border-white/10">
+                        <div class="label-tiny">Studio</div>
+                        <div class="tag-label mt-3">Pelimotion Hub</div>
+                    </div>
+                    <div class="contact-card border-t border-l border-white/10">
+                        <div class="label-tiny">City</div>
+                        <div class="tag-label mt-3">Rio de Janeiro</div>
+                    </div>
+                    <a href="https://pelimotion.com" target="_blank"
+                        class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
+                        <div class="label-tiny">Web</div>
+                        <div class="tag-label mt-3">pelimotion.com</div>
+                    </a>
+                    <a href="https://linkedin.com/in/felipeconceicao" target="_blank"
+                        class="contact-card border-t border-l border-white/10 group transition-colors hover:bg-white/5">
+                        <div class="label-tiny">LinkedIn</div>
+                        <div class="tag-label mt-3">/felipeconceicao</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="container-custom flex flex-col sm:flex-row items-center justify-between py-10 gap-4 opacity-50">
+            <div class="label-tiny">© 2025 Felipe Conceição — Curriculum Vitae</div>
+            <div class="flex items-center gap-3 label-tiny">
+                <div class="flex items-center gap-2">
+                    <span class="status-dot"></span>
+                    <span>Available for projects</span>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+
+    </div><!-- end page-cv -->
+    <!-- Cover Letter Page (hidden by default) -->
+    <div id="page-cl" style="display:none;max-width:900px;margin:0 auto;padding:clamp(2rem,6vw,5rem) clamp(1.5rem,5vw,4rem) 100px">
+      <div style="margin-bottom:48px">
+        <div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.3);font-family:monospace;margin-bottom:8px">COVER LETTER</div>
+        <h1 id="cl-name" style="font-size:clamp(2rem,8vw,4rem);font-weight:900;line-height:.88;letter-spacing:-.04em"></h1>
+        <p id="cl-subtitle" style="font-family:'Instrument Serif',serif;font-style:italic;color:rgba(255,255,255,.45);margin-top:10px;font-size:1rem"></p>
+        <div style="display:flex;flex-wrap:wrap;gap:20px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3)">
+          <span id="cl-role"></span><span id="cl-location"></span><span id="cl-date"></span>
+        </div>
+      </div>
+      <div style="max-width:680px">
+        <p id="cl-greeting" style="font-size:1.1rem;font-weight:600;margin-bottom:28px"></p>
+        <p id="cl-opening" style="font-size:clamp(1rem,2vw,1.1rem);line-height:1.8;color:rgba(255,255,255,.9);margin-bottom:20px"></p>
+        <p id="cl-body1" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
+        <p id="cl-body2" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
+        <p id="cl-body3" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
+        <p id="cl-closing" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
+        <div style="margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)">
+          <div id="cl-signoff" style="font-family:'Instrument Serif',serif;font-style:italic;color:rgba(255,255,255,.6);margin-bottom:8px;font-size:1rem"></div>
+          <div id="cl-sname" style="font-size:1.2rem;font-weight:700"></div>
+          <div id="cl-stitle" style="font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:4px"></div>
+          <div id="cl-links" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px"></div>
+        </div>
+      </div>
     </div>
-    <div class="cv-summary" id="cv-summary"></div>
-    <div class="cv-stats" id="cv-stats"></div>
-  </section>
 
-  <!-- Experience -->
-  <section class="cv-section">
-    <div class="cv-section-head">
-      <span class="cv-section-num">02</span>
-      <h2 class="cv-section-title">Professional Experience</h2>
-    </div>
-    <div id="cv-experience"></div>
-  </section>
-
-  <!-- Education -->
-  <section class="cv-section">
-    <div class="cv-section-head">
-      <span class="cv-section-num">03</span>
-      <h2 class="cv-section-title">Education</h2>
-    </div>
-    <div id="cv-education"></div>
-  </section>
-
-  <!-- Languages -->
-  <section class="cv-section">
-    <div class="cv-section-head">
-      <span class="cv-section-num">04</span>
-      <h2 class="cv-section-title">Languages</h2>
-    </div>
-    <div id="cv-languages"></div>
-  </section>
-
-  <!-- Skills -->
-  <section class="cv-section">
-    <div class="cv-section-head">
-      <span class="cv-section-num">05</span>
-      <h2 class="cv-section-title">Skills & Toolset</h2>
-    </div>
-    <div class="skills-grid" id="cv-skills"></div>
-  </section>
-
-  <!-- Contact -->
-  <section class="cv-section">
-    <div class="cv-section-head">
-      <span class="cv-section-num">06</span>
-      <h2 class="cv-section-title">Contact</h2>
-    </div>
-    <div class="contact-grid" id="cv-contact"></div>
-  </section>
-</div>
-
-<!-- COVER LETTER PAGE -->
-<div class="page" id="page-cl">
-  <header class="cl-header">
-    <div class="cl-from">Cover Letter</div>
-    <h1 class="cl-name" id="cl-name"></h1>
-    <p class="cl-subtitle" id="cl-subtitle"></p>
-    <div class="cl-meta-bar">
-      <span id="cl-role"></span>
-      <span id="cl-location"></span>
-      <span id="cl-date"></span>
-    </div>
-  </header>
-
-  <div class="cl-body">
-    <div class="cl-greeting" id="cl-greeting"></div>
-    <p class="cl-para" id="cl-opening"></p>
-    <p class="cl-para" id="cl-body1"></p>
-    <p class="cl-para" id="cl-body2"></p>
-    <p class="cl-para" id="cl-body3"></p>
-    <p class="cl-para" id="cl-closing"></p>
-
-    <div class="cl-signoff">
-      <div class="cl-signoff-text" id="cl-signoff"></div>
-      <div class="cl-signoff-name" id="cl-sname"></div>
-      <div class="cl-signoff-title" id="cl-stitle"></div>
-      <div class="cl-links" id="cl-links"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-let D = null;
-
-async function loadData(){
-  try {
+    <script src="../script.js"></script>
+<script id="inject-script">
+(async function(){
+  let D;
+  try{
     const r = await fetch('../../site-content.json?t='+Date.now());
     if(!r.ok) throw new Error();
     D = await r.json();
-  } catch(e){
-    // Prompt import
-    const input = document.createElement('input');
-    input.type='file'; input.accept='.json';
-    input.onchange = ev => {
-      const reader = new FileReader();
-      reader.onload = e2 => { D = JSON.parse(e2.target.result); render(); };
-      reader.readAsText(ev.target.files[0]);
-    };
-    document.body.innerHTML = '<div style="text-align:center;padding:100px 20px;font-family:sans-serif;color:#fff"><h2>Import site-content.json</h2><p style="color:#888;margin:16px 0">Local mode — select your JSON file.</p></div>';
-    document.body.querySelector('div').appendChild(input);
-    return;
-  }
-  render();
-}
+  } catch(e){ return; } // silently fail on local
 
-function render(){
   const C = D.curriculum || {};
   const CL = D.coverLetter || {};
 
-  // CV
-  document.getElementById('cv-name').textContent = C.name || '';
-  document.getElementById('cv-title').textContent = C.title || '';
-  document.getElementById('cv-based').textContent = C.basedIn || '';
-  document.getElementById('cv-disc').textContent = C.disciplines || '';
-  document.getElementById('cv-years').textContent = C.yearsRange || '';
+  // ── CV injection ──
+  // Name
+  const nameEl = document.getElementById('dyn-name');
+  if(nameEl && C.name){
+    const parts = C.name.split(' ');
+    nameEl.innerHTML = parts[0]+'<br>'+parts.slice(1).join(' ')+'<span class="text-white/30">.</span>';
+  }
 
-  // Summary
-  const sum = document.getElementById('cv-summary');
-  sum.innerHTML = `<p>${C.profileParagraph1||''}</p><p style="margin-top:12px;font-size:.9rem;color:rgba(255,255,255,.6)">${C.profileParagraph2||''}</p>`;
+  // Meta
+  if(C.basedIn) setText('dyn-based', C.basedIn);
+  if(C.disciplines) setHTML('dyn-disc', C.disciplines.replace(/·/g,'<br>'));
+  if(C.yearsRange) setText('dyn-years', C.yearsRange);
+
+  // Profile paragraphs
+  if(C.profileParagraph1) setHTML('dyn-p1', C.profileParagraph1);
+  const p2 = document.querySelector('#profile p.mt-6');
+  if(p2 && C.profileParagraph2) p2.textContent = C.profileParagraph2;
 
   // Stats
-  const stats = document.getElementById('cv-stats');
-  stats.innerHTML = (C.stats||[]).map(s=>`<div class="cv-stat"><div class="cv-stat-val">${s.value}</div><div class="cv-stat-label">${s.label}</div></div>`).join('');
+  const statsEl = document.getElementById('dyn-stats');
+  if(statsEl && C.stats){
+    statsEl.innerHTML = C.stats.map((s,i)=>\`
+      <div class="stat-card${i>0?' border-l':''}${i>1?' border-t sm:border-t-0':''}">
+        <div class="stat-label">${s.value}</div>
+        <div class="stat-sub">${s.label}</div>
+      </div>\`).join('');
+  }
+
+  // Marquee
+  const mq = document.getElementById('dyn-marquee');
+  if(mq && C.clientMarquee){
+    const spans = C.clientMarquee.map(b=>\`<span>${b}</span>\`).join(' ');
+    mq.innerHTML = \`<div class="marquee-content">${spans}</div><div class="marquee-content" aria-hidden="true">${spans}</div>\`;
+  }
 
   // Experience
-  const exp = document.getElementById('cv-experience');
-  exp.innerHTML = (C.experience||[]).map(e=>`
-    <div class="exp-entry">
-      <div class="exp-top"><div class="exp-role">${e.role}</div><div class="exp-period">${e.period}</div></div>
-      <div class="exp-company">${e.company}</div>
-      <ul class="exp-items">${(e.items||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
-      <div class="exp-tags">${(e.tags||[]).map(t=>`<span class="exp-tag">${t}</span>`).join('')}</div>
-    </div>`).join('');
+  const expEl = document.getElementById('dyn-exp');
+  if(expEl && C.experience){
+    expEl.innerHTML = C.experience.map((e,i,arr)=>\`
+      <article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 ${i<arr.length-1?'border-b border-white/10':''} group transition-all hover:bg-white/[0.02]">
+        <div class="col-span-12 sm:col-span-3 px-5 sm:px-8">
+          <div class="font-mono text-[10px] text-white/30">EXP_0${i+1}</div>
+          <div class="mono-label mt-1">${e.period}</div>
+        </div>
+        <div class="col-span-12 mt-6 sm:col-span-6 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">
+          <h3 class="exp-title font-mono uppercase tracking-tight">${e.role}</h3>
+          <div class="serif text-white/40 text-sm italic mt-1">${e.company}</div>
+          <ul class="exp-list mt-8">${(e.items||[]).map(it=>\`<li><span>${it}</span></li>\`).join('')}</ul>
+        </div>
+        <div class="col-span-12 mt-6 sm:col-span-3 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">
+          <div class="tag-cloud">${(e.tags||[]).map(t=>\`<span>[${t}]</span>\`).join('')}</div>
+        </div>
+      </article>\`).join('');
+    document.querySelectorAll('#dyn-exp .reveal-mech').forEach(el=>{
+      setTimeout(()=>el.classList.add('visible'),100);
+    });
+  }
 
   // Education
-  const edu = document.getElementById('cv-education');
-  edu.innerHTML = (C.education||[]).map(e=>`
-    <div class="edu-entry"><div class="edu-period">${e.period}</div><div><div class="edu-title">${e.title}</div><div class="edu-inst">${e.institution}</div></div></div>`).join('');
+  const eduEl = document.getElementById('dyn-edu');
+  if(eduEl && C.education){
+    eduEl.innerHTML = C.education.map((e,i,arr)=>\`
+      <div class="edu-item reveal-mech grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">
+        <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_0${i+1}</div>
+        <div class="col-span-8 sm:col-span-3 mono-label">${e.period}</div>
+        <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
+          <div class="text-white font-mono text-sm uppercase tracking-tight">${e.title}</div>
+          <div class="serif text-[11px] text-white/30 italic">${e.institution}</div>
+        </div>
+      </div>\`).join('');
+  }
 
   // Languages
-  const lang = document.getElementById('cv-languages');
-  lang.innerHTML = (C.languages||[]).map(l=>`
-    <div class="lang-entry"><span class="lang-name">${l.name}</span><span class="lang-level">${l.level}</span></div>`).join('');
+  const langEl = document.getElementById('dyn-lang');
+  if(langEl && C.languages){
+    const lvlMap = {Native:100,'Professional / B2+':85,'Conversational / B1':55};
+    langEl.innerHTML = \`<div class="label-tiny mb-6">Languages</div><div class="space-y-6">\` +
+      C.languages.map(l=>{
+        const pct = lvlMap[l.level] || 70;
+        return \`<div class="lang-bar" data-val="${pct}">
+          <div class="flex justify-between text-sm mb-2"><span>${l.name}</span><span class="label-tiny">${l.level}</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+        </div>\`;}).join('') + '</div>';
+  }
 
   // Skills
-  const skills = document.getElementById('cv-skills');
-  const sk = C.skills||{};
-  skills.innerHTML = Object.keys(sk).map(cat=>`
-    <div><div class="skill-cat-title">${cat}</div><ul class="skill-cat-list">${sk[cat].map(s=>`<li>${s}</li>`).join('')}</ul></div>`).join('');
+  const skillsEl = document.getElementById('dyn-skills');
+  if(skillsEl && C.skills){
+    const cats = Object.keys(C.skills);
+    const borders = ['lg:border-r border-white/10','lg:border-r border-white/10 sm:border-l lg:sm:border-l-0','lg:border-r border-white/10 border-t lg:border-t-0','border-t lg:border-t-0 sm:border-l border-white/10'];
+    skillsEl.innerHTML = cats.map((cat,i)=>\`
+      <div class="skill-group reveal-mech ${borders[i]||'border-white/10'} p-10">
+        <div class="flex justify-between items-center mb-8">
+          <div class="label-tiny font-mono">${cat.toUpperCase().replace(/ /g,'_')}</div>
+          <div class="mono-label text-white/10">CAT_0${i+1}</div>
+        </div>
+        <ul class="skill-list font-mono text-[11px] uppercase space-y-4">
+          ${C.skills[cat].map(s=>\`<li>${s}</li>\`).join('')}
+        </ul>
+      </div>\`).join('');
+  }
 
   // Contact
-  const contact = document.getElementById('cv-contact');
-  contact.innerHTML = `
-    <div><div class="contact-item-label">Email</div><div class="contact-item-value"><a href="mailto:${C.contactEmail||''}">${C.contactEmail||''}</a></div></div>
-    <div><div class="contact-item-label">WhatsApp</div><div class="contact-item-value"><a href="https://wa.me/${C.contactWhatsApp||''}">${C.contactWhatsApp||''}</a></div></div>
-    <div><div class="contact-item-label">Instagram</div><div class="contact-item-value"><a href="https://instagram.com/${C.socialInstagram||''}">@${C.socialInstagram||''}</a></div></div>
-    <div><div class="contact-item-label">LinkedIn</div><div class="contact-item-value"><a href="https://linkedin.com/in/${C.socialLinkedIn||''}">/in/${C.socialLinkedIn||''}</a></div></div>
-    <div><div class="contact-item-label">Behance</div><div class="contact-item-value"><a href="https://behance.net/${C.socialBehance||''}">${C.socialBehance||''}</a></div></div>
-    <div><div class="contact-item-label">Portfolio</div><div class="contact-item-value"><a href="https://pelimotion.com">pelimotion.com</a></div></div>`;
+  const emailEl = document.getElementById('dyn-email');
+  if(emailEl && C.contactEmail){
+    emailEl.href = 'mailto:'+C.contactEmail;
+    emailEl.textContent = C.contactEmail;
+  }
 
-  // Cover Letter
-  document.getElementById('cl-name').textContent = C.name || '';
-  document.getElementById('cl-subtitle').textContent = (CL.targetRole||'Creative Director') + (CL.targetCompany ? ' — '+CL.targetCompany : '');
-  document.getElementById('cl-role').textContent = 'Applying for: '+(CL.targetRole||'Creative Director');
-  document.getElementById('cl-location').textContent = C.basedIn||'';
-  const now = new Date();
-  document.getElementById('cl-date').textContent = now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  document.getElementById('cl-greeting').textContent = CL.greeting||'Dear Hiring Team,';
-  document.getElementById('cl-opening').textContent = CL.opening||'';
-  document.getElementById('cl-body1').textContent = CL.body1||'';
-  document.getElementById('cl-body2').textContent = CL.body2||'';
-  document.getElementById('cl-body3').textContent = CL.body3||'';
-  document.getElementById('cl-closing').textContent = CL.closing||'';
-  document.getElementById('cl-signoff').textContent = CL.signoff||'';
-  document.getElementById('cl-sname').textContent = C.name||'';
-  document.getElementById('cl-stitle').textContent = C.title||'';
+  // ── Cover Letter injection ──
+  if(C.name) setText('cl-name', C.name);
+  setText('cl-subtitle', (CL.targetRole||'Creative Director')+(CL.targetCompany?' — '+CL.targetCompany:''));
+  setText('cl-role', 'For: '+(CL.targetRole||'Creative Director'));
+  setText('cl-location', C.basedIn||'');
+  setText('cl-date', new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}));
+  setText('cl-greeting', CL.greeting||'Dear Hiring Team,');
+  setText('cl-opening', CL.opening||'');
+  setText('cl-body1', CL.body1||'');
+  setText('cl-body2', CL.body2||'');
+  setText('cl-body3', CL.body3||'');
+  setText('cl-closing', CL.closing||'');
+  setText('cl-signoff', CL.signoff||'');
+  setText('cl-sname', C.name||'');
+  setText('cl-stitle', C.title||'');
+  const linksEl = document.getElementById('cl-links');
+  if(linksEl){
+    linksEl.innerHTML = [
+      ['Portfolio','https://pelimotion.com'],
+      ['LinkedIn','https://linkedin.com/in/'+(C.socialLinkedIn||'')],
+      ['Instagram','https://instagram.com/'+(C.socialInstagram||'')],
+      ['Email','mailto:'+(C.contactEmail||'')]
+    ].map(([l,h])=>\`<a href="${h}" target="_blank">${l}</a>\`).join('');
+  }
 
-  const links = document.getElementById('cl-links');
-  links.innerHTML = `
-    <a class="cl-link" href="https://pelimotion.com">Portfolio</a>
-    <a class="cl-link" href="https://linkedin.com/in/${C.socialLinkedIn||''}">LinkedIn</a>
-    <a class="cl-link" href="https://instagram.com/${C.socialInstagram||''}">Instagram</a>
-    <a class="cl-link" href="mailto:${C.contactEmail||''}">${C.contactEmail||''}</a>`;
+  function setText(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+  function setHTML(id, val){ const el=document.getElementById(id); if(el) el.innerHTML=val; }
+})();
+
+function showCV(){
+  document.getElementById('page-cv').style.display='';
+  document.getElementById('page-cl').style.display='none';
+  document.getElementById('btn-cv').style.cssText+='color:#fff;border-bottom:2px solid #34d399';
+  document.getElementById('btn-cl').style.cssText+='color:rgba(255,255,255,.4);border-bottom:2px solid transparent';
+  document.getElementById('btn-pdf').setAttribute('data-mode','cv');
 }
-
-function switchTab(tab){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+tab).classList.add('active');
-  event.target.classList.add('active');
+function showCL(){
+  document.getElementById('page-cv').style.display='none';
+  document.getElementById('page-cl').style.display='block';
+  document.getElementById('btn-cl').style.cssText+='color:#fff;border-bottom:2px solid #34d399';
+  document.getElementById('btn-cv').style.cssText+='color:rgba(255,255,255,.4);border-bottom:2px solid transparent';
+  document.getElementById('btn-pdf').setAttribute('data-mode','cl');
 }
-
-function downloadPDF(which){
-  const el = document.getElementById('page-'+which);
-  const name = which==='cv' ? 'Felipe_Conceicao_CV' : 'Felipe_Conceicao_CoverLetter';
-
-  // Temporarily show the page if hidden
-  const wasHidden = !el.classList.contains('active');
-  if(wasHidden) el.style.display='block';
-
-  const opt = {
-    margin: [12, 14, 12, 14],
-    filename: name+'.pdf',
-    image: {type:'jpeg', quality:.98},
-    html2canvas: {scale:2, useCORS:true, backgroundColor:'#000000'},
-    jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
-    pagebreak: {mode:['avoid-all','css','legacy']}
-  };
-
-  html2pdf().set(opt).from(el).save().then(()=>{
-    if(wasHidden) el.style.display='';
-  });
-}
-
-// Keyboard: Backspace to go back
-document.addEventListener('keydown', e=>{
-  if(e.key==='Backspace' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){
-    e.preventDefault();
-    window.history.back();
+document.addEventListener('keydown',e=>{
+  if(e.key==='Backspace'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){
+    e.preventDefault(); history.back();
   }
 });
-
-loadData();
 </script>
 </body>
+
 </html>
