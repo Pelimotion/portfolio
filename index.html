@@ -9,210 +9,158 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#f4f4f2}
+html,body{width:100%;height:100%;overflow:hidden;background:#f4f4f2;color:#111}
 body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}
 
-#flow-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-
 .hub{
-    position:relative;z-index:10;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    height:100vh;width:100%;gap:32px;padding:40px;
-    pointer-events:none;
+    display:flex;
+    height:100vh;width:100vw;
 }
-.hub>*{pointer-events:auto}
 
-.hub-logo{width:64px;height:64px}
+.hub-content{
+    flex:1;
+    display:flex;flex-direction:column;
+    justify-content:space-between;
+    padding:3rem;
+    border-right:2px solid #111;
+    position:relative;z-index:10;
+}
+
+.hub-header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+}
+.hub-logo{width:48px;height:48px;display:block;}
 .hub-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.hub-footer{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#111;}
 
-.hub-brand{text-align:center}
+.hub-middle{
+    margin-top:auto;
+}
+
+.hub-brand{margin-bottom:3rem;}
 .hub-brand-name{
     font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-    font-size:clamp(11px,1.8vw,17px);font-weight:900;
-    letter-spacing:.28em;text-transform:uppercase;color:#111;
+    font-size:clamp(3rem,6vw,5.5rem);font-weight:900;
+    letter-spacing:-.04em;text-transform:uppercase;color:#111;line-height:.85;
 }
-.hub-brand-sub{font-size:7px;font-weight:500;letter-spacing:.38em;text-transform:uppercase;color:#aaa;margin-top:5px}
+.hub-brand-sub{
+    font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:#111;
+    margin-top:1.5rem;display:inline-block;border:2px solid #111;padding:8px 12px;
+}
 
-.hub-nav{display:flex;gap:0;border:2px solid #111}
-@media(max-width:500px){.hub-nav{flex-direction:column}}
-
+.hub-nav{
+    display:flex;flex-direction:column;gap:0;border:2px solid #111;width:100%;max-width:360px;
+}
 .hub-btn{
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    width:170px;height:100px;
-    background:#f4f4f2;text-decoration:none;color:#111;border:none;
-    gap:5px;transition:background .15s,color .15s;
+    display:flex;justify-content:space-between;align-items:center;
+    height:64px;padding:0 24px;
+    background:transparent;color:#111;text-decoration:none;
+    transition:background .2s,color .2s;
 }
-.hub-btn:not(:last-child){border-right:2px solid #111}
-@media(max-width:500px){.hub-btn:not(:last-child){border-right:none;border-bottom:2px solid #111}}
+.hub-btn:not(:last-child){border-bottom:2px solid #111}
 .hub-btn:hover,.hub-btn:focus-visible{background:#111;color:#f4f4f2;outline:none}
-.hub-btn .t{font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;line-height:1}
-.hub-btn .s{font-size:7px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.4}
+.hub-btn .t{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;}
+.hub-btn .s{font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;opacity:.6;}
 
-.hub-footer{font-size:7px;letter-spacing:.28em;text-transform:uppercase;color:#ccc}
+.hub-media{
+    flex:1.2;
+    position:relative;
+    background:#000;
+    overflow:hidden;
+}
+.hub-media video{
+    position:absolute;inset:0;
+    width:100%;height:100%;object-fit:cover;
+    opacity:0.95;
+    transition:transform 6s ease-out;
+}
+.hub-media:hover video{
+    transform:scale(1.03);
+}
+
+@media(max-width:900px){
+    .hub{flex-direction:column-reverse;overflow-y:auto;height:auto;min-height:100vh;}
+    .hub-content{border-right:none;padding:2rem;min-height:60vh;justify-content:center;}
+    .hub-media{min-height:50vh;flex:none;border-bottom:2px solid #111;}
+    .hub-brand{margin-top:2rem;}
+    .hub-brand-name{font-size:clamp(2.5rem,10vw,4rem);}
+    .hub-nav{max-width:100%;}
+    html,body{overflow-y:auto;}
+}
 
 /* cursor */
 *,*::before,*::after{cursor:none!important}
 @media(hover:none),(pointer:coarse){*,*::before,*::after{cursor:auto!important}}
 #plm-cursor{
     position:fixed;z-index:99999;pointer-events:none;
-    width:9px;height:9px;border-radius:50%;background:#111;
+    width:12px;height:12px;border:2px solid #111;border-radius:50%;background:transparent;
     transform:translate(-50%,-50%);top:0;left:0;
-    transition:width .1s,height .1s,opacity .1s;
+    transition:width .2s,height .2s,background .2s,border-color .2s;
 }
-#plm-cursor.hover{width:16px;height:16px;opacity:.35}
+#plm-cursor.hover{
+    width:24px;height:24px;background:#111;border-color:#111;mix-blend-mode:difference;
+}
+#plm-cursor.hover-light{
+    background:#f4f4f2;border-color:#f4f4f2;
+}
 @media(hover:none),(pointer:coarse){#plm-cursor{display:none}}
 </style>
 </head>
 <body>
 
-<canvas id="flow-canvas" aria-hidden="true"></canvas>
-
 <main class="hub" aria-label="Pelimotion hub">
-    <a href="V1/portfolio/index.html" class="hub-logo" aria-label="Pelimotion">
-        <img src="logo.png" alt="PLM">
-    </a>
-    <div class="hub-brand" aria-hidden="true">
-        <div class="hub-brand-name">Pelimotion</div>
-        <div class="hub-brand-sub">Motion Branding &amp; Creative Direction</div>
+    <div class="hub-content">
+        <div class="hub-header">
+            <a href="V1/portfolio/index.html" class="hub-logo" aria-label="Pelimotion">
+                <img src="logo.png" alt="PLM">
+            </a>
+            <div class="hub-footer">&copy; 2026</div>
+        </div>
+        
+        <div class="hub-middle">
+            <div class="hub-brand" aria-hidden="true">
+                <div class="hub-brand-name">Pelimotion</div>
+                <div class="hub-brand-sub">Motion Branding &amp; Direction</div>
+            </div>
+            
+            <nav class="hub-nav" aria-label="Navigation">
+                <a href="V1/portfolio/index.html" class="hub-btn" id="btn-portfolio">
+                    <span class="t">Portfolio</span><span class="s">Motion Works</span>
+                </a>
+                <a href="Curriculum/index.html" class="hub-btn" id="btn-curriculum">
+                    <span class="t">Curriculum</span><span class="s">Creative</span>
+                </a>
+            </nav>
+        </div>
     </div>
-    <nav class="hub-nav" aria-label="Navigation">
-        <a href="V1/portfolio/index.html" class="hub-btn" id="btn-portfolio">
-            <span class="t">Portfolio</span><span class="s">Motion Works</span>
-        </a>
-        <a href="Curriculum/index.html" class="hub-btn" id="btn-curriculum">
-            <span class="t">Curriculum</span><span class="s">Creative Direction</span>
-        </a>
-    </nav>
-    <p class="hub-footer">&copy; 2026 Pelimotion</p>
+    
+    <div class="hub-media">
+        <video autoplay loop muted playsinline>
+            <source src="Medias Portfolio/Pelimotion - Reel 2021.mp4" type="video/mp4">
+        </video>
+    </div>
 </main>
 
 <div id="plm-cursor" aria-hidden="true"></div>
 
 <script>
-// ── ORGANIC FLOW FIELD ART ──────────────────────────────────────────────────
-// Tracers follow a curling vector field defined by layered sin/cos
-// Trails rendered as smooth bezier curves → organic, detailed, dynamic
-// White bg, dark gray strokes only. No fills, no gradients, no shadows.
-
-const canvas = document.getElementById('flow-canvas');
-const ctx    = canvas.getContext('2d');
-let W, H, t = 0;
-const mouse  = {x: W/2, y: H/2, active: false};
-
-function resize(){
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    mouse.x = W/2; mouse.y = H/2;
-}
-resize();
-window.addEventListener('resize', resize, {passive:true});
-window.addEventListener('mousemove', e=>{
-    mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
-},{passive:true});
-
-// Flow field angle at point (x,y) at time t
-// Layered frequencies produce complex organic curvature
-function fieldAngle(x, y, time){
-    const nx = x / W, ny = y / H;
-    return (
-        Math.sin(nx * 4.2 + time * 0.38) * Math.cos(ny * 3.1 + time * 0.22) * Math.PI * 1.4
-      + Math.cos(nx * 2.7 - time * 0.17 + ny * 1.8) * Math.PI * 0.6
-      + Math.sin((nx + ny) * 3.5 + time * 0.29) * Math.PI * 0.4
-      + Math.cos(ny * 5.1 - time * 0.12) * Math.PI * 0.2
-    );
-}
-
-// Mouse creates a local disturbance in the field
-function mouseInfluence(x, y){
-    const dx = x - mouse.x, dy = y - mouse.y;
-    const d  = Math.sqrt(dx*dx + dy*dy);
-    const r  = 180;
-    if(!mouse.active || d > r || d < 1) return 0;
-    return (1 - d/r) * Math.PI * 0.9;
-}
-
-class Tracer {
-    constructor(){
-        this._init();
-    }
-    _init(){
-        this.x     = Math.random() * W;
-        this.y     = Math.random() * H;
-        this.speed = 0.6 + Math.random() * 1.1;
-        this.pts   = [];
-        this.maxPts= 55 + Math.floor(Math.random() * 80);
-        this.age   = 0;
-        this.life  = this.maxPts + 30 + Math.floor(Math.random() * 60);
-        // Stroke visual character: some thin/faint, some bolder/darker
-        const dark = Math.random() < 0.55;
-        const v    = dark ? 15 + Math.random()*55 : 90 + Math.random()*100;
-        this.strokeVal = v;
-        this.alpha = dark ? 0.12 + Math.random()*0.22 : 0.05 + Math.random()*0.10;
-        this.lw    = dark ? 0.5 + Math.random()*0.8  : 0.4 + Math.random()*0.5;
-    }
-    update(){
-        const a = fieldAngle(this.x, this.y, t) + mouseInfluence(this.x, this.y);
-        this.x += Math.cos(a) * this.speed;
-        this.y += Math.sin(a) * this.speed;
-        this.pts.push({x: this.x, y: this.y});
-        if(this.pts.length > this.maxPts) this.pts.shift();
-        this.age++;
-        if(this.age > this.life || this.x < -80 || this.x > W+80 || this.y < -80 || this.y > H+80){
-            this._init();
-        }
-    }
-    draw(){
-        const n = this.pts.length;
-        if(n < 4) return;
-        ctx.beginPath();
-        ctx.moveTo(this.pts[0].x, this.pts[0].y);
-        // Smooth quadratic bezier through all points
-        for(let i=1; i<n-2; i++){
-            const mx = (this.pts[i].x + this.pts[i+1].x) * 0.5;
-            const my = (this.pts[i].y + this.pts[i+1].y) * 0.5;
-            ctx.quadraticCurveTo(this.pts[i].x, this.pts[i].y, mx, my);
-        }
-        ctx.quadraticCurveTo(
-            this.pts[n-2].x, this.pts[n-2].y,
-            this.pts[n-1].x, this.pts[n-1].y
-        );
-        const v = this.strokeVal;
-        ctx.strokeStyle = `rgba(${v},${v},${v},${this.alpha})`;
-        ctx.lineWidth   = this.lw;
-        ctx.lineCap     = 'round';
-        ctx.lineJoin    = 'round';
-        ctx.stroke();
-    }
-}
-
-// Adaptive tracer count
-function tracerCount(){ return Math.min(110, Math.max(40, Math.round(W * H / 9000))); }
-let tracers = [];
-function buildTracers(){ tracers = Array.from({length: tracerCount()}, ()=>new Tracer()); }
-buildTracers();
-window.addEventListener('resize', ()=>{ buildTracers(); }, {passive:true});
-
-// Subtle fade gives "trail persistence" — makes the art denser and more organic
-const FADE_ALPHA = 0.04; // smaller = more persistent trails
-
-function loop(){
-    // Very light fade to white (not full clear) → trails accumulate softly
-    ctx.fillStyle = `rgba(244,244,242,${FADE_ALPHA})`;
-    ctx.fillRect(0, 0, W, H);
-
-    tracers.forEach(tr=>{ tr.update(); tr.draw(); });
-    t += 0.004;
-    requestAnimationFrame(loop);
-}
-loop();
-
-// ── CURSOR ─────────────────────────────────────────────────────────────────
 const cur = document.getElementById('plm-cursor');
 if(cur && window.matchMedia('(hover:hover)').matches){
     window.addEventListener('mousemove', e=>{
         cur.style.left = e.clientX+'px';
         cur.style.top  = e.clientY+'px';
-        cur.classList.toggle('hover', !!e.target.closest('a,button,.hub-btn'));
+        
+        const isHovering = !!e.target.closest('a,button,.hub-btn');
+        const isOverMedia = !!e.target.closest('.hub-media');
+        
+        cur.classList.toggle('hover', isHovering);
+        cur.classList.toggle('hover-light', isOverMedia && isHovering);
+        
+        if(isOverMedia && !isHovering){
+            cur.style.borderColor = '#f4f4f2';
+        } else if(!isHovering) {
+            cur.style.borderColor = '#111';
+        }
     },{passive:true});
 }
 </script>

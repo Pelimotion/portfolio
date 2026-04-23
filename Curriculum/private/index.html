@@ -30,25 +30,28 @@
 <style>
 @media print{
   #priv-bar{display:none!important}
-  #page-cl{display:block!important}
   body{background:#fff!important;color:#000!important}
   .hero-title,.section-title,.exp-title,.contact-cta{color:#000!important}
-  .text-white\/85,.text-white\/65,.text-white\/70{color:#333!important}
-  .text-white\/40,.text-white\/30,.text-white\/20,.mono-label,.label-tiny{color:#666!important}
+  .text-white\/85,.text-white\/65,.text-white\/70,.text-white\/90{color:#333!important}
+  .text-white\/40,.text-white\/30,.text-white\/20,.text-white\/50,.mono-label,.label-tiny{color:#666!important}
   .hairline{border-color:#ddd!important}
+  .border-white\/10,.border-white\/5{border-color:#eee!important}
+  .bg-black\/90{background:transparent!important}
+  section, article, .skill-group { page-break-inside: avoid; }
 }
-#page-cl a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
-#page-cl a:hover{border-color:rgba(255,255,255,.6)}
+#cl-links a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
+#cl-links a:hover{border-color:rgba(255,255,255,.6)}
 </style>
 </head>
 
 <body class="bg-black text-white selection:bg-white/20">
     <!-- Private Tab Bar -->
-    <div id="priv-bar" style="position:sticky;top:0;z-index:100;background:rgba(0,0,0,.96);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 clamp(1rem,4vw,3rem);gap:0">
-      <span style="font-family:monospace;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-right:auto">[PRIVATE]</span>
-      <button onclick="showCV()" id="btn-cv" style="font-family:monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:#fff;background:none;border:none;border-bottom:2px solid #34d399;padding:12px 18px;cursor:pointer">CV</button>
-      <button onclick="showCL()" id="btn-cl" style="font-family:monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);background:none;border:none;border-bottom:2px solid transparent;padding:12px 18px;cursor:pointer">COVER LETTER</button>
-      <button onclick="window.print()" style="font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);background:none;border:1px solid rgba(255,255,255,.15);padding:8px 14px;margin-left:16px;cursor:pointer" id="btn-pdf">↓ PDF</button>
+    <div id="priv-bar" class="sticky top-0 z-[100] bg-black border-b border-white/10 flex items-center px-4 sm:px-8">
+      <span class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block">[PRIVATE_ACCESS]</span>
+      <div class="flex">
+          <button onclick="showCV()" id="btn-cv" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white border-b-2 border-white">CV_RESUME</button>
+          <button onclick="showCL()" id="btn-cl" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">COVER_LETTER</button>
+      </div>
     </div>
     <!-- CV Page -->
     <div id="page-cv">
@@ -472,29 +475,54 @@
 
     </div><!-- end page-cv -->
     <!-- Cover Letter Page (hidden by default) -->
-    <div id="page-cl" style="display:none;max-width:900px;margin:0 auto;padding:clamp(2rem,6vw,5rem) clamp(1.5rem,5vw,4rem) 100px">
-      <div style="margin-bottom:48px">
-        <div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.3);font-family:monospace;margin-bottom:8px">COVER LETTER</div>
-        <h1 id="cl-name" style="font-size:clamp(2rem,8vw,4rem);font-weight:900;line-height:.88;letter-spacing:-.04em"></h1>
-        <p id="cl-subtitle" style="font-family:'Instrument Serif',serif;font-style:italic;color:rgba(255,255,255,.45);margin-top:10px;font-size:1rem"></p>
-        <div style="display:flex;flex-wrap:wrap;gap:20px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3)">
-          <span id="cl-role"></span><span id="cl-location"></span><span id="cl-date"></span>
-        </div>
-      </div>
-      <div style="max-width:680px">
-        <p id="cl-greeting" style="font-size:1.1rem;font-weight:600;margin-bottom:28px"></p>
-        <p id="cl-opening" style="font-size:clamp(1rem,2vw,1.1rem);line-height:1.8;color:rgba(255,255,255,.9);margin-bottom:20px"></p>
-        <p id="cl-body1" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
-        <p id="cl-body2" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
-        <p id="cl-body3" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
-        <p id="cl-closing" style="font-size:clamp(.9rem,1.8vw,1rem);line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:20px"></p>
-        <div style="margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)">
-          <div id="cl-signoff" style="font-family:'Instrument Serif',serif;font-style:italic;color:rgba(255,255,255,.6);margin-bottom:8px;font-size:1rem"></div>
-          <div id="cl-sname" style="font-size:1.2rem;font-weight:700"></div>
-          <div id="cl-stitle" style="font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:4px"></div>
-          <div id="cl-links" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px"></div>
-        </div>
-      </div>
+    <div id="page-cl" style="display:none;" class="min-h-screen">
+        <header class="hairline border-b sticky top-0 z-50 bg-black/90 backdrop-blur-md">
+            <div class="container-custom flex items-center justify-between py-3">
+                <div class="nav-label flex-1 font-mono hover:opacity-70 transition-opacity">
+                    <span class="text-white/40">[</span>COVER_LETTER<span class="text-white/40">]</span>
+                    <span class="hidden lg:inline text-white/20">— PRIVATE_REQ</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="hairline border-b">
+            <div class="container-custom py-20 sm:py-28">
+                <div class="label-tiny">COVER LETTER</div>
+                <h1 id="cl-name" class="hero-title mt-6">Felipe Conceição<span class="text-white/30">.</span></h1>
+                <p id="cl-subtitle" class="serif text-white/50 italic mt-6 text-xl max-w-xl">Creative Director — Motion Branding & Artistic Direction</p>
+                
+                <div class="flex flex-wrap gap-6 mt-12 pt-6 border-t border-white/10 font-mono text-[10px] uppercase tracking-widest text-white/40">
+                    <span id="cl-role">For: Creative / Motion Director</span>
+                    <span id="cl-location">Rio de Janeiro, BR</span>
+                    <span id="cl-date">April 2026</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="container-custom py-14 sm:py-20 grid grid-cols-12 gap-10">
+            <div class="col-span-12 lg:col-span-8">
+                <p id="cl-greeting" class="text-xl sm:text-2xl font-medium mb-10 text-white/90">Dear Hiring Team,</p>
+                <div class="space-y-8 text-white/70 text-base sm:text-lg leading-relaxed">
+                    <p id="cl-opening">The most compelling brands today aren't just seen; they are felt. I have spent the last eight years operating at the intersection of strategy and motion, building kinetic visual systems that define how global brands move, scale, and connect with their audiences.</p>
+                    <p id="cl-body1">As a Creative Director at Pelimotion Hub, I lead the development of high-end motion pipelines and immersive artistic experiences. My background as a musician heavily influences my approach: I treat motion design as a rhythmic discipline, where pacing, weight, and silence are just as critical as the visuals themselves. This philosophy has allowed me to successfully direct campaigns for tier-one clients across automotive, finance, and culture.</p>
+                    <p id="cl-body2">Modern brand direction requires more than aesthetic excellence; it demands scalable systems. I have pioneered AI-integrated generative video workflows, reducing friction in production pipelines while elevating the creative ceiling. Whether conceptualizing a global broadcast campaign or orchestrating a live projection mapping experience, I focus on delivering work that is both culturally resonant and structurally robust.</p>
+                    <p id="cl-body3">I am looking to bring this systemic approach to motion branding to your team. I thrive in environments that challenge the status quo and demand a high degree of technical and conceptual rigor.</p>
+                    <p id="cl-closing">I would welcome the opportunity to discuss how my vision for dynamic, rhythm-driven brand systems aligns with your upcoming objectives. Let's build something that moves.</p>
+                </div>
+                
+                <div class="mt-20 pt-10 border-t border-white/10">
+                    <div id="cl-signoff" class="serif text-white/50 italic text-xl mb-4">Sincerely,</div>
+                    <div id="cl-sname" class="text-2xl font-bold text-white">Felipe Conceição</div>
+                    <div id="cl-stitle" class="font-mono text-[10px] uppercase tracking-widest text-white/40 mt-2">CREATIVE DIRECTOR</div>
+                    
+                    <div id="cl-links" class="flex flex-wrap gap-4 mt-8">
+                        <a href="https://pelimotion.com" target="_blank">Portfolio</a>
+                        <a href="https://linkedin.com/in/felipeconceicao" target="_blank">LinkedIn</a>
+                        <a href="mailto:conceicao.felipe@gmail.com">Email</a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script src="../script.js"></script>
@@ -651,16 +679,14 @@
 function showCV(){
   document.getElementById('page-cv').style.display='';
   document.getElementById('page-cl').style.display='none';
-  document.getElementById('btn-cv').style.cssText+='color:#fff;border-bottom:2px solid #34d399';
-  document.getElementById('btn-cl').style.cssText+='color:rgba(255,255,255,.4);border-bottom:2px solid transparent';
-  document.getElementById('btn-pdf').setAttribute('data-mode','cv');
+  document.getElementById('btn-cv').className='font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white border-b-2 border-white';
+  document.getElementById('btn-cl').className='font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70';
 }
 function showCL(){
   document.getElementById('page-cv').style.display='none';
   document.getElementById('page-cl').style.display='block';
-  document.getElementById('btn-cl').style.cssText+='color:#fff;border-bottom:2px solid #34d399';
-  document.getElementById('btn-cv').style.cssText+='color:rgba(255,255,255,.4);border-bottom:2px solid transparent';
-  document.getElementById('btn-pdf').setAttribute('data-mode','cl');
+  document.getElementById('btn-cl').className='font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white border-b-2 border-white';
+  document.getElementById('btn-cv').className='font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70';
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='Backspace'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){
