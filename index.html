@@ -8,93 +8,99 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden}
-body{background:#f5f5f5;font-family:'Space Grotesk','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}
+html,body{width:100%;height:100%;overflow:hidden;background:#f5f5f5}
+body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}
 
-/* ── FLOATING IMAGES ───────────────────────────────────────── */
-.float-scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.float-img{
-    position:absolute;
-    width:220px;
-    will-change:transform;
-    filter:grayscale(30%) contrast(1.05);
-    transition:filter .4s;
+/* ── PARTICLE CANVAS ────────────────────────────────────── */
+#particle-canvas{
+    position:fixed;inset:0;z-index:0;
+    width:100%;height:100%;
     pointer-events:none;
-    border:0;
-    box-shadow:0 8px 40px rgba(0,0,0,.12);
-}
-/* Each image gets unique position & animation via inline style */
-
-/* ── LIQUID CANVAS ─────────────────────────────────────────── */
-#liquid-canvas{
-    position:fixed;inset:0;z-index:1;pointer-events:none;
-    /* mix-blend-mode:multiply keeps it brutaliste on white */
 }
 
-/* ── CONTENT ───────────────────────────────────────────────── */
+/* ── HUB CENTER ─────────────────────────────────────────── */
 .hub{
     position:relative;z-index:10;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    height:100vh;width:100%;gap:40px;padding:40px;
+    height:100vh;width:100%;gap:36px;padding:40px;
+    pointer-events:none; /* canvas receives mouse */
 }
+.hub > *{pointer-events:auto}
 
 /* Logo */
-.hub-logo{width:88px;height:88px;display:block}
+.hub-logo{width:72px;height:72px;display:block;transition:opacity .3s}
 .hub-logo img{width:100%;height:100%;object-fit:contain;display:block}
 
-/* Nav buttons — brutalist bar style */
-.hub-nav{display:flex;gap:0;border:2.5px solid #050505;background:#f5f5f5}
+/* Brand name above buttons */
+.hub-brand{
+    text-align:center;line-height:1;
+}
+.hub-brand-name{
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-size:clamp(13px,2vw,20px);font-weight:900;
+    letter-spacing:.22em;text-transform:uppercase;color:#111;
+}
+.hub-brand-sub{
+    font-size:8px;font-weight:500;letter-spacing:.35em;
+    text-transform:uppercase;color:#999;margin-top:6px;
+}
+
+/* Nav buttons — brutalist bar */
+.hub-nav{display:flex;gap:0;border:2px solid #111;background:#f5f5f5}
 @media(max-width:540px){.hub-nav{flex-direction:column}}
 
 .hub-btn{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    width:200px;height:130px;
+    width:180px;height:110px;
     background:transparent;
-    text-decoration:none;color:#050505;
+    text-decoration:none;color:#111;
     border:none;position:relative;overflow:hidden;
     transition:background .18s,color .18s;
+    gap:6px;
 }
-.hub-btn:not(:last-child){border-right:2.5px solid #050505}
-@media(max-width:540px){.hub-btn:not(:last-child){border-right:none;border-bottom:2.5px solid #050505}}
-.hub-btn:hover{background:#050505;color:#f5f5f5}
-.hub-btn .btn-title{font-size:17px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;line-height:1}
-.hub-btn .btn-sub{font-size:8px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;margin-top:8px;opacity:.5}
+.hub-btn:not(:last-child){border-right:2px solid #111}
+@media(max-width:540px){.hub-btn:not(:last-child){border-right:none;border-bottom:2px solid #111}}
+.hub-btn:hover{background:#111;color:#f5f5f5}
+.hub-btn .btn-title{font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;line-height:1}
+.hub-btn .btn-sub{font-size:7px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.45}
 
 /* Footer */
-.hub-footer{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:#999;margin-top:8px}
+.hub-footer{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:#bbb}
 
-/* ── CURSOR ────────────────────────────────────────────────── */
+/* ── CURSOR ──────────────────────────────────────────────── */
 *,*::before,*::after{cursor:none!important}
 @media(hover:none),(pointer:coarse){*,*::before,*::after{cursor:auto!important}}
 #plm-cursor{
     position:fixed;z-index:99999;pointer-events:none;
     width:10px;height:10px;border-radius:50%;
-    background:#050505;border:none;
+    background:#111;
     transform:translate(-50%,-50%);top:0;left:0;
-    transition:width .1s,height .1s,opacity .1s;
+    transition:width .1s,height .1s,opacity .12s;
 }
-#plm-cursor.hover{width:20px;height:20px;opacity:.5}
+#plm-cursor.hover{width:18px;height:18px;opacity:.4}
 @media(hover:none),(pointer:coarse){#plm-cursor{display:none}}
 </style>
 </head>
 <body>
 
-<!-- FLOATING IMAGES SCENE -->
-<div class="float-scene" id="float-scene" aria-hidden="true"></div>
+<!-- PARTICLE CANVAS -->
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
 
-<!-- LIQUID CANVAS (brutaliste distortion) -->
-<canvas id="liquid-canvas" aria-hidden="true"></canvas>
-
-<!-- HUB CENTER CONTENT -->
-<main class="hub">
-    <a href="V1/portfolio/index.html" class="hub-logo" id="logo-link" aria-label="Pelimotion home">
-        <img src="logo.png" alt="Pelimotion PLM Logo">
+<!-- HUB CENTER -->
+<main class="hub" aria-label="Pelimotion hub">
+    <a href="V1/portfolio/index.html" class="hub-logo" aria-label="Pelimotion">
+        <img src="logo.png" alt="PLM logo">
     </a>
+
+    <div class="hub-brand">
+        <div class="hub-brand-name">Pelimotion</div>
+        <div class="hub-brand-sub">Motion Branding &amp; Creative Direction</div>
+    </div>
 
     <nav class="hub-nav" aria-label="Main navigation">
         <a href="V1/portfolio/index.html" class="hub-btn" id="btn-portfolio">
             <span class="btn-title">Portfolio</span>
-            <span class="btn-sub">Motion Systems</span>
+            <span class="btn-sub">Motion Works</span>
         </a>
         <a href="Curriculum/index.html" class="hub-btn" id="btn-curriculum">
             <span class="btn-title">Curriculum</span>
@@ -102,219 +108,151 @@ body{background:#f5f5f5;font-family:'Space Grotesk','Helvetica Neue',sans-serif;
         </a>
     </nav>
 
-    <p class="hub-footer">&copy; 2026 Pelimotion. All rights reserved.</p>
+    <p class="hub-footer">&copy; 2026 Pelimotion</p>
 </main>
 
 <!-- CURSOR -->
 <div id="plm-cursor" aria-hidden="true"></div>
 
 <script>
-// ── IMAGES (15 unique CDN posters) ────────────────────────────────────────────
-const IMGS = [
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_50.jpg',
-    'https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_50.jpg'
-];
+// ── PARTICLE CONSTELLATION (inspired by ShaderToy 4l2XWK) ──────────────────
+// White canvas, dark gray particles, connecting lines based on proximity
+const canvas = document.getElementById('particle-canvas');
+const ctx    = canvas.getContext('2d');
 
-// ── BUILD FLOATING IMAGES ─────────────────────────────────────────────────────
-const scene = document.getElementById('float-scene');
-const VW = window.innerWidth, VH = window.innerHeight;
+let W, H, mouse = {x: -9999, y: -9999};
 
-// Positions scattered around the viewport, avoiding the center 360px circle
-const positions = [
-    {x:4, y:5,  w:200, angle:-6},
-    {x:68, y:2,  w:180, angle:4},
-    {x:82, y:12, w:210, angle:-3},
-    {x:-2, y:32, w:190, angle:8},
-    {x:74, y:38, w:200, angle:-5},
-    {x:5,  y:62, w:185, angle:6},
-    {x:70, y:65, w:195, angle:-7},
-    {x:20, y:80, w:175, angle:5},
-    {x:58, y:80, w:205, angle:-4},
-    {x:38, y:3,  w:160, angle:3},
-    {x:88, y:55, w:180, angle:-8},
-    {x:-3, y:50, w:170, angle:7},
-    {x:45, y:88, w:195, angle:-2},
-    {x:10, y:22, w:165, angle:5},
-    {x:78, y:78, w:175, angle:-6},
-];
-
-const floats = [];
-positions.forEach((p, i) => {
-    const img = document.createElement('img');
-    img.className = 'float-img';
-    img.src = IMGS[i];
-    img.alt = '';
-    img.loading = 'eager';
-    img.width = p.w;
-    img.style.width = p.w + 'px';
-
-    // Base position in vw/vh units (clamped so edge images stay partially visible)
-    const bx = (p.x / 100) * VW;
-    const by = (p.y / 100) * VH;
-
-    // Slow random drift parameters
-    const drift = {
-        dx: (Math.random() - 0.5) * 18,
-        dy: (Math.random() - 0.5) * 14,
-        rot: p.angle,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.0003 + Math.random() * 0.0002,
-    };
-
-    img.style.left = bx + 'px';
-    img.style.top  = by + 'px';
-    img.style.transform = `rotate(${p.angle}deg)`;
-    scene.appendChild(img);
-    floats.push({el: img, bx, by, drift});
-});
-
-// ── FLOAT ANIMATION LOOP ──────────────────────────────────────────────────────
-function animateFloats(t) {
-    floats.forEach(f => {
-        const s = Math.sin(t * f.drift.speed + f.drift.phase);
-        const c = Math.cos(t * f.drift.speed * 0.7 + f.drift.phase);
-        const x = f.bx + s * f.drift.dx;
-        const y = f.by + c * f.drift.dy;
-        const rot = f.drift.rot + s * 1.5;
-        f.el.style.transform = `translate(${s * f.drift.dx - f.drift.dx/2}px, ${c * f.drift.dy - f.drift.dy/2}px) rotate(${rot}deg)`;
-    });
-    requestAnimationFrame(animateFloats);
-}
-requestAnimationFrame(animateFloats);
-
-// ── LIQUID / DISTORTION CANVAS (brutaliste, black ink on white) ───────────────
-const canvas = document.getElementById('liquid-canvas');
-const ctx = canvas.getContext('2d');
-let W, H, mx = 0, my = 0, pmx = 0, pmy = 0;
-const drops = [];
-
-function resize() {
-    W = canvas.width = window.innerWidth;
+function resize(){
+    W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
 }
 resize();
-window.addEventListener('resize', resize);
+window.addEventListener('resize', resize, {passive:true});
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, {passive:true});
 
-// Each "ink drop" is a growing blot that fades out
-class Drop {
-    constructor(x, y, vx, vy) {
-        this.x = x; this.y = y;
-        this.vx = vx * 0.25; this.vy = vy * 0.25;
-        this.r = 0;
-        this.maxR = 60 + Math.random() * 80;
-        this.alpha = 0.28 + Math.random() * 0.12;
-        this.speed = 2 + Math.random() * 2;
-        this.type = Math.random() < 0.4 ? 'ring' : 'fill';
+// Config
+const N_BASE   = 80;    // base particle count
+const MAX_DIST = 160;   // max distance for drawing a line
+const MOUSE_R  = 200;   // mouse influence radius
+const MOUSE_PULL = 0.018; // how strongly mouse attracts particles
+const SPEED    = 0.45;  // base speed
+const DOT_R_MIN = 1.2;
+const DOT_R_MAX = 2.5;
+
+// Color palette: very subtle — near-black to mid-gray
+function randColor(){
+    const v = Math.round(30 + Math.random()*120); // 30-150 dark to mid gray
+    return `rgb(${v},${v},${v})`;
+}
+
+class Particle {
+    constructor(){
+        this.reset(true);
     }
-    get life() { return Math.max(0, 1 - this.r / this.maxR); }
-    update() {
-        this.r += this.speed;
-        this.x += this.vx * this.life;
-        this.y += this.vy * this.life;
+    reset(init){
+        this.x  = Math.random() * (W || window.innerWidth);
+        this.y  = Math.random() * (H || window.innerHeight);
+        this.vx = (Math.random()-.5)*SPEED;
+        this.vy = (Math.random()-.5)*SPEED;
+        this.r  = DOT_R_MIN + Math.random()*(DOT_R_MAX - DOT_R_MIN);
+        this.color = randColor();
+        this.alpha = 0.35 + Math.random()*0.55;
     }
-    draw(ctx) {
-        if (this.life <= 0) return;
-        ctx.save();
-        ctx.globalAlpha = this.alpha * this.life;
-        if (this.type === 'ring') {
+    update(){
+        // Gentle mouse attraction
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < MOUSE_R && dist > 1){
+            this.vx += (dx/dist)*MOUSE_PULL;
+            this.vy += (dy/dist)*MOUSE_PULL;
+        }
+
+        // Speed cap
+        const spd = Math.sqrt(this.vx*this.vx+this.vy*this.vy);
+        if(spd > SPEED*2){ this.vx *= .92; this.vy *= .92; }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Wrap at edges
+        if(this.x < -10) this.x = W+10;
+        if(this.x > W+10) this.x = -10;
+        if(this.y < -10) this.y = H+10;
+        if(this.y > H+10) this.y = -10;
+    }
+    draw(){
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+}
+
+// Adaptive particle count based on screen
+function particleCount(){ return Math.min(N_BASE, Math.round(W*H/12000)); }
+
+let particles = [];
+function buildParticles(){
+    const n = particleCount();
+    particles = Array.from({length: n}, ()=>new Particle());
+}
+buildParticles();
+window.addEventListener('resize', ()=>{ buildParticles(); }, {passive:true});
+
+function drawLines(){
+    for(let i=0; i<particles.length; i++){
+        for(let j=i+1; j<particles.length; j++){
+            const a=particles[i], b=particles[j];
+            const dx=a.x-b.x, dy=a.y-b.y;
+            const d=Math.sqrt(dx*dx+dy*dy);
+            if(d > MAX_DIST) continue;
+            const alpha = (1 - d/MAX_DIST) * 0.22;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-            ctx.strokeStyle = '#050505';
-            ctx.lineWidth = 2.5 * this.life;
+            ctx.moveTo(a.x,a.y);
+            ctx.lineTo(b.x,b.y);
+            ctx.strokeStyle = `rgba(60,60,60,${alpha})`;
+            ctx.lineWidth   = 0.8;
             ctx.stroke();
-        } else {
-            // Splat — irregular blob
+        }
+
+        // Also draw line from particle to mouse if close
+        const mx=mouse.x, my=mouse.y;
+        const dxm=particles[i].x-mx, dym=particles[i].y-my;
+        const dm=Math.sqrt(dxm*dxm+dym*dym);
+        if(dm < MOUSE_R){
+            const alpha=(1-dm/MOUSE_R)*0.35;
             ctx.beginPath();
-            const pts = 7;
-            for (let i = 0; i <= pts; i++) {
-                const ang = (i / pts) * Math.PI * 2;
-                const rad = this.r * (0.7 + 0.3 * Math.sin(ang * 3 + this.x));
-                if (i === 0) ctx.moveTo(this.x + Math.cos(ang)*rad, this.y + Math.sin(ang)*rad);
-                else ctx.lineTo(this.x + Math.cos(ang)*rad, this.y + Math.sin(ang)*rad);
-            }
-            ctx.closePath();
-            ctx.fillStyle = '#050505';
-            ctx.fill();
-        }
-        ctx.restore();
-    }
-}
-
-// Cross-hair lines that follow cursor
-function drawCrosshair(x, y, speed) {
-    if (speed < 2) return;
-    const len = Math.min(speed * 4, 80);
-    const alpha = Math.min(speed * 0.02, 0.35);
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.strokeStyle = '#050505';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(x - len, y); ctx.lineTo(x + len, y);
-    ctx.moveTo(x, y - len); ctx.lineTo(x, y + len);
-    ctx.stroke();
-    ctx.restore();
-}
-
-let frame = 0;
-function render() {
-    ctx.clearRect(0, 0, W, H);
-
-    const dvx = mx - pmx, dvy = my - pmy;
-    const speed = Math.sqrt(dvx*dvx + dvy*dvy);
-
-    // Spawn drops on movement
-    if (speed > 4 && frame % 2 === 0) {
-        drops.push(new Drop(mx, my, dvx, dvy));
-        // Extra satellite drop for drama
-        if (speed > 10) {
-            drops.push(new Drop(
-                mx + (Math.random()-0.5)*20,
-                my + (Math.random()-0.5)*20,
-                dvx * 0.5, dvy * 0.5
-            ));
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(mx, my);
+            ctx.strokeStyle=`rgba(20,20,20,${alpha})`;
+            ctx.lineWidth=0.7;
+            ctx.stroke();
         }
     }
-
-    // Draw crosshair
-    drawCrosshair(mx, my, speed);
-
-    // Draw drops
-    for (let i = drops.length - 1; i >= 0; i--) {
-        drops[i].update();
-        drops[i].draw(ctx);
-        if (drops[i].life <= 0) drops.splice(i, 1);
-    }
-
-    pmx = mx; pmy = my;
-    frame++;
-    requestAnimationFrame(render);
 }
-render();
 
-window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, {passive:true});
+function loop(){
+    // Clear to white
+    ctx.clearRect(0,0,W,H);
+    // Draw connection lines
+    drawLines();
+    // Draw + update dots
+    particles.forEach(p=>{ p.update(); p.draw(); });
+    requestAnimationFrame(loop);
+}
+loop();
 
 // ── CURSOR ────────────────────────────────────────────────────────────────────
 const cur = document.getElementById('plm-cursor');
-if (cur && window.matchMedia('(hover:hover)').matches) {
-    window.addEventListener('mousemove', e => {
-        cur.style.left = e.clientX + 'px';
-        cur.style.top  = e.clientY + 'px';
+if(cur && window.matchMedia('(hover:hover)').matches){
+    window.addEventListener('mousemove', e=>{
+        cur.style.left=e.clientX+'px';
+        cur.style.top =e.clientY+'px';
         cur.classList.toggle('hover', !!e.target.closest('a,button,.hub-btn'));
-    }, {passive:true});
+    },{passive:true});
 }
 </script>
 </body>

@@ -267,17 +267,21 @@
         #gallery-header-sticky{
             position:sticky;top:0;z-index:500;
             display:flex;align-items:center;gap:16px;
-            padding:16px 96px;
+            padding:20px 96px;
             background:var(--bg);border-bottom:1.5px solid var(--border);
             transition:background .4s,border-color .4s;
+        }
+        #gallery-header-sticky .plm-btn{
+            padding:0 22px; /* extra breathing room on back btn */
+            flex-shrink:0;
         }
         #gallery-title-main{
             font-size:10px;font-weight:900;letter-spacing:.35em;
             text-transform:uppercase;color:var(--fg3);
             flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
         }
-        @media(max-width:1100px){#gallery-header-sticky{padding:14px 60px}}
-        @media(max-width:767px){#gallery-header-sticky{padding:12px 18px}}
+        @media(max-width:1100px){#gallery-header-sticky{padding:16px 60px}}
+        @media(max-width:767px){#gallery-header-sticky{padding:14px 18px}}
 
         /* ═══ FEATURED HERO GRID ═══ */
         .gallery-featured{
@@ -306,24 +310,136 @@
         .work-card-foot{padding:12px 0;border-top:1.5px solid var(--border);transition:border-color .4s}
         .work-title{font-size:8px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;color:var(--fg)}
 
-        /* ═══ MODAL ═══ */
-        #modal{display:none;position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:none;z-index:1000;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;padding:2vh}
-        #modal.active{display:flex;opacity:1}
-        .player-container{
-            position:relative;
-            width:100%;
-            height:auto;
-            max-width:min(95vw, 1600px);
-            max-height:92vh;
-            background:var(--bg);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            border:none;
+        /* ═══ MODAL PLAYER ═══ */
+        #modal{
+            display:none;position:fixed;inset:0;
+            z-index:9000;
+            background:rgba(0,0,0,.92);
+            align-items:center;justify-content:center;
+            flex-direction:column;
+            opacity:0;transition:opacity .25s;
+            padding:0;
         }
-        .player-container video{width:100%;height:auto;max-height:92vh;border:none;object-fit:contain}
-        .close-modal{position:fixed;top:1rem;right:1rem;z-index:1010;font-size:8px;font-weight:900;letter-spacing:.4em;text-transform:uppercase;color:var(--fg);border:1.5px solid var(--border);padding:7px 14px;background:var(--bg);transition:none}
-        .close-modal:hover{background:var(--fg);color:var(--bg)}
+        #modal.active{display:flex;opacity:1}
+
+        /* Close button — top-right */
+        .close-modal{
+            position:absolute;top:20px;right:20px;z-index:9010;
+            font-size:9px;font-weight:900;letter-spacing:.3em;text-transform:uppercase;
+            color:#f0f0f0;background:rgba(0,0,0,.5);
+            border:1.5px solid rgba(255,255,255,.25);
+            padding:8px 16px;backdrop-filter:blur(4px);
+            transition:background .15s,border-color .15s;
+        }
+        .close-modal:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.6)}
+
+        /* Video wrapper — respects aspect ratio, fills screen */
+        .plm-player-wrap{
+            position:relative;
+            width:min(95vw, calc((92vh) * var(--ar, 1.778)));
+            max-width:95vw;
+            background:#000;
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .plm-player-wrap video{
+            display:block;width:100%;height:auto;
+        }
+
+        /* Click-to-pause overlay */
+        .plm-click-zone{
+            position:absolute;inset:0 0 54px 0;
+            z-index:2;cursor:pointer;
+        }
+        /* Big play/pause icon on click */
+        .plm-play-icon{
+            position:absolute;top:50%;left:50%;
+            transform:translate(-50%,-50%) scale(0);
+            font-size:56px;color:rgba(255,255,255,.85);
+            pointer-events:none;transition:transform .12s,opacity .2s;
+            opacity:0;z-index:3;
+        }
+        .plm-play-icon.flash{transform:translate(-50%,-50%) scale(1);opacity:1}
+
+        /* Controls bar */
+        .plm-controls{
+            position:absolute;bottom:0;left:0;width:100%;height:54px;
+            background:rgba(0,0,0,.72);backdrop-filter:blur(8px);
+            border-top:1px solid rgba(255,255,255,.08);
+            display:flex;align-items:center;gap:12px;padding:0 14px;
+            z-index:4;
+            opacity:0;transition:opacity .25s;
+        }
+        .plm-player-wrap:hover .plm-controls,
+        .plm-player-wrap.controls-visible .plm-controls{opacity:1}
+        /* Always visible on mobile */
+        @media(hover:none){.plm-controls{opacity:1}}
+
+        /* Seek bar */
+        .plm-seek{
+            flex:1;height:4px;background:rgba(255,255,255,.2);
+            position:relative;cursor:pointer;border-radius:2px;
+        }
+        .plm-seek:hover{height:6px}
+        .plm-seek-fill{
+            position:absolute;top:0;left:0;height:100%;
+            background:#f0f0f0;border-radius:2px;
+            pointer-events:none;
+        }
+        .plm-seek-thumb{
+            position:absolute;top:50%;right:0;
+            width:12px;height:12px;border-radius:50%;background:#fff;
+            transform:translate(50%,-50%);
+            pointer-events:none;opacity:0;transition:opacity .15s;
+        }
+        .plm-seek:hover .plm-seek-thumb{opacity:1}
+
+        /* Volume */
+        .plm-vol{
+            display:flex;align-items:center;gap:6px;
+        }
+        .plm-vol-btn{font-size:13px;color:#f0f0f0;background:none;border:none;cursor:pointer;line-height:1}
+        .plm-vol-slider{
+            width:60px;height:4px;background:rgba(255,255,255,.2);
+            border-radius:2px;cursor:pointer;
+            -webkit-appearance:none;appearance:none;
+        }
+        .plm-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:#fff}
+        @media(max-width:500px){.plm-vol-slider{display:none}}
+
+        /* Control buttons */
+        .plm-ctrl-btn{
+            font-size:9px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;
+            color:#f0f0f0;background:none;border:none;cursor:pointer;
+            white-space:nowrap;line-height:1;
+        }
+        .plm-ctrl-btn.active{color:#ccc;opacity:.5}
+        .plm-time{
+            font-size:9px;font-weight:900;letter-spacing:.1em;
+            color:rgba(255,255,255,.6);white-space:nowrap;
+        }
+        /* HD badge */
+        .plm-hd-btn{
+            font-size:8px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;
+            color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.2);
+            padding:3px 7px;background:none;cursor:pointer;
+        }
+        .plm-hd-btn.on{color:#f0f0f0;border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.1)}
+        /* Native fullscreen btn */
+        .plm-fs-btn{font-size:14px;color:#f0f0f0;background:none;border:none;cursor:pointer;line-height:1}
+
+        /* Loading spinner */
+        .plm-loader{
+            position:absolute;top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            z-index:5;pointer-events:none;transition:opacity .3s;
+            display:flex;flex-direction:column;align-items:center;gap:10px;
+        }
+        .plm-spinner{
+            width:36px;height:36px;border:3px solid rgba(255,255,255,.1);
+            border-top-color:#f0f0f0;border-radius:50%;
+            animation:spin .7s linear infinite;
+        }
+        .plm-loader.hidden{opacity:0;pointer-events:none}
 
         /* ═══ MOSAIC PREVIEW ═══ */
         .mosaic-preview {
@@ -837,84 +953,161 @@
     };
 
     let currentVideoData = { hd: '', preview: '' };
-    function openModal(hdUrl, previewUrl, aspect){
+    let _playerHD = true; // start in HD mode
+
+    function openModal(hdUrl, previewUrl, aspect, title, client){
         currentVideoData = { hd: hdUrl, preview: previewUrl || hdUrl };
+        _playerHD = true;
+        const ar = aspect || '16/9';
+        const [aw, ah] = ar.split('/').map(Number);
+        const arNum = (aw||16)/(ah||9);
+
         modal.style.display='flex';
-        modalContent.innerHTML=`
-            <div class="player-outer">
-                <div class="player-container" style="aspect-ratio:${aspect || '16/9'}">
-                    <div class="player-loader" id="modal-loader">
-                        <div class="spinner"></div>
-                        <div style="font-size:9px; letter-spacing:0.2em; font-weight:900">BUFFERING</div>
-                    </div>
-                    <video id="modal-video" autoplay playsinline style="width:100%;height:100%;object-fit:contain;background:#000">
-                        <source src="${hdUrl}" type="video/mp4">
-                    </video>
-                    <div class="player-controls">
-                        <button class="play-btn" id="player-play-pause">PAUSE</button>
-                        <div class="player-seek" id="player-seek-bar"><div class="player-seek-fill" id="player-seek-fill"></div></div>
-                        <div id="player-time" style="font-size:9px;font-weight:900;letter-spacing:0.1em;color:var(--fg)">0:00 / 0:00</div>
-                        <button class="player-hd-toggle active" id="hd-toggle" onclick="toggleHD()">HD</button>
-                    </div>
+        modal.setAttribute('aria-label', title || 'Video player');
+        modalContent.innerHTML = `
+        <button class="close-modal" onclick="closeModal()" aria-label="Close">CLOSE ✕</button>
+        <div class="plm-player-wrap" id="plm-wrap" style="--ar:${arNum}">
+            <div class="plm-loader" id="plm-loader">
+                <div class="plm-spinner"></div>
+                <div style="font-size:8px;letter-spacing:.2em;font-weight:900;color:rgba(255,255,255,.5)">BUFFERING</div>
+            </div>
+            <div class="plm-play-icon" id="plm-play-icon">▶</div>
+            <div class="plm-click-zone" id="plm-click-zone" title="Click to play/pause"></div>
+            <video id="modal-video" autoplay playsinline preload="auto"
+                style="width:100%;height:auto;display:block;background:#000">
+                <source src="${hdUrl}" type="video/mp4">
+            </video>
+            <div class="plm-controls" id="plm-controls">
+                <button class="plm-ctrl-btn" id="player-play-pause" aria-label="Play/Pause">❙❙</button>
+                <div class="plm-seek" id="player-seek-bar" role="slider" aria-label="Seek">
+                    <div class="plm-seek-fill" id="player-seek-fill"></div>
+                    <div class="plm-seek-thumb" id="player-seek-thumb"></div>
                 </div>
-            </div>`;
-            
+                <span class="plm-time" id="player-time">0:00 / 0:00</span>
+                <div class="plm-vol">
+                    <button class="plm-vol-btn" id="plm-mute-btn" aria-label="Mute">🔊</button>
+                    <input class="plm-vol-slider" id="plm-vol" type="range" min="0" max="1" step="0.02" value="1" aria-label="Volume">
+                </div>
+                <button class="plm-hd-btn on" id="hd-toggle" onclick="toggleHD()" aria-label="Toggle HD">HD</button>
+                <button class="plm-fs-btn" id="plm-fs-btn" aria-label="Fullscreen">⛶</button>
+            </div>
+        </div>`;
+
         setTimeout(()=>modal.classList.add('active'),10);
 
-        const v = document.getElementById('modal-video');
-        const l = document.getElementById('modal-loader');
-        const fill = document.getElementById('player-seek-fill');
-        const seek = document.getElementById('player-seek-bar');
-        const playBtn = document.getElementById('player-play-pause');
-        const timeBox = document.getElementById('player-time');
+        const v   = document.getElementById('modal-video');
+        const lo  = document.getElementById('plm-loader');
+        const fill= document.getElementById('player-seek-fill');
+        const thumb = document.getElementById('player-seek-thumb');
+        const seek= document.getElementById('player-seek-bar');
+        const pb  = document.getElementById('player-play-pause');
+        const tb  = document.getElementById('player-time');
+        const mute= document.getElementById('plm-mute-btn');
+        const vol = document.getElementById('plm-vol');
+        const fs  = document.getElementById('plm-fs-btn');
+        const ci  = document.getElementById('plm-play-icon');
+        const cz  = document.getElementById('plm-click-zone');
+        const wrap= document.getElementById('plm-wrap');
 
-        v.oncanplay = () => l.classList.add('hidden');
-        v.onwaiting = () => l.classList.remove('hidden');
-        v.onplaying = () => { l.classList.add('hidden'); playBtn.textContent = 'PAUSE'; };
-        v.onpause = () => { playBtn.textContent = 'PLAY'; };
+        // Loader
+        v.oncanplay  = ()=>lo.classList.add('hidden');
+        v.onwaiting  = ()=>lo.classList.remove('hidden');
+        v.onplaying  = ()=>{ lo.classList.add('hidden'); pb.textContent='❙❙'; };
+        v.onpause    = ()=>pb.textContent='▶';
+        v.onended    = ()=>pb.textContent='▶';
 
-        v.ontimeupdate = () => {
-            const pct = (v.currentTime / v.duration) * 100;
-            if(fill) fill.style.width = pct + '%';
-            if(timeBox){
-                const cur = formatTime(v.currentTime);
-                const dur = formatTime(v.duration || 0);
-                timeBox.textContent = `${cur} / ${dur}`;
-            }
+        // Progress
+        v.ontimeupdate = ()=>{
+            if(!v.duration) return;
+            const pct = v.currentTime/v.duration*100;
+            fill.style.width = pct+'%';
+            thumb.style.left = pct+'%';
+            tb.textContent = formatTime(v.currentTime)+' / '+formatTime(v.duration);
         };
 
-        playBtn.onclick = () => { if(v.paused) v.play(); else v.pause(); };
-        seek.onclick = (e) => {
-            const rect = seek.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            v.currentTime = pos * v.duration;
+        // Seek — support click & drag
+        function seekTo(e){
+            const rect=seek.getBoundingClientRect();
+            const pos=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+            v.currentTime=pos*(v.duration||0);
+        }
+        let seeking=false;
+        seek.addEventListener('mousedown',e=>{seeking=true;seekTo(e);},{ passive:true});
+        window.addEventListener('mousemove',e=>{if(seeking)seekTo(e);},{ passive:true});
+        window.addEventListener('mouseup',()=>seeking=false);
+        // Touch seek
+        seek.addEventListener('touchstart',e=>{seeking=true;seekTo(e.touches[0]);},{passive:true});
+        window.addEventListener('touchmove',e=>{if(seeking)seekTo(e.touches[0]);},{passive:true});
+        window.addEventListener('touchend',()=>seeking=false);
+
+        // Play/Pause button
+        pb.onclick=()=>v.paused?v.play():v.pause();
+
+        // Click-to-play/pause with icon flash
+        cz.onclick=()=>{
+            v.paused?v.play():v.pause();
+            ci.textContent=v.paused?'▶':'❙❙';
+            ci.classList.add('flash');
+            clearTimeout(ci._t);
+            ci._t=setTimeout(()=>ci.classList.remove('flash'),500);
         };
 
-        v.onerror = () => {
-            modalContent.innerHTML = `<div style="padding:40px; text-align:center; font-size:12px; font-weight:900; letter-spacing:0.2em; color:var(--fg)">VIDEO FAILED TO LOAD.</div>`;
+        // Volume
+        vol.oninput=()=>{ v.volume=vol.value; mute.textContent=vol.value==0?'🔇':'🔊'; };
+        mute.onclick=()=>{
+            v.muted=!v.muted;
+            mute.textContent=v.muted?'🔇':'🔊';
+            vol.value=v.muted?0:v.volume;
         };
-        document.querySelector('.close-modal').focus();
+
+        // Fullscreen
+        fs.onclick=()=>{
+            const el=wrap;
+            if(!document.fullscreenElement){el.requestFullscreen&&el.requestFullscreen();}
+            else{document.exitFullscreen&&document.exitFullscreen();}
+        };
+        document.addEventListener('fullscreenchange',_onFSChange);
+        function _onFSChange(){fs.textContent=document.fullscreenElement?'⛶':'⛶';}
+
+        // Auto-hide controls on inactivity (desktop)
+        let _hideT;
+        function _resetHide(){
+            wrap.classList.add('controls-visible');
+            clearTimeout(_hideT);
+            _hideT=setTimeout(()=>wrap.classList.remove('controls-visible'),2500);
+        }
+        wrap.addEventListener('mousemove',_resetHide,{passive:true});
+        wrap.addEventListener('touchstart',_resetHide,{passive:true});
+
+        v.onerror=()=>{ modalContent.innerHTML='<div style="padding:60px;color:#fff;text-align:center;font-weight:900;letter-spacing:.2em">VIDEO FAILED TO LOAD</div>'; };
+        document.querySelector('.close-modal')&&document.querySelector('.close-modal').focus();
     }
+
     function formatTime(s){
-        const m = Math.floor(s/60);
-        const ss = Math.floor(s%60);
-        return m + ':' + (ss<10?'0':'') + ss;
+        if(!s||isNaN(s)) return '0:00';
+        const m=Math.floor(s/60),ss=Math.floor(s%60);
+        return m+':'+(ss<10?'0':'')+ss;
     }
     function toggleHD(){
-        const v = document.getElementById('modal-video');
-        const btn = document.getElementById('hd-toggle');
-        if(!v) return;
-        const time = v.currentTime;
-        const isHD = btn.classList.toggle('active');
-        v.src = isHD ? currentVideoData.hd : currentVideoData.preview;
-        v.currentTime = time;
+        const v=document.getElementById('modal-video');
+        const btn=document.getElementById('hd-toggle');
+        if(!v)return;
+        const t=v.currentTime;
+        _playerHD=!_playerHD;
+        btn.classList.toggle('on',_playerHD);
+        btn.classList.toggle('active',!_playerHD);
+        v.src=_playerHD?currentVideoData.hd:currentVideoData.preview;
+        v.load();
+        v.currentTime=t;
         v.play();
     }
     function closeModal(){
-        const v = document.getElementById('modal-video');
-        if(v) v.pause();
+        const v=document.getElementById('modal-video');
+        if(v)v.pause();
+        document.removeEventListener('fullscreenchange',arguments.callee);
+        if(document.fullscreenElement)document.exitFullscreen&&document.exitFullscreen();
         modal.classList.remove('active');
-        setTimeout(()=>{modal.style.display='none';modalContent.innerHTML=''},420);
+        setTimeout(()=>{modal.style.display='none';modalContent.innerHTML='';},300);
     }
 
     /* ─── THEME & CONTACT ─── */
