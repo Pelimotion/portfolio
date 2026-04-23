@@ -47,21 +47,31 @@
         .ca-stripe-right{right:0;border-left:1.5px solid var(--border)}
         @media(max-width:900px){.ca-stripe{display:none}}
 
+        /* ═══ SHARED BUTTON SYSTEM (PLM-BTN) ═══ */
+        .plm-btn{
+            display:inline-flex;align-items:center;justify-content:center;
+            height:34px;padding:0 14px;
+            border:1.5px solid var(--fg);background:var(--bg);
+            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+            font-size:9px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;
+            color:var(--fg);transition:background .2s,color .2s;
+            white-space:nowrap;text-decoration:none;
+        }
+        .plm-btn:hover{background:var(--fg);color:var(--bg)}
+        @media(max-width:767px){.plm-btn{letter-spacing:.2em;font-size:8px}}
+
         /* ═══ THEME TOGGLE ═══ */
-        .theme-toggle{position:fixed;top:1.6rem;right:1.6rem;z-index:960;width:34px;height:34px;border:1.5px solid var(--fg);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--fg);transition:background .2s,color .2s}
-        .theme-toggle:hover{background:var(--fg);color:var(--bg)}
+        .theme-toggle{
+            position:fixed;top:1.6rem;right:1.6rem;z-index:960;
+            width:34px;padding:0;
+        }
         @media(max-width:767px){.theme-toggle{top:1rem;right:1rem}}
 
         /* ═══ CONTACT BUTTON ═══ */
         .contact-trigger{
-            position:fixed;top:1.6rem;right:4.2rem;z-index:960;
-            padding:6px 14px;border:1.5px solid var(--fg);background:var(--bg);
-            font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-            font-size:9px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;
-            color:var(--fg);transition:background .2s,color .2s;
+            position:fixed;top:1.6rem;right:calc(1.6rem + 34px + 8px);z-index:960;
         }
-        .contact-trigger:hover{background:var(--fg);color:var(--bg)}
-        @media(max-width:767px){.contact-trigger{top:1rem;right:3.6rem;padding:7px 10px;font-size:8px;letter-spacing:.2em}}
+        @media(max-width:767px){.contact-trigger{top:1rem;right:calc(1rem + 34px + 8px)}}
 
         /* ═══ CONTACT POPOVER ═══ */
         .contact-popover{
@@ -105,18 +115,9 @@
             .view-wrapper.active{display:block;opacity:1;pointer-events:all;visibility:visible}
         }
 
-        /* ═══ FLOATING NAV ═══ */
-        
-        
-        .floating-nav:hover{background:var(--fg);color:var(--bg)}
-        @media(min-width:768px){
-            
-            
-        }
-        @media(max-width:767px){
-            
-            
-        }
+        /* ═══ UNIFIED BACK BUTTON ═══ */
+        .back-btn{}
+        /* inherits from .plm-btn */
 
         /* ═══ HERO ═══ */
         .hero-section{position:relative;width:100%;height:100vh;overflow:hidden;background:#000}
@@ -141,8 +142,14 @@
             transition:background .4s, width .1s;
             z-index:-1;
         }
+        @media(max-width:900px){
+            .hero-content{padding:0 5vw}
+            .hero-text{max-width:min(90vw, 480px);padding-right:0}
+        }
         @media(max-width:767px){
             .hero-content::before{width:100%;max-width:100%}
+            .hero-text{max-width:100%;padding:0 4px}
+            .hero-name{font-size:clamp(24px,8vw,48px)}
         }
 
         /* Logo */
@@ -224,8 +231,55 @@
         .gallery-title{font-size:clamp(36px,8vw,120px);font-weight:900;text-transform:uppercase;letter-spacing:-.025em;line-height:.9;color:var(--fg);word-break:break-word}
         .gallery-desc{font-size:14px;line-height:1.7;color:var(--fg2);max-width:560px;margin-top:20px}
         .gallery-meta{font-size:8px;font-weight:900;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3);margin-top:16px;padding-top:14px;border-top:1.5px solid var(--border);max-width:260px}
+        /* Deliverable tags */
+        .deliverable-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;padding-top:16px;border-top:1.5px solid var(--border)}
+        .deliverable-tag{
+            font-size:8px;font-weight:900;letter-spacing:.25em;text-transform:uppercase;
+            color:var(--fg);border:1.5px solid var(--border);padding:5px 10px;
+            background:transparent;
+            transition:background .15s,color .15s;
+        }
+        .deliverable-tag:hover{background:var(--fg);color:var(--bg)}
+        /* Footer section */
+        .portfolio-footer{
+            border-top:2px solid var(--border);
+            padding:60px 0 40px;
+            margin-top:80px;
+            display:flex;
+            flex-direction:column;
+            align-items:flex-start;
+            gap:20px;
+        }
+        .portfolio-footer-title{
+            font-size:clamp(28px,4vw,56px);font-weight:900;
+            text-transform:uppercase;letter-spacing:-.02em;line-height:.95;
+            color:var(--fg);
+        }
+        .portfolio-footer-sub{
+            font-size:9px;font-weight:900;letter-spacing:.4em;text-transform:uppercase;color:var(--fg3);
+        }
+        .portfolio-footer-copy{
+            font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg3);
+            margin-top:20px;padding-top:20px;border-top:1px solid var(--border);width:100%;
+        }
 
-        /* Featured hero video */
+        /* ═══ GALLERY STICKY HEADER ═══ */
+        #gallery-header-sticky{
+            position:sticky;top:0;z-index:500;
+            display:flex;align-items:center;gap:16px;
+            padding:16px 96px;
+            background:var(--bg);border-bottom:1.5px solid var(--border);
+            transition:background .4s,border-color .4s;
+        }
+        #gallery-title-main{
+            font-size:10px;font-weight:900;letter-spacing:.35em;
+            text-transform:uppercase;color:var(--fg3);
+            flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+        }
+        @media(max-width:1100px){#gallery-header-sticky{padding:14px 60px}}
+        @media(max-width:767px){#gallery-header-sticky{padding:12px 18px}}
+
+        /* ═══ FEATURED HERO GRID ═══ */
         .gallery-featured{
             display:grid;grid-template-columns:1fr;gap:2px;margin-bottom:48px;
         }
@@ -442,8 +496,8 @@
 
     
     <a href="../../index.html" class="exit-link" aria-label="Home" title="Home">⌂</a>
-    <button class="theme-toggle interactive" onclick="toggleTheme()" aria-label="Toggle light/dark mode">◧</button>
-    <button class="contact-trigger interactive" id="contact-btn" onclick="toggleContact()" aria-label="Contact">CONTACT</button>
+    <button class="theme-toggle plm-btn interactive" onclick="toggleTheme()" aria-label="Toggle light/dark mode">◧</button>
+    <button class="contact-trigger plm-btn interactive" id="contact-btn" onclick="toggleContact()" aria-label="Contact">CONTACT</button>
     <div class="contact-popover" id="contact-popover">
         <div class="contact-popover-header">Get in touch</div>
         <a href="https://wa.me/5547999664274" target="_blank" rel="noopener" class="interactive">
@@ -497,15 +551,12 @@
     <!-- VIEW: GALLERY -->
     <div id="view-gallery" class="view-wrapper" role="main">
         <div id="gallery-header-sticky">
-            <button class="back-btn interactive" onclick="goHome()" aria-label="Back to home">BACK</button>
+            <button class="plm-btn interactive" onclick="goHome()" aria-label="Back to collections">← COLLECTIONS</button>
             <div id="gallery-title-main"></div>
         </div>
         <div class="content-section" style="padding-top:120px">
             <div id="gallery-meta" class="entrance-mask"></div>
             <div id="gallery-content"></div>
-            <div style="margin-top:100px;text-align:center" class="entrance-mask">
-                <button class="return-btn interactive" onclick="goHome()">BACK TO COLLECTIONS</button>
-            </div>
         </div>
     </div>
 
@@ -662,9 +713,22 @@
         
         if(pushState) history.pushState({view:'gallery', client:name}, '', '#'+encodeURIComponent(name));
 
+        const _cd = (plmContent.clients && plmContent.clients[name]) || {};
+        const _deliverables = _cd.deliverables || [];
+        // Also collect category names as additional tags
+        const _catNames = Object.keys(client.categories || {});
+        // Build all unique tags: deliverables first, then categories
+        const _allTags = [..._deliverables, ..._catNames.filter(c => !_deliverables.includes(c))];
+
         let html='<div class="gallery-hero entrance-mask"><h1 class="gallery-title">'+name+'</h1>';
-        if(clientDescriptions[name])html+='<p class="gallery-desc">'+clientDescriptions[name]+'</p>';
-        html+='<p class="gallery-meta"><span>'+String(client.total).padStart(2,'0')+'</span> EXECUTIONS</p></div>';
+        if(clientDescriptions[name]) html+='<p class="gallery-desc">'+clientDescriptions[name]+'</p>';
+        html+='<p class="gallery-meta"><span>'+String(client.total).padStart(2,'0')+'</span> EXECUTIONS</p>';
+        if(_allTags.length){
+            html+='<div class="deliverable-tags" role="list" aria-label="Deliverables">';
+            _allTags.forEach(tag=>{ html+=`<span class="deliverable-tag" role="listitem">${tag}</span>`; });
+            html+='</div>';
+        }
+        html+='</div>';
         
         // Root Videos & Special Layout for Single Work
         const rootWorks = (client.root||[]).filter(w=>w.video_url);
@@ -855,10 +919,8 @@
 
     /* ─── THEME & CONTACT ─── */
     function toggleTheme(){
-        const b = document.body;
         const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
+        document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
     }
     function toggleContact(){
         contactPopover.classList.toggle('open');
@@ -866,6 +928,24 @@
     window.addEventListener('click', e=>{
         if(!contactPopover.contains(e.target) && e.target !== contactBtn) contactPopover.classList.remove('open');
     });
+
+    /* ─── FOOTER: injected after renderHome ─── */
+    function renderFooter(){
+        const container = document.getElementById('clients-container');
+        if(!container || document.getElementById('portfolio-footer-el')) return;
+        const footer = document.createElement('div');
+        footer.id = 'portfolio-footer-el';
+        footer.className = 'portfolio-footer entrance-mask';
+        footer.innerHTML = `
+            <p class="portfolio-footer-sub">Studio — Florianópolis, Brasil</p>
+            <p class="portfolio-footer-title">PELIMOTION</p>
+            <p class="portfolio-footer-sub">Motion Branding &amp; Creative Direction</p>
+            <p class="portfolio-footer-copy">&copy; 2026 Pelimotion. All rights reserved.</p>
+        `;
+        container.parentElement.appendChild(footer);
+        maskObs.observe(footer);
+    }
+    setTimeout(()=>{ renderHome(); renderFooter(); }, 100);
     </script>
 </body>
 </html>
