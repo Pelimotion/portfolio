@@ -5,252 +5,213 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pelimotion — Motion Branding & Creative Direction</title>
 <meta name="description" content="Pelimotion — Premium motion design studio. Kinetic visual experiences, brand systems, and creative direction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#f5f5f5}
+html,body{width:100%;height:100%;overflow:hidden;background:#f4f4f2}
 body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}
 
-/* ── PARTICLE CANVAS ────────────────────────────────────── */
-#particle-canvas{
-    position:fixed;inset:0;z-index:0;
-    width:100%;height:100%;
-    pointer-events:none;
-}
+#flow-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 
-/* ── HUB CENTER ─────────────────────────────────────────── */
 .hub{
     position:relative;z-index:10;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    height:100vh;width:100%;gap:36px;padding:40px;
-    pointer-events:none; /* canvas receives mouse */
+    height:100vh;width:100%;gap:32px;padding:40px;
+    pointer-events:none;
 }
-.hub > *{pointer-events:auto}
+.hub>*{pointer-events:auto}
 
-/* Logo */
-.hub-logo{width:72px;height:72px;display:block;transition:opacity .3s}
+.hub-logo{width:64px;height:64px}
 .hub-logo img{width:100%;height:100%;object-fit:contain;display:block}
 
-/* Brand name above buttons */
-.hub-brand{
-    text-align:center;line-height:1;
-}
+.hub-brand{text-align:center}
 .hub-brand-name{
     font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-    font-size:clamp(13px,2vw,20px);font-weight:900;
-    letter-spacing:.22em;text-transform:uppercase;color:#111;
+    font-size:clamp(11px,1.8vw,17px);font-weight:900;
+    letter-spacing:.28em;text-transform:uppercase;color:#111;
 }
-.hub-brand-sub{
-    font-size:8px;font-weight:500;letter-spacing:.35em;
-    text-transform:uppercase;color:#999;margin-top:6px;
-}
+.hub-brand-sub{font-size:7px;font-weight:500;letter-spacing:.38em;text-transform:uppercase;color:#aaa;margin-top:5px}
 
-/* Nav buttons — brutalist bar */
-.hub-nav{display:flex;gap:0;border:2px solid #111;background:#f5f5f5}
-@media(max-width:540px){.hub-nav{flex-direction:column}}
+.hub-nav{display:flex;gap:0;border:2px solid #111}
+@media(max-width:500px){.hub-nav{flex-direction:column}}
 
 .hub-btn{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    width:180px;height:110px;
-    background:transparent;
-    text-decoration:none;color:#111;
-    border:none;position:relative;overflow:hidden;
-    transition:background .18s,color .18s;
-    gap:6px;
+    width:170px;height:100px;
+    background:#f4f4f2;text-decoration:none;color:#111;border:none;
+    gap:5px;transition:background .15s,color .15s;
 }
 .hub-btn:not(:last-child){border-right:2px solid #111}
-@media(max-width:540px){.hub-btn:not(:last-child){border-right:none;border-bottom:2px solid #111}}
-.hub-btn:hover{background:#111;color:#f5f5f5}
-.hub-btn .btn-title{font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;line-height:1}
-.hub-btn .btn-sub{font-size:7px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.45}
+@media(max-width:500px){.hub-btn:not(:last-child){border-right:none;border-bottom:2px solid #111}}
+.hub-btn:hover,.hub-btn:focus-visible{background:#111;color:#f4f4f2;outline:none}
+.hub-btn .t{font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;line-height:1}
+.hub-btn .s{font-size:7px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.4}
 
-/* Footer */
-.hub-footer{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:#bbb}
+.hub-footer{font-size:7px;letter-spacing:.28em;text-transform:uppercase;color:#ccc}
 
-/* ── CURSOR ──────────────────────────────────────────────── */
+/* cursor */
 *,*::before,*::after{cursor:none!important}
 @media(hover:none),(pointer:coarse){*,*::before,*::after{cursor:auto!important}}
 #plm-cursor{
     position:fixed;z-index:99999;pointer-events:none;
-    width:10px;height:10px;border-radius:50%;
-    background:#111;
+    width:9px;height:9px;border-radius:50%;background:#111;
     transform:translate(-50%,-50%);top:0;left:0;
-    transition:width .1s,height .1s,opacity .12s;
+    transition:width .1s,height .1s,opacity .1s;
 }
-#plm-cursor.hover{width:18px;height:18px;opacity:.4}
+#plm-cursor.hover{width:16px;height:16px;opacity:.35}
 @media(hover:none),(pointer:coarse){#plm-cursor{display:none}}
 </style>
 </head>
 <body>
 
-<!-- PARTICLE CANVAS -->
-<canvas id="particle-canvas" aria-hidden="true"></canvas>
+<canvas id="flow-canvas" aria-hidden="true"></canvas>
 
-<!-- HUB CENTER -->
 <main class="hub" aria-label="Pelimotion hub">
     <a href="V1/portfolio/index.html" class="hub-logo" aria-label="Pelimotion">
-        <img src="logo.png" alt="PLM logo">
+        <img src="logo.png" alt="PLM">
     </a>
-
-    <div class="hub-brand">
+    <div class="hub-brand" aria-hidden="true">
         <div class="hub-brand-name">Pelimotion</div>
         <div class="hub-brand-sub">Motion Branding &amp; Creative Direction</div>
     </div>
-
-    <nav class="hub-nav" aria-label="Main navigation">
+    <nav class="hub-nav" aria-label="Navigation">
         <a href="V1/portfolio/index.html" class="hub-btn" id="btn-portfolio">
-            <span class="btn-title">Portfolio</span>
-            <span class="btn-sub">Motion Works</span>
+            <span class="t">Portfolio</span><span class="s">Motion Works</span>
         </a>
         <a href="Curriculum/index.html" class="hub-btn" id="btn-curriculum">
-            <span class="btn-title">Curriculum</span>
-            <span class="btn-sub">Creative Direction</span>
+            <span class="t">Curriculum</span><span class="s">Creative Direction</span>
         </a>
     </nav>
-
     <p class="hub-footer">&copy; 2026 Pelimotion</p>
 </main>
 
-<!-- CURSOR -->
 <div id="plm-cursor" aria-hidden="true"></div>
 
 <script>
-// ── PARTICLE CONSTELLATION (inspired by ShaderToy 4l2XWK) ──────────────────
-// White canvas, dark gray particles, connecting lines based on proximity
-const canvas = document.getElementById('particle-canvas');
-const ctx    = canvas.getContext('2d');
+// ── ORGANIC FLOW FIELD ART ──────────────────────────────────────────────────
+// Tracers follow a curling vector field defined by layered sin/cos
+// Trails rendered as smooth bezier curves → organic, detailed, dynamic
+// White bg, dark gray strokes only. No fills, no gradients, no shadows.
 
-let W, H, mouse = {x: -9999, y: -9999};
+const canvas = document.getElementById('flow-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H, t = 0;
+const mouse  = {x: W/2, y: H/2, active: false};
 
 function resize(){
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
+    mouse.x = W/2; mouse.y = H/2;
 }
 resize();
 window.addEventListener('resize', resize, {passive:true});
-window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, {passive:true});
+window.addEventListener('mousemove', e=>{
+    mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
+},{passive:true});
 
-// Config
-const N_BASE   = 80;    // base particle count
-const MAX_DIST = 160;   // max distance for drawing a line
-const MOUSE_R  = 200;   // mouse influence radius
-const MOUSE_PULL = 0.018; // how strongly mouse attracts particles
-const SPEED    = 0.45;  // base speed
-const DOT_R_MIN = 1.2;
-const DOT_R_MAX = 2.5;
-
-// Color palette: very subtle — near-black to mid-gray
-function randColor(){
-    const v = Math.round(30 + Math.random()*120); // 30-150 dark to mid gray
-    return `rgb(${v},${v},${v})`;
+// Flow field angle at point (x,y) at time t
+// Layered frequencies produce complex organic curvature
+function fieldAngle(x, y, time){
+    const nx = x / W, ny = y / H;
+    return (
+        Math.sin(nx * 4.2 + time * 0.38) * Math.cos(ny * 3.1 + time * 0.22) * Math.PI * 1.4
+      + Math.cos(nx * 2.7 - time * 0.17 + ny * 1.8) * Math.PI * 0.6
+      + Math.sin((nx + ny) * 3.5 + time * 0.29) * Math.PI * 0.4
+      + Math.cos(ny * 5.1 - time * 0.12) * Math.PI * 0.2
+    );
 }
 
-class Particle {
+// Mouse creates a local disturbance in the field
+function mouseInfluence(x, y){
+    const dx = x - mouse.x, dy = y - mouse.y;
+    const d  = Math.sqrt(dx*dx + dy*dy);
+    const r  = 180;
+    if(!mouse.active || d > r || d < 1) return 0;
+    return (1 - d/r) * Math.PI * 0.9;
+}
+
+class Tracer {
     constructor(){
-        this.reset(true);
+        this._init();
     }
-    reset(init){
-        this.x  = Math.random() * (W || window.innerWidth);
-        this.y  = Math.random() * (H || window.innerHeight);
-        this.vx = (Math.random()-.5)*SPEED;
-        this.vy = (Math.random()-.5)*SPEED;
-        this.r  = DOT_R_MIN + Math.random()*(DOT_R_MAX - DOT_R_MIN);
-        this.color = randColor();
-        this.alpha = 0.35 + Math.random()*0.55;
+    _init(){
+        this.x     = Math.random() * W;
+        this.y     = Math.random() * H;
+        this.speed = 0.6 + Math.random() * 1.1;
+        this.pts   = [];
+        this.maxPts= 55 + Math.floor(Math.random() * 80);
+        this.age   = 0;
+        this.life  = this.maxPts + 30 + Math.floor(Math.random() * 60);
+        // Stroke visual character: some thin/faint, some bolder/darker
+        const dark = Math.random() < 0.55;
+        const v    = dark ? 15 + Math.random()*55 : 90 + Math.random()*100;
+        this.strokeVal = v;
+        this.alpha = dark ? 0.12 + Math.random()*0.22 : 0.05 + Math.random()*0.10;
+        this.lw    = dark ? 0.5 + Math.random()*0.8  : 0.4 + Math.random()*0.5;
     }
     update(){
-        // Gentle mouse attraction
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const dist = Math.sqrt(dx*dx+dy*dy);
-        if(dist < MOUSE_R && dist > 1){
-            this.vx += (dx/dist)*MOUSE_PULL;
-            this.vy += (dy/dist)*MOUSE_PULL;
+        const a = fieldAngle(this.x, this.y, t) + mouseInfluence(this.x, this.y);
+        this.x += Math.cos(a) * this.speed;
+        this.y += Math.sin(a) * this.speed;
+        this.pts.push({x: this.x, y: this.y});
+        if(this.pts.length > this.maxPts) this.pts.shift();
+        this.age++;
+        if(this.age > this.life || this.x < -80 || this.x > W+80 || this.y < -80 || this.y > H+80){
+            this._init();
         }
-
-        // Speed cap
-        const spd = Math.sqrt(this.vx*this.vx+this.vy*this.vy);
-        if(spd > SPEED*2){ this.vx *= .92; this.vy *= .92; }
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // Wrap at edges
-        if(this.x < -10) this.x = W+10;
-        if(this.x > W+10) this.x = -10;
-        if(this.y < -10) this.y = H+10;
-        if(this.y > H+10) this.y = -10;
     }
     draw(){
+        const n = this.pts.length;
+        if(n < 4) return;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-        ctx.fillStyle = this.color;
-        ctx.globalAlpha = this.alpha;
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        ctx.moveTo(this.pts[0].x, this.pts[0].y);
+        // Smooth quadratic bezier through all points
+        for(let i=1; i<n-2; i++){
+            const mx = (this.pts[i].x + this.pts[i+1].x) * 0.5;
+            const my = (this.pts[i].y + this.pts[i+1].y) * 0.5;
+            ctx.quadraticCurveTo(this.pts[i].x, this.pts[i].y, mx, my);
+        }
+        ctx.quadraticCurveTo(
+            this.pts[n-2].x, this.pts[n-2].y,
+            this.pts[n-1].x, this.pts[n-1].y
+        );
+        const v = this.strokeVal;
+        ctx.strokeStyle = `rgba(${v},${v},${v},${this.alpha})`;
+        ctx.lineWidth   = this.lw;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        ctx.stroke();
     }
 }
 
-// Adaptive particle count based on screen
-function particleCount(){ return Math.min(N_BASE, Math.round(W*H/12000)); }
+// Adaptive tracer count
+function tracerCount(){ return Math.min(110, Math.max(40, Math.round(W * H / 9000))); }
+let tracers = [];
+function buildTracers(){ tracers = Array.from({length: tracerCount()}, ()=>new Tracer()); }
+buildTracers();
+window.addEventListener('resize', ()=>{ buildTracers(); }, {passive:true});
 
-let particles = [];
-function buildParticles(){
-    const n = particleCount();
-    particles = Array.from({length: n}, ()=>new Particle());
-}
-buildParticles();
-window.addEventListener('resize', ()=>{ buildParticles(); }, {passive:true});
-
-function drawLines(){
-    for(let i=0; i<particles.length; i++){
-        for(let j=i+1; j<particles.length; j++){
-            const a=particles[i], b=particles[j];
-            const dx=a.x-b.x, dy=a.y-b.y;
-            const d=Math.sqrt(dx*dx+dy*dy);
-            if(d > MAX_DIST) continue;
-            const alpha = (1 - d/MAX_DIST) * 0.22;
-            ctx.beginPath();
-            ctx.moveTo(a.x,a.y);
-            ctx.lineTo(b.x,b.y);
-            ctx.strokeStyle = `rgba(60,60,60,${alpha})`;
-            ctx.lineWidth   = 0.8;
-            ctx.stroke();
-        }
-
-        // Also draw line from particle to mouse if close
-        const mx=mouse.x, my=mouse.y;
-        const dxm=particles[i].x-mx, dym=particles[i].y-my;
-        const dm=Math.sqrt(dxm*dxm+dym*dym);
-        if(dm < MOUSE_R){
-            const alpha=(1-dm/MOUSE_R)*0.35;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(mx, my);
-            ctx.strokeStyle=`rgba(20,20,20,${alpha})`;
-            ctx.lineWidth=0.7;
-            ctx.stroke();
-        }
-    }
-}
+// Subtle fade gives "trail persistence" — makes the art denser and more organic
+const FADE_ALPHA = 0.04; // smaller = more persistent trails
 
 function loop(){
-    // Clear to white
-    ctx.clearRect(0,0,W,H);
-    // Draw connection lines
-    drawLines();
-    // Draw + update dots
-    particles.forEach(p=>{ p.update(); p.draw(); });
+    // Very light fade to white (not full clear) → trails accumulate softly
+    ctx.fillStyle = `rgba(244,244,242,${FADE_ALPHA})`;
+    ctx.fillRect(0, 0, W, H);
+
+    tracers.forEach(tr=>{ tr.update(); tr.draw(); });
+    t += 0.004;
     requestAnimationFrame(loop);
 }
 loop();
 
-// ── CURSOR ────────────────────────────────────────────────────────────────────
+// ── CURSOR ─────────────────────────────────────────────────────────────────
 const cur = document.getElementById('plm-cursor');
 if(cur && window.matchMedia('(hover:hover)').matches){
     window.addEventListener('mousemove', e=>{
-        cur.style.left=e.clientX+'px';
-        cur.style.top =e.clientY+'px';
+        cur.style.left = e.clientX+'px';
+        cur.style.top  = e.clientY+'px';
         cur.classList.toggle('hover', !!e.target.closest('a,button,.hub-btn'));
     },{passive:true});
 }

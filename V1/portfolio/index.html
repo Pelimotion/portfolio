@@ -243,13 +243,14 @@
         /* Footer section */
         .portfolio-footer{
             border-top:2px solid var(--border);
-            padding:60px 0 40px;
+            padding:80px 0 60px;
             margin-top:80px;
-            display:flex;
-            flex-direction:column;
-            align-items:flex-start;
-            gap:20px;
+            display:flex;flex-direction:column;align-items:flex-start;gap:0;
         }
+        /* cursor: white fill when modal is open (dark overlay) */
+        body.modal-open #plm-cursor{background:#f0f0f0}
+        /* modal-content: flex center */
+        #modal-content{display:flex!important;align-items:center!important;justify-content:center!important;width:100%;height:100%;position:relative}
         .portfolio-footer-title{
             font-size:clamp(28px,4vw,56px);font-weight:900;
             text-transform:uppercase;letter-spacing:-.02em;line-height:.95;
@@ -360,18 +361,16 @@
         }
         .plm-play-icon.flash{transform:translate(-50%,-50%) scale(1);opacity:1}
 
-        /* Controls bar */
+        /* Controls bar — always visible */
         .plm-controls{
-            position:absolute;bottom:0;left:0;width:100%;height:54px;
-            background:rgba(0,0,0,.72);backdrop-filter:blur(8px);
-            border-top:1px solid rgba(255,255,255,.08);
-            display:flex;align-items:center;gap:12px;padding:0 14px;
+            position:absolute;bottom:0;left:0;width:100%;height:52px;
+            background:rgba(8,8,8,.85);
+            border-top:1px solid rgba(255,255,255,.07);
+            display:flex;align-items:center;gap:10px;padding:0 14px;
             z-index:4;
-            opacity:0;transition:opacity .25s;
+            opacity:1; /* always shown */
         }
-        .plm-player-wrap:hover .plm-controls,
-        .plm-player-wrap.controls-visible .plm-controls{opacity:1}
-        /* Always visible on mobile */
+        /* Always visible on mobile too */
         @media(hover:none){.plm-controls{opacity:1}}
 
         /* Seek bar */
@@ -965,14 +964,14 @@
         modal.style.display='flex';
         modal.setAttribute('aria-label', title || 'Video player');
         modalContent.innerHTML = `
-        <button class="close-modal" onclick="closeModal()" aria-label="Close">CLOSE ✕</button>
+        <button class="close-modal" onclick="closeModal()" aria-label="Close">CLOSE ×</button>
         <div class="plm-player-wrap" id="plm-wrap" style="--ar:${arNum}">
             <div class="plm-loader" id="plm-loader">
                 <div class="plm-spinner"></div>
-                <div style="font-size:8px;letter-spacing:.2em;font-weight:900;color:rgba(255,255,255,.5)">BUFFERING</div>
+                <div style="font-size:8px;letter-spacing:.2em;font-weight:900;color:rgba(255,255,255,.4)">BUFFERING</div>
             </div>
             <div class="plm-play-icon" id="plm-play-icon">▶</div>
-            <div class="plm-click-zone" id="plm-click-zone" title="Click to play/pause"></div>
+            <div class="plm-click-zone" id="plm-click-zone"></div>
             <video id="modal-video" autoplay playsinline preload="auto"
                 style="width:100%;height:auto;display:block;background:#000">
                 <source src="${hdUrl}" type="video/mp4">
@@ -985,13 +984,25 @@
                 </div>
                 <span class="plm-time" id="player-time">0:00 / 0:00</span>
                 <div class="plm-vol">
-                    <button class="plm-vol-btn" id="plm-mute-btn" aria-label="Mute">🔊</button>
+                    <button class="plm-vol-btn" id="plm-mute-btn" aria-label="Mute" style="display:flex;align-items:center">
+                        <svg id="vol-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M1 6h3.5L8 3.5v9L4.5 10H1z"/>
+                            <path d="M10 5.5Q12 8 10 10.5" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 3.5Q16 8 12 12.5" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
                     <input class="plm-vol-slider" id="plm-vol" type="range" min="0" max="1" step="0.02" value="1" aria-label="Volume">
                 </div>
                 <button class="plm-hd-btn on" id="hd-toggle" onclick="toggleHD()" aria-label="Toggle HD">HD</button>
-                <button class="plm-fs-btn" id="plm-fs-btn" aria-label="Fullscreen">⛶</button>
+                <button class="plm-fs-btn" id="plm-fs-btn" aria-label="Fullscreen">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                        <path d="M1 5V1h4M9 1h4v4M13 9v4h-4M5 13H1V9"/>
+                    </svg>
+                </button>
             </div>
         </div>`;
+
+        document.body.classList.add('modal-open');
 
         setTimeout(()=>modal.classList.add('active'),10);
 
@@ -1052,11 +1063,20 @@
             ci._t=setTimeout(()=>ci.classList.remove('flash'),500);
         };
 
-        // Volume
-        vol.oninput=()=>{ v.volume=vol.value; mute.textContent=vol.value==0?'🔇':'🔊'; };
+        // Volume — SVG icon toggle
+        function setVolIcon(muted){
+            const icon = document.getElementById('vol-icon');
+            if(!icon) return;
+            if(muted){
+                icon.innerHTML = '<path d="M1 6h3.5L8 3.5v9L4.5 10H1z"/><line x1="11" y1="6" x2="13.5" y2="9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="13.5" y1="6" x2="11" y2="9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
+            } else {
+                icon.innerHTML = '<path d="M1 6h3.5L8 3.5v9L4.5 10H1z"/><path d="M10 5.5Q12 8 10 10.5" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/><path d="M12 3.5Q16 8 12 12.5" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/>';
+            }
+        }
+        vol.oninput=()=>{ v.volume=parseFloat(vol.value); setVolIcon(vol.value==0); };
         mute.onclick=()=>{
             v.muted=!v.muted;
-            mute.textContent=v.muted?'🔇':'🔊';
+            setVolIcon(v.muted);
             vol.value=v.muted?0:v.volume;
         };
 
@@ -1067,18 +1087,9 @@
             else{document.exitFullscreen&&document.exitFullscreen();}
         };
         document.addEventListener('fullscreenchange',_onFSChange);
-        function _onFSChange(){fs.textContent=document.fullscreenElement?'⛶':'⛶';}
+        function _onFSChange(){ /* icon stays the same */ }
 
-        // Auto-hide controls on inactivity (desktop)
-        let _hideT;
-        function _resetHide(){
-            wrap.classList.add('controls-visible');
-            clearTimeout(_hideT);
-            _hideT=setTimeout(()=>wrap.classList.remove('controls-visible'),2500);
-        }
-        wrap.addEventListener('mousemove',_resetHide,{passive:true});
-        wrap.addEventListener('touchstart',_resetHide,{passive:true});
-
+        // No auto-hide — controls always visible (user preference)
         v.onerror=()=>{ modalContent.innerHTML='<div style="padding:60px;color:#fff;text-align:center;font-weight:900;letter-spacing:.2em">VIDEO FAILED TO LOAD</div>'; };
         document.querySelector('.close-modal')&&document.querySelector('.close-modal').focus();
     }
@@ -1104,9 +1115,9 @@
     function closeModal(){
         const v=document.getElementById('modal-video');
         if(v)v.pause();
-        document.removeEventListener('fullscreenchange',arguments.callee);
         if(document.fullscreenElement)document.exitFullscreen&&document.exitFullscreen();
         modal.classList.remove('active');
+        document.body.classList.remove('modal-open');
         setTimeout(()=>{modal.style.display='none';modalContent.innerHTML='';},300);
     }
 
@@ -1122,18 +1133,61 @@
         if(!contactPopover.contains(e.target) && e.target !== contactBtn) contactPopover.classList.remove('open');
     });
 
-    /* ─── FOOTER: injected after renderHome ─── */
+    /* ─── FOOTER ─── */
     function renderFooter(){
         const container = document.getElementById('clients-container');
         if(!container || document.getElementById('portfolio-footer-el')) return;
-        const footer = document.createElement('div');
+        const footer = document.createElement('section');
         footer.id = 'portfolio-footer-el';
         footer.className = 'portfolio-footer entrance-mask';
+        footer.setAttribute('aria-label','Footer');
         footer.innerHTML = `
-            <p class="portfolio-footer-sub">Studio — Florianópolis, Brasil</p>
-            <p class="portfolio-footer-title">PELIMOTION</p>
-            <p class="portfolio-footer-sub">Motion Branding &amp; Creative Direction</p>
-            <p class="portfolio-footer-copy">&copy; 2026 Pelimotion. All rights reserved.</p>
+            <div style="width:100%;padding-bottom:40px;border-bottom:1px solid var(--border);margin-bottom:40px">
+                <p style="font-size:clamp(16px,2.5vw,26px);font-weight:900;letter-spacing:-.01em;line-height:1.3;color:var(--fg);max-width:600px;margin-bottom:20px">
+                    &ldquo;Visual systems built for those who set the pace,&nbsp;not just follow&nbsp;it.&rdquo;
+                </p>
+                <p style="font-size:clamp(12px,1.6vw,17px);font-weight:400;letter-spacing:.02em;line-height:1.5;color:var(--fg2);max-width:480px;font-style:italic">
+                    &ldquo;Systemize the motion, elevate the branding.&rdquo;
+                </p>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:40px;width:100%;margin-bottom:48px">
+                <div>
+                    <p class="portfolio-footer-sub" style="margin-bottom:16px">Contact</p>
+                    <a href="https://wa.me/5547999664274" target="_blank" rel="noopener"
+                       style="display:block;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);text-decoration:none;margin-bottom:10px;transition:opacity .2s" onmouseover="this.style.opacity=.5" onmouseout="this.style.opacity=1">
+                        WhatsApp ↗
+                    </a>
+                    <a href="mailto:conceicao.felipe@gmail.com"
+                       style="display:block;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);text-decoration:none;transition:opacity .2s" onmouseover="this.style.opacity=.5" onmouseout="this.style.opacity=1">
+                        Email ↗
+                    </a>
+                </div>
+                <div>
+                    <p class="portfolio-footer-sub" style="margin-bottom:16px">Follow</p>
+                    <a href="https://instagram.com/pelimotion" target="_blank" rel="noopener"
+                       style="display:block;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);text-decoration:none;margin-bottom:10px;transition:opacity .2s" onmouseover="this.style.opacity=.5" onmouseout="this.style.opacity=1">
+                        Instagram @pelimotion ↗
+                    </a>
+                    <a href="https://linkedin.com/in/pelife" target="_blank" rel="noopener"
+                       style="display:block;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);text-decoration:none;margin-bottom:10px;transition:opacity .2s" onmouseover="this.style.opacity=.5" onmouseout="this.style.opacity=1">
+                        LinkedIn pelife ↗
+                    </a>
+                    <a href="https://behance.net/pelimotion" target="_blank" rel="noopener"
+                       style="display:block;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);text-decoration:none;transition:opacity .2s" onmouseover="this.style.opacity=.5" onmouseout="this.style.opacity=1">
+                        Behance pelimotion ↗
+                    </a>
+                </div>
+                <div>
+                    <p class="portfolio-footer-sub" style="margin-bottom:16px">Studio</p>
+                    <p style="font-size:10px;letter-spacing:.1em;color:var(--fg3);line-height:1.7">
+                        Florianópolis, Brasil<br>Available worldwide
+                    </p>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;width:100%;padding-top:24px;border-top:1px solid var(--border)">
+                <p class="portfolio-footer-copy" style="margin:0;border:none;padding:0">&copy; 2026 Pelimotion. All rights reserved.</p>
+                <img src="../../logo.png" alt="PLM" style="height:32px;width:auto;opacity:.35;filter:var(--img-filter)" loading="lazy">
+            </div>
         `;
         container.parentElement.appendChild(footer);
         maskObs.observe(footer);
