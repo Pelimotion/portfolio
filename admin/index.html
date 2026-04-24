@@ -62,9 +62,33 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 .preview-ref strong{color:var(--fg2)}
 .exp-block{border:1px solid var(--border);padding:20px;margin-bottom:16px;background:rgba(255,255,255,.01)}
 .exp-block-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:14px}
+.login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; flex-direction: column; }
+.login-card { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 420px; padding: 40px; text-align: left; }
+.login-title { font-size: 24px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+.login-sub { font-size: 12px; color: var(--fg2); margin-bottom: 30px; line-height: 1.6; }
+.login-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); color: var(--fg); padding: 12px 14px; font-family: monospace; font-size: 12px; outline: none; margin-bottom: 20px; transition: border-color 0.15s; }
+.login-input:focus { border-color: var(--green); }
+.login-btn { width: 100%; display: flex; align-items: center; justify-content: center; padding: 12px; background: var(--fg); color: var(--bg); font-weight: 700; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.15s; }
+.login-btn:hover { background: var(--green); color: #000; }
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.login-hint { margin-top: 20px; font-size: 10px; color: var(--fg3); line-height: 1.6; }
+.login-hint a { color: var(--fg2); text-decoration: underline; }
 </style>
 </head>
 <body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green); margin-bottom: 10px;">Security</div>
+    <div class="login-title">Admin Authentication</div>
+    <div class="login-sub">Enter your GitHub Personal Access Token to authenticate. This grants direct write-access to your portfolio repository.</div>
+    <input type="password" id="gh-token" class="login-input" placeholder="ghp_xxxxxxxxxxxxxxxxx..." spellcheck="false" autocomplete="off">
+    <button class="login-btn" id="login-btn" onclick="authenticate()">Authenticate</button>
+    <div class="login-hint">
+      Don't have a token? <a href="https://github.com/settings/tokens/new?scopes=repo&description=PLM+Portfolio+Admin" target="_blank">Generate one here</a>. Make sure it has the <strong>repo</strong> scope.
+    </div>
+  </div>
+</div>
 
 <div class="shell">
   <!-- SIDEBAR -->
@@ -95,7 +119,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
     <div id="sb-categories"></div>
 
     <div class="sidebar-footer">
-      <button class="btn primary" style="width:100%" onclick="saveAll()">Save & Export JSON</button>
+      <button class="btn primary" id="btn-save-all" style="width:100%" onclick="saveAll()">Publish to Live Site</button>
     </div>
   </aside>
 
@@ -107,7 +131,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
     </div>
 
     <div class="actions-bar">
-      <button class="btn primary" onclick="saveAll()">💾 Save & Export</button>
+      <button class="btn primary" id="btn-save-all-main" onclick="saveAll()">🚀 Publish to Vercel</button>
       <button class="btn" onclick="importJSON()">📂 Import JSON</button>
       <button class="btn" onclick="copyJSON()">📋 Copy JSON</button>
       <span class="unsaved" id="unsaved-label">● Unsaved changes</span>
@@ -126,13 +150,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
           <li><strong style="color:var(--green)">Categories</strong> — Description and deliverables for project sub-categories</li>
         </ul>
         <p><strong style="color:var(--fg)">2.</strong> Edit the fields. Changes auto-save when you switch sections.</p>
-        <p><strong style="color:var(--fg)">3.</strong> Click <strong style="color:var(--fg)">Save & Export</strong> to download updated JSON files.</p>
-        <p><strong style="color:var(--fg)">4.</strong> Replace the files in your portfolio folder:</p>
-        <ul style="margin:8px 0 12px 20px;list-style:disc">
-          <li><code style="color:var(--fg)">site-content.json</code> — unified data (used by admin)</li>
-          <li><code style="color:var(--fg)">content.json</code> — legacy format (used by portfolio build)</li>
-        </ul>
-        <p><strong style="color:var(--fg)">5.</strong> Push to deploy: <code style="color:var(--fg);background:rgba(255,255,255,.05);padding:2px 8px">git add . && git commit -m "content update" && git push</code></p>
+        <p><strong style="color:var(--fg)">3.</strong> Click <strong style="color:var(--fg)">Publish to Vercel</strong> to instantly push changes directly to the live site.</p>
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
         <p style="color:var(--fg3)"><strong>Tip:</strong> Use <kbd style="border:1px solid var(--border);padding:1px 6px;border-radius:2px">⌘S</kbd> / <kbd style="border:1px solid var(--border);padding:1px 6px;border-radius:2px">Ctrl+S</kbd> to quick-save at any time.</p>
       </div>

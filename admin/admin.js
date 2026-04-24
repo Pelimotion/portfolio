@@ -4,6 +4,52 @@ let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
 
+
+// ─── GitHub API Auth ──────────────────────────────────────────────────────
+const REPO = 'Pelimotion/portfolio';
+let githubToken = localStorage.getItem('ghToken');
+
+function checkAuth() {
+  const overlay = document.getElementById('login-overlay');
+  if(githubToken) {
+    if(overlay) overlay.style.display = 'none';
+    return true;
+  }
+  if(overlay) overlay.style.display = 'flex';
+  return false;
+}
+
+async function authenticate() {
+  const input = document.getElementById('gh-token');
+  const btn = document.getElementById('login-btn');
+  const token = input.value.trim();
+  if(!token) return;
+  
+  btn.textContent = 'Verifying...';
+  btn.disabled = true;
+  
+  try {
+    const res = await fetch('https://api.github.com/user', {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if(!res.ok) throw new Error('Invalid token');
+    
+    githubToken = token;
+    localStorage.setItem('ghToken', token);
+    document.getElementById('login-overlay').style.display = 'none';
+    toast('Authenticated successfully!');
+    
+    // Refresh data now that we have auth
+    checkAuth();
+loadData();
+  } catch(e) {
+    alert('Authentication failed: ' + e.message);
+    btn.textContent = 'Authenticate';
+    btn.disabled = false;
+  }
+}
+
+
 async function loadData(){
   try {
     const r = await fetch('../site-content.json?t='+Date.now());
@@ -411,32 +457,72 @@ function saveCoverLetterToMem(){
 function saveCoverLetterAction(){ saveCoverLetterToMem(); saveAll(); }
 
 // ─── Save / Export ────────────────────────────────────────────────────────
-function saveAll(){
+
+async function saveAll(){
+  if(!checkAuth()) return;
   autoSave();
-  // Also export legacy content.json for backward compat
+  
   const legacy = { _note: D._note||'', clients: D.clients||{}, categories: D.categories||{} };
-
-  // Download site-content.json
-  const json = JSON.stringify(D, null, 2);
-  download(json, 'site-content.json');
-
-  // Also download content.json
-  setTimeout(()=>download(JSON.stringify(legacy,null,2), 'content.json'), 500);
-
-  hasUnsaved=false;
-  document.getElementById('unsaved-label').classList.remove('visible');
-  buildSidebar();
-  toast('✓ Exported site-content.json + content.json — replace both files in your portfolio folder, then git push');
+  const jsonContent = JSON.stringify(D, null, 2);
+  const legacyContent = JSON.stringify(legacy, null, 2);
+  
+  const btn = document.getElementById('btn-save-all-main');
+  const oldText = btn.textContent;
+  btn.textContent = 'Publishing...';
+  btn.disabled = true;
+  toast('Pushing changes to GitHub...');
+  
+  try {
+    // 1. Get SHA of site-content.json
+    let sha1 = await getFileSha('site-content.json');
+    await commitFile('site-content.json', jsonContent, sha1, 'Admin: Update site-content.json');
+    
+    // 2. Get SHA of content.json (legacy)
+    let sha2 = await getFileSha('content.json');
+    await commitFile('content.json', legacyContent, sha2, 'Admin: Update content.json');
+    
+    hasUnsaved=false;
+    document.getElementById('unsaved-label').classList.remove('visible');
+    buildSidebar();
+    toast('✓ Published successfully! Vercel is now deploying your changes.');
+  } catch(e) {
+    console.error(e);
+    toast('Error publishing: ' + e.message, true);
+  } finally {
+    btn.textContent = oldText;
+    btn.disabled = false;
+  }
 }
 
-function download(content, filename){
-  const blob = new Blob([content], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
+async function getFileSha(path) {
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    headers: { 'Authorization': `token ${githubToken}` }
+  });
+  if(res.status === 404) return null; // File doesn't exist yet
+  if(!res.ok) throw new Error('Failed to get file info');
+  const data = await res.json();
+  return data.sha;
 }
 
+async function commitFile(path, content, sha, message) {
+  const body = {
+    message: message,
+    content: btoa(unescape(encodeURIComponent(content))), // Base64 encode UTF-8
+    branch: 'main'
+  };
+  if(sha) body.sha = sha;
+  
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `token ${githubToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  
+  if(!res.ok) throw new Error(`Failed to commit ${path}`);
+}
 function copyJSON(){
   autoSave();
   navigator.clipboard.writeText(JSON.stringify(D,null,2)).then(()=>toast('JSON copied to clipboard'));
@@ -492,4 +578,5 @@ document.addEventListener('keydown', e=>{
 });
 
 // ─── Init ─────────────────────────────────────────────────────────────────
+checkAuth();
 loadData();
