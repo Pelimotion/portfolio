@@ -149,8 +149,7 @@ async function getFileSha(path, token) {
   const res = await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path+'?ref=main&t='+Date.now(), {
     headers: { 
       'Authorization': 'token '+token, 
-      'Accept': 'application/vnd.github.v3+json',
-      'Cache-Control': 'no-cache'
+      'Accept': 'application/vnd.github.v3+json'
     }
   });
   if(res.status === 404) return null;
