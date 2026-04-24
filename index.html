@@ -153,8 +153,8 @@ section{width:100%;border-top:1px solid var(--border)}
 
   <div class="hero-content">
     <div class="hero-title-wrap">
-      <div class="hero-eyebrow">Motion Branding &amp; Creative Direction</div>
-      <h1 class="hero-title">Peli<em>motion</em><br>Hub<span style="color:rgba(240,237,232,.25)">.</span></h1>
+      <div class="hero-eyebrow" id="hero-eyebrow">Motion Branding &amp; Creative Direction</div>
+      <h1 class="hero-title" id="hero-title">Peli<em>motion</em><br>Hub<span style="color:rgba(240,237,232,.25)">.</span></h1>
     </div>
     <div class="hero-sub">
       <p class="hero-desc" id="hero-desc">Visual systems built for brands that set the pace, not just follow it.</p>
@@ -171,7 +171,7 @@ section{width:100%;border-top:1px solid var(--border)}
     <div class="about-grid">
       <div class="reveal">
         <div class="about-label">01 — The Studio</div>
-        <h2 class="about-title">Motion as a <em>strategic</em> language.</h2>
+        <h2 class="about-title" id="about-title">Motion as a <em>strategic</em> language.</h2>
         <div class="about-stats">
           <div class="about-stat"><div class="stat-val" id="stat-0-val">08+</div><div class="stat-lbl" id="stat-0-lbl">Years of Practice</div></div>
           <div class="about-stat" style="border-left:1px solid var(--border)"><div class="stat-val" id="stat-1-val">40+</div><div class="stat-lbl" id="stat-1-lbl">Brand Campaigns</div></div>
@@ -242,7 +242,7 @@ section{width:100%;border-top:1px solid var(--border)}
     <div class="contact-grid">
       <div class="reveal">
         <div class="about-label">03 — Contact</div>
-        <h2 class="contact-title">Open to direction, <em>collaborations</em> and long-form briefs.</h2>
+        <h2 class="contact-title" id="contact-title">Open to direction, <em>collaborations</em> and long-form briefs.</h2>
         <p class="contact-sub" id="contact-sub">Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.</p>
         <a href="mailto:conceicao.felipe@gmail.com" class="contact-email" id="contact-email">conceicao.felipe@gmail.com</a>
         <div class="contact-links">
@@ -315,6 +315,15 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
     const D = await r.json();
     const C = D.curriculum || {};
     const P = D.portfolio || {};
+    const L = D.landing || {};
+
+    // Landing
+    if(L.brandName) { const el=document.getElementById('hero-title'); if(el) el.innerHTML=L.brandName; }
+    if(L.brandSub) { const el=document.getElementById('hero-eyebrow'); if(el) el.innerHTML=L.brandSub; }
+    if(L.footerText) { const el=document.getElementById('footer-copy'); if(el) el.innerHTML=L.footerText; }
+    if(L.aboutTitle) { const el=document.getElementById('about-title'); if(el) el.innerHTML=L.aboutTitle; }
+    if(L.contactTitle) { const el=document.getElementById('contact-title'); if(el) el.innerHTML=L.contactTitle; }
+    if(L.contactSub) { const el=document.getElementById('contact-sub'); if(el) el.innerHTML=L.contactSub; }
 
     // Hero
     if(P.heroRelease) { const el=document.getElementById('hero-desc'); if(el) el.textContent=P.heroRelease; }

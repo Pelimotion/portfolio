@@ -283,20 +283,16 @@ function showLanding(){ autoSave(); currentSection='landing'; currentKey=null; h
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">LANDING PAGE</div><h1 class="page-title">Index Principal</h1></div>
     <div class="preview-ref">📍 <strong>File:</strong> index.html — The main hub page with particle animation and navigation buttons.</div>
-    <div class="card"><div class="card-title"><span class="icon">🏷️</span> Brand Identity</div>
-      <div class="field"><label>Brand Name (shown centered on landing)</label><input id="f-brandName" value="${esc(L.brandName||'Pelimotion')}" oninput="markUnsaved()"><div class="hint">The large text displayed below the logo.</div></div>
-      <div class="field"><label>Brand Subtitle</label><input id="f-brandSub" value="${esc(L.brandSub||'')}" oninput="markUnsaved()"><div class="hint">Small text below the brand name, e.g. "Motion Branding & Creative Direction"</div></div>
-      <div class="field"><label>Footer Text</label><input id="f-footerText" value="${esc(L.footerText||'')}" oninput="markUnsaved()"><div class="hint">Copyright line at the bottom of the landing page.</div></div>
+    <div class="card"><div class="card-title"><span class="icon">🏷️</span> Brand Identity (Hero)</div>
+      <div class="field"><label>Hero Title (HTML allowed)</label><input id="f-brandName" value="${esc(L.brandName||'Peli<em>motion</em><br>Hub<span style=\'color:rgba(240,237,232,.25)\'>.</span>')}" oninput="markUnsaved()"><div class="hint">Use <code>&lt;em&gt;text&lt;/em&gt;</code> for italic styling.</div></div>
+      <div class="field"><label>Hero Eyebrow (Subtitle)</label><input id="f-brandSub" value="${esc(L.brandSub||'Motion Branding & Creative Direction')}" oninput="markUnsaved()"><div class="hint">Small text above the main title.</div></div>
     </div>
-    <div class="card"><div class="card-title"><span class="icon">🔗</span> Navigation Buttons</div>
-      <div class="hint" style="margin-bottom:14px">The two main buttons on the landing page. Change labels and links here.</div>
-      ${(L.navButtons||[{label:'Portfolio',sub:'Motion Works',href:'V1/portfolio/index.html'},{label:'Curriculum',sub:'Creative Direction',href:'Curriculum/index.html'}]).map((b,i)=>`
-        <div class="exp-block"><div class="exp-block-title">Button ${i+1}</div>
-          <div class="field"><label>Label</label><input id="f-nav${i}-label" value="${esc(b.label)}" oninput="markUnsaved()"></div>
-          <div class="field"><label>Subtitle</label><input id="f-nav${i}-sub" value="${esc(b.sub)}" oninput="markUnsaved()"></div>
-          <div class="field"><label>Link (href)</label><input id="f-nav${i}-href" value="${esc(b.href)}" oninput="markUnsaved()"><div class="hint">Relative path, e.g. V1/portfolio/index.html</div></div>
-        </div>
-      `).join('')}
+    
+    <div class="card"><div class="card-title"><span class="icon">📝</span> Page Sections</div>
+      <div class="field"><label>About Title</label><input id="f-aboutTitle" value="${esc(L.aboutTitle||'Motion as a <em>strategic</em> language.')}" oninput="markUnsaved()"><div class="hint">Title for the About section. Use <code>&lt;em&gt;text&lt;/em&gt;</code> for italics.</div></div>
+      <div class="field"><label>Contact Title</label><input id="f-contactTitle" value="${esc(L.contactTitle||'Open to direction, <em>collaborations</em> and long-form briefs.')}" oninput="markUnsaved()"><div class="hint">Title for the Contact section.</div></div>
+      <div class="field"><label>Contact Subtext</label><input id="f-contactSub" value="${esc(L.contactSub||'Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.')}" oninput="markUnsaved()"><div class="hint">Text below the contact title.</div></div>
+      <div class="field"><label>Footer Text</label><input id="f-footerText" value="${esc(L.footerText||'Motion Branding & Creative Direction')}" oninput="markUnsaved()"><div class="hint">Secondary line at the bottom of the landing page.</div></div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveLanding()">Apply Changes</button></div>`;
 }
@@ -499,7 +495,7 @@ function saveLandingToMem(){
   const L = D.landing = D.landing||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
   L.brandName=v('f-brandName'); L.brandSub=v('f-brandSub'); L.footerText=v('f-footerText');
-  L.navButtons = [0,1].map(i=>({label:v(`f-nav${i}-label`),sub:v(`f-nav${i}-sub`),href:v(`f-nav${i}-href`)}));
+  L.aboutTitle=v('f-aboutTitle'); L.contactTitle=v('f-contactTitle'); L.contactSub=v('f-contactSub');
 }
 function saveLanding(){ saveLandingToMem(); saveAll(); }
 
