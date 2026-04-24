@@ -7,7 +7,7 @@ let hasUnsaved = false;
 // ─── PIN Auth (SHA-256, runs 100% locally — no external calls) ────────────
 // To change PIN: run this in browser console: sha256('yourpin').then(h=>console.log(h))
 // Then paste the hash below as ADMIN_PIN_HASH.
-const ADMIN_PIN_HASH = 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'; // default: 1234
+const ADMIN_PIN_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // default: 1234
 const REPO = 'Pelimotion/portfolio';
 const SESSION_KEY = 'plm_admin_unlocked';
 
