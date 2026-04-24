@@ -81,11 +81,12 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
   <div class="login-card">
     <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green); margin-bottom: 10px;">Security</div>
     <div class="login-title">Admin Authentication</div>
-    <div class="login-sub">Enter your GitHub Personal Access Token to authenticate. This grants direct write-access to your portfolio repository.</div>
-    <input type="password" id="gh-token" class="login-input" placeholder="ghp_xxxxxxxxxxxxxxxxx..." spellcheck="false" autocomplete="off">
-    <button class="login-btn" id="login-btn" onclick="authenticate()">Authenticate</button>
+    <div class="login-sub">Enter your GitHub Personal Access Token (classic) to authenticate. Make sure it has the <strong>repo</strong> scope enabled.</div>
+    <input type="password" id="gh-token" class="login-input" placeholder="ghp_xxxxxxxxxxxxxxxxx..." spellcheck="false" autocomplete="off" onkeydown="if(event.key==='Enter') authenticate()">
+    <div id="login-error" style="color:var(--red);font-size:11px;margin-bottom:12px;min-height:16px;"></div>
+    <button class="login-btn" id="login-btn" onclick="authenticate()">Authenticate &rarr;</button>
     <div class="login-hint">
-      Don't have a token? <a href="https://github.com/settings/tokens/new?scopes=repo&description=PLM+Portfolio+Admin" target="_blank">Generate one here</a>. Make sure it has the <strong>repo</strong> scope.
+      Don't have a token? <a href="https://github.com/settings/tokens/new?scopes=repo&description=PLM+Portfolio+Admin" target="_blank">Generate one here</a> (Classic Token, repo scope).
     </div>
   </div>
 </div>
@@ -119,7 +120,8 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
     <div id="sb-categories"></div>
 
     <div class="sidebar-footer">
-      <button class="btn primary" id="btn-save-all" style="width:100%" onclick="saveAll()">Publish to Live Site</button>
+      <button class="btn primary" id="btn-save-all" style="width:100%;margin-bottom:8px" onclick="saveAll()">Publish to Live Site</button>
+      <button class="btn" style="width:100%;font-size:8px" onclick="logout()">⎋ Sign Out</button>
     </div>
   </aside>
 

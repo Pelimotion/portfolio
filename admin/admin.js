@@ -4,10 +4,9 @@ let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
 
-
 // ─── GitHub API Auth ──────────────────────────────────────────────────────
 const REPO = 'Pelimotion/portfolio';
-let githubToken = localStorage.getItem('ghToken');
+let githubToken = localStorage.getItem('plm_ghToken');
 
 function checkAuth() {
   const overlay = document.getElementById('login-overlay');
@@ -22,31 +21,43 @@ function checkAuth() {
 async function authenticate() {
   const input = document.getElementById('gh-token');
   const btn = document.getElementById('login-btn');
-  const token = input.value.trim();
-  if(!token) return;
+  const errEl = document.getElementById('login-error');
+  const token = (input ? input.value : '').trim();
+  if(!token) { if(errEl) errEl.textContent = 'Please enter your token.'; return; }
   
-  btn.textContent = 'Verifying...';
-  btn.disabled = true;
+  if(btn) { btn.textContent = 'Verifying...'; btn.disabled = true; }
+  if(errEl) errEl.textContent = '';
   
   try {
     const res = await fetch('https://api.github.com/user', {
-      headers: { 'Authorization': `token ${token}` }
+      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
     });
-    if(!res.ok) throw new Error('Invalid token');
     
+    if(!res.ok) {
+      const body = await res.json().catch(()=>({}));
+      throw new Error(body.message || 'Token rejected (status ' + res.status + ')');
+    }
+    
+    const user = await res.json();
     githubToken = token;
-    localStorage.setItem('ghToken', token);
-    document.getElementById('login-overlay').style.display = 'none';
-    toast('Authenticated successfully!');
+    localStorage.setItem('plm_ghToken', token);
     
-    // Refresh data now that we have auth
-    checkAuth();
-loadData();
+    const overlay = document.getElementById('login-overlay');
+    if(overlay) overlay.style.display = 'none';
+    
+    toast('✓ Authenticated as ' + (user.login || 'user'));
+    loadData();
+    
   } catch(e) {
-    alert('Authentication failed: ' + e.message);
-    btn.textContent = 'Authenticate';
-    btn.disabled = false;
+    if(errEl) errEl.textContent = '⚠ ' + e.message;
+    if(btn) { btn.textContent = 'Authenticate'; btn.disabled = false; }
   }
+}
+
+function logout() {
+  githubToken = null;
+  localStorage.removeItem('plm_ghToken');
+  checkAuth();
 }
 
 
