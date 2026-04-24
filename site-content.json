@@ -2212,6 +2212,10 @@
       {
         "value": "12",
         "label": "Countries Reached"
+      },
+      {
+        "value": "",
+        "label": ""
       }
     ],
     "clientMarquee": [
@@ -2224,9 +2228,7 @@
       "CAOA Tiggo",
       "Suzano",
       "O Boticário",
-      "Colcci",
-      "Pelimotion Hub",
-      "Rockset"
+      "Colcci"
     ],
     "experience": [
       {
@@ -2241,6 +2243,7 @@
           "Strategic brands: Suzano, O Boticário, Colcci, FG and Embraed."
         ],
         "tags": [
+          "MOTION_DESIGN",
           "AI_R&D",
           "SYSTEMS",
           "LIVE",
@@ -2251,7 +2254,7 @@
         ]
       },
       {
-        "period": "2024 â 2025",
+        "period": "2024 — 2025",
         "role": "Artistic Collaboration â Duo Sirius",
         "company": "Interdisciplinary Visual Artist",
         "items": [
@@ -2264,7 +2267,7 @@
         ]
       },
       {
-        "period": "2019 â 2022",
+        "period": "2019 — 2022",
         "role": "Motion Designer & Post-Producer",
         "company": "Rockset",
         "items": [
@@ -2280,14 +2283,24 @@
     ],
     "education": [
       {
-        "period": "2014 â 2017",
+        "period": "2014 — 2017",
         "title": "Audiovisual Production",
-        "institution": "UNIVALI â Itajaí / Brazil"
+        "institution": "UNIVALI — Universidade do Vale do Itajaí"
       },
       {
-        "period": "2025",
-        "title": "AI & Generative Workflows",
-        "institution": "Self-directed R&D"
+        "period": "2021",
+        "title": "Audio Post Production",
+        "institution": "Estúdio Café Maestro"
+      },
+      {
+        "period": "2019",
+        "title": "Motion Design Essencial",
+        "institution": "Layer Lemonade"
+      },
+      {
+        "period": "2020",
+        "title": "Motion Beast",
+        "institution": "Motion Design School"
       }
     ],
     "languages": [
@@ -2328,9 +2341,9 @@
     },
     "contactEmail": "conceicao.felipe@gmail.com",
     "contactWhatsApp": "5547999664274",
-    "socialInstagram": "pelimotion",
-    "socialLinkedIn": "pelife",
-    "socialBehance": "pelimotion"
+    "socialInstagram": "instagram.com/pelimotion",
+    "socialLinkedIn": "https://www.linkedin.com/in/pelife/",
+    "socialBehance": "be.net/pelimotion"
   },
   "coverLetter": {
     "greeting": "AAAAA",
