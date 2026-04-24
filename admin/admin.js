@@ -1,64 +1,152 @@
-// ─── PLM Admin v2 — JS ──────────────────────────────────────────────────────
-let D = null; // site-content.json data
+// ─── PLM Admin v3 — JS ──────────────────────────────────────────────────────
+let D = null;
 let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
 
-// ─── GitHub API Auth ──────────────────────────────────────────────────────
+// ─── PIN Auth (SHA-256, runs 100% locally — no external calls) ────────────
+// To change PIN: run this in browser console: sha256('yourpin').then(h=>console.log(h))
+// Then paste the hash below as ADMIN_PIN_HASH.
+const ADMIN_PIN_HASH = 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'; // default: 1234
 const REPO = 'Pelimotion/portfolio';
-let githubToken = localStorage.getItem('plm_ghToken');
+const SESSION_KEY = 'plm_admin_unlocked';
 
-function checkAuth() {
-  const overlay = document.getElementById('login-overlay');
-  if(githubToken) {
-    if(overlay) overlay.style.display = 'none';
-    return true;
-  }
-  if(overlay) overlay.style.display = 'flex';
-  return false;
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-async function authenticate() {
-  const input = document.getElementById('gh-token');
-  const btn = document.getElementById('login-btn');
-  const errEl = document.getElementById('login-error');
-  const token = (input ? input.value : '').trim();
-  if(!token) { if(errEl) errEl.textContent = 'Please enter your token.'; return; }
-  
-  if(btn) { btn.textContent = 'Verifying...'; btn.disabled = true; }
-  if(errEl) errEl.textContent = '';
-  
-  try {
-    const res = await fetch('https://api.github.com/user', {
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    
-    if(!res.ok) {
-      const body = await res.json().catch(()=>({}));
-      throw new Error(body.message || 'Token rejected (status ' + res.status + ')');
-    }
-    
-    const user = await res.json();
-    githubToken = token;
-    localStorage.setItem('plm_ghToken', token);
-    
-    const overlay = document.getElementById('login-overlay');
-    if(overlay) overlay.style.display = 'none';
-    
-    toast('✓ Authenticated as ' + (user.login || 'user'));
+function isUnlocked() {
+  return sessionStorage.getItem(SESSION_KEY) === '1';
+}
+
+function showAuthOverlay() {
+  const el = document.getElementById('auth-overlay');
+  if(el) el.style.display = 'flex';
+}
+
+function hideAuthOverlay() {
+  const el = document.getElementById('auth-overlay');
+  if(el) el.style.display = 'none';
+}
+
+function onPinInput(input) {
+  // Clear error when typing
+  const err = document.getElementById('auth-error');
+  if(err) err.textContent = '';
+  // Auto-submit when 4 digits entered
+  if(input.value.length >= 4) checkPin();
+}
+
+async function checkPin() {
+  const input = document.getElementById('auth-pin');
+  const btn = document.getElementById('auth-btn');
+  const errEl = document.getElementById('auth-error');
+  if(!input) return;
+  const pin = input.value.trim();
+  if(!pin) { if(errEl) errEl.textContent = 'Enter your PIN'; return; }
+  if(btn) btn.disabled = true;
+  const hash = await sha256(pin);
+  if(hash === ADMIN_PIN_HASH) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    hideAuthOverlay();
     loadData();
-    
+  } else {
+    if(errEl) errEl.textContent = 'Incorrect PIN. Try again.';
+    input.value = '';
+    input.focus();
+    if(btn) btn.disabled = false;
+  }
+}
+
+function lockAdmin() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function setActive(el) {
+  document.querySelectorAll('.sidebar-nav-item').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── Publish Modal ────────────────────────────────────────────────────────
+function openPublishModal() {
+  autoSave();
+  document.getElementById('publish-modal').classList.add('open');
+  const inp = document.getElementById('gh-token-modal');
+  if(inp) { inp.value = ''; setTimeout(()=>inp.focus(), 100); }
+  const err = document.getElementById('publish-error');
+  if(err) err.textContent = '';
+}
+
+function closePublishModal() {
+  document.getElementById('publish-modal').classList.remove('open');
+}
+
+async function doPublish() {
+  const inp = document.getElementById('gh-token-modal');
+  const btn = document.getElementById('publish-btn');
+  const errEl = document.getElementById('publish-error');
+  const token = (inp ? inp.value.trim() : '');
+  if(!token) { if(errEl) errEl.textContent = 'Please enter your GitHub token.'; return; }
+  if(errEl) errEl.textContent = '';
+  if(btn) { btn.textContent = 'Pushing...'; btn.disabled = true; }
+
+  const legacy = { _note: D._note||'', clients: D.clients||{}, categories: D.categories||{} };
+  const jsonContent = JSON.stringify(D, null, 2);
+  const legacyContent = JSON.stringify(legacy, null, 2);
+
+  try {
+    const sha1 = await getFileSha('site-content.json', token);
+    await commitFile('site-content.json', jsonContent, sha1, 'Admin: Update site-content.json', token);
+    const sha2 = await getFileSha('content.json', token);
+    await commitFile('content.json', legacyContent, sha2, 'Admin: Update content.json', token);
+
+    hasUnsaved = false;
+    document.getElementById('unsaved-label').classList.remove('visible');
+    closePublishModal();
+    toast('✓ Published! Vercel is deploying now.');
+    buildSidebar();
   } catch(e) {
     if(errEl) errEl.textContent = '⚠ ' + e.message;
-    if(btn) { btn.textContent = 'Authenticate'; btn.disabled = false; }
+  } finally {
+    if(btn) { btn.textContent = '🚀 Push to GitHub'; btn.disabled = false; }
   }
 }
 
-function logout() {
-  githubToken = null;
-  localStorage.removeItem('plm_ghToken');
-  checkAuth();
+async function getFileSha(path, token) {
+  const res = await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path, {
+    headers: { 'Authorization': 'token '+token, 'Accept': 'application/vnd.github.v3+json' }
+  });
+  if(res.status === 404) return null;
+  if(!res.ok) { const b=await res.json().catch(()=>({})); throw new Error(b.message||'Cannot read '+path); }
+  return (await res.json()).sha;
 }
+
+async function commitFile(path, content, sha, message, token) {
+  const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: 'main' };
+  if(sha) body.sha = sha;
+  const res = await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path, {
+    method: 'PUT',
+    headers: { 'Authorization': 'token '+token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok) { const b=await res.json().catch(()=>({})); throw new Error(b.message||'Failed to commit '+path); }
+}
+
+// ─── Export / Import ──────────────────────────────────────────────────────
+function exportJSON() {
+  autoSave();
+  const legacy = { _note: D._note||'', clients: D.clients||{}, categories: D.categories||{} };
+  download(JSON.stringify(D, null, 2), 'site-content.json');
+  setTimeout(() => download(JSON.stringify(legacy, null, 2), 'content.json'), 500);
+  hasUnsaved = false;
+  document.getElementById('unsaved-label').classList.remove('visible');
+  toast('✓ Downloaded site-content.json + content.json');
+}
+
+// Keep saveAll() as alias for exportJSON for backward compat with existing inline buttons
+function saveAll() { exportJSON(); }
 
 
 async function loadData(){
@@ -584,10 +672,16 @@ function setStatus(msg, warn=false){
 }
 
 // ─── Keyboard shortcuts ──────────────────────────────────────────────────
-document.addEventListener('keydown', e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='s'){ e.preventDefault(); saveAll(); }
+document.addEventListener('keydown', e => {
+  if((e.metaKey||e.ctrlKey) && e.key==='s'){ e.preventDefault(); exportJSON(); }
+  if(e.key === 'Escape') closePublishModal();
 });
 
 // ─── Init ─────────────────────────────────────────────────────────────────
-checkAuth();
-loadData();
+if(isUnlocked()) {
+  hideAuthOverlay();
+  loadData();
+} else {
+  showAuthOverlay();
+  setTimeout(() => { const p = document.getElementById('auth-pin'); if(p) p.focus(); }, 200);
+}

@@ -34,6 +34,8 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 .btn.primary:hover{background:transparent;color:var(--fg)}
 .btn.danger{border-color:var(--red);color:var(--red)}
 .btn.danger:hover{background:var(--red);color:#fff}
+.btn.green{border-color:var(--green);color:var(--green)}
+.btn.green:hover{background:var(--green);color:#000}
 .field{margin-bottom:22px}
 .field label{display:block;font-size:8px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px}
 .field input,.field textarea,.field select{width:100%;background:var(--card);border:1.5px solid var(--border);color:var(--fg);padding:10px 12px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;resize:vertical}
@@ -62,31 +64,61 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 .preview-ref strong{color:var(--fg2)}
 .exp-block{border:1px solid var(--border);padding:20px;margin-bottom:16px;background:rgba(255,255,255,.01)}
 .exp-block-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:14px}
-.login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; flex-direction: column; }
-.login-card { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 420px; padding: 40px; text-align: left; }
-.login-title { font-size: 24px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
-.login-sub { font-size: 12px; color: var(--fg2); margin-bottom: 30px; line-height: 1.6; }
-.login-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); color: var(--fg); padding: 12px 14px; font-family: monospace; font-size: 12px; outline: none; margin-bottom: 20px; transition: border-color 0.15s; }
-.login-input:focus { border-color: var(--green); }
-.login-btn { width: 100%; display: flex; align-items: center; justify-content: center; padding: 12px; background: var(--fg); color: var(--bg); font-weight: 700; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.15s; }
-.login-btn:hover { background: var(--green); color: #000; }
-.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.login-hint { margin-top: 20px; font-size: 10px; color: var(--fg3); line-height: 1.6; }
-.login-hint a { color: var(--fg2); text-decoration: underline; }
+
+/* ── AUTH OVERLAY ── */
+.auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:380px;padding:40px}
+.auth-badge{font-size:9px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+.auth-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.auth-sub{font-size:12px;color:var(--fg2);margin-bottom:28px;line-height:1.6}
+.auth-input{width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);color:var(--fg);padding:14px 16px;font-family:'Space Grotesk',monospace;font-size:18px;letter-spacing:.3em;text-align:center;outline:none;transition:border-color .2s;margin-bottom:8px}
+.auth-input:focus{border-color:var(--green)}
+.auth-error{height:18px;font-size:11px;color:var(--red);margin-bottom:16px;text-align:center;font-weight:500}
+.auth-btn{width:100%;padding:14px;background:var(--fg);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s}
+.auth-btn:hover{background:var(--green);color:#000}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed}
+.auth-hint{margin-top:18px;font-size:10px;color:var(--fg3);text-align:center;line-height:1.6}
+.auth-hint code{background:rgba(255,255,255,.06);padding:2px 8px;font-family:monospace;color:var(--fg2)}
+
+/* ── PUBLISH MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:480px;padding:32px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.modal-sub{font-size:12px;color:var(--fg2);margin-bottom:24px;line-height:1.6}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
 </style>
 </head>
 <body>
 
-<div class="login-overlay" id="login-overlay">
-  <div class="login-card">
-    <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green); margin-bottom: 10px;">Security</div>
-    <div class="login-title">Admin Authentication</div>
-    <div class="login-sub">Enter your GitHub Personal Access Token (classic) to authenticate. Make sure it has the <strong>repo</strong> scope enabled.</div>
-    <input type="password" id="gh-token" class="login-input" placeholder="ghp_xxxxxxxxxxxxxxxxx..." spellcheck="false" autocomplete="off" onkeydown="if(event.key==='Enter') authenticate()">
-    <div id="login-error" style="color:var(--red);font-size:11px;margin-bottom:12px;min-height:16px;"></div>
-    <button class="login-btn" id="login-btn" onclick="authenticate()">Authenticate &rarr;</button>
-    <div class="login-hint">
-      Don't have a token? <a href="https://github.com/settings/tokens/new?scopes=repo&description=PLM+Portfolio+Admin" target="_blank">Generate one here</a> (Classic Token, repo scope).
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-badge">PLM Admin · Secured</div>
+    <div class="auth-title">Enter Access PIN</div>
+    <div class="auth-sub">Type your 4-digit admin PIN to access the content editor.</div>
+    <input type="password" inputmode="numeric" maxlength="4" id="auth-pin" class="auth-input" placeholder="••••" autocomplete="off" oninput="onPinInput(this)">
+    <div class="auth-error" id="auth-error"></div>
+    <button class="auth-btn" id="auth-btn" onclick="checkPin()">Unlock →</button>
+    <div class="auth-hint">Default PIN: <code>1234</code><br>Change it in admin.js → <code>ADMIN_PIN_HASH</code></div>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-bg" id="publish-modal">
+  <div class="modal-card">
+    <div class="auth-badge">GitHub API</div>
+    <div class="modal-title">Publish to Vercel</div>
+    <div class="modal-sub">Enter your GitHub Personal Access Token (Classic, with <strong>repo</strong> scope) to push changes directly to the live site. The token is used once and not stored.</div>
+    <div class="field">
+      <label>GitHub Token</label>
+      <input type="password" id="gh-token-modal" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" onkeydown="if(event.key==='Enter') doPublish()">
+      <div class="hint">Generate at: github.com → Settings → Developer Settings → Personal Access Tokens → Classic</div>
+    </div>
+    <div class="auth-error" id="publish-error" style="text-align:left;height:auto;margin:0 0 8px"></div>
+    <div class="modal-actions">
+      <button class="btn primary" id="publish-btn" onclick="doPublish()">🚀 Push to GitHub</button>
+      <button class="btn" onclick="closePublishModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -96,20 +128,20 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">Pelimotion</div>
-      <div class="sidebar-title">Site Admin v2</div>
+      <div class="sidebar-title">Site Admin v3</div>
     </div>
 
     <div class="sidebar-section">Pages</div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showLanding();this.classList.add('active')">
+    <div class="sidebar-item sidebar-nav-item" onclick="showLanding();setActive(this)">
       <div class="dot" style="background:var(--yellow)"></div><span>🏠 Landing Page</span>
     </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showPortfolio();this.classList.add('active')">
+    <div class="sidebar-item sidebar-nav-item" onclick="showPortfolio();setActive(this)">
       <div class="dot" style="background:var(--yellow)"></div><span>🎬 Portfolio</span>
     </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showCurriculum();this.classList.add('active')">
+    <div class="sidebar-item sidebar-nav-item" onclick="showCurriculum();setActive(this)">
       <div class="dot" style="background:var(--yellow)"></div><span>📄 Curriculum</span>
     </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showCoverLetter();this.classList.add('active')">
+    <div class="sidebar-item sidebar-nav-item" onclick="showCoverLetter();setActive(this)">
       <div class="dot" style="background:var(--yellow)"></div><span>✉️ Cover Letter</span>
     </div>
 
@@ -120,20 +152,22 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
     <div id="sb-categories"></div>
 
     <div class="sidebar-footer">
-      <button class="btn primary" id="btn-save-all" style="width:100%;margin-bottom:8px" onclick="saveAll()">Publish to Live Site</button>
-      <button class="btn" style="width:100%;font-size:8px" onclick="logout()">⎋ Sign Out</button>
+      <button class="btn green" id="btn-publish" style="width:100%;margin-bottom:8px" onclick="openPublishModal()">🚀 Publish to Vercel</button>
+      <button class="btn primary" style="width:100%;margin-bottom:8px" onclick="exportJSON()">💾 Export JSON</button>
+      <button class="btn" style="width:100%;font-size:8px" onclick="lockAdmin()">⎋ Lock</button>
     </div>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main class="main" id="main-content">
     <div class="page-header">
-      <div class="page-label">PLM Admin Panel v2</div>
+      <div class="page-label">PLM Admin Panel v3</div>
       <h1 class="page-title">Site Content Editor</h1>
     </div>
 
     <div class="actions-bar">
-      <button class="btn primary" id="btn-save-all-main" onclick="saveAll()">🚀 Publish to Vercel</button>
+      <button class="btn green" onclick="openPublishModal()">🚀 Publish to Vercel</button>
+      <button class="btn primary" onclick="exportJSON()">💾 Export JSON</button>
       <button class="btn" onclick="importJSON()">📂 Import JSON</button>
       <button class="btn" onclick="copyJSON()">📋 Copy JSON</button>
       <span class="unsaved" id="unsaved-label">● Unsaved changes</span>
@@ -142,51 +176,12 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
     <div class="card">
       <div class="card-title"><span class="icon">📖</span> How to use</div>
       <div style="font-size:12px;line-height:1.8;color:var(--fg2)">
-        <p><strong style="color:var(--fg)">1.</strong> Select a section from the sidebar:</p>
-        <ul style="margin:8px 0 12px 20px;list-style:disc">
-          <li><strong style="color:var(--yellow)">🏠 Landing Page</strong> — Brand name, navigation buttons, footer text</li>
-          <li><strong style="color:var(--yellow)">🎬 Portfolio</strong> — Hero text, contact info, social links, footer quotes</li>
-          <li><strong style="color:var(--yellow)">📄 Curriculum</strong> — Name, title, profile, stats, experience, education, skills, contact</li>
-          <li><strong style="color:var(--yellow)">✉️ Cover Letter</strong> — Greeting, body paragraphs, target role/company, sign-off</li>
-          <li><strong style="color:var(--green)">Clients</strong> — Description, release text, and deliverable tags for each project</li>
-          <li><strong style="color:var(--green)">Categories</strong> — Description and deliverables for project sub-categories</li>
-        </ul>
-        <p><strong style="color:var(--fg)">2.</strong> Edit the fields. Changes auto-save when you switch sections.</p>
-        <p><strong style="color:var(--fg)">3.</strong> Click <strong style="color:var(--fg)">Publish to Vercel</strong> to instantly push changes directly to the live site.</p>
-        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
-        <p style="color:var(--fg3)"><strong>Tip:</strong> Use <kbd style="border:1px solid var(--border);padding:1px 6px;border-radius:2px">⌘S</kbd> / <kbd style="border:1px solid var(--border);padding:1px 6px;border-radius:2px">Ctrl+S</kbd> to quick-save at any time.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon">🗂️</span> What each field controls</div>
-      <div style="font-size:11px;line-height:1.8;color:var(--fg2)">
-        <table style="width:100%;border-collapse:collapse">
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px 10px;font-weight:700;color:var(--fg);width:140px">Client Description</td>
-            <td style="padding:8px 10px">Shown below the client name in the portfolio gallery header</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px 10px;font-weight:700;color:var(--fg)">Release Text</td>
-            <td style="padding:8px 10px">Editorial text shown in the video player modal</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px 10px;font-weight:700;color:var(--fg)">Deliverables</td>
-            <td style="padding:8px 10px">Tag pills shown below description (e.g. "Social Media Campaign")</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px 10px;font-weight:700;color:var(--fg)">Hero Name</td>
-            <td style="padding:8px 10px">The massive title in the portfolio hero section</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px 10px;font-weight:700;color:var(--fg)">Footer Quotes</td>
-            <td style="padding:8px 10px">The two statements at the bottom of the portfolio page</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 10px;font-weight:700;color:var(--fg)">CV Stats</td>
-            <td style="padding:8px 10px">The 4 metric boxes in the curriculum hero (e.g. "08+ Years")</td>
-          </tr>
-        </table>
+        <p><strong style="color:var(--fg)">1.</strong> Select a section from the sidebar to edit its content.</p>
+        <p><strong style="color:var(--fg)">2.</strong> Make your changes — they auto-save in memory when you switch sections.</p>
+        <p><strong style="color:var(--fg)">3.</strong> Click <strong style="color:var(--green)">🚀 Publish to Vercel</strong> to push directly to the live site via GitHub API.</p>
+        <p><strong style="color:var(--fg)">4.</strong> Or click <strong style="color:var(--fg)">💾 Export JSON</strong> to download files and deploy manually.</p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+        <p style="color:var(--fg3)"><strong>Tip:</strong> <kbd style="border:1px solid var(--border);padding:1px 6px">⌘S</kbd> / <kbd style="border:1px solid var(--border);padding:1px 6px">Ctrl+S</kbd> to quick-export.</p>
       </div>
     </div>
   </main>
@@ -196,7 +191,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 <div class="status-bar">
   <div class="status-dot" id="status-dot"></div>
   <span id="status-text">Loading...</span>
-  <span style="margin-left:auto;font-size:9px;letter-spacing:.15em">PLM ADMIN v2.0</span>
+  <span style="margin-left:auto;font-size:9px;letter-spacing:.15em">PLM ADMIN v3.0</span>
 </div>
 
 <!-- TOAST -->
@@ -205,6 +200,6 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 <!-- FILE INPUT -->
 <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleImport(this)">
 
-<script src="admin.js?v=2.2"></script>
+<script src="admin.js?v=3.0"></script>
 </body>
 </html>
