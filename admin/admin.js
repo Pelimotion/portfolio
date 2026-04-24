@@ -205,7 +205,7 @@ async function loadData(){
       });
       if(ghRes.ok) {
         const ghData = await ghRes.json();
-        D = JSON.parse(atob(ghData.content.replace(/\n/g,'')));
+        D = JSON.parse(decodeURIComponent(escape(atob(ghData.content.replace(/\n/g,'')))));
         setStatus('✓ Loaded from GitHub (source of truth)');
         buildSidebar();
         showLanding();
