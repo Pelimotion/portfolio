@@ -1,12 +1,57 @@
 {
   "_note": "Unified content layer for the entire Pelimotion site. Edit via admin/index.html or directly here.",
-  "_version": "2.0",
+  "_version": "2.2",
+  "pages": {
+    "landing": {
+      "title": "Landing Hub",
+      "slug": "/",
+      "status": "public",
+      "group": "site",
+      "lastModified": "2026-04-24"
+    },
+    "portfolio": {
+      "title": "Portfolio Gallery",
+      "slug": "/v1/",
+      "status": "public",
+      "group": "site",
+      "lastModified": "2026-04-24"
+    },
+    "curriculum": {
+      "title": "Curriculum (Public)",
+      "slug": "/curriculum/",
+      "status": "public",
+      "group": "site",
+      "lastModified": "2026-04-24"
+    },
+    "cv-private": {
+      "title": "CV + Cover Letter",
+      "slug": "/curriculum/private/",
+      "status": "unlisted",
+      "group": "site",
+      "lastModified": "2026-04-24"
+    },
+    "admin": {
+      "title": "Admin Panel",
+      "slug": "/admin/",
+      "status": "system",
+      "group": "system",
+      "lastModified": "2026-04-24"
+    }
+  },
   "landing": {
     "brandName": "Pelimotion",
     "brandSub": "Motion Branding & Creative Direction",
     "navButtons": [
-      {"label": "Portfolio", "sub": "Motion Works", "href": "V1/portfolio/index.html"},
-      {"label": "Curriculum", "sub": "Creative Direction", "href": "Curriculum/index.html"}
+      {
+        "label": "Portfolio",
+        "sub": "Motion Works",
+        "href": "V1/portfolio/index.html"
+      },
+      {
+        "label": "Curriculum",
+        "sub": "Creative Direction",
+        "href": "Curriculum/index.html"
+      }
     ],
     "footerText": "© 2026 Pelimotion"
   },
@@ -25,124 +70,2122 @@
   },
   "clients": {
     "BC MAPPING FESTIVAL": {
-      "description": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
-      "release": "A full motion branding system developed for one of the south's largest projection mapping festivals. Every asset was engineered to feel kinetic in both digital and outdoor contexts.",
-      "deliverables": ["Brand Identity Motion", "Media Kit", "Social Media Campaign", "LED Visuals", "OOH Signage"]
+      "status": "public",
+      "slug": "bc-mapping-festival",
+      "lastModified": "2026-04-24",
+      "title": "BC MAPPING FESTIVAL",
+      "tagline": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
+      "description": "A full motion branding system developed for one of the south's largest projection mapping festivals. Every asset was engineered to feel kinetic in both digital and outdoor contexts.",
+      "services": [
+        "Brand Identity Motion",
+        "Media Kit",
+        "Social Media Campaign",
+        "LED Visuals",
+        "OOH Signage"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_50.jpg",
+      "seo": {
+        "title": "BC MAPPING FESTIVAL — Pelimotion",
+        "description": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_50.jpg"
+      },
+      "media": {
+        "root": [],
+        "categories": {
+          "Media Kit": [
+            {
+              "title": "CORES VERDE E AZUL",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_85.jpg"
+              ]
+            },
+            {
+              "title": "CORES 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%202_85.jpg"
+              ]
+            },
+            {
+              "title": "CORES",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES_85.jpg"
+              ]
+            },
+            {
+              "title": "ONDA PADROES",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/ONDA%20PADROES_85.jpg"
+              ]
+            },
+            {
+              "title": "TRANSICAO CORES 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES%202_85.jpg"
+              ]
+            },
+            {
+              "title": "TRANSICAO CORES",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/TRANSICAO%20CORES_85.jpg"
+              ]
+            }
+          ],
+          "Motion Campaign": [
+            {
+              "title": "BC MAPPING BOARD",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_%20BOARD_85.jpg"
+              ]
+            },
+            {
+              "title": "BC MAPPING INFOS 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_INFOS_01_85.jpg"
+              ]
+            },
+            {
+              "title": "BC MAPPING LED 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_01_85.jpg"
+              ]
+            },
+            {
+              "title": "BC MAPPING LED 02",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_LED_02_85.jpg"
+              ]
+            },
+            {
+              "title": "BC MAPPING TEMPLATE PEIXE 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Motion%20Campaign/BC_MAPPING_TEMPLATE_PEIXE_01_85.jpg"
+              ]
+            }
+          ]
+        },
+        "total": 11
+      }
     },
     "EQI": {
-      "description": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
-      "release": "Exclusive making-of content produced for EQI's high-end brand activation at Cirque du Soleil. Captures the intersection of luxury finance and world-class live performance.",
-      "deliverables": ["Making Of", "Institutional Film"]
+      "status": "public",
+      "slug": "eqi",
+      "lastModified": "2026-04-24",
+      "title": "EQI",
+      "tagline": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
+      "description": "Exclusive making-of content produced for EQI's high-end brand activation at Cirque du Soleil. Captures the intersection of luxury finance and world-class live performance.",
+      "services": [
+        "Making Of",
+        "Institutional Film"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg",
+      "seo": {
+        "title": "EQI — Pelimotion",
+        "description": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "EQI MAKING OF CIRQUE DU SOLEIL",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
     },
     "FAST SHIPPING": {
-      "description": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
-      "release": "A concept-driven rebranding exploration for Fast Shipping, translating the brand's core promise of speed and reliability into a living, modular motion identity.",
-      "deliverables": ["Brand Manifesto", "Identity Animation", "Digital Campaign"]
+      "status": "public",
+      "slug": "fast-shipping",
+      "lastModified": "2026-04-24",
+      "title": "FAST SHIPPING",
+      "tagline": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
+      "description": "A concept-driven rebranding exploration for Fast Shipping, translating the brand's core promise of speed and reliability into a living, modular motion identity.",
+      "services": [
+        "Brand Manifesto",
+        "Identity Animation",
+        "Digital Campaign"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg",
+      "seo": {
+        "title": "FAST SHIPPING — Pelimotion",
+        "description": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "FAST SHIPPING LIVING REBRANDING",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
     },
     "FUNKY ROOM": {
-      "description": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
-      "release": "Six editions. One consistent visual language that grows bolder with each release. Funky Room's motion identity was built to live on every screen — from stories to street panels.",
-      "deliverables": ["Event Identity", "Social Media Campaign", "OOH Visuals", "Brand Animation", "BTS Content", "Motion Kit"]
+      "status": "public",
+      "slug": "funky-room",
+      "lastModified": "2026-04-24",
+      "title": "FUNKY ROOM",
+      "tagline": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
+      "description": "Six editions. One consistent visual language that grows bolder with each release. Funky Room's motion identity was built to live on every screen — from stories to street panels.",
+      "services": [
+        "Event Identity",
+        "Social Media Campaign",
+        "OOH Visuals",
+        "Brand Animation",
+        "BTS Content",
+        "Motion Kit"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg",
+      "seo": {
+        "title": "FUNKY ROOM — Pelimotion",
+        "description": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "FUNKY ROOM 3 OVERVIEW",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_85.jpg"
+            ]
+          },
+          {
+            "title": "MEDIA KIT EDIÇÃO ESPECIAL FNKD UP",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_85.jpg"
+            ]
+          },
+          {
+            "title": "SOCIAL MEDIA FUNKY WEEKEND",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/SOCIAL%20MEDIA%20-%20FUNKY%20WEEKEND_85.jpg"
+            ]
+          }
+        ],
+        "categories": {
+          "FUNKY 6 - FUNKED UP": [
+            {
+              "title": "BTS CENA 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/BTS%20-%20Cena%202_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP LOGO",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP BTS",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20BTS_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP CRIATIVO 01 LOGO REVEAL",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001%20-%20logo%20reveal_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP CRIATIVO 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2001_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP CRIATIVO 02 LIE 3 SLOGAN",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20lie%203%20slogan_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP CRIATIVO 02 LINE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2002%20-%20line_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP CRIATIVO 03 CONCECITO + SLOGAN",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20concecito%20%2B%20slogan_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKED UP CRIATIVO 03 ISNT JUST A PARTY",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20-%20Criativo%2003%20-%20isnt%20just%20a%20party_85.jpg"
+              ]
+            },
+            {
+              "title": "SLOGAN",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/SLOGAN_85.jpg"
+              ]
+            }
+          ],
+          "FUNKY ROOM 1": [
+            {
+              "title": "FUNKY ROOM 1ST ROOM 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_01_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY ROOM 1ST ROOM 02",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_1ST_ROOM_02_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY ROOM ROOM AFTER PARTY",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%201/FUNKY_ROOM_ROOM_AFTER_PARTY_85.jpg"
+              ]
+            }
+          ],
+          "FUNKY ROOM 2": [
+            {
+              "title": "DROP 01 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_85.jpg"
+              ]
+            },
+            {
+              "title": "DROP 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY 2 DRIP E TICKET",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20DRIP_E_TICKET_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY 2 HEADLINE ULTIMOS INGRESSOS 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/FUNKY%202%20-%20HEADLINE%20ULTIMOS%20INGRESSOS_1_85.jpg"
+              ]
+            },
+            {
+              "title": "LOTE 80%",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/LOTE%2080%25_85.jpg"
+              ]
+            }
+          ],
+          "FUNKY ROOM 3": [
+            {
+              "title": "OOH FUNKY 3",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/OOH%20FUNKY%203_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 01 20.09",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2001%20-%2020.09_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 02 19.09",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2002%20-%2019.09_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 03 20.09",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203/SOCIAL%20MEDIA%2003%20-%2020.09_85.jpg"
+              ]
+            }
+          ],
+          "FUNKY ROOM 4": [
+            {
+              "title": "FUNKY 4 HEADLINE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_HEADLINE_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY 4 MC CAVERINHA",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_4%20_MC_CAVERINHA_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY BLUE EDITION 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_BLUE_EDITION_01_85.jpg"
+              ]
+            },
+            {
+              "title": "FUNKY TOCA DISCO V2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%204/FUNKY_TOCA%20DISCO_V2_85.jpg"
+              ]
+            }
+          ],
+          "FUNKY ROOM 5": [
+            {
+              "title": "FUNKY ROOM 5",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/FUNKY%20ROOM%205_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 01 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2001_1_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 02 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 02",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 03",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2003_85.jpg"
+              ]
+            }
+          ]
+        },
+        "total": 34
+      }
     },
     "FURB": {
-      "description": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
-      "release": "A comprehensive broadcast campaign for FURB, designed to reach across channels — from primetime TV to digital platforms — while maintaining full LIBRAS accessibility compliance.",
-      "deliverables": ["TV Spot", "Broadcast Campaign", "LIBRAS Accessible Version", "OOH Campaign", "Event Motion"]
+      "status": "public",
+      "slug": "furb",
+      "lastModified": "2026-04-24",
+      "title": "FURB",
+      "tagline": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
+      "description": "A comprehensive broadcast campaign for FURB, designed to reach across channels — from primetime TV to digital platforms — while maintaining full LIBRAS accessibility compliance.",
+      "services": [
+        "TV Spot",
+        "Broadcast Campaign",
+        "LIBRAS Accessible Version",
+        "OOH Campaign",
+        "Event Motion"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg",
+      "seo": {
+        "title": "FURB — Pelimotion",
+        "description": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg"
+      },
+      "media": {
+        "root": [],
+        "categories": {
+          "Broadcast Campaign - FURB": [
+            {
+              "title": "FURB CARTAO 10 1920 1080 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_85.jpg"
+              ]
+            },
+            {
+              "title": "FURB PONTO 1080 1920 LIBRAS 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_1080_1920_LIBRAS_1_85.jpg"
+              ]
+            },
+            {
+              "title": "FURB PONTO V3 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_PONTO_V3_1_85.jpg"
+              ]
+            }
+          ],
+          "OOH Campaign - ETEVI": [
+            {
+              "title": "ETEVI VT 10 1152 640 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_10_1152_640_1_85.jpg"
+              ]
+            },
+            {
+              "title": "ETEVI VT 15 1080 1920 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1080_1920_1_85.jpg"
+              ]
+            },
+            {
+              "title": "ETEVI VT 15 1920 1080 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/OOH%20Campaign%20-%20ETEVI/ETEVI_VT_15_1920_1080_1_85.jpg"
+              ]
+            }
+          ]
+        },
+        "total": 6
+      }
     },
     "HEO": {
-      "description": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
-      "release": "A precise, minimal logo reveal and brand motion system built for HEO's identity relaunch. Clean execution, maximum brand recall.",
-      "deliverables": ["Logo Animation", "Brand Identity Motion", "Visual System"]
+      "status": "public",
+      "slug": "heo",
+      "lastModified": "2026-04-24",
+      "title": "HEO",
+      "tagline": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
+      "description": "A precise, minimal logo reveal and brand motion system built for HEO's identity relaunch. Clean execution, maximum brand recall.",
+      "services": [
+        "Logo Animation",
+        "Brand Identity Motion",
+        "Visual System"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg",
+      "seo": {
+        "title": "HEO — Pelimotion",
+        "description": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "HEO REBRANDING 720",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
     },
     "LSLA": {
-      "description": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
-      "release": "From campaign posts to AI-generated food content and cinematic manifesto films, this project spans the full creative spectrum of Isla's coastal brand universe.",
-      "deliverables": ["Brand Manifesto", "Social Media Campaign", "AI Generated Content", "Event Promotion", "Weekly Campaign"]
+      "status": "public",
+      "slug": "lsla",
+      "lastModified": "2026-04-24",
+      "title": "LSLA",
+      "tagline": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+      "description": "From campaign posts to AI-generated food content and cinematic manifesto films, this project spans the full creative spectrum of Isla's coastal brand universe.",
+      "services": [
+        "Brand Manifesto",
+        "Social Media Campaign",
+        "AI Generated Content",
+        "Event Promotion",
+        "Weekly Campaign"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
+      "seo": {
+        "title": "LSLA — Pelimotion",
+        "description": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "CHAMADA 07 03 26 L CIO",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_85.jpg"
+            ]
+          }
+        ],
+        "categories": {
+          "IA Genenerated": [
+            {
+              "title": "PRATOS E DRINKS 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_85.jpg"
+              ]
+            },
+            {
+              "title": "PRATOS E DRINKS 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_85.jpg"
+              ]
+            },
+            {
+              "title": "PRATOS E DRINKS 5",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_85.jpg"
+              ]
+            },
+            {
+              "title": "PRATOS E DRINKS",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_85.jpg"
+              ]
+            }
+          ],
+          "MANIFESTO": [
+            {
+              "title": "ISLA AFTERMOVIE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA BRAVA LUA CONCEPT",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA NAO VIRE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_85.jpg"
+              ]
+            },
+            {
+              "title": "POST MARE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_85.jpg"
+              ]
+            }
+          ],
+          "Motion Campaign": [
+            {
+              "title": "CHAMADA 24 01 26 CHELINA MANUHUTU",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_85.jpg"
+              ]
+            },
+            {
+              "title": "CHAMADA 25 10 25 MARCEL COELHO 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA 01 VIRADA LOTE 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA LINE BALIMOON 12 11 1080 1920",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA NEGRONI WEEK",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA RESTAURANTE VIRADA DE LOTE SLIDE01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA RESTAURENTE SALMAO VIDEO",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE BLUE 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE UP 08 11 1080 1920 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE UP 23 10 1080 1920 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_85.jpg"
+              ]
+            },
+            {
+              "title": "PROGRAMACAO SEMANAL RESTAURANTE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_85.jpg"
+              ]
+            }
+          ]
+        },
+        "total": 20
+      }
     },
     "NEXTRON": {
-      "description": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
-      "release": "A refined brand signature update for Nextron, expressing precision and forward motion through minimal animation language.",
-      "deliverables": ["Logo Animation", "Brand Signature"]
+      "status": "public",
+      "slug": "nextron",
+      "lastModified": "2026-04-24",
+      "title": "NEXTRON",
+      "tagline": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
+      "description": "A refined brand signature update for Nextron, expressing precision and forward motion through minimal animation language.",
+      "services": [
+        "Logo Animation",
+        "Brand Signature"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg",
+      "seo": {
+        "title": "NEXTRON — Pelimotion",
+        "description": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "NEXTRON ALTERACAO ASSINATURA",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
     },
     "PIANISSIMO": {
-      "description": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
-      "release": "Generative stage visuals designed to breathe with the music. Built for live performance, Pianissimo's visualizers shift between ambient and reactive modes in real time.",
-      "deliverables": ["Stage Visuals", "Live Visualizer", "Generative Motion"]
+      "status": "public",
+      "slug": "pianissimo",
+      "lastModified": "2026-04-24",
+      "title": "PIANISSIMO",
+      "tagline": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
+      "description": "Generative stage visuals designed to breathe with the music. Built for live performance, Pianissimo's visualizers shift between ambient and reactive modes in real time.",
+      "services": [
+        "Stage Visuals",
+        "Live Visualizer",
+        "Generative Motion"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg",
+      "seo": {
+        "title": "PIANISSIMO — Pelimotion",
+        "description": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "STAGE PIANISSIMO VISUALIZER 3",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_85.jpg"
+            ]
+          },
+          {
+            "title": "STAGE PIANISSIMO VISUALIZER 4",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_85.jpg"
+            ]
+          },
+          {
+            "title": "STAGE PIANISSIMO VISUALIZER 1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 3
+      }
     },
     "PLAYA": {
-      "description": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
-      "release": "An ongoing creative partnership with Playa Beach Club — building a cohesive visual language across every touchpoint, from high-concept manifesto films to weekly social activations.",
-      "deliverables": ["Brand Manifesto", "Social Media Campaign", "Event Promotion", "OOH Signage", "Weekly Content", "Seasonal Campaign"]
+      "status": "public",
+      "slug": "playa",
+      "lastModified": "2026-04-24",
+      "title": "PLAYA",
+      "tagline": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
+      "description": "An ongoing creative partnership with Playa Beach Club — building a cohesive visual language across every touchpoint, from high-concept manifesto films to weekly social activations.",
+      "services": [
+        "Brand Manifesto",
+        "Social Media Campaign",
+        "Event Promotion",
+        "OOH Signage",
+        "Weekly Content",
+        "Seasonal Campaign"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_50.jpg",
+      "seo": {
+        "title": "PLAYA — Pelimotion",
+        "description": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_50.jpg"
+      },
+      "media": {
+        "root": [],
+        "categories": {
+          "MANIFESTO": [
+            {
+              "title": "BEACH TENIS DO PLAYA",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_85.jpg"
+              ]
+            },
+            {
+              "title": "CRIATIVO CONCEITO OPS ACERTEI NA PLAYA",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/CRIATIVO%20CONCEITO_OPS_ACERTEI_NA_PLAYA_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA CONCEITO BOIAS AO MAR",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA CONCEITO CARNAVAL",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_CARNAVAL_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA CONCEITO MODELO RESPIRE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_MODELO_RESPIRE_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA CONCEITO RUNNING CAIPIRINHA",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/PLAYA_CONCEITO_RUNNING_CAIPIRINHA_85.jpg"
+              ]
+            },
+            {
+              "title": "SURFISTA VIVA INTENSAMENTE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/SURFISTA_VIVA_INTENSAMENTE_85.jpg"
+              ]
+            }
+          ],
+          "Motion Campaign": [
+            {
+              "title": "AGENDA JANEIRO OOH 16.01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/AGENDA_JANEIRO_OOH%2016.01_85.jpg"
+              ]
+            },
+            {
+              "title": "CHAMADA CARNAPLAYA ABADAS 02",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_ABADAS_02_85.jpg"
+              ]
+            },
+            {
+              "title": "CHAMADA CARNAPLAYA COMECOU",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_COMECOU_85.jpg"
+              ]
+            },
+            {
+              "title": "CHAMADA CARNAPLAYA TERÇA 03",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_85.jpg"
+              ]
+            },
+            {
+              "title": "CHAMADA DUBDOGZ 29 01 26 V1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_DUBDOGZ_29_01_26_V1_85.jpg"
+              ]
+            },
+            {
+              "title": "DOM 21.12 MOTION",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/DOM_21.12_MOTION_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE UP VERAO 19 12 25 1080 1920",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/LINE_UP_VERAO_19_12_25_1080_1920_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA CHAMADA 20 04 26 MEGA BAILE DO PETROSKI FUNKY",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA CHAMADA SUNDAY SUNSET 01 02 26",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_SUNDAY_SUNSET_01_02_26_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA LINE 15 16 17 18",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_LINE_15_16_17_18_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA PROMOCAO 20 OFF 04 26",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_20_OFF_04_26_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYA PROMOCAO LINE UP GERAL 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_PROMOCAO_LINE_UP_GERAL_2_85.jpg"
+              ]
+            },
+            {
+              "title": "PLAYACHAMADA 19 04 26 KVSH 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_85.jpg"
+              ]
+            },
+            {
+              "title": "SEG 22.12 MOTION",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_85.jpg"
+              ]
+            }
+          ]
+        },
+        "total": 21
+      }
     },
     "RIO CARNAVAL": {
-      "description": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
-      "release": "Two films for the Rio Carnaval app launch — one a full release film, one a kinetic visualizer. Both designed to capture the rhythm and spectacle of the world's greatest carnival.",
-      "deliverables": ["App Release Film", "Motion Visualizer"]
+      "status": "public",
+      "slug": "rio-carnaval",
+      "lastModified": "2026-04-24",
+      "title": "RIO CARNAVAL",
+      "tagline": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
+      "description": "Two films for the Rio Carnaval app launch — one a full release film, one a kinetic visualizer. Both designed to capture the rhythm and spectacle of the world's greatest carnival.",
+      "services": [
+        "App Release Film",
+        "Motion Visualizer"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg",
+      "seo": {
+        "title": "RIO CARNAVAL — Pelimotion",
+        "description": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "RIO CARNAVAL APP RELEASE",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_85.jpg"
+            ]
+          },
+          {
+            "title": "RIO CARNAVAL APP VISUALIZER",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_VISUALIZER_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 2
+      }
     },
     "SUZANO": {
-      "description": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
-      "release": "A series of institutional pieces for Suzano spanning innovation, culture, and recognition — designed to communicate impact at scale across digital and event environments.",
-      "deliverables": ["Institutional Film", "Innovation Center Presentation", "Award Ceremony Visuals", "Internal Culture Film"]
+      "status": "public",
+      "slug": "suzano",
+      "lastModified": "2026-04-24",
+      "title": "SUZANO",
+      "tagline": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
+      "description": "A series of institutional pieces for Suzano spanning innovation, culture, and recognition — designed to communicate impact at scale across digital and event environments.",
+      "services": [
+        "Institutional Film",
+        "Innovation Center Presentation",
+        "Award Ceremony Visuals",
+        "Internal Culture Film"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg",
+      "seo": {
+        "title": "SUZANO — Pelimotion",
+        "description": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "SUZANO CENTRO INOVACAO V5",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_85.jpg"
+            ]
+          },
+          {
+            "title": "SUZANO LETRAS QUE TRANSFORMAM ALTA2",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_85.jpg"
+            ]
+          },
+          {
+            "title": "SUZANO PREMIO 2022",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_PREMIO_2022_85.jpg"
+            ]
+          },
+          {
+            "title": "SUZANO RIR ABETURA PREVIA3",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_RIR_ABETURA_PREVIA3_85.jpg"
+            ]
+          },
+          {
+            "title": "TEMPO DE CASA 04 23 PT",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/tempo_de_casa_04_23_pt_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 5
+      }
     },
     "WOLFGARTEN": {
-      "description": "Motion branding and signature animation for Wolfgarten — a premium European outdoor living brand entering the Brazilian market.",
-      "release": "Brand motion assets for Wolfgarten's Brazilian launch — precise, premium, and built to communicate quality craftsmanship through fluid, confident animation.",
-      "deliverables": ["Brand Signature Animation", "Preview Reel"]
+      "status": "public",
+      "slug": "wolfgarten",
+      "lastModified": "2026-04-24",
+      "title": "WOLFGARTEN",
+      "tagline": "Motion branding and signature animation for Wolfgarten — a premium European outdoor living brand entering the Brazilian market.",
+      "description": "Brand motion assets for Wolfgarten's Brazilian launch — precise, premium, and built to communicate quality craftsmanship through fluid, confident animation.",
+      "services": [
+        "Brand Signature Animation",
+        "Preview Reel"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg",
+      "seo": {
+        "title": "WOLFGARTEN — Pelimotion",
+        "description": "Motion branding and signature animation for Wolfgarten — a premium European outdoor living brand entering the Brazilian market.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "WOLFEGARTEN ASSINATURA",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_85.jpg"
+            ]
+          },
+          {
+            "title": "WOLFEGARTEN PREVIEW4",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_PREVIEW4.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_PREVIEW4_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_PREVIEW4.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_PREVIEW4_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_PREVIEW4_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_PREVIEW4_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 2
+      }
     },
     "PREFEITURA TIMBÓ": {
-      "description": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
-      "release": "Public sector motion design for Prefeitura de Timbó, balancing institutional clarity with modern visual language to reach the full breadth of the community.",
-      "deliverables": ["Institutional Campaign", "Social Media Motion"]
+      "status": "public",
+      "slug": "prefeitura-timbo",
+      "lastModified": "2026-04-24",
+      "title": "PREFEITURA TIMBÓ",
+      "tagline": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
+      "description": "Public sector motion design for Prefeitura de Timbó, balancing institutional clarity with modern visual language to reach the full breadth of the community.",
+      "services": [
+        "Institutional Campaign",
+        "Social Media Motion"
+      ],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "",
+      "seo": {
+        "title": "PREFEITURA TIMBÓ — Pelimotion",
+        "description": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
+        "ogImage": ""
+      },
+      "media": {
+        "root": [],
+        "categories": {},
+        "total": 0
+      }
+    },
+    "BEIRAMAR SHOPPING": {
+      "status": "public",
+      "slug": "beiramar-shopping",
+      "lastModified": "2026-04-24",
+      "title": "BEIRAMAR SHOPPING",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
+      "seo": {
+        "title": "BEIRAMAR SHOPPING — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "BEIRAMAR SHOPPING DIA DOS PAIS VT V4 1080",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
+    },
+    "FIREDOGS": {
+      "status": "public",
+      "slug": "firedogs",
+      "lastModified": "2026-04-24",
+      "title": "FIREDOGS",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
+      "seo": {
+        "title": "FIREDOGS — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "FIREDOGS ROCK AT THE BAR 1080",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
+    },
+    "NEY SOUZA": {
+      "status": "private",
+      "slug": "ney-souza",
+      "lastModified": "2026-04-24",
+      "title": "NEY SOUZA",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
+      "seo": {
+        "title": "NEY SOUZA — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "NEY SOUZA CARAVANA DO AMANHA",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
+    },
+    "R9 LUXEMBOURG": {
+      "status": "public",
+      "slug": "r9-luxembourg",
+      "lastModified": "2026-04-24",
+      "title": "R9 LUXEMBOURG",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
+      "seo": {
+        "title": "R9 LUXEMBOURG — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "R9 LUXEMBURGO V1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
+    },
+    "SIMÃO": {
+      "status": "public",
+      "slug": "simao",
+      "lastModified": "2026-04-24",
+      "title": "SIMÃO",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg",
+      "seo": {
+        "title": "SIMÃO — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "SIMAO DISPLAY",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY.mp4",
+            "preview_url": null,
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
     }
   },
   "categories": {
     "Media Kit": {
       "description": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application.",
-      "deliverables": ["Pattern Animation", "Color System", "Transition Kit"]
+      "deliverables": [
+        "Pattern Animation",
+        "Color System",
+        "Transition Kit"
+      ]
     },
     "Motion Campaign": {
       "description": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces.",
-      "deliverables": ["Social Media Post", "Story / Reel", "OOH Animation", "Digital Ad"]
+      "deliverables": [
+        "Social Media Post",
+        "Story / Reel",
+        "OOH Animation",
+        "Digital Ad"
+      ]
     },
     "FUNKY 6 - FUNKED UP": {
       "description": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.",
-      "deliverables": ["BTS Film", "Logo Animation", "Social Media Campaign", "Conceptual Creatives"]
+      "deliverables": [
+        "BTS Film",
+        "Logo Animation",
+        "Social Media Campaign",
+        "Conceptual Creatives"
+      ]
     },
     "FUNKY ROOM 1": {
       "description": "Edition 01 — The original. First Room, After Party, and the birth of the visual language.",
-      "deliverables": ["Event Promo", "After Party Promo"]
+      "deliverables": [
+        "Event Promo",
+        "After Party Promo"
+      ]
     },
     "FUNKY ROOM 2": {
       "description": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.",
-      "deliverables": ["Ticket Drop Animation", "Headline Reveal", "Social Media Promo"]
+      "deliverables": [
+        "Ticket Drop Animation",
+        "Headline Reveal",
+        "Social Media Promo"
+      ]
     },
     "FUNKY ROOM 3": {
       "description": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH.",
-      "deliverables": ["Feed Post", "OOH Adaptation", "Social Media Campaign"]
+      "deliverables": [
+        "Feed Post",
+        "OOH Adaptation",
+        "Social Media Campaign"
+      ]
     },
     "FUNKY ROOM 4": {
       "description": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content.",
-      "deliverables": ["Artist Promo", "Turntable Visual", "Headline Animation"]
+      "deliverables": [
+        "Artist Promo",
+        "Turntable Visual",
+        "Headline Animation"
+      ]
     },
     "FUNKY ROOM 5": {
       "description": "Edition 05 — Evolved social media system with refined grid and content hierarchy.",
-      "deliverables": ["Social Media System", "Grid Content", "Reels"]
+      "deliverables": [
+        "Social Media System",
+        "Grid Content",
+        "Reels"
+      ]
     },
     "Broadcast Campaign - FURB": {
       "description": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility.",
-      "deliverables": ["TV Spot", "LIBRAS Version", "Broadcast Adaptation"]
+      "deliverables": [
+        "TV Spot",
+        "LIBRAS Version",
+        "Broadcast Adaptation"
+      ]
     },
     "OOH Campaign - ETEVI": {
       "description": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor.",
-      "deliverables": ["LED Screen", "Digital OOH", "Social Media Adaptation"]
+      "deliverables": [
+        "LED Screen",
+        "Digital OOH",
+        "Social Media Adaptation"
+      ]
     },
     "MANIFESTO": {
       "description": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul.",
-      "deliverables": ["Brand Manifesto Film", "Concept Film", "Narrative Piece"]
+      "deliverables": [
+        "Brand Manifesto Film",
+        "Concept Film",
+        "Narrative Piece"
+      ]
     },
     "IA Genenerated": {
       "description": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools.",
-      "deliverables": ["AI Generated Content", "Food & Lifestyle Visual"]
+      "deliverables": [
+        "AI Generated Content",
+        "Food & Lifestyle Visual"
+      ]
     }
   },
   "curriculum": {
@@ -155,12 +2198,37 @@
     "profileParagraph1": "I work where strategy meets motion. Over eight years I've built visual systems for global brands across automotive, finance and culture — designing how a brand moves, not only how it looks.",
     "profileParagraph2": "My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion Hub, where we develop AI-integrated motion pipelines and direct immersive experiences — combining motion design with light and projection for theater and live performances.",
     "stats": [
-      {"value": "08+", "label": "Years of Practice"},
-      {"value": "40+", "label": "Brand Campaigns"},
-      {"value": "12", "label": "Countries Reached"},
-      {"value": "∞", "label": "Frames Per Second"}
+      {
+        "value": "08+",
+        "label": "Years of Practice"
+      },
+      {
+        "value": "40+",
+        "label": "Brand Campaigns"
+      },
+      {
+        "value": "12",
+        "label": "Countries Reached"
+      },
+      {
+        "value": "∞",
+        "label": "Frames Per Second"
+      }
     ],
-    "clientMarquee": ["BMW", "Subaru", "Hyundai", "EQI", "Movida", "Motul", "CAOA Tiggo", "Suzano", "O Boticário", "Colcci", "Pelimotion Hub", "Rockset"],
+    "clientMarquee": [
+      "BMW",
+      "Subaru",
+      "Hyundai",
+      "EQI",
+      "Movida",
+      "Motul",
+      "CAOA Tiggo",
+      "Suzano",
+      "O Boticário",
+      "Colcci",
+      "Pelimotion Hub",
+      "Rockset"
+    ],
     "experience": [
       {
         "period": "2022 — PRE",
@@ -172,14 +2240,24 @@
           "Immersive artistic direction (light/projection).",
           "Brand strategy alignment for high-ticket positioning."
         ],
-        "tags": ["DIRECTION", "SYSTEMS", "AI_R&D", "LIVE"]
+        "tags": [
+          "DIRECTION",
+          "SYSTEMS",
+          "AI_R&D",
+          "LIVE"
+        ]
       },
       {
         "period": "2024 — 2025",
         "role": "Artistic Collaboration — Duo Sirius",
         "company": "Interdisciplinary Visual Artist",
-        "items": ["Generative motion merging fine art with digital media."],
-        "tags": ["GENERATIVE", "FINE_ART"]
+        "items": [
+          "Generative motion merging fine art with digital media."
+        ],
+        "tags": [
+          "GENERATIVE",
+          "FINE_ART"
+        ]
       },
       {
         "period": "2019 — 2022",
@@ -190,7 +2268,11 @@
           "Owned post-production pipeline for aesthetic excellence.",
           "Broadcast / Digital Signage assets for financial sectors."
         ],
-        "tags": ["CGI", "POST_PROD", "BROADCAST"]
+        "tags": [
+          "CGI",
+          "POST_PROD",
+          "BROADCAST"
+        ]
       },
       {
         "period": "2018 — PRE",
@@ -200,23 +2282,66 @@
           "Strategic brands: Suzano, O Boticário, Colcci.",
           "Full-cycle conceptualization to final export."
         ],
-        "tags": ["RETAIL", "SOCIAL", "EVENTS"]
+        "tags": [
+          "RETAIL",
+          "SOCIAL",
+          "EVENTS"
+        ]
       }
     ],
     "education": [
-      {"period": "2014 — 2017", "title": "Audiovisual Production", "institution": "UNIVALI — Itajaí / Brazil"},
-      {"period": "2025", "title": "AI & Generative Workflows", "institution": "Self-directed R&D"}
+      {
+        "period": "2014 — 2017",
+        "title": "Audiovisual Production",
+        "institution": "UNIVALI — Itajaí / Brazil"
+      },
+      {
+        "period": "2025",
+        "title": "AI & Generative Workflows",
+        "institution": "Self-directed R&D"
+      }
     ],
     "languages": [
-      {"name": "Portuguese", "level": "Native"},
-      {"name": "English", "level": "Professional / B2+"},
-      {"name": "Spanish", "level": "Conversational / B1"}
+      {
+        "name": "Portuguese",
+        "level": "Native"
+      },
+      {
+        "name": "English",
+        "level": "Professional / B2+"
+      },
+      {
+        "name": "Spanish",
+        "level": "Conversational / B1"
+      }
     ],
     "skills": {
-      "Motion & Post": ["After Effects", "Cinema 4D", "Premiere Pro", "DaVinci Resolve", "Nuke"],
-      "Design & 3D": ["Illustrator", "Photoshop", "Figma", "Blender", "Redshift"],
-      "Code & AI": ["Python Automation", "ComfyUI / Stable Diffusion", "TouchDesigner", "Generative Pipelines"],
-      "Strategy": ["Brand Systems", "Creative Direction", "Project Management", "Client Relations"]
+      "Motion & Post": [
+        "After Effects",
+        "Cinema 4D",
+        "Premiere Pro",
+        "DaVinci Resolve",
+        "Nuke"
+      ],
+      "Design & 3D": [
+        "Illustrator",
+        "Photoshop",
+        "Figma",
+        "Blender",
+        "Redshift"
+      ],
+      "Code & AI": [
+        "Python Automation",
+        "ComfyUI / Stable Diffusion",
+        "TouchDesigner",
+        "Generative Pipelines"
+      ],
+      "Strategy": [
+        "Brand Systems",
+        "Creative Direction",
+        "Project Management",
+        "Client Relations"
+      ]
     },
     "contactEmail": "conceicao.felipe@gmail.com",
     "contactWhatsApp": "5547999664274",
@@ -235,5 +2360,43 @@
     "targetRole": "Creative Director",
     "targetCompany": "",
     "whyCompany": ""
+  },
+  "categoryMeta": {
+    "Media Kit": {
+      "description": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application."
+    },
+    "Motion Campaign": {
+      "description": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces."
+    },
+    "FUNKY 6 - FUNKED UP": {
+      "description": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content."
+    },
+    "FUNKY ROOM 1": {
+      "description": "Edition 01 — The original. First Room, After Party, and the birth of the visual language."
+    },
+    "FUNKY ROOM 2": {
+      "description": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos."
+    },
+    "FUNKY ROOM 3": {
+      "description": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH."
+    },
+    "FUNKY ROOM 4": {
+      "description": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content."
+    },
+    "FUNKY ROOM 5": {
+      "description": "Edition 05 — Evolved social media system with refined grid and content hierarchy."
+    },
+    "Broadcast Campaign - FURB": {
+      "description": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility."
+    },
+    "OOH Campaign - ETEVI": {
+      "description": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor."
+    },
+    "MANIFESTO": {
+      "description": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul."
+    },
+    "IA Genenerated": {
+      "description": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools."
+    }
   }
 }

@@ -92,10 +92,26 @@ async function doPublish() {
   const inp = document.getElementById('gh-token-modal');
   const btn = document.getElementById('publish-btn');
   const errEl = document.getElementById('publish-error');
-  const token = (inp ? inp.value.trim() : '');
-  if(!token) { if(errEl) errEl.textContent = 'Please enter your GitHub token.'; return; }
+  
+  // Try modal input first, then localStorage
+  let token = (inp ? inp.value.trim() : '');
+  if (!token) token = localStorage.getItem('plm_gh_token') || '';
+  
+  if(!token) { 
+    if(errEl) errEl.textContent = 'Please enter your GitHub token.'; 
+    openPublishModal();
+    return; 
+  }
+  
+  // Persist token for future automatic deploys
+  localStorage.setItem('plm_gh_token', token);
+  
   if(errEl) errEl.textContent = '';
   if(btn) { btn.textContent = 'Pushing...'; btn.disabled = true; }
+  
+  const mainBtn = document.getElementById('btn-publish');
+  const oldMainText = mainBtn ? mainBtn.textContent : '';
+  if(mainBtn) { mainBtn.textContent = '⏳ Pushing...'; mainBtn.disabled = true; }
 
   const legacy = { _note: D._note||'', clients: D.clients||{}, categories: D.categories||{} };
   const jsonContent = JSON.stringify(D, null, 2);
@@ -108,20 +124,34 @@ async function doPublish() {
     await commitFile('content.json', legacyContent, sha2, 'Admin: Update content.json', token);
 
     hasUnsaved = false;
-    document.getElementById('unsaved-label').classList.remove('visible');
+    const unsavedLabel = document.getElementById('unsaved-label');
+    if (unsavedLabel) unsavedLabel.classList.remove('visible');
+    
     closePublishModal();
     toast('✓ Published! Vercel is deploying now.');
     buildSidebar();
   } catch(e) {
+    console.error('Publish error:', e);
     if(errEl) errEl.textContent = '⚠ ' + e.message;
+    toast('⚠ Publish failed: ' + e.message, true);
+    // If it's an auth error, clear token
+    if (e.message.includes('401') || e.message.includes('Bad credentials')) {
+      localStorage.removeItem('plm_gh_token');
+      openPublishModal();
+    }
   } finally {
     if(btn) { btn.textContent = '🚀 Push to GitHub'; btn.disabled = false; }
+    if(mainBtn) { mainBtn.textContent = oldMainText; mainBtn.disabled = false; }
   }
 }
 
 async function getFileSha(path, token) {
-  const res = await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path, {
-    headers: { 'Authorization': 'token '+token, 'Accept': 'application/vnd.github.v3+json' }
+  const res = await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path+'?ref=main&t='+Date.now(), {
+    headers: { 
+      'Authorization': 'token '+token, 
+      'Accept': 'application/vnd.github.v3+json',
+      'Cache-Control': 'no-cache'
+    }
   });
   if(res.status === 404) return null;
   if(!res.ok) { const b=await res.json().catch(()=>({})); throw new Error(b.message||'Cannot read '+path); }
@@ -140,6 +170,15 @@ async function commitFile(path, content, sha, message, token) {
 }
 
 // ─── Export / Import ──────────────────────────────────────────────────────
+function saveAll() { 
+  autoSave();
+  if (localStorage.getItem('plm_gh_token')) {
+    doPublish(); 
+  } else {
+    openPublishModal();
+  }
+}
+
 function exportJSON() {
   autoSave();
   const legacy = { _note: D._note||'', clients: D.clients||{}, categories: D.categories||{} };
@@ -149,9 +188,6 @@ function exportJSON() {
   document.getElementById('unsaved-label').classList.remove('visible');
   toast('✓ Downloaded site-content.json + content.json');
 }
-
-// Keep saveAll() as alias for exportJSON for backward compat with existing inline buttons
-function saveAll() { exportJSON(); }
 
 window.exportJSON = exportJSON;
 window.saveAll = saveAll;
@@ -566,73 +602,7 @@ function saveCoverLetterToMem(){
 }
 function saveCoverLetterAction(){ saveCoverLetterToMem(); saveAll(); }
 
-// ─── Save / Export ────────────────────────────────────────────────────────
-
-async function saveAll(){
-  if(!checkAuth()) return;
-  autoSave();
-  
-  const legacy = { _note: D._note||'', clients: D.clients||{}, categories: D.categories||{} };
-  const jsonContent = JSON.stringify(D, null, 2);
-  const legacyContent = JSON.stringify(legacy, null, 2);
-  
-  const btn = document.getElementById('btn-save-all-main');
-  const oldText = btn.textContent;
-  btn.textContent = 'Publishing...';
-  btn.disabled = true;
-  toast('Pushing changes to GitHub...');
-  
-  try {
-    // 1. Get SHA of site-content.json
-    let sha1 = await getFileSha('site-content.json');
-    await commitFile('site-content.json', jsonContent, sha1, 'Admin: Update site-content.json');
-    
-    // 2. Get SHA of content.json (legacy)
-    let sha2 = await getFileSha('content.json');
-    await commitFile('content.json', legacyContent, sha2, 'Admin: Update content.json');
-    
-    hasUnsaved=false;
-    document.getElementById('unsaved-label').classList.remove('visible');
-    buildSidebar();
-    toast('✓ Published successfully! Vercel is now deploying your changes.');
-  } catch(e) {
-    console.error(e);
-    toast('Error publishing: ' + e.message, true);
-  } finally {
-    btn.textContent = oldText;
-    btn.disabled = false;
-  }
-}
-
-async function getFileSha(path) {
-  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-    headers: { 'Authorization': `token ${githubToken}` }
-  });
-  if(res.status === 404) return null; // File doesn't exist yet
-  if(!res.ok) throw new Error('Failed to get file info');
-  const data = await res.json();
-  return data.sha;
-}
-
-async function commitFile(path, content, sha, message) {
-  const body = {
-    message: message,
-    content: btoa(unescape(encodeURIComponent(content))), // Base64 encode UTF-8
-    branch: 'main'
-  };
-  if(sha) body.sha = sha;
-  
-  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `token ${githubToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-  
-  if(!res.ok) throw new Error(`Failed to commit ${path}`);
-}
+// ─── Save / Export aliases handled above ───────────────────────────────────
 function copyJSON(){
   autoSave();
   navigator.clipboard.writeText(JSON.stringify(D,null,2)).then(()=>toast('JSON copied to clipboard'));
@@ -671,7 +641,11 @@ function handleImport(input){
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 function esc(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-function markUnsaved(){ hasUnsaved=true; document.getElementById('unsaved-label').classList.add('visible'); }
+function markUnsaved(){ 
+  hasUnsaved=true; 
+  const el = document.getElementById('unsaved-label');
+  if(el) el.classList.add('visible'); 
+}
 function toast(msg, isErr=false){
   const el=document.getElementById('toast');
   el.textContent=msg; el.className='toast show'+(isErr?' error':'');
