@@ -742,14 +742,20 @@
     const clSections = document.getElementById('dyn-cl-sections');
     const accent = APP.accentColor || '#34d399';
     if(clSections && APP.coverLetter && APP.coverLetter.sections) {
-      clSections.innerHTML = APP.coverLetter.sections.map((s, i) => `
-        <div class="col-span-12 lg:col-span-6 reveal-mech">
-          <div class="font-mono text-[10px] uppercase tracking-widest mb-4" style="color:${accent}; opacity:0.7">${String(i+1).padStart(2,'0')}. ${s.title}</div>
-          <p class="text-white/80 leading-relaxed text-sm sm:text-base">${s.body}</p>
-        </div>`).join('');
-      // Trigger reveal animation
-      clSections.querySelectorAll('.reveal-mech').forEach(el => {
-        setTimeout(() => el.classList.add('visible'), 100 + i * 50);
+      const secs = APP.coverLetter.sections;
+      clSections.innerHTML = secs.map((s, i) => {
+        // Escape body text so special chars don't break HTML
+        const safeBody = (s.body || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const safeTitle = (s.title || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return `<div class="col-span-12 lg:col-span-6 reveal-mech">
+          <div class="font-mono text-[10px] uppercase tracking-widest mb-4" style="color:${accent}; opacity:0.7">${String(i+1).padStart(2,'0')}. ${safeTitle}</div>
+          <p class="text-white/80 leading-relaxed text-sm sm:text-base">${safeBody}</p>
+        </div>`;
+      }).join('');
+      // Trigger reveal animation (fixed: use proper indexed loop, not forEach with out-of-scope i)
+      const revealEls = clSections.querySelectorAll('.reveal-mech');
+      revealEls.forEach((el, idx) => {
+        setTimeout(() => el.classList.add('visible'), 100 + idx * 80);
       });
     }
   }
