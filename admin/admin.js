@@ -480,6 +480,7 @@ function autoSave(){
   else if(currentSection==='portfolio') savePortfolioToMem();
   else if(currentSection==='curriculum') saveCurriculumToMem();
   else if(currentSection==='coverLetter') saveCoverLetterToMem();
+  else if(currentSection==='appEdit') saveAppEditToMem();
   else if(currentKey) saveEntryToMem();
 }
 function saveEntryToMem(){
@@ -596,6 +597,194 @@ function saveCoverLetterToMem(){
   CL.closing=v('f-clClosing'); CL.signoff=v('f-clSignoff');
 }
 function saveCoverLetterAction(){ saveCoverLetterToMem(); saveAll(); }
+
+// ─── Applications editor (CV+CL combined pages) ──────────────────────────
+function showApplications(){ autoSave(); currentSection='applications'; currentKey=null; highlightSb(null);
+  const apps = D.applications || [];
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-header"><div class="page-label">APPLICATIONS</div><h1 class="page-title">CV + Cover Letter Pages</h1></div>
+    <div class="preview-ref">📍 Each application generates a unique page at <code>/Curriculum/private/app.html?app=SLUG</code>. The CV is shared; the cover letter is customized per application.</div>
+    <div class="card"><div class="card-title"><span class="icon">📎</span> Your Applications (${apps.length})</div>
+      ${apps.length === 0 ? '<div class="hint">No applications yet. Click "+ New Application" to create your first one.</div>' : ''}
+      ${apps.map((app, i) => `
+        <div class="exp-block" style="border-left:3px solid ${esc(app.accentColor||'#34d399')}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="exp-block-title" style="color:${esc(app.accentColor||'#34d399')}">${esc(app.companyName||'Untitled')} <span style="opacity:0.4;font-size:9px;margin-left:8px">${esc(app.targetRole||'')}</span></div>
+            <div style="display:flex;gap:6px">
+              <button class="btn" style="font-size:8px;padding:4px 10px" onclick="editApp(${i})">✏️ Edit</button>
+              <button class="btn" style="font-size:8px;padding:4px 10px" onclick="duplicateApp(${i})">📋 Duplicate</button>
+              <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="deleteApp(${i})">🗑️</button>
+            </div>
+          </div>
+          <div class="hint" style="margin:0">
+            <strong>URL:</strong> <a href="/Curriculum/private/app.html?app=${esc(app.id)}" target="_blank" style="color:var(--accent);text-decoration:underline">/Curriculum/private/app.html?app=${esc(app.id)}</a>
+            · ${(app.coverLetter?.sections||[]).length} sections · Created ${app.createdAt||'—'}
+          </div>
+        </div>`).join('')}
+      <button class="btn primary" style="margin-top:14px" onclick="createApp()">+ New Application</button>
+    </div>`;
+}
+
+function createApp(){
+  D.applications = D.applications || [];
+  const id = 'app-' + Date.now().toString(36);
+  D.applications.push({
+    id: id,
+    companyName: 'New Company',
+    targetRole: 'Creative Director',
+    accentColor: '#34d399',
+    createdAt: new Date().toISOString().split('T')[0],
+    heroLabel: '',
+    coverLetter: { sections: [
+      { title: 'OPENING', body: '' },
+      { title: 'WHAT I BRING', body: '' },
+      { title: 'WHY DIFFERENT', body: '' },
+      { title: 'WHY THIS COMPANY', body: '' }
+    ]},
+    cvOverrides: {}
+  });
+  editApp(D.applications.length - 1);
+  markUnsaved();
+}
+
+function duplicateApp(idx){
+  const apps = D.applications || [];
+  if(!apps[idx]) return;
+  const clone = JSON.parse(JSON.stringify(apps[idx]));
+  clone.id = clone.id + '-copy-' + Date.now().toString(36);
+  clone.companyName = clone.companyName + ' (Copy)';
+  clone.createdAt = new Date().toISOString().split('T')[0];
+  apps.push(clone);
+  markUnsaved();
+  editApp(apps.length - 1);
+  toast('✓ Duplicated application');
+}
+
+function deleteApp(idx){
+  const apps = D.applications || [];
+  if(!apps[idx] || !confirm(`Delete application for "${apps[idx].companyName}"?`)) return;
+  apps.splice(idx, 1);
+  markUnsaved();
+  showApplications();
+  toast('Application deleted');
+}
+
+function editApp(idx){
+  autoSave();
+  currentSection = 'appEdit';
+  currentKey = idx;
+  highlightSb(null);
+  const apps = D.applications || [];
+  const app = apps[idx];
+  if(!app) { showApplications(); return; }
+  const sections = app.coverLetter?.sections || [];
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-header">
+      <div class="page-label">APPLICATION #${idx+1}</div>
+      <h1 class="page-title" style="color:${esc(app.accentColor||'#34d399')}">${esc(app.companyName||'Untitled')}</h1>
+    </div>
+    <div class="preview-ref">📍 <strong>Live URL:</strong> <a href="/Curriculum/private/app.html?app=${esc(app.id)}" target="_blank" style="color:var(--accent);text-decoration:underline">/Curriculum/private/app.html?app=${esc(app.id)}</a></div>
+
+    <div class="card"><div class="card-title"><span class="icon">🏢</span> Application Info</div>
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="flex:2;margin:0"><label>Company Name</label><input id="f-appCompany" value="${esc(app.companyName||'')}" oninput="markUnsaved()"></div>
+        <div class="field" style="flex:2;margin:0"><label>Target Role</label><input id="f-appRole" value="${esc(app.targetRole||'')}" oninput="markUnsaved()"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="field" style="flex:1;margin:0"><label>Slug (URL ID)</label><input id="f-appId" value="${esc(app.id||'')}" oninput="markUnsaved()"><div class="hint">Lowercase, no spaces. Used in ?app=SLUG</div></div>
+        <div class="field" style="flex:1;margin:0"><label>Accent Color</label><div style="display:flex;gap:6px;align-items:center"><input type="color" id="f-appColor" value="${esc(app.accentColor||'#34d399')}" style="width:40px;height:32px;border:none;background:none;cursor:pointer" oninput="markUnsaved()"><input id="f-appColorText" value="${esc(app.accentColor||'#34d399')}" style="flex:1" oninput="document.getElementById('f-appColor').value=this.value;markUnsaved()"></div></div>
+        <div class="field" style="flex:1;margin:0"><label>Hero Label (optional)</label><input id="f-appHeroLabel" value="${esc(app.heroLabel||'')}" oninput="markUnsaved()"><div class="hint">Leave blank for auto-generated</div></div>
+      </div>
+    </div>
+
+    <div class="card"><div class="card-title"><span class="icon">✍️</span> Cover Letter Sections (${sections.length})</div>
+      <div class="hint" style="margin-bottom:14px">Each section = one block in the 2-column cover letter grid. You can add, remove, or reorder them.</div>
+      ${sections.map((s, i) => `
+        <div class="exp-block">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div class="exp-block-title">Section ${i+1}</div>
+            <div style="display:flex;gap:6px">
+              ${i > 0 ? `<button class="btn" style="font-size:8px;padding:4px 8px" onclick="moveAppSection(${idx},${i},-1)">↑</button>` : ''}
+              ${i < sections.length-1 ? `<button class="btn" style="font-size:8px;padding:4px 8px" onclick="moveAppSection(${idx},${i},1)">↓</button>` : ''}
+              <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeAppSection(${idx},${i})">Remove</button>
+            </div>
+          </div>
+          <div class="field"><label>Section Title</label><input id="f-appSec${i}-title" value="${esc(s.title||'')}" oninput="markUnsaved()"><div class="hint">e.g. "OPENING", "WHAT I BRING", "WHY THIS COMPANY"</div></div>
+          <div class="field"><label>Section Body</label><textarea id="f-appSec${i}-body" rows="4" oninput="markUnsaved()">${esc(s.body||'')}</textarea></div>
+        </div>`).join('')}
+      <button class="btn" style="margin-top:10px" onclick="addAppSection(${idx})">+ Add Section</button>
+    </div>
+
+    <div class="actions-bar">
+      <button class="btn" onclick="showApplications()">← Back to List</button>
+      <button class="btn primary" onclick="saveAppEdit(${idx})">Apply Changes</button>
+    </div>`;
+}
+
+function saveAppEditToMem(){
+  if(currentSection !== 'appEdit' || currentKey === null) return;
+  const idx = currentKey;
+  const apps = D.applications || [];
+  const app = apps[idx];
+  if(!app) return;
+  const v = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+  app.companyName = v('f-appCompany');
+  app.targetRole = v('f-appRole');
+  app.id = v('f-appId').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  app.accentColor = v('f-appColor') || v('f-appColorText') || '#34d399';
+  app.heroLabel = v('f-appHeroLabel');
+  // Save sections
+  const sections = app.coverLetter?.sections || [];
+  for(let i = 0; i < sections.length; i++){
+    sections[i].title = v(`f-appSec${i}-title`);
+    sections[i].body = v(`f-appSec${i}-body`);
+  }
+}
+
+function saveAppEdit(idx){ saveAppEditToMem(); saveAll(); }
+
+function addAppSection(idx){
+  saveAppEditToMem();
+  const app = (D.applications||[])[idx];
+  if(!app) return;
+  app.coverLetter = app.coverLetter || { sections: [] };
+  app.coverLetter.sections.push({ title: 'NEW SECTION', body: '' });
+  editApp(idx);
+  markUnsaved();
+}
+
+function removeAppSection(appIdx, secIdx){
+  saveAppEditToMem();
+  const app = (D.applications||[])[appIdx];
+  if(!app) return;
+  app.coverLetter.sections.splice(secIdx, 1);
+  editApp(appIdx);
+  markUnsaved();
+}
+
+function moveAppSection(appIdx, secIdx, dir){
+  saveAppEditToMem();
+  const app = (D.applications||[])[appIdx];
+  if(!app) return;
+  const secs = app.coverLetter.sections;
+  const newIdx = secIdx + dir;
+  if(newIdx < 0 || newIdx >= secs.length) return;
+  [secs[secIdx], secs[newIdx]] = [secs[newIdx], secs[secIdx]];
+  editApp(appIdx);
+  markUnsaved();
+}
+
+// Expose to window
+window.showApplications = showApplications;
+window.createApp = createApp;
+window.duplicateApp = duplicateApp;
+window.deleteApp = deleteApp;
+window.editApp = editApp;
+window.saveAppEdit = saveAppEdit;
+window.addAppSection = addAppSection;
+window.removeAppSection = removeAppSection;
+window.moveAppSection = moveAppSection;
 
 // ─── Save / Export aliases handled above ───────────────────────────────────
 function copyJSON(){
