@@ -2431,6 +2431,35 @@
         ]
       },
       "cvOverrides": {}
+    },
+    {
+      "id": "vaga01",
+      "companyName": "Novo teste",
+      "targetRole": "Creative Director",
+      "accentColor": "#ff5544",
+      "createdAt": "2026-04-24",
+      "heroLabel": "Curriculum Vitae — Application / VAGA01",
+      "coverLetter": {
+        "sections": [
+          {
+            "title": "SEÇÃO 01",
+            "body": "I'm Felipe Conceição — Creative Director and motion designer behind Pelimotion Hub in Rio de Janeiro. For eight years I've been building visual systems for brands across Latin America and beyond: from full motion branding campaigns to modular asset libraries that marketing teams keep using long after launch day."
+          },
+          {
+            "title": "WHAT I BRING",
+            "body": "My work lives at the intersection of strategy and execution. I concept, direct, and deliver — in After Effects, Illustrator, Premiere, and Figma — without needing a layer of translation between creative thinking and the timeline. I've produced CGI/motion content for BMW, Subaru, Hyundai, and Motul, and led the full motion branding for a brand relaunch that included both the launch film and a complete Motion Media Kit for ongoing marketing use."
+          },
+          {
+            "title": "WHY DIFFERENT",
+            "body": "I approach motion the way a musician approaches rhythm — timing, weight, silence. That foundation, combined with AI-integrated workflows and a minimalist design philosophy, means I move fast without losing craft. Fluent in async-first communication, accustomed to U.S. client standards, English at professional level."
+          },
+          {
+            "title": "WHY NEAR & WHY NOW",
+            "body": "Near's model — connecting LatAm talent with high-growth U.S. companies — is exactly the move I've been building toward. Performance marketing demands motion that works, not just motion that looks good. That tension between aesthetics and results is where I'm most at home. Ready for full-time commitment and the pace this role requires."
+          }
+        ]
+      },
+      "cvOverrides": {}
     }
   ]
 }
