@@ -2192,12 +2192,12 @@
     }
   },
   "curriculum": {
-    "name": "Felipe ConceiÃÂ§ÃÂ£oaaaaa",
+    "name": "Felipe Conceição",
     "title": "Creative Director, motion branding and artistic direction.",
     "subtitle": "Eight years translating brand strategy into rhythm, light and image Ã¢ÂÂ from generative pipelines to projection mapping.",
     "basedIn": "Rio de Janeiro, BR",
     "disciplines": "Motion ÃÂ· Direction ÃÂ· Branding ÃÂ· CGI",
-    "yearsRange": "2017 Ã¢ÂÂ Now",
+    "yearsRange": "2017 > Now",
     "profileParagraph1": "I work where strategy meets motion. Over eight years I've built visual systems for global brands across automotive, finance and culture Ã¢ÂÂ designing how a brand moves, not only how it looks.",
     "profileParagraph2": "My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion Hub, where we develop AI-integrated motion pipelines and direct immersive experiences Ã¢ÂÂ combining motion design with light and projection for theater and live performances.",
     "stats": [
@@ -2255,11 +2255,12 @@
         "role": "Artistic Collaboration Ã¢ÂÂ Duo Sirius",
         "company": "Interdisciplinary Visual Artist",
         "items": [
-          "Generative motion merging fine art with digital media."
+          "Generative motion merging fine art, analog experiments with digital medias."
         ],
         "tags": [
           "GENERATIVE",
-          "FINE_ART"
+          "FINE_ART",
+          "MERCHANDISING"
         ]
       },
       {
@@ -2434,8 +2435,8 @@
     },
     {
       "id": "vaga01",
-      "companyName": "Novo teste",
-      "targetRole": "Creative Director",
+      "companyName": "Deer Design",
+      "targetRole": "Creative Editor - Motion Designer",
       "accentColor": "#44b5a0",
       "createdAt": "2026-04-24",
       "heroLabel": "CV Application / Deer Design",
@@ -2443,19 +2444,19 @@
         "sections": [
           {
             "title": "OPENING",
-            "body": "I'm Felipe Conceição, creative director and motion designer behind Pelimotion Hub in Rio de Janeiro. For eight years I've been building visual systems for brands across Latin America and beyond: from full motion branding campaigns aato modular asset libraries that marketing teams keep using long after launch day."
+            "body": "I'm Felipe Conceição, a motion designer and video editor based in Rio de Janeiro with 8+ years delivering high-velocity content for global brands. I don't just edit — I architect pipelines that compress timelines without compressing quality. When I saw \"speed-obsessed\" in your brief, I recognized myself."
           },
           {
             "title": "WHAT I BRING",
-            "body": "My work lives at the intersection of strategy and execution. I concept, direct, and deliver Ã¢ÂÂ in After Effects, Illustrator, Premiere, and Figma Ã¢ÂÂ without needing a layer of translation between creative thinking and the timeline. I've produced CGI/motion content for BMW, Subaru, Hyundai, and Motul, and led the full motion branding for a brand relaunch that included both the launch film and a complete Motion Media Kit for ongoing marketing use."
+            "body": "I run full post-production pipelines for short-form and long-form simultaneously — Reels, TikToks, YouTube, podcast cuts — using text-based editing in Descript, AI-assisted B-roll via Runway and Kling, and batch repurposing through Opus Clip. A single long-form recording becomes 15+ platform-native clips inside a single session. My NLE stack is Premiere Pro + DaVinci Resolve. Motion work lives in After Effects daily — kinetic type, logo reveals, transitions are standard output, not a bonus skill."
           },
           {
             "title": "WHY DIFFERENT",
-            "body": "I approach motion the way a musician approaches rhythm Ã¢ÂÂ timing, weight, silence. That foundation, combined with AI-integrated workflows and a minimalist design philosophy, means I move fast without losing craft. Fluent in async-first communication, accustomed to U.S. client standards, English at professional level."
+            "body": "Most editors optimize for quality or speed. I've built workflows that refuse to choose. I approach every project like a systems designer: map the grunt work, automate it, protect creative energy for decisions that actually move the needle. AI tools aren't a shortcut I use reluctantly — they're the first thing I open. That mindset consistently lets me deliver what takes others a full day in a fraction of the time, at a standard clients sign off without revision rounds."
           },
           {
-            "title": "WHY NEAR & WHY NOW",
-            "body": "TESTEEEEEEE ULTIMA SESSAO"
+            "title": "WHY DEER & WHY NOW",
+            "body": "Deer Designer's model — async-first, remote, long-term — matches exactly how I work best: deep focus, high output, no bureaucracy. I'm at a point in my career where I want to embed inside a team that values craft and pace equally, not trade one for the other. This role is that intersection. I'm ready to contribute from day one and grow with the team long-term."
           }
         ]
       },
