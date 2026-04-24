@@ -64,6 +64,11 @@ function lockAdmin() {
   location.reload();
 }
 
+window.onPinInput = onPinInput;
+window.checkPin = checkPin;
+window.lockAdmin = lockAdmin;
+window.authenticate = checkPin; // Alias if needed
+
 function setActive(el) {
   document.querySelectorAll('.sidebar-nav-item').forEach(e => e.classList.remove('active'));
   el.classList.add('active');
@@ -147,6 +152,12 @@ function exportJSON() {
 
 // Keep saveAll() as alias for exportJSON for backward compat with existing inline buttons
 function saveAll() { exportJSON(); }
+
+window.exportJSON = exportJSON;
+window.saveAll = saveAll;
+window.openPublishModal = openPublishModal;
+window.closePublishModal = closePublishModal;
+window.doPublish = doPublish;
 
 
 async function loadData(){
