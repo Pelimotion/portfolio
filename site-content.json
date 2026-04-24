@@ -39,8 +39,8 @@
     }
   },
   "landing": {
-    "brandName": "Pelimotion TESTE",
-    "brandSub": "Motion Branding & Creative Direction",
+    "brandName": "Pelimotion TESTEEE",
+    "brandSub": "Motion Branding & Creative Direction TESTEEE",
     "navButtons": [
       {
         "label": "Portfolio",
@@ -53,7 +53,7 @@
         "href": "Curriculum/index.html"
       }
     ],
-    "footerText": "© 2026 Pelimotion"
+    "footerText": "© 2026 Pelimotion TESTEEE"
   },
   "portfolio": {
     "heroName": "PELIMOTION",
