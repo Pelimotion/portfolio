@@ -39,8 +39,8 @@
     }
   },
   "landing": {
-    "brandName": "Pelimotion TESTEEE",
-    "brandSub": "Motion Branding & Creative Direction TESTEEE",
+    "brandName": "Peli<em>motion</em>",
+    "brandSub": "Motion Branding & Creative Direction",
     "navButtons": [
       {
         "label": "Portfolio",
@@ -53,7 +53,10 @@
         "href": "Curriculum/index.html"
       }
     ],
-    "footerText": "© 2026 Pelimotion TESTEEE"
+    "footerText": "© 2026 Pelimotion TESTEEE",
+    "aboutTitle": "Motion as a <em>strategic</em> language.",
+    "contactTitle": "Open to direction, <em>collaborations</em> and long-form briefs.",
+    "contactSub": "Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish."
   },
   "portfolio": {
     "heroName": "PELIMOTION",
