@@ -196,13 +196,34 @@ window.doPublish = doPublish;
 
 
 async function loadData(){
+  // ── Try GitHub first (source of truth) ──
+  const savedToken = localStorage.getItem('plm_gh_token');
+  if(savedToken) {
+    try {
+      const ghRes = await fetch('https://api.github.com/repos/'+REPO+'/contents/site-content.json?ref=main&t='+Date.now(), {
+        headers: { 'Authorization': 'token '+savedToken, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if(ghRes.ok) {
+        const ghData = await ghRes.json();
+        D = JSON.parse(atob(ghData.content.replace(/\n/g,'')));
+        setStatus('✓ Loaded from GitHub (source of truth)');
+        buildSidebar();
+        showLanding();
+        return;
+      }
+    } catch(ghErr) {
+      // fall through to local
+    }
+  }
+
+  // ── Fallback: local Vercel-deployed file ──
   try {
     const r = await fetch('../site-content.json?t='+Date.now());
     if(!r.ok) throw new Error('Not found');
     D = await r.json();
-    setStatus('site-content.json loaded');
+    setStatus(savedToken ? '⚠ Loaded local copy (GitHub unreachable)' : '⚠ Loaded local copy — enter GitHub token to sync', !savedToken);
     buildSidebar();
-    showLanding(); // Auto-open landing
+    showLanding();
   } catch(e){
     // fallback: try old content.json
     try {
@@ -216,7 +237,7 @@ async function loadData(){
       buildSidebar();
       showLanding();
     } catch(e2){
-      D = {landing:{},portfolio:{},clients:{},categories:{},curriculum:{}};
+      D = {landing:{},portfolio:{},clients:{},categories:{},curriculum:{},applications:[]};
       setStatus('Local mode: Please click Import JSON', true);
       buildSidebar();
       document.getElementById('main-content').innerHTML = `
@@ -648,6 +669,9 @@ function createApp(){
 }
 
 function duplicateApp(idx){
+  // Save any unsaved form edits first
+  if(currentSection === 'appEdit') saveAppEditToMem();
+  else autoSave();
   const apps = D.applications || [];
   if(!apps[idx]) return;
   const clone = JSON.parse(JSON.stringify(apps[idx]));
@@ -657,7 +681,7 @@ function duplicateApp(idx){
   apps.push(clone);
   markUnsaved();
   editApp(apps.length - 1);
-  toast('✓ Duplicated application');
+  toast('✓ Duplicated — all sections copied');
 }
 
 function deleteApp(idx){
