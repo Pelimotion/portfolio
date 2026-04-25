@@ -273,6 +273,9 @@
   }
 
   // ── Contact ──
+  const ctaEl = document.getElementById('dyn-contact-text');
+  if(ctaEl && C.contactText) ctaEl.innerHTML = C.contactText;
+
   const emailEl = document.getElementById('dyn-email');
   if(emailEl && C.contactEmail){
     emailEl.href = 'mailto:'+C.contactEmail;

@@ -521,7 +521,7 @@
 
             <div class="container-custom-flush grid grid-cols-12">
                 <div class="col-span-12 lg:col-span-8 py-14 sm:py-20 lg:border-r border-white/10">
-                    <h3 class="contact-cta">
+                    <h3 id="dyn-contact-text" class="contact-cta">
                         Open to direction,<br>
                         <span class="serif text-white/70">collaborations</span> and<br>
                         long-form briefs<span class="text-white/30">.</span>
@@ -666,6 +666,9 @@
   }
 
   // ── Contact ──
+  const ctaEl = document.getElementById('dyn-contact-text');
+  if(ctaEl && C.contactText) ctaEl.innerHTML = C.contactText;
+
   const emailEl = document.getElementById('dyn-email');
   if(emailEl && C.contactEmail){
     emailEl.href = 'mailto:'+C.contactEmail;
