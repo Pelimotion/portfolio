@@ -38,10 +38,31 @@
             }
         }
 
-        @media print {
-            #priv-bar {
-                display: none !important
-            }
+        @media print{
+  #priv-bar{display:none!important}
+  @page { margin: 0; size: auto; }
+  body {
+    background-color: #050505 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .bg-black { background-color: #050505 !important; }
+  .text-white { color: #ffffff !important; }
+  .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
+  .border-white\/5 { border-color: rgba(255,255,255,0.05) !important; }
+  .text-white\/40 { color: rgba(255,255,255,0.4) !important; }
+  .text-white\/30 { color: rgba(255,255,255,0.3) !important; }
+  .text-white\/20 { color: rgba(255,255,255,0.2) !important; }
+  .text-white\/55 { color: rgba(255,255,255,0.55) !important; }
+  .text-white\/70 { color: rgba(255,255,255,0.7) !important; }
+  
+  /* Hide the progress bar on print */
+  .progress-bar-container { display: none !important; }
+
+  section, article, .skill-group { page-break-inside: avoid; }
+  .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; }
+}
 
             body {
                 background: #fff !important;
@@ -113,7 +134,7 @@
 
     <div id="priv-bar" class="sticky top-0 z-[100] bg-black border-b border-white/10 flex items-center px-4 sm:px-8">
         <span
-            class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block">[PRIVATE_ACCESS]</span>
+            class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block cursor-pointer hover:text-white/70 transition-colors" onclick="window.print()" title="Save as PDF">[PRIVATE_ACCESS]</span>
         <div class="flex">
             <a href="index.html" onclick="navTo(event, \'index.html\')"
                 class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">←
@@ -130,7 +151,7 @@
             <div class="container-custom flex items-center justify-between py-3">
                 <a href="/" class="nav-label flex-1 font-mono hover:opacity-70 transition-opacity">
                     <span class="text-white/40">[</span>FC.CV<span class="text-white/40">]</span>
-                    <span class="hidden lg:inline text-white/20">— MT_PH_01.2025</span>
+                    <span class="hidden lg:inline text-white/20 hover:text-white transition-colors cursor-pointer" onclick="event.preventDefault(); window.print();" title="Save as PDF">— MT_PH_01.2025</span>
                 </a>
                 <nav class="hidden md:flex flex-1 justify-center gap-10 nav-label text-white/55">
                     <a href="#cover-letter" class="nav-link text-[#34d399]">00.Intro</a>
