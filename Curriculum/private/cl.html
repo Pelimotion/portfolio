@@ -410,6 +410,12 @@ function navTo(e, file) {
 
 <script>
 function generatePDF() {
+    // Disable all transitions instantly
+    const styleBlock = document.createElement('style');
+    styleBlock.innerHTML = `* { transition: none !important; animation: none !important; }`;
+    document.head.appendChild(styleBlock);
+
+    // Reveal everything
     document.querySelectorAll('.reveal-mech, .reveal').forEach(el => {
         el.classList.add('visible', 'active');
         el.style.opacity = '1';
@@ -417,8 +423,10 @@ function generatePDF() {
     });
     
     setTimeout(() => {
-        const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-        const w = window.innerWidth;
+        // Use getBoundingClientRect for absolute pixel-perfect rendered dimensions
+        const rect = document.documentElement.getBoundingClientRect();
+        const w = Math.ceil(rect.width);
+        const h = Math.ceil(rect.height);
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -427,11 +435,16 @@ function generatePDF() {
             document.head.appendChild(style);
         }
         
-        // Exact screen width and height
-        style.innerHTML = `@media print { @page { size: ${w}px ${h}px; margin: 0; } }`;
+        // Exact rendered dimensions with zero margin
+        style.innerHTML = `@media print { @page { size: ${w}px ${h}px; margin: 0 !important; } }`;
         
         window.print();
-    }, 200);
+        
+        // Clean up after print dialog opens
+        setTimeout(() => {
+            styleBlock.remove();
+        }, 1000);
+    }, 50); // very short timeout since transitions are disabled
 }
 
 // Intercept Cmd+P or Ctrl+P
