@@ -49,6 +49,7 @@
   .text-white\/55 { color: rgba(255,255,255,0.55) !important; }
   .text-white\/70 { color: rgba(255,255,255,0.7) !important; }
   
+  header { position: relative !important; top: auto !important; }
   /* Hide the progress bar on print */
   .progress-bar-container { display: none !important; }
 
@@ -409,16 +410,15 @@ function navTo(e, file) {
 
 <script>
 function generatePDF() {
-    // Reveal all items so they are included in the height calculation
     document.querySelectorAll('.reveal-mech, .reveal').forEach(el => {
         el.classList.add('visible', 'active');
         el.style.opacity = '1';
         el.style.transform = 'none';
     });
     
-    // Give it a tiny bit of time to render the visibility changes
     setTimeout(() => {
-        const h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        const w = window.innerWidth;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -427,16 +427,13 @@ function generatePDF() {
             document.head.appendChild(style);
         }
         
-        // 1400px width matches the max container size, height dynamically adjusts
-        style.innerHTML = `@media print { @page { size: 1400px ${h + 10}px; margin: 0; } }`;
+        // Exact screen width and height
+        style.innerHTML = `@media print { @page { size: ${w}px ${h}px; margin: 0; } }`;
         
         window.print();
-    }, 150);
+    }, 200);
 }
-</script>
 
-
-<script>
 // Intercept Cmd+P or Ctrl+P
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
@@ -445,7 +442,4 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
-
 </body>
-
-
