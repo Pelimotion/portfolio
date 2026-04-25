@@ -423,9 +423,25 @@ function generatePDF() {
     });
     
     setTimeout(() => {
-        // Use getBoundingClientRect for absolute pixel-perfect rendered dimensions
+        // --- PRINT SIMULATION FOR PERFECT HEIGHT ---
+        // Hide elements that are hidden in @media print
+        const privBar = document.getElementById('priv-bar');
+        const progBar = document.querySelector('.progress-bar-container');
+        const mainEl = document.querySelector('main');
+        
+        if (privBar) privBar.style.display = 'none';
+        if (progBar) progBar.style.display = 'none';
+        
+        // Temporarily remove min-h-screen to avoid 100vh stretching to full page height during print
+        if (mainEl) mainEl.classList.remove('min-h-screen');
+        
+        // Force layout recalculation
+        void document.body.offsetHeight;
+        
+        // Measure exact rendered dimensions
         const rect = document.documentElement.getBoundingClientRect();
         const w = Math.ceil(rect.width);
+        // Reduce the height by 2 pixels to guarantee no empty fractional spillover
         const h = Math.ceil(rect.height);
         
         let style = document.getElementById('dynamic-print-style');
@@ -435,16 +451,22 @@ function generatePDF() {
             document.head.appendChild(style);
         }
         
-        // Exact rendered dimensions with zero margin
-        style.innerHTML = `@media print { @page { size: ${w}px ${h}px; margin: 0 !important; } }`;
+        // Inject the precise physical size and kill all browser margins
+        style.innerHTML = `@media print { 
+            @page { size: ${w}px ${h}px !important; margin: 0 !important; } 
+            body, html { min-height: auto !important; height: auto !important; }
+        }`;
         
         window.print();
         
-        // Clean up after print dialog opens
+        // --- CLEANUP ---
         setTimeout(() => {
             styleBlock.remove();
+            if (privBar) privBar.style.display = '';
+            if (progBar) progBar.style.display = '';
+            if (mainEl) mainEl.classList.add('min-h-screen');
         }, 1000);
-    }, 50); // very short timeout since transitions are disabled
+    }, 50);
 }
 
 // Intercept Cmd+P or Ctrl+P
