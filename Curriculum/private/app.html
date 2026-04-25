@@ -65,54 +65,7 @@
   .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; }
 }
 
-            body {
-                background: #fff !important;
-                color: #000 !important
-            }
-
-            .hero-title,
-            .section-title,
-            .exp-title,
-            .contact-cta {
-                color: #000 !important
-            }
-
-            .text-white\/85,
-            .text-white\/65,
-            .text-white\/70,
-            .text-white\/90 {
-                color: #333 !important
-            }
-
-            .text-white\/40,
-            .text-white\/30,
-            .text-white\/20,
-            .text-white\/50,
-            .mono-label,
-            .label-tiny {
-                color: #666 !important
-            }
-
-            .hairline {
-                border-color: #ddd !important
-            }
-
-            .border-white\/10,
-            .border-white\/5 {
-                border-color: #eee !important
-            }
-
-            .bg-black\/90 {
-                background: transparent !important
-            }
-
-            section,
-            article,
-            .skill-group {
-                page-break-inside: avoid;
-            }
-        }
-
+            
         #cl-links a {
             color: #fff;
             text-decoration: none;
@@ -863,6 +816,7 @@
                     if (navIntro) navIntro.style.color = APP.accentColor || '#34d399';
 
                     const clSections = document.getElementById('dyn-cl-sections');
+                    document.documentElement.style.setProperty('--accent-color', APP.accentColor || '#34d399');
                     const accent = APP.accentColor || '#34d399';
                     if (clSections && APP.coverLetter && APP.coverLetter.sections) {
                         clSections.innerHTML = APP.coverLetter.sections.map((s, i) => {
