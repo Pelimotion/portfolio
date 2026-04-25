@@ -52,7 +52,7 @@
   /* Hide the progress bar on print */
   .progress-bar-container { display: none !important; }
 
-  section, article, .skill-group { page-break-inside: avoid; }
+  article, .skill-group, .edu-item, .exp-item { page-break-inside: avoid; }
   .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; }
 }
 #cl-links a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
@@ -826,6 +826,17 @@ function generatePDF() {
         window.print();
     }, 150);
 }
+</script>
+
+
+<script>
+// Intercept Cmd+P or Ctrl+P
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        generatePDF();
+    }
+});
 </script>
 
 </body>
