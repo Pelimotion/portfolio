@@ -32,7 +32,7 @@
 @media (min-width: 640px) { .container-custom-flush { padding: 0 2rem; } }
 @media print{
   #priv-bar{display:none!important}
-  @page { margin: 0; size: auto; }
+  
   body {
     background-color: #050505 !important;
     color: #fff !important;
@@ -62,7 +62,7 @@
 <body class="bg-black text-white selection:bg-white/20">
 
     <div id="priv-bar" class="sticky top-0 z-[100] bg-black border-b border-white/10 flex items-center px-4 sm:px-8">
-      <span class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block cursor-pointer hover:text-white/70 transition-colors" onclick="window.print()" title="Save as PDF">[PRIVATE_ACCESS]</span>
+      <span class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block cursor-pointer hover:text-white/70 transition-colors" onclick="event.preventDefault(); generatePDF()" title="Save as PDF">[PRIVATE_ACCESS]</span>
       <div class="flex">
           <a href="index.html" onclick="navTo(event, \'index.html\')" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">← BACK</a>
       </div>
@@ -406,6 +406,35 @@ function navTo(e, file) {
     window.location.href = p + file;
 }
 </script>
+
+<script>
+function generatePDF() {
+    // Reveal all items so they are included in the height calculation
+    document.querySelectorAll('.reveal-mech, .reveal').forEach(el => {
+        el.classList.add('visible', 'active');
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+    });
+    
+    // Give it a tiny bit of time to render the visibility changes
+    setTimeout(() => {
+        const h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        
+        let style = document.getElementById('dynamic-print-style');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'dynamic-print-style';
+            document.head.appendChild(style);
+        }
+        
+        // 1400px width matches the max container size, height dynamically adjusts
+        style.innerHTML = `@media print { @page { size: 1400px ${h + 10}px; margin: 0; } }`;
+        
+        window.print();
+    }, 150);
+}
+</script>
+
 </body>
 
 
