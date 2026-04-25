@@ -448,6 +448,7 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
       <div class="field"><label>Brands (comma-separated)</label><textarea id="f-cvMarquee" rows="2" oninput="markUnsaved()">${esc((C.clientMarquee||[]).join(', '))}</textarea><div class="hint">Scrolling brand names on the CV page.</div></div>
     </div>
     <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social</div>
+      <div class="field"><label>Contact Call to Action <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'i')">I</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'br')">↵</button></div></label><textarea id="f-cvContactText" rows="3" oninput="markUnsaved()">${esc(C.contactText||'Open to direction,<br>\n<span class="serif text-white/70">collaborations</span> and<br>\nlong-form briefs<span class="text-white/30">.</span>')}</textarea><div class="hint">The large text in the Contact section of the curriculum.</div></div>
       <div class="field"><label>Email</label><input id="f-cvEmail" value="${esc(C.contactEmail||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>WhatsApp</label><input id="f-cvWA" value="${esc(C.contactWhatsApp||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Instagram</label><input id="f-cvIG" value="${esc(C.socialInstagram||'')}" oninput="markUnsaved()"></div>
