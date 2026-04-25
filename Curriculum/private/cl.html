@@ -229,7 +229,7 @@
   const eduEl = document.getElementById('dyn-edu');
   if(eduEl && C.education){
     eduEl.innerHTML = C.education.map((e,i,arr) =>
-      `<div class="edu-item reveal-mech grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">` +
+      `<div class="edu-item reveal-mech visible grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">` +
       `<div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_0${i+1}</div>` +
       `<div class="col-span-8 sm:col-span-3 mono-label">${e.period}</div>` +
       `<div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">` +
@@ -262,7 +262,7 @@
       'border-t lg:border-t-0 sm:border-l border-white/10'
     ];
     skillsEl.innerHTML = cats.map((cat,i) =>
-      `<div class="skill-group reveal-mech ${borders[i]||'border-white/10'} p-10">` +
+      `<div class="skill-group reveal-mech visible ${borders[i]||'border-white/10'} p-10">` +
       `<div class="flex justify-between items-center mb-8">` +
       `<div class="label-tiny font-mono">${cat.toUpperCase().replace(/ /g,'_')}</div>` +
       `<div class="mono-label text-white/10">CAT_0${i+1}</div></div>` +
@@ -277,6 +277,37 @@
   if(emailEl && C.contactEmail){
     emailEl.href = 'mailto:'+C.contactEmail;
     emailEl.textContent = C.contactEmail;
+  }
+  const ccEl = document.getElementById('dyn-contact-cards');
+  if(ccEl){
+    let cards = [];
+    cards.push(`<a href="/" class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
+        <div class="label-tiny">Portfolio</div>
+        <div class="tag-label mt-3">pelimotion.com</div></a>`);
+    cards.push(`<div class="contact-card border-t border-l border-white/10">
+        <div class="label-tiny">City</div>
+        <div class="tag-label mt-3">${C.basedIn || 'Rio de Janeiro'}</div></div>`);
+    if(C.socialLinkedIn){
+      const un = C.socialLinkedIn.split('/').filter(Boolean).pop();
+      cards.push(`<a href="${C.socialLinkedIn.startsWith('http')?C.socialLinkedIn:'https://'+C.socialLinkedIn}" target="_blank" class="contact-card border-t ${cards.length%2===1?'border-l':''} border-white/10 group transition-colors hover:bg-white/5">
+          <div class="label-tiny">LinkedIn</div>
+          <div class="tag-label mt-3">/${un}</div></a>`);
+    }
+    if(C.socialInstagram){
+      const un = C.socialInstagram.split('/').filter(Boolean).pop();
+      cards.push(`<a href="${C.socialInstagram.startsWith('http')?C.socialInstagram:'https://'+C.socialInstagram}" target="_blank" class="contact-card border-t ${cards.length%2===1?'border-l':''} border-white/10 group transition-colors hover:bg-white/5">
+          <div class="label-tiny">Instagram</div>
+          <div class="tag-label mt-3">@${un}</div></a>`);
+    }
+    ccEl.innerHTML = cards.join('');
+  }
+
+  const slEl = document.getElementById('dyn-social-links');
+  if(slEl){
+    let sl = [];
+    if(C.socialInstagram) sl.push(`<a href="${C.socialInstagram.startsWith('http')?C.socialInstagram:'https://'+C.socialInstagram}" target="_blank" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[INSTAGRAM]</a>`);
+    if(C.socialLinkedIn) sl.push(`<a href="${C.socialLinkedIn.startsWith('http')?C.socialLinkedIn:'https://'+C.socialLinkedIn}" target="_blank" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[LINKEDIN]</a>`);
+    slEl.innerHTML = sl.join('');
   }
 
   // ── Cover Letter ──

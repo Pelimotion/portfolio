@@ -376,7 +376,7 @@
 
             <div class="container-custom-flush grid grid-cols-12">
                 <div id="dyn-edu" class="col-span-12 lg:col-span-8 lg:border-r border-white/10 px-5 sm:px-8">
-                    <div class="edu-item reveal-mech grid grid-cols-12 py-7 border-b border-white/5 group hover:bg-white/[0.01] transition-colors">
+                    <div class="edu-item reveal-mech visible grid grid-cols-12 py-7 border-b border-white/5 group hover:bg-white/[0.01] transition-colors">
                         <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_01</div>
                         <div class="col-span-8 sm:col-span-3 mono-label">2014 — 2017</div>
                         <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
@@ -384,7 +384,7 @@
                             <div class="serif text-[11px] text-white/30 italic">UNIVALI — Itajaí / Brazil</div>
                         </div>
                     </div>
-                    <div class="edu-item reveal-mech grid grid-cols-12 py-7 border-b border-white/5 group hover:bg-white/[0.01] transition-colors">
+                    <div class="edu-item reveal-mech visible grid grid-cols-12 py-7 border-b border-white/5 group hover:bg-white/[0.01] transition-colors">
                         <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_02</div>
                         <div class="col-span-8 sm:col-span-3 mono-label">2021</div>
                         <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
@@ -392,7 +392,7 @@
                             <div class="serif text-[11px] text-white/30 italic">Estúdio Café Maestro</div>
                         </div>
                     </div>
-                    <div class="edu-item reveal-mech grid grid-cols-12 py-7 group hover:bg-white/[0.01] transition-colors border-b border-white/5 lg:border-b-0">
+                    <div class="edu-item reveal-mech visible grid grid-cols-12 py-7 group hover:bg-white/[0.01] transition-colors border-b border-white/5 lg:border-b-0">
                         <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_03</div>
                         <div class="col-span-8 sm:col-span-3 mono-label">2010 — 2016</div>
                         <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
@@ -547,31 +547,13 @@
                     </h3>
                     <div class="flex flex-col sm:flex-row gap-6 mt-12">
                         <a id="dyn-email" href="mailto:conceicao.felipe@gmail.com" class="email-link">conceicao.felipe@gmail.com</a>
-                        <div class="flex gap-6">
-                            <a href="#" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[INSTAGRAM]</a>
-                            <a href="#" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[LINKEDIN]</a>
+                        <div id="dyn-social-links" class="flex gap-6">
+                            <!-- Injected by JS -->
                         </div>
                     </div>
                 </div>
-                <div class="col-span-12 lg:col-span-4 grid grid-cols-2">
-                    <div class="contact-card border-t border-white/10">
-                        <div class="label-tiny">Studio</div>
-                        <div class="tag-label mt-3">Pelimotion Hub</div>
-                    </div>
-                    <div class="contact-card border-t border-l border-white/10">
-                        <div class="label-tiny">City</div>
-                        <div class="tag-label mt-3">Rio de Janeiro</div>
-                    </div>
-                    <a href="https://pelimotion.com" target="_blank"
-                        class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
-                        <div class="label-tiny">Web</div>
-                        <div class="tag-label mt-3">pelimotion.com</div>
-                    </a>
-                    <a href="https://linkedin.com/in/felipeconceicao" target="_blank"
-                        class="contact-card border-t border-l border-white/10 group transition-colors hover:bg-white/5">
-                        <div class="label-tiny">LinkedIn</div>
-                        <div class="tag-label mt-3">/felipeconceicao</div>
-                    </a>
+                <div id="dyn-contact-cards" class="col-span-12 lg:col-span-4 grid grid-cols-2">
+                    <!-- Injected by JS -->
                 </div>
             </div>
         </section>
@@ -664,7 +646,7 @@
   const eduEl = document.getElementById('dyn-edu');
   if(eduEl && C.education){
     eduEl.innerHTML = C.education.map((e,i,arr) =>
-      `<div class="edu-item reveal-mech grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">` +
+      `<div class="edu-item reveal-mech visible grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">` +
       `<div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_0${i+1}</div>` +
       `<div class="col-span-8 sm:col-span-3 mono-label">${e.period}</div>` +
       `<div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">` +
@@ -697,7 +679,7 @@
       'border-t lg:border-t-0 sm:border-l border-white/10'
     ];
     skillsEl.innerHTML = cats.map((cat,i) =>
-      `<div class="skill-group reveal-mech ${borders[i]||'border-white/10'} p-10">` +
+      `<div class="skill-group reveal-mech visible ${borders[i]||'border-white/10'} p-10">` +
       `<div class="flex justify-between items-center mb-8">` +
       `<div class="label-tiny font-mono">${cat.toUpperCase().replace(/ /g,'_')}</div>` +
       `<div class="mono-label text-white/10">CAT_0${i+1}</div></div>` +
@@ -712,6 +694,37 @@
   if(emailEl && C.contactEmail){
     emailEl.href = 'mailto:'+C.contactEmail;
     emailEl.textContent = C.contactEmail;
+  }
+  const ccEl = document.getElementById('dyn-contact-cards');
+  if(ccEl){
+    let cards = [];
+    cards.push(`<a href="/" class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
+        <div class="label-tiny">Portfolio</div>
+        <div class="tag-label mt-3">pelimotion.com</div></a>`);
+    cards.push(`<div class="contact-card border-t border-l border-white/10">
+        <div class="label-tiny">City</div>
+        <div class="tag-label mt-3">${C.basedIn || 'Rio de Janeiro'}</div></div>`);
+    if(C.socialLinkedIn){
+      const un = C.socialLinkedIn.split('/').filter(Boolean).pop();
+      cards.push(`<a href="${C.socialLinkedIn.startsWith('http')?C.socialLinkedIn:'https://'+C.socialLinkedIn}" target="_blank" class="contact-card border-t ${cards.length%2===1?'border-l':''} border-white/10 group transition-colors hover:bg-white/5">
+          <div class="label-tiny">LinkedIn</div>
+          <div class="tag-label mt-3">/${un}</div></a>`);
+    }
+    if(C.socialInstagram){
+      const un = C.socialInstagram.split('/').filter(Boolean).pop();
+      cards.push(`<a href="${C.socialInstagram.startsWith('http')?C.socialInstagram:'https://'+C.socialInstagram}" target="_blank" class="contact-card border-t ${cards.length%2===1?'border-l':''} border-white/10 group transition-colors hover:bg-white/5">
+          <div class="label-tiny">Instagram</div>
+          <div class="tag-label mt-3">@${un}</div></a>`);
+    }
+    ccEl.innerHTML = cards.join('');
+  }
+
+  const slEl = document.getElementById('dyn-social-links');
+  if(slEl){
+    let sl = [];
+    if(C.socialInstagram) sl.push(`<a href="${C.socialInstagram.startsWith('http')?C.socialInstagram:'https://'+C.socialInstagram}" target="_blank" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[INSTAGRAM]</a>`);
+    if(C.socialLinkedIn) sl.push(`<a href="${C.socialLinkedIn.startsWith('http')?C.socialLinkedIn:'https://'+C.socialLinkedIn}" target="_blank" class="nav-link font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">[LINKEDIN]</a>`);
+    slEl.innerHTML = sl.join('');
   }
 
   // ── Application Cover Letter ──
