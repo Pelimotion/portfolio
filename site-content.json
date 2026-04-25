@@ -2328,13 +2328,19 @@
         "Premiere"
       ],
       "AI Pipeline": [
+        "Midjourney",
         "Nano Banana",
         "GPT 2",
-        "Seedance"
+        "Seedance",
+        "Kling",
+        "VEO3",
+        "Antigravity",
+        "Claude Code"
       ],
       "Strategy": [
         "Brand Systems",
         "Creative Direction",
+        "Generative Motion Systems",
         "Team Manager",
         "Client Relations"
       ]
