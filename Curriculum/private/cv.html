@@ -564,14 +564,7 @@
                 <div class="flex items-center gap-2">
                     <span class="status-dot"></span>
                     <span>Available for projects</span>
-                </div>
-            </div>
-        </footer>
-    </main>
-
-
-    
-<script src="/Curriculum/script.js"></script>
+               <script src="/Curriculum/script.js"></script>
 <script id="inject-script">
 (async function(){
   let D;
@@ -579,132 +572,134 @@
     const r = await fetch('/site-content.json?t='+Date.now());
     if(!r.ok) throw new Error();
     D = await r.json();
-  } catch(e){ return; } // silently fail on local
+  } catch(e){ return; }
 
   const C = D.curriculum || {};
   const CL = D.coverLetter || {};
 
-  // ── CV injection ──
-  // Name
+  // ── Name ──
   const nameEl = document.getElementById('dyn-name');
   if(nameEl && C.name){
     const parts = C.name.split(' ');
     nameEl.innerHTML = parts[0]+'<br>'+parts.slice(1).join(' ')+'<span class="text-white/30">.</span>';
   }
 
-  // Meta
+  // ── Helpers ──
+  const setText = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  const setHTML = (id, val) => { const el=document.getElementById(id); if(el) el.innerHTML=val; };
+
+  // ── Meta ──
   if(C.basedIn) setText('dyn-based', C.basedIn);
   if(C.disciplines) setHTML('dyn-disc', C.disciplines.replace(/·/g,'<br>'));
   if(C.yearsRange) setText('dyn-years', C.yearsRange);
 
-  // Profile paragraphs
+  // ── Profile ──
   if(C.profileParagraph1) setHTML('dyn-p1', C.profileParagraph1);
   const p2 = document.querySelector('#profile p.mt-6');
   if(p2 && C.profileParagraph2) p2.textContent = C.profileParagraph2;
 
-  // Stats
+  // ── Stats ──
   const statsEl = document.getElementById('dyn-stats');
   if(statsEl && C.stats){
-    statsEl.innerHTML = C.stats.map((s,i)=>\`
-      <div class="stat-card${i>0?' border-l':''}${i>1?' border-t sm:border-t-0':''}">
-        <div class="stat-label">${s.value}</div>
-        <div class="stat-sub">${s.label}</div>
-      </div>\`).join('');
+    statsEl.innerHTML = C.stats.map((s,i) =>
+      `<div class="stat-card${i>0?' border-l':''}${i>1?' border-t sm:border-t-0':''}">` +
+      `<div class="stat-label">${s.value}</div>` +
+      `<div class="stat-sub">${s.label}</div></div>`
+    ).join('');
   }
 
-  // Marquee
+  // ── Marquee ──
   const mq = document.getElementById('dyn-marquee');
   if(mq && C.clientMarquee){
-    const spans = C.clientMarquee.map(b=>\`<span>${b}</span>\`).join(' ');
-    mq.innerHTML = \`<div class="marquee-content">${spans}</div><div class="marquee-content" aria-hidden="true">${spans}</div>\`;
+    const spans = C.clientMarquee.map(b => '<span>'+b+'</span>').join(' ');
+    mq.innerHTML = '<div class="marquee-content">'+spans+'</div><div class="marquee-content" aria-hidden="true">'+spans+'</div>';
   }
 
-  // Experience
+  // ── Experience ──
   const expEl = document.getElementById('dyn-exp');
   if(expEl && C.experience){
-    expEl.innerHTML = C.experience.map((e,i,arr)=>\`
-      <article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 ${i<arr.length-1?'border-b border-white/10':''} group transition-all hover:bg-white/[0.02]">
-        <div class="col-span-12 sm:col-span-3 px-5 sm:px-8">
-          <div class="font-mono text-[10px] text-white/30">EXP_0${i+1}</div>
-          <div class="mono-label mt-1">${e.period}</div>
-        </div>
-        <div class="col-span-12 mt-6 sm:col-span-6 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">
-          <h3 class="exp-title font-mono uppercase tracking-tight">${e.role}</h3>
-          <div class="serif text-white/40 text-sm italic mt-1">${e.company}</div>
-          <ul class="exp-list mt-8">${(e.items||[]).map(it=>\`<li><span>${it}</span></li>\`).join('')}</ul>
-        </div>
-        <div class="col-span-12 mt-6 sm:col-span-3 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">
-          <div class="tag-cloud">${(e.tags||[]).map(t=>\`<span>[${t}]</span>\`).join('')}</div>
-        </div>
-      </article>\`).join('');
-    document.querySelectorAll('#dyn-exp .reveal-mech').forEach(el=>{
-      setTimeout(()=>el.classList.add('visible'),100);
+    expEl.innerHTML = C.experience.map((e,i,arr) =>
+      `<article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 ${i<arr.length-1?'border-b border-white/10':''} group transition-all hover:bg-white/[0.02]">` +
+      `<div class="col-span-12 sm:col-span-3 px-5 sm:px-8">` +
+      `<div class="font-mono text-[10px] text-white/30">EXP_0${i+1}</div>` +
+      `<div class="mono-label mt-1">${e.period}</div></div>` +
+      `<div class="col-span-12 mt-6 sm:col-span-6 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">` +
+      `<h3 class="exp-title font-mono uppercase tracking-tight">${e.role}</h3>` +
+      `<div class="serif text-white/40 text-sm italic mt-1">${e.company}</div>` +
+      `<ul class="exp-list mt-8">${(e.items||[]).map(it => '<li><span>'+it+'</span></li>').join('')}</ul></div>` +
+      `<div class="col-span-12 mt-6 sm:col-span-3 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">` +
+      `<div class="tag-cloud">${(e.tags||[]).map(t => '<span>['+t+']</span>').join('')}</div></div>` +
+      `</article>`
+    ).join('');
+    document.querySelectorAll('#dyn-exp .reveal-mech').forEach(el => {
+      setTimeout(() => el.classList.add('visible'), 100);
     });
   }
 
-  // Education
+  // ── Education ──
   const eduEl = document.getElementById('dyn-edu');
   if(eduEl && C.education){
-    eduEl.innerHTML = C.education.map((e,i,arr)=>\`
-      <div class="edu-item reveal-mech grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">
-        <div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_0${i+1}</div>
-        <div class="col-span-8 sm:col-span-3 mono-label">${e.period}</div>
-        <div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">
-          <div class="text-white font-mono text-sm uppercase tracking-tight">${e.title}</div>
-          <div class="serif text-[11px] text-white/30 italic">${e.institution}</div>
-        </div>
-      </div>\`).join('');
+    eduEl.innerHTML = C.education.map((e,i,arr) =>
+      `<div class="edu-item reveal-mech grid grid-cols-12 py-7 ${i<arr.length-1?'border-b border-white/5':''} group hover:bg-white/[0.01] transition-colors">` +
+      `<div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_0${i+1}</div>` +
+      `<div class="col-span-8 sm:col-span-3 mono-label">${e.period}</div>` +
+      `<div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">` +
+      `<div class="text-white font-mono text-sm uppercase tracking-tight">${e.title}</div>` +
+      `<div class="serif text-[11px] text-white/30 italic">${e.institution}</div></div></div>`
+    ).join('');
   }
 
-  // Languages
+  // ── Languages ──
   const langEl = document.getElementById('dyn-lang');
   if(langEl && C.languages){
     const lvlMap = {Native:100,'Professional / B2+':85,'Conversational / B1':55};
-    langEl.innerHTML = \`<div class="label-tiny mb-6">Languages</div><div class="space-y-6">\` +
-      C.languages.map(l=>{
+    langEl.innerHTML = '<div class="label-tiny mb-6">Languages</div><div class="space-y-6">' +
+      C.languages.map(l => {
         const pct = lvlMap[l.level] || 70;
-        return \`<div class="lang-bar" data-val="${pct}">
-          <div class="flex justify-between text-sm mb-2"><span>${l.name}</span><span class="label-tiny">${l.level}</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-        </div>\`;}).join('') + '</div>';
+        return `<div class="lang-bar" data-val="${pct}">` +
+          `<div class="flex justify-between text-sm mb-2"><span>${l.name}</span><span class="label-tiny">${l.level}</span></div>` +
+          `<div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></div>`;
+      }).join('') + '</div>';
   }
 
-  // Skills
+  // ── Skills ──
   const skillsEl = document.getElementById('dyn-skills');
   if(skillsEl && C.skills){
     const cats = Object.keys(C.skills);
-    const borders = ['lg:border-r border-white/10','lg:border-r border-white/10 sm:border-l lg:sm:border-l-0','lg:border-r border-white/10 border-t lg:border-t-0','border-t lg:border-t-0 sm:border-l border-white/10'];
-    skillsEl.innerHTML = cats.map((cat,i)=>\`
-      <div class="skill-group reveal-mech ${borders[i]||'border-white/10'} p-10">
-        <div class="flex justify-between items-center mb-8">
-          <div class="label-tiny font-mono">${cat.toUpperCase().replace(/ /g,'_')}</div>
-          <div class="mono-label text-white/10">CAT_0${i+1}</div>
-        </div>
-        <ul class="skill-list font-mono text-[11px] uppercase space-y-4">
-          ${C.skills[cat].map(s=>\`<li>${s}</li>\`).join('')}
-        </ul>
-      </div>\`).join('');
+    const borders = [
+      'lg:border-r border-white/10',
+      'lg:border-r border-white/10 sm:border-l lg:sm:border-l-0',
+      'lg:border-r border-white/10 border-t lg:border-t-0',
+      'border-t lg:border-t-0 sm:border-l border-white/10'
+    ];
+    skillsEl.innerHTML = cats.map((cat,i) =>
+      `<div class="skill-group reveal-mech ${borders[i]||'border-white/10'} p-10">` +
+      `<div class="flex justify-between items-center mb-8">` +
+      `<div class="label-tiny font-mono">${cat.toUpperCase().replace(/ /g,'_')}</div>` +
+      `<div class="mono-label text-white/10">CAT_0${i+1}</div></div>` +
+      `<ul class="skill-list font-mono text-[11px] uppercase space-y-4">` +
+      C.skills[cat].map(s => '<li>'+s+'</li>').join('') +
+      `</ul></div>`
+    ).join('');
   }
 
-  // Contact
+  // ── Contact ──
   const emailEl = document.getElementById('dyn-email');
   if(emailEl && C.contactEmail){
     emailEl.href = 'mailto:'+C.contactEmail;
     emailEl.textContent = C.contactEmail;
   }
 
-  // ── Cover Letter injection ──
+  // ── Cover Letter ──
   if(C.name) {
     setText('cl-name', C.name);
     setText('cl-sname', C.name);
   }
   if(C.title) setText('cl-stitle', C.title);
-  
   if(CL.targetRole || CL.targetCompany) {
     setText('cl-subtitle', (CL.targetRole||'Creative Director')+(CL.targetCompany?' — '+CL.targetCompany:''));
     setText('cl-role', 'For: '+(CL.targetRole||'Creative Director'));
   }
-  
   if(C.basedIn) setText('cl-location', C.basedIn);
   setText('cl-date', new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}));
 
@@ -723,17 +718,15 @@
         C.socialLinkedIn ? ['LinkedIn','https://linkedin.com/in/'+C.socialLinkedIn] : null,
         C.socialInstagram ? ['Instagram','https://instagram.com/'+C.socialInstagram] : null,
         C.contactEmail ? ['Email','mailto:'+C.contactEmail] : null
-      ].filter(Boolean).map(([l,h])=>`<a href="${h}" target="_blank" class="flex items-center justify-between border-b border-white/10 pb-2 hover:border-white/50 transition-colors"><span class="font-mono text-[10px] uppercase tracking-widest">${l}</span><span class="text-white/30">↗</span></a>`).join('');
+      ].filter(Boolean).map(([l,h]) => 
+        `<a href="${h}" target="_blank" class="flex items-center justify-between border-b border-white/10 pb-2 hover:border-white/50 transition-colors">` +
+        `<span class="font-mono text-[10px] uppercase tracking-widest">${l}</span><span class="text-white/30">↗</span></a>`
+      ).join('');
     }
   }
-
-  function setText(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
-  function setHTML(id, val){ const el=document.getElementById(id); if(el) el.innerHTML=val; }
 })();
 
-
-
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown', e => {
   if(e.key==='Backspace'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){
     e.preventDefault(); history.back();
   }
@@ -764,7 +757,6 @@ window.showCL = function() {
     if(bcv) bcv.className = 'font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70';
     window.scrollTo(0,0);
 };
-
 </script>
 
 <script>
