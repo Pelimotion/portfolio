@@ -4,6 +4,31 @@ let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
 
+
+// ─── Text Formatting Helper ───────────────────────────────────────────────
+function insertFormat(id, tag) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  const val = el.value;
+  const selectedText = val.substring(start, end);
+  
+  let insertion = '';
+  if(tag === 'br') {
+    insertion = '<br>\n';
+  } else if(tag === 'b') {
+    insertion = `<b>${selectedText}</b>`;
+  } else if(tag === 'i') {
+    insertion = `<i>${selectedText}</i>`;
+  }
+  
+  el.value = val.substring(0, start) + insertion + val.substring(end);
+  el.selectionStart = el.selectionEnd = start + insertion.length;
+  el.focus();
+  markUnsaved();
+}
+
 // ─── PIN Auth (SHA-256, runs 100% locally — no external calls) ────────────
 // To change PIN: run this in browser console: sha256('yourpin').then(h=>console.log(h))
 // Then paste the hash below as ADMIN_PIN_HASH.
@@ -351,7 +376,7 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
     <div class="card"><div class="card-title"><span class="icon">👤</span> Profile</div>
       <div class="field"><label>Full Name</label><input id="f-cvName" value="${esc(C.name||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Title Line</label><input id="f-cvTitle" value="${esc(C.title||'')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director, motion branding and artistic direction."</div></div>
-      <div class="field"><label>Subtitle / Tagline</label><textarea id="f-cvSub" rows="2" oninput="markUnsaved()">${esc(C.subtitle||'')}</textarea></div>
+      <div class="field"><label>Subtitle / Tagline <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat(\'f-cvSub\', \'b\')">B</button><button type="button" tabindex="-1" onclick="insertFormat(\'f-cvSub\', \'i\')">I</button></div></label><textarea id="f-cvSub" rows="2" oninput="markUnsaved()">${esc(C.subtitle||'')}</textarea></div>
       <div class="field"><label>Based In</label><input id="f-cvBase" value="${esc(C.basedIn||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Disciplines</label><input id="f-cvDisc" value="${esc(C.disciplines||'')}" oninput="markUnsaved()"><div class="hint">Separated by " · " e.g. "Motion · Direction · Branding · CGI"</div></div>
       <div class="field"><label>Years Range</label><input id="f-cvYears" value="${esc(C.yearsRange||'')}" oninput="markUnsaved()"></div>
@@ -541,6 +566,7 @@ function saveCurriculumToMem(){
   const mq=v('f-cvMarquee'); C.clientMarquee=mq?mq.split(',').map(s=>s.trim()).filter(Boolean):[];
   C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA');
   C.socialInstagram=v('f-cvIG'); C.socialLinkedIn=v('f-cvLI'); C.socialBehance=v('f-cvBE');
+  C.contactText=v('f-cvContactText');
   // Save skills
   const skillKeys = Object.keys(C.skills||{}); const newSkills = {};
   skillKeys.forEach((_,i)=>{
