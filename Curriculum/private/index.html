@@ -57,7 +57,7 @@
         <h1 class="hero-title text-5xl sm:text-7xl">Select Document<span class="text-white/30">.</span></h1>
     </div>
 
-    <div class="z-10 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl px-6 reveal-mech visible" style="transition-delay: 100ms">
+    <div id="doc-grid" class="z-10 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl px-6 reveal-mech visible" style="transition-delay: 100ms">
         <a href="cv.html" onclick="navTo(event, 'cv.html')" class="flex-1 group relative overflow-hidden border border-white/20 bg-white/[0.02] p-10 hover:bg-white/[0.05] hover:border-white/50 transition-all duration-500">
             <div class="font-mono text-[10px] tracking-widest text-white/40 mb-8">DOC_01</div>
             <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform">Curriculum Vitae</h2>
@@ -78,15 +78,7 @@
             </div>
         </a>
 
-        <a href="near.html" onclick="navTo(event, 'near.html')" class="group relative overflow-hidden border border-[#34d399]/40 bg-[#34d399]/[0.02] p-10 hover:bg-[#34d399]/[0.05] hover:border-[#34d399] transition-all duration-500">
-            <div class="font-mono text-[10px] tracking-widest text-[#34d399]/70 mb-8">DOC_03_PRIVATE</div>
-            <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform text-white">Near App.</h2>
-            <p class="serif italic text-white/50 mb-10 group-hover:-translate-y-1 transition-transform">Custom curriculum and cover letter for Near.</p>
-            <div class="flex justify-between items-center font-mono text-[10px] uppercase tracking-widest text-[#34d399]">
-                <span>View Application</span>
-                <span class="group-hover:translate-x-2 transition-transform">→</span>
-            </div>
-        </a>
+        
     </div>
     
     <div class="absolute bottom-10 font-mono text-[9px] uppercase tracking-[0.3em] text-white/20">
@@ -103,6 +95,51 @@
             else if (p.endsWith('.html')) p = p.substring(0, p.lastIndexOf('/') + 1);
             window.location.href = p + file;
         }
+
+        // Fetch duplicated applications and inject into grid
+        fetch('/site-content.json?v=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                if(data.applications && data.applications.length > 0) {
+                    const grid = document.getElementById('doc-grid');
+                    data.applications.forEach((app, idx) => {
+                        const link = document.createElement('a');
+                        link.href = `app.html?app=${app.id}`;
+                        link.className = "group relative overflow-hidden border transition-all duration-500 p-10";
+                        const cColor = app.accentColor || '#34d399';
+                        
+                        link.style.borderColor = cColor + '66'; // 40% opacity
+                        link.style.backgroundColor = cColor + '05'; // 2% opacity
+                        
+                        link.onmouseenter = () => {
+                            link.style.backgroundColor = cColor + '0D'; // 5% opacity
+                            link.style.borderColor = cColor;
+                        };
+                        link.onmouseleave = () => {
+                            link.style.backgroundColor = cColor + '05';
+                            link.style.borderColor = cColor + '66';
+                        };
+
+                        const docNum = String(idx + 3).padStart(2, '0');
+                        
+                        link.innerHTML = `
+                            <div class="font-mono text-[10px] tracking-widest mb-8" style="color:${cColor}b3">DOC_${docNum}_PRIVATE</div>
+                            <h2 class="text-3xl font-medium mb-2 group-hover:-translate-y-1 transition-transform text-white">${app.companyName}</h2>
+                            <p class="serif italic text-white/50 mb-10 group-hover:-translate-y-1 transition-transform">Custom curriculum and cover letter for ${app.companyName}.</p>
+                            <div class="flex justify-between items-center font-mono text-[10px] uppercase tracking-widest" style="color:${cColor}">
+                                <span>View Application</span>
+                                <span class="group-hover:translate-x-2 transition-transform">→</span>
+                            </div>
+                        `;
+                        
+                        link.onclick = (e) => navTo(e, `app.html?app=${app.id}`);
+                        
+                        grid.appendChild(link);
+                    });
+                }
+            })
+            .catch(err => console.error('Failed to load applications:', err));
+
         document.querySelectorAll('.reveal-mech').forEach(el => setTimeout(() => el.classList.add('visible'), 50));
     </script>
 </body>
