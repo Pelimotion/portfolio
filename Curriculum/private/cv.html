@@ -835,7 +835,7 @@ function generatePDF() {
         const rect = document.documentElement.getBoundingClientRect();
         const w = Math.ceil(rect.width);
         // Reduce the height by 2 pixels to guarantee no empty fractional spillover
-        const h = Math.ceil(rect.height);
+        const h = Math.ceil(rect.height) + 10;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -847,7 +847,7 @@ function generatePDF() {
         // Inject the precise physical size and kill all browser margins
         style.innerHTML = `@media print { 
             @page { size: ${w}px ${h}px !important; margin: 0 !important; } 
-            body, html { min-height: auto !important; height: auto !important; }
+            body, html { min-height: auto !important; height: auto !important; overflow: hidden !important; }
         }`;
         
         window.print();
