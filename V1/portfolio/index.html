@@ -816,28 +816,56 @@
 
     /* ─── DATA — fetched from site-content.json (SPEC_02 unified source) ─── */
     let clientsData = {}, clientDescriptions = {}, categoryDescriptions = {}, portfolioData = {};
-    fetch('../../site-content.json')
+    
+    function mapPortfolioData(d, lang = 'en') {
+      const isPT = lang === 'pt';
+      clientsData = {}; clientDescriptions = {}; categoryDescriptions = {};
+      portfolioData = d.portfolio || {};
+
+      // Inject Hero text
+      if(portfolioData.heroName) { 
+        const el=document.getElementById('p-hero-name'); 
+        if(el) el.innerHTML = (isPT && portfolioData.heroName_pt) ? portfolioData.heroName_pt : portfolioData.heroName; 
+      }
+      if(portfolioData.heroTitle) { 
+        const el=document.getElementById('p-hero-role'); 
+        if(el) el.innerHTML = (isPT && portfolioData.heroTitle_pt) ? portfolioData.heroTitle_pt : portfolioData.heroTitle; 
+      }
+      if(portfolioData.heroRelease) { 
+        const el=document.getElementById('p-hero-body'); 
+        if(el) el.innerHTML = (isPT && portfolioData.heroRelease_pt) ? portfolioData.heroRelease_pt : portfolioData.heroRelease; 
+      }
+
+      Object.keys(d.clients || {}).forEach(name => {
+        const c = d.clients[name];
+        if (c.status === 'private') return;
+        
+        // Deep clone media to apply translations
+        const media = JSON.parse(JSON.stringify(c.media || { root: [], categories: {}, total: 0 }));
+        if (isPT) {
+          if (media.root) media.root.forEach(m => { if(m.title_pt) m.title = m.title_pt; });
+          if (media.categories) {
+            Object.keys(media.categories).forEach(cat => {
+              media.categories[cat].forEach(m => { if(m.title_pt) m.title = m.title_pt; });
+            });
+          }
+        }
+        
+        clientsData[name] = media;
+        clientDescriptions[name] = isPT ? (c.tagline_pt || c.tagline || '') : (c.tagline || '');
+      });
+
+      Object.keys(d.categoryMeta || {}).forEach(cat => {
+        const meta = d.categoryMeta[cat] || {};
+        categoryDescriptions[cat] = isPT ? (meta.description_pt || meta.description || '') : (meta.description || '');
+      });
+    }
+
+    fetch('../../site-content.json?t='+Date.now())
       .then(r => r.json())
       .then(d => {
         window.plmContent = d;
-        portfolioData = d.portfolio || {};
-        
-        // Inject Hero text
-        if(portfolioData.heroName) { const el=document.getElementById('p-hero-name'); if(el) el.innerHTML=portfolioData.heroName; }
-        if(portfolioData.heroTitle) { const el=document.getElementById('p-hero-role'); if(el) el.innerHTML=portfolioData.heroTitle; }
-        if(portfolioData.heroRelease) { const el=document.getElementById('p-hero-body'); if(el) el.innerHTML=portfolioData.heroRelease; }
-
-        // Map SPEC_02 schema → shape the existing rendering functions expect
-        Object.keys(d.clients).forEach(name => {
-          const c = d.clients[name];
-          // Skip private clients on the public-facing portfolio
-          if (c.status === 'private') return;
-          clientsData[name]        = c.media || { root: [], categories: {}, total: 0 };
-          clientDescriptions[name] = c.tagline || '';
-        });
-        Object.keys(d.categoryMeta || {}).forEach(cat => {
-          categoryDescriptions[cat] = (d.categoryMeta[cat] || {}).description || '';
-        });
+        mapPortfolioData(d, window._PLM_LANG);
         renderHome();
         renderFooter();
       })
@@ -1254,7 +1282,16 @@ function applyLang(lang) {
   if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
   document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
   
-  // Refresh footer if it exists to update quotes
+  if (window.plmContent) {
+    mapPortfolioData(window.plmContent, lang);
+    renderHome();
+    // If a client view is open, we'd need to re-open it to refresh its content
+    // but usually users toggle on the main gallery.
+    if (!viewHome.classList.contains('active') && currentClientName) {
+       openClient(currentClientName, false);
+    }
+  }
+
   const footer = document.getElementById('portfolio-footer-el');
   if(footer) { footer.remove(); renderFooter(); }
 }

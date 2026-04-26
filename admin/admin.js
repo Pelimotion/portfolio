@@ -37,6 +37,9 @@ const REPO = 'Pelimotion/portfolio';
 const SESSION_KEY = 'plm_admin_unlocked';
 
 async function sha256(str) {
+  if (!window.isSecureContext || !crypto.subtle) {
+    throw new Error('This browser/connection is not secure. Admin PIN requires HTTPS or Localhost.');
+  }
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
@@ -71,15 +74,22 @@ async function checkPin() {
   const pin = input.value.trim();
   if(!pin) { if(errEl) errEl.textContent = 'Enter your PIN'; return; }
   if(btn) btn.disabled = true;
-  const hash = await sha256(pin);
-  if(hash === ADMIN_PIN_HASH) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    hideAuthOverlay();
-    loadData();
-  } else {
-    if(errEl) errEl.textContent = 'Incorrect PIN. Try again.';
-    input.value = '';
-    input.focus();
+  
+  try {
+    const hash = await sha256(pin);
+    if(hash === ADMIN_PIN_HASH) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      hideAuthOverlay();
+      await loadData();
+    } else {
+      if(errEl) errEl.textContent = 'Incorrect PIN. Try again.';
+      input.value = '';
+      input.focus();
+      if(btn) btn.disabled = false;
+    }
+  } catch(e) {
+    console.error('Auth error:', e);
+    if(errEl) errEl.textContent = 'Auth system error: ' + e.message;
     if(btn) btn.disabled = false;
   }
 }
@@ -220,65 +230,62 @@ window.closePublishModal = closePublishModal;
 window.doPublish = doPublish;
 
 
-async function loadData(){
-  // ── Try GitHub first (source of truth) ──
-  const savedToken = localStorage.getItem('plm_gh_token');
-  if(savedToken) {
-    try {
-      const ghRes = await fetch('https://api.github.com/repos/'+REPO+'/contents/site-content.json?ref=main&t='+Date.now(), {
-        headers: { 'Authorization': 'token '+savedToken, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if(ghRes.ok) {
-        const ghData = await ghRes.json();
-        D = JSON.parse(decodeURIComponent(escape(atob(ghData.content.replace(/\n/g,'')))));
-        setStatus('✓ Loaded from GitHub (source of truth)');
-        buildSidebar();
-        showLanding();
-        return;
-      }
-    } catch(ghErr) {
-      // fall through to local
-    }
-  }
 
-  // ── Fallback: local Vercel-deployed file ──
+async function loadData(){
   try {
-    const r = await fetch('../site-content.json?t='+Date.now());
-    if(!r.ok) throw new Error('Not found');
-    D = await r.json();
-    setStatus(savedToken ? '⚠ Loaded local copy (GitHub unreachable)' : '⚠ Loaded local copy — enter GitHub token to sync', !savedToken);
-    buildSidebar();
-    showLanding();
-  } catch(e){
-    // fallback: try old content.json
+    const savedToken = localStorage.getItem('plm_gh_token');
+    if(savedToken) {
+      try {
+        const ghRes = await fetch('https://api.github.com/repos/'+REPO+'/contents/site-content.json?ref=main&t='+Date.now(), {
+          headers: { 'Authorization': 'token '+savedToken, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if(ghRes.ok) {
+          const ghData = await ghRes.json();
+          const decoded = atob(ghData.content.replace(/
+/g,''));
+          const utf8 = new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0)));
+          D = JSON.parse(utf8);
+          setStatus('✓ Loaded from GitHub');
+          buildSidebar(); showLanding(); return;
+        }
+      } catch(ghErr) { console.warn('GH fetch failed', ghErr); }
+    }
+
+    try {
+      const r = await fetch('../site-content.json?t='+Date.now());
+      if(r.ok) {
+        D = await r.json();
+        setStatus(savedToken ? '⚠ Loaded local copy (GH unreachable)' : '⚠ Loaded local copy — enter GH token', !savedToken);
+        buildSidebar(); showLanding(); return;
+      }
+    } catch(e){}
+
     try {
       const r2 = await fetch('../content.json?t='+Date.now());
-      if(!r2.ok) throw new Error('Not found');
-      D = await r2.json();
-      D.landing = D.landing || {};
-      D.portfolio = D.portfolio || {};
-      D.curriculum = D.curriculum || {};
-      setStatus('content.json loaded (legacy)', true);
-      buildSidebar();
-      showLanding();
-    } catch(e2){
-      D = {landing:{},portfolio:{},clients:{},categories:{},curriculum:{},applications:[]};
-      setStatus('Local mode: Please click Import JSON', true);
-      buildSidebar();
-      document.getElementById('main-content').innerHTML = `
-        <div style="text-align:center;padding:100px 20px">
-          <div style="font-size:40px;margin-bottom:20px">⚠️</div>
-          <h2 style="font-size:24px;margin-bottom:10px;color:var(--fg)">Local File Mode Detected</h2>
-          <p style="color:var(--fg2);max-width:400px;margin:0 auto 30px;line-height:1.6">
-            Browsers block local files from loading data automatically. <br><br>
-            Please click <strong>Import JSON</strong> and select your <code>site-content.json</code> file to begin editing.
-          </p>
-          <button class="btn primary" onclick="importJSON()">📂 Import JSON</button>
-        </div>
-      `;
-    }
+      if(r2.ok) {
+        D = await r2.json();
+        D.landing=D.landing||{}; D.portfolio=D.portfolio||{}; D.curriculum=D.curriculum||{};
+        setStatus('content.json loaded (legacy)', true);
+        buildSidebar(); showLanding(); return;
+      }
+    } catch(e2){}
+
+    D = {landing:{},portfolio:{},clients:{},categories:{},curriculum:{},applications:[]};
+    setStatus('Local mode: Please Import JSON', true);
+    buildSidebar();
+    document.getElementById('main-content').innerHTML = `
+      <div style="text-align:center;padding:100px 20px">
+        <div style="font-size:40px;margin-bottom:20px">⚠️</div>
+        <h2 style="font-size:24px;margin-bottom:10px;color:var(--fg)">Local File Mode</h2>
+        <p style="color:var(--fg2);max-width:400px;margin:0 auto 30px;line-height:1.6">Please Import your <code>site-content.json</code> file.</p>
+        <button class="btn primary" onclick="importJSON()">📂 Import JSON</button>
+      </div>`;
+  } catch(fatal) {
+    console.error('Fatal load error', fatal);
+    setStatus('Fatal Error: ' + fatal.message, true);
   }
 }
+
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────
 function buildSidebar(){
