@@ -467,17 +467,17 @@ function generatePDF() {
         const header = document.querySelector('header');
         const body = document.body;
         
-        // Hide UI elements that shouldn't be in the document
+        // Hide UI elements
         if (privBar) privBar.style.display = 'none';
         if (progBar) progBar.style.display = 'none';
-        // Hide sticky header during measurement to avoid its height/offset interfering
+        
+        // Reset layout for measurement
         let originalHeaderPos = '';
         if (header) {
             originalHeaderPos = header.style.position;
             header.style.position = 'relative';
         }
         
-        // KILL all height constraints
         const originalBodyClass = body.className;
         body.classList.remove('min-h-screen');
         if (mainEl) mainEl.classList.remove('min-h-screen');
@@ -490,17 +490,11 @@ function generatePDF() {
         // Force layout recalculation
         void body.offsetHeight;
         
-        // Measure exact rendered dimensions of the content
-        // We use a more comprehensive measurement approach
+        // Measure exact rendered dimensions
         const w = window.innerWidth;
-        const h = Math.max(
-            body.scrollHeight, 
-            body.offsetHeight, 
-            document.documentElement.clientHeight,
-            document.documentElement.scrollHeight,
-            document.documentElement.offsetHeight,
-            mainEl ? mainEl.scrollHeight : 0
-        ) + 40; // Increased safety margin to 40px
+        // We use offsetHeight of the body which is usually the most accurate for physical length
+        // We subtract a tiny fraction (0.5px) to prevent the "1-pixel spillover" that triggers a 2nd page
+        const h = Math.floor(Math.max(body.scrollHeight, body.offsetHeight, mainEl ? mainEl.offsetHeight : 0)) - 1;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -517,12 +511,22 @@ function generatePDF() {
                 padding: 0 !important; 
                 height: ${h}px !important; 
                 min-height: ${h}px !important;
-                overflow: visible !important; 
+                overflow: hidden !important; 
+                display: block !important;
                 background-color: #050505 !important;
                 -webkit-print-color-adjust: exact !important;
+                break-inside: avoid !important;
             }
-            main { height: auto !important; min-height: 0 !important; padding-bottom: 40px !important; }
+            main { 
+                height: auto !important; 
+                min-height: 0 !important; 
+                padding-bottom: 0 !important; 
+                margin: 0 !important;
+                display: block !important;
+            }
             header { position: relative !important; }
+            * { break-inside: auto !important; }
+            section, article { break-inside: avoid !important; }
         }`;
         
         window.print();
@@ -541,7 +545,7 @@ function generatePDF() {
             document.documentElement.style.height = '';
             document.documentElement.style.minHeight = '';
         }, 1000);
-    }, 400); // Increased settle time to 400ms
+    }, 400);
 }
 
 // Intercept Cmd+P or Ctrl+P
