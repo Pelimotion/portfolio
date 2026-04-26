@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 
 <head>
+    <meta name="google" content="notranslate">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Felipe Conceição — CV & Cover Letter (Private)</title>
@@ -433,6 +434,83 @@ function generatePDF() {
     // Disable all transitions instantly
     const styleBlock = document.createElement('style');
     styleBlock.innerHTML = `* { transition: none !important; animation: none !important; }`;
+    document.head.appendChild(styleBlock);
+
+    // Reveal everything
+    document.querySelectorAll('.reveal-mech, .reveal').forEach(el => {
+        el.classList.add('visible', 'active');
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+    });
+    
+    setTimeout(() => {
+        const privBar = document.getElementById('priv-bar');
+        const progBar = document.querySelector('.progress-bar-container');
+        const mainEl = document.querySelector('main');
+        const body = document.body;
+        
+        // Hide UI elements
+        if (privBar) privBar.style.display = 'none';
+        if (progBar) progBar.style.display = 'none';
+        
+        // KILL all height constraints that cause blank space/splitting
+        const originalBodyClass = body.className;
+        body.classList.remove('min-h-screen');
+        if (mainEl) mainEl.classList.remove('min-h-screen');
+        
+        body.style.height = 'auto';
+        body.style.minHeight = '0';
+        document.documentElement.style.height = 'auto';
+        document.documentElement.style.minHeight = '0';
+        
+        // Force layout recalculation
+        void body.offsetHeight;
+        
+        // Measure exact rendered dimensions of the content
+        // We use scrollHeight to capture the full content height without any screen-size stretching
+        const w = window.innerWidth;
+        const h = Math.max(body.scrollHeight, body.offsetHeight, mainEl ? mainEl.offsetHeight : 0);
+        
+        let style = document.getElementById('dynamic-print-style');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'dynamic-print-style';
+            document.head.appendChild(style);
+        }
+        
+        // Inject the precise physical size and kill all browser margins
+        // We use a very slight negative margin/size adjustment to prevent empty page spillover
+        style.innerHTML = `@media print { 
+            @page { size: ${w}px ${h}px !important; margin: 0 !important; } 
+            body, html { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                height: ${h}px !important; 
+                min-height: ${h}px !important;
+                overflow: hidden !important; 
+                background-color: #050505 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+            main { height: auto !important; min-height: 0 !important; }
+        }`;
+        
+        window.print();
+        
+        // --- CLEANUP ---
+        setTimeout(() => {
+            styleBlock.remove();
+            if (style) style.innerHTML = '';
+            if (privBar) privBar.style.display = '';
+            if (progBar) progBar.style.display = '';
+            body.className = originalBodyClass;
+            if (mainEl) mainEl.classList.add('min-h-screen');
+            body.style.height = '';
+            body.style.minHeight = '';
+            document.documentElement.style.height = '';
+            document.documentElement.style.minHeight = '';
+        }, 1000);
+    }, 100);
+}`;
     document.head.appendChild(styleBlock);
 
     // Reveal everything

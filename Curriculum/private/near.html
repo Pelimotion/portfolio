@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 
 <head>
+    <meta name="google" content="notranslate">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Felipe Conceição — Application for Near</title>
@@ -983,47 +984,6 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
-<!-- Google Translate Integration -->
-<style>
-.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-simple { display: none !important; }
-body { top: 0px !important; }
-#google_translate_element { display: none !important; }
-.lang-toggle { 
-    font-family: monospace; font-size: 10px; cursor: pointer; 
-    border: 1px solid rgba(255,255,255,0.2); background: transparent; 
-    color: white; padding: 4px 8px; transition: all 0.3s; letter-spacing: 0.1em;
-}
-.lang-toggle:hover { background: white; color: black; }
-/* Override Google translation background highlights */
-font[style*="background-color"] { background-color: transparent !important; }
-font[style*="background-color"] { box-shadow: none !important; }
-</style>
-<div id="google_translate_element"></div>
-<script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,pt', autoDisplay: false}, 'google_translate_element');
-  // Check cookie or local storage to set initial button state if needed
-  setTimeout(updateLangButtonState, 1000);
-}
-function updateLangButtonState() {
-  var select = document.querySelector('.goog-te-combo');
-  var btn = document.getElementById('custom-lang-toggle');
-  if(select && btn) {
-      if(select.value === 'pt') btn.innerText = 'EN';
-      else btn.innerText = 'PT';
-  }
-}
-function toggleLanguage() {
-    var select = document.querySelector('.goog-te-combo');
-    if (!select) return;
-    var currentLang = select.value || 'en';
-    var targetLang = currentLang === 'en' ? 'pt' : 'en';
-    select.value = targetLang;
-    select.dispatchEvent(new Event('change'));
-    var btn = document.getElementById('custom-lang-toggle');
-    if(btn) btn.innerText = currentLang === 'en' ? 'EN' : 'PT';
-}
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 
 </body>
