@@ -196,7 +196,8 @@
                     </div>
                 </div>
             </section>
-  <script src="/Curriculum/script.js"></script>
+  </div></div></footer></main>
+<script src="/Curriculum/script.js"></script>
 <script id="inject-script">
 (async function(){
   let D;
@@ -479,7 +480,7 @@ function generatePDF() {
         
         // Measure exact rendered dimensions of the content
         const w = window.innerWidth;
-        const h = Math.max(body.scrollHeight, body.offsetHeight, mainEl ? mainEl.offsetHeight : 0);
+        const h = Math.max(body.scrollHeight, body.offsetHeight, mainEl ? mainEl.offsetHeight : 0) + 20;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -500,7 +501,7 @@ function generatePDF() {
                 background-color: #050505 !important;
                 -webkit-print-color-adjust: exact !important;
             }
-            main { height: auto !important; min-height: 0 !important; }
+            main { height: auto !important; min-height: 0 !important; padding-bottom: 20px !important; }
         }`;
         
         window.print();
