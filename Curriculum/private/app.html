@@ -923,17 +923,29 @@ function generatePDF() {
         el.style.transform = 'none';
     });
     
+    // Force browser to "see" everything by scrolling
+    window.scrollTo(0, document.body.scrollHeight);
+    
     setTimeout(() => {
+        window.scrollTo(0, 0);
+        
         const privBar = document.getElementById('priv-bar');
         const progBar = document.querySelector('.progress-bar-container');
         const mainEl = document.querySelector('main');
+        const header = document.querySelector('header');
         const body = document.body;
         
-        // Hide UI elements
+        // Hide UI elements that shouldn't be in the document
         if (privBar) privBar.style.display = 'none';
         if (progBar) progBar.style.display = 'none';
+        // Hide sticky header during measurement to avoid its height/offset interfering
+        let originalHeaderPos = '';
+        if (header) {
+            originalHeaderPos = header.style.position;
+            header.style.position = 'relative';
+        }
         
-        // KILL all height constraints that cause blank space/splitting
+        // KILL all height constraints
         const originalBodyClass = body.className;
         body.classList.remove('min-h-screen');
         if (mainEl) mainEl.classList.remove('min-h-screen');
@@ -947,8 +959,16 @@ function generatePDF() {
         void body.offsetHeight;
         
         // Measure exact rendered dimensions of the content
+        // We use a more comprehensive measurement approach
         const w = window.innerWidth;
-        const h = Math.max(body.scrollHeight, body.offsetHeight, mainEl ? mainEl.offsetHeight : 0) + 20;
+        const h = Math.max(
+            body.scrollHeight, 
+            body.offsetHeight, 
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight,
+            mainEl ? mainEl.scrollHeight : 0
+        ) + 40; // Increased safety margin to 40px
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -965,11 +985,12 @@ function generatePDF() {
                 padding: 0 !important; 
                 height: ${h}px !important; 
                 min-height: ${h}px !important;
-                overflow: hidden !important; 
+                overflow: visible !important; 
                 background-color: #050505 !important;
                 -webkit-print-color-adjust: exact !important;
             }
-            main { height: auto !important; min-height: 0 !important; padding-bottom: 20px !important; }
+            main { height: auto !important; min-height: 0 !important; padding-bottom: 40px !important; }
+            header { position: relative !important; }
         }`;
         
         window.print();
@@ -980,6 +1001,7 @@ function generatePDF() {
             if (style) style.innerHTML = '';
             if (privBar) privBar.style.display = '';
             if (progBar) progBar.style.display = '';
+            if (header) header.style.position = originalHeaderPos;
             body.className = originalBodyClass;
             if (mainEl) mainEl.classList.add('min-h-screen');
             body.style.height = '';
@@ -987,7 +1009,7 @@ function generatePDF() {
             document.documentElement.style.height = '';
             document.documentElement.style.minHeight = '';
         }, 1000);
-    }, 100);
+    }, 400); // Increased settle time to 400ms
 }
 
 // Intercept Cmd+P or Ctrl+P
