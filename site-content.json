@@ -1327,7 +1327,7 @@
       "media": {
         "root": [
           {
-            "title": "NEXTRON ALTERACAO ASSINATURA",
+            "title": "NEXTRON - EXPLAINER LAUNCH VIDEO",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.jpg",
@@ -1337,12 +1337,19 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_85.jpg"
-            ]
+            ],
+            "title_pt": "NEXTRON - VIDEO DE LANÇAMENTO EXPLAINER"
           }
         ],
         "categories": {},
         "total": 1
-      }
+      },
+      "tagline_pt": "",
+      "description_pt": "",
+      "release": "",
+      "release_pt": "",
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     },
     "PIANISSIMO": {
       "status": "public",
