@@ -107,6 +107,7 @@
             transition:opacity .6s,visibility .6s;
             -webkit-overflow-scrolling:touch;
             scrollbar-width:none;-ms-overflow-style:none;
+            background: var(--bg);
         }
         .view-wrapper::-webkit-scrollbar{display:none}
         .view-wrapper.active{opacity:1;pointer-events:all;visibility:visible;z-index:20}
@@ -337,13 +338,23 @@
         /* Video wrapper — respects aspect ratio, fills screen */
         .plm-player-wrap{
             position:relative;
-            width:min(95vw, calc((92vh) * var(--ar, 1.778)));
+            width:min(95vw, calc((90vh) * var(--ar, 1.778)));
             max-width:95vw;
+            max-height:90vh;
             background:#000;
             border:1px solid rgba(255,255,255,.08);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;
         }
         .plm-player-wrap video{
-            display:block;width:100%;height:auto;
+            display:block;
+            max-width:100%;
+            max-height:calc(90vh - 50px);
+            width:auto;
+            height:auto;
+            object-fit:contain;
         }
 
         /* Click-to-pause overlay */
@@ -1242,6 +1253,10 @@ function applyLang(lang) {
   const btn = document.getElementById('lang-btn') || document.getElementById('custom-lang-toggle');
   if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
   document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
+  
+  // Refresh footer if it exists to update quotes
+  const footer = document.getElementById('portfolio-footer-el');
+  if(footer) { footer.remove(); renderFooter(); }
 }
 function toggleLanguage() { applyLang(window._PLM_LANG === 'en' ? 'pt' : 'en'); }
 document.addEventListener('DOMContentLoaded', () => { applyLang(window._PLM_LANG); });

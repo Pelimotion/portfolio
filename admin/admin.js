@@ -341,26 +341,48 @@ async function autoTranslate(fromId, toId, fromLang, toLang) {
 }
 
 // ─── Section openers ──────────────────────────────────────────────────────
+
 function showLanding(){ autoSave(); currentSection='landing'; currentKey=null; highlightSb(null);
   const L = D.landing || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">LANDING PAGE</div><h1 class="page-title">Index Principal</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> index.html — Página principal com vídeo hero e navegação bilíngue.</div>
+    
     <div class="card"><div class="card-title"><span class="icon">🏷️</span> Brand Identity (Hero)</div>
-      <div class="field"><label>Hero Title (HTML) — <span style="color:var(--fg3)">EN</span></label><input id="f-brandName" value="${esc(L.brandName||'Peli<em>motion</em><br>Hub<span style=\'color:rgba(240,237,232,.25)\'>.</span>')}" oninput="markUnsaved()"><div class="hint">Use <code>&lt;em&gt;text&lt;/em&gt;</code> para itálico.</div></div>
-      <div class="field"><label>Hero Eyebrow — <span style="color:var(--fg3)">EN</span></label><input id="f-brandSub" value="${esc(L.brandSub||'Motion Branding & Creative Direction')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-brandSub','f-brandSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
-      <div class="field"><label>Hero Eyebrow — <span style="color:#34d399">PT</span></label><input id="f-brandSub_pt" value="${esc(L.brandSub_pt||'Motion Branding & Direção Criativa')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Hero Title (HTML)</label><input id="f-brandName" value="${esc(L.brandName||'')}" oninput="markUnsaved()"></div>
+      <div class="field-pair">
+        <div class="field"><label>Hero Eyebrow — <span style="color:var(--fg3)">EN</span></label><input id="f-brandSub" value="${esc(L.brandSub||'')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-brandSub','f-brandSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Hero Eyebrow — <span style="color:#34d399">PT</span></label><input id="f-brandSub_pt" value="${esc(L.brandSub_pt||'')}" oninput="markUnsaved()"></div>
+      </div>
     </div>
-    <div class="card"><div class="card-title"><span class="icon">📝</span> Page Sections</div>
-      <div class="field"><label>About Title — <span style="color:var(--fg3)">EN</span></label><input id="f-aboutTitle" value="${esc(L.aboutTitle||'Motion as a <em>strategic</em> language.')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-aboutTitle','f-aboutTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
-      <div class="field"><label>About Title — <span style="color:#34d399">PT</span></label><input id="f-aboutTitle_pt" value="${esc(L.aboutTitle_pt||'Motion como <em>linguagem</em> estratégica.')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Contact Title — <span style="color:var(--fg3)">EN</span></label><input id="f-contactTitle" value="${esc(L.contactTitle||'Open to direction, <em>collaborations</em> and long-form briefs.')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-contactTitle','f-contactTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
-      <div class="field"><label>Contact Title — <span style="color:#34d399">PT</span></label><input id="f-contactTitle_pt" value="${esc(L.contactTitle_pt||'Aberto a direção, <em>colaborações</em> e projetos de longo prazo.')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Contact Subtext — <span style="color:var(--fg3)">EN</span></label><input id="f-contactSub" value="${esc(L.contactSub||'Based in Rio de Janeiro. Working globally.')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-contactSub','f-contactSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
-      <div class="field"><label>Contact Subtext — <span style="color:#34d399">PT</span></label><input id="f-contactSub_pt" value="${esc(L.contactSub_pt||'Baseado no Rio de Janeiro. Atuação global.')}" oninput="markUnsaved()"></div>
+
+    <div class="card"><div class="card-title"><span class="icon">📝</span> About Section</div>
+      <div class="field-pair">
+        <div class="field"><label>About Title — <span style="color:var(--fg3)">EN</span></label><input id="f-aboutTitle" value="${esc(L.aboutTitle||'')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-aboutTitle','f-aboutTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>About Title — <span style="color:#34d399">PT</span></label><input id="f-aboutTitle_pt" value="${esc(L.aboutTitle_pt||'')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Paragraph 1 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-aboutP1" rows="3" oninput="markUnsaved()">${esc(L.aboutParagraph1||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-aboutP1','f-aboutP1_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Paragraph 1 — <span style="color:#34d399">PT</span></label><textarea id="f-aboutP1_pt" rows="3" oninput="markUnsaved()">${esc(L.aboutParagraph1_pt||'')}</textarea></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Paragraph 2 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-aboutP2" rows="3" oninput="markUnsaved()">${esc(L.aboutParagraph2||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-aboutP2','f-aboutP2_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Paragraph 2 — <span style="color:#34d399">PT</span></label><textarea id="f-aboutP2_pt" rows="3" oninput="markUnsaved()">${esc(L.aboutParagraph2_pt||'')}</textarea></div>
+      </div>
+    </div>
+
+    <div class="card"><div class="card-title"><span class="icon">💬</span> Contact Section</div>
+      <div class="field-pair">
+        <div class="field"><label>Contact Title — <span style="color:var(--fg3)">EN</span></label><input id="f-contactTitle" value="${esc(L.contactTitle||'')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-contactTitle','f-contactTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Contact Title — <span style="color:#34d399">PT</span></label><input id="f-contactTitle_pt" value="${esc(L.contactTitle_pt||'')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Contact Subtext — <span style="color:var(--fg3)">EN</span></label><input id="f-contactSub" value="${esc(L.contactSub||'')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-contactSub','f-contactSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Contact Subtext — <span style="color:#34d399">PT</span></label><input id="f-contactSub_pt" value="${esc(L.contactSub_pt||'')}" oninput="markUnsaved()"></div>
+      </div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveLanding()">Apply Changes</button></div>`;
 }
+
 
 function showPortfolio(){ autoSave(); currentSection='portfolio'; currentKey=null; highlightSb(null);
   const P = D.portfolio || {};
@@ -477,28 +499,38 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
 }
 
 // ─── Client/Category editor ──────────────────────────────────────────────
+
 function openEditor(type, key){ autoSave(); currentSection=type; currentKey=key;
   highlightSb(key);
   const data = (type==='client' ? D.clients : D.categories)[key] || {};
   const isClient = type==='client';
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">${isClient?'CLIENT':'CATEGORY'}</div><h1 class="page-title">${key}</h1></div>
-    <div class="preview-ref">📍 Shown in the <strong>portfolio gallery</strong> when viewing ${isClient?'this client':'videos in this category'}. Description appears as subtitle, deliverables as tags.</div>
+    
     <div class="card"><div class="card-title"><span class="icon">📋</span> Description</div>
-      <div class="field"><label>Short description (gallery header + card hover)</label><textarea id="f-desc" rows="3" oninput="markUnsaved()">${esc(data.description||'')}</textarea><div class="hint">1-2 sentences. Shown below the client name in the gallery.</div></div>
+      <div class="field-pair">
+        <div class="field"><label>Short Description — <span style="color:var(--fg3)">EN</span></label><textarea id="f-desc" rows="2" oninput="markUnsaved()">${esc(data.description||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-desc','f-desc_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Short Description — <span style="color:#34d399">PT</span></label><textarea id="f-desc_pt" rows="2" oninput="markUnsaved()">${esc(data.description_pt||'')}</textarea></div>
+      </div>
     </div>
-    ${isClient?`<div class="card"><div class="card-title"><span class="icon">📰</span> Release Text</div>
-      <div class="field"><label>Release / editorial text</label><textarea id="f-release" rows="4" oninput="markUnsaved()">${esc(data.release||'')}</textarea><div class="hint">Longer text shown in the video player view. Think of it as a press release.</div></div>
+
+    ${isClient?`
+    <div class="card"><div class="card-title"><span class="icon">📰</span> Release Text</div>
+      <div class="field-pair">
+        <div class="field"><label>Release Text — <span style="color:var(--fg3)">EN</span></label><textarea id="f-release" rows="4" oninput="markUnsaved()">${esc(data.release||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-release','f-release_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Release Text — <span style="color:#34d399">PT</span></label><textarea id="f-release_pt" rows="4" oninput="markUnsaved()">${esc(data.release_pt||'')}</textarea></div>
+      </div>
     </div>`:''}
+
     <div class="card"><div class="card-title"><span class="icon">🏷️</span> Deliverables</div>
       <div class="field"><label>Types of work delivered</label>
         <div class="chips" id="chips-box">${(data.deliverables||[]).map((d,i)=>`<div class="chip">${d}<span class="rm" onclick="removeChip(${i})">✕</span></div>`).join('')}</div>
         <div class="add-chip"><input type="text" id="chip-input" placeholder="e.g. Social Media Campaign" onkeydown="if(event.key==='Enter'){addChip();event.preventDefault()}"><button class="btn" onclick="addChip()">+ Add</button></div>
-        <div class="hint">These appear as tags in the project gallery. Press Enter or click Add.</div>
       </div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveAll()">Save & Export</button><button class="btn danger" onclick="clearEntry()">Clear This Entry</button></div>`;
 }
+
 
 function highlightSb(key){
   document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
@@ -565,7 +597,20 @@ function saveLandingToMem(){
   L.contactTitle=v('f-contactTitle'); L.contactTitle_pt=v('f-contactTitle_pt');
   L.contactSub=v('f-contactSub'); L.contactSub_pt=v('f-contactSub_pt');
 }
-function saveLanding(){ saveLandingToMem(); saveAll(); }
+
+function saveLanding(){
+  const L = D.landing = D.landing||{};
+  const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  L.brandName=v('f-brandName');
+  L.brandSub=v('f-brandSub'); L.brandSub_pt=v('f-brandSub_pt');
+  L.aboutTitle=v('f-aboutTitle'); L.aboutTitle_pt=v('f-aboutTitle_pt');
+  L.aboutParagraph1=v('f-aboutP1'); L.aboutParagraph1_pt=v('f-aboutP1_pt');
+  L.aboutParagraph2=v('f-aboutP2'); L.aboutParagraph2_pt=v('f-aboutP2_pt');
+  L.contactTitle=v('f-contactTitle'); L.contactTitle_pt=v('f-contactTitle_pt');
+  L.contactSub=v('f-contactSub'); L.contactSub_pt=v('f-contactSub_pt');
+  saveAll();
+}
+
 
 function savePortfolioToMem(){
   const P = D.portfolio = D.portfolio||{};
@@ -578,32 +623,24 @@ function savePortfolioToMem(){
 }
 function savePortfolio(){ savePortfolioToMem(); saveAll(); }
 
+
 function saveCurriculumToMem(){
   const C = D.curriculum = D.curriculum||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
   C.accentColor=v('f-cvAccent');
-  C.name=v('f-cvName'); C.title=v('f-cvTitle'); C.subtitle=v('f-cvSub');
-  C.basedIn=v('f-cvBase'); C.disciplines=v('f-cvDisc'); C.yearsRange=v('f-cvYears');
-  C.profileParagraph1=v('f-cvP1'); C.profileParagraph2=v('f-cvP2');
-  C.stats=[0,1,2,3].map(i=>({value:v(`f-stat${i}v`),label:v(`f-stat${i}l`)}));
-  const mq=v('f-cvMarquee'); C.clientMarquee=mq?mq.split(',').map(s=>s.trim()).filter(Boolean):[];
+  C.name=v('f-cvName'); 
+  C.title=v('f-cvTitle'); C.title_pt=v('f-cvTitle_pt');
+  C.subtitle=v('f-cvSub'); C.subtitle_pt=v('f-cvSub_pt');
+  C.basedIn=v('f-cvBase'); C.basedIn_pt=v('f-cvBase_pt');
+  C.disciplines=v('f-cvDisc'); C.disciplines_pt=v('f-cvDisc_pt');
+  C.yearsRange=v('f-cvYears');
+  C.profileParagraph1=v('f-cvP1'); C.profileParagraph1_pt=v('f-cvP1_pt');
+  C.profileParagraph2=v('f-cvP2'); C.profileParagraph2_pt=v('f-cvP2_pt');
+  C.contactText=v('f-cvContactText'); C.contactText_pt=v('f-cvContactText_pt');
   C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA'); C.contactWebsite=v('f-cvWebsite');
   C.socialInstagram=v('f-cvIG'); C.socialLinkedIn=v('f-cvLI'); C.socialBehance=v('f-cvBE');
-  C.contactText=v('f-cvContactText');
-  // Save skills
-  const skillKeys = Object.keys(C.skills||{}); const newSkills = {};
-  skillKeys.forEach((_,i)=>{
-    const catName=v(`f-scat${i}-name`); const items=v(`f-scat${i}-items`);
-    if(catName) newSkills[catName]=items?items.split(',').map(s=>s.trim()).filter(Boolean):[];
-  }); C.skills=newSkills;
-  // Save experience entries
-  const expCount = (C.experience||[]).length;
-  for(let i=0;i<expCount;i++){
-    const e = C.experience[i];
-    e.period=v(`f-exp${i}-period`); e.role=v(`f-exp${i}-role`); e.company=v(`f-exp${i}-company`);
-    const items=v(`f-exp${i}-items`); e.items=items?items.split('\n').map(s=>s.trim()).filter(Boolean):[];
-    const tags=v(`f-exp${i}-tags`); e.tags=tags?tags.split(',').map(s=>s.trim()).filter(Boolean):[];
-  }
+}
+
   // Save education
   const eduCount = (C.education||[]).length;
   for(let i=0;i<eduCount;i++){
@@ -636,38 +673,58 @@ function removeSkillCat(i){ saveCurriculumToMem(); const C=D.curriculum;
   showCurriculum(); markUnsaved(); }
 
 // ─── Cover Letter editor ──────────────────────────────────────────────────
+
 function showCoverLetter(){ autoSave(); currentSection='coverLetter'; currentKey=null; highlightSb(null);
   const CL = D.coverLetter || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">COVER LETTER</div><h1 class="page-title">Cover Letter Editor</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> Curriculum/private/index.html (Cover Letter tab) — Customizable per application. Download as PDF from the private page.</div>
-    <div class="card"><div class="card-title"><span class="icon">🎯</span> Target</div>
-      <div class="hint" style="margin-bottom:14px">Customize these for each application. Leave company blank for a generic version.</div>
-      <div class="field"><label>Accent Color (Hex)</label><input type="color" id="f-clAccent" value="${esc(CL.accentColor||'#34d399')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Target Role</label><input id="f-clRole" value="${esc(CL.targetRole||'Creative Director')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director", "Senior Motion Designer"</div></div>
-      <div class="field"><label>Target Company (optional)</label><input id="f-clCompany" value="${esc(CL.targetCompany||'')}" oninput="markUnsaved()"><div class="hint">Leave blank for a generic cover letter.</div></div>
-    </div>
     <div class="card"><div class="card-title"><span class="icon">✍️</span> Letter Content</div>
-      <div class="hint" style="margin-bottom:14px">Best practice: Don't repeat your CV. Tell the story behind your achievements. Show personality and strategic thinking.</div>
-      <div class="field"><label>Greeting</label><input id="f-clGreeting" value="${esc(CL.greeting||'Dear Hiring Team,')}" oninput="markUnsaved()"><div class="hint">Address a specific person if possible.</div></div>
-      <div class="field"><label>Opening Paragraph (the hook)</label><textarea id="f-clOpening" rows="3" oninput="markUnsaved()">${esc(CL.opening||'')}</textarea><div class="hint">State who you are, why you're applying, and your main value proposition. This is your first impression.</div></div>
-      <div class="field"><label>Body 1 — Experience & Impact</label><textarea id="f-clBody1" rows="4" oninput="markUnsaved()">${esc(CL.body1||'')}</textarea><div class="hint">Pick 1-2 major achievements and tell the story. Focus on leadership and results.</div></div>
-      <div class="field"><label>Body 2 — Unique Differentiator</label><textarea id="f-clBody2" rows="4" oninput="markUnsaved()">${esc(CL.body2||'')}</textarea><div class="hint">What makes you different? Technical depth, artistic background, strategic thinking.</div></div>
-      <div class="field"><label>Body 3 — Cultural Fit & Motivation</label><textarea id="f-clBody3" rows="3" oninput="markUnsaved()">${esc(CL.body3||'')}</textarea><div class="hint">Show you've researched the company. Why them? Why now?</div></div>
-      <div class="field"><label>Closing (call to action)</label><textarea id="f-clClosing" rows="2" oninput="markUnsaved()">${esc(CL.closing||'')}</textarea><div class="hint">Propose next steps. Be confident but polite.</div></div>
-      <div class="field"><label>Sign-off</label><input id="f-clSignoff" value="${esc(CL.signoff||'Looking forward to connecting,')}" oninput="markUnsaved()"></div>
+      
+      <div class="field-pair">
+        <div class="field"><label>Greeting — <span style="color:var(--fg3)">EN</span></label><input id="f-clGreeting" value="${esc(CL.greeting||'')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-clGreeting','f-clGreeting_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Greeting — <span style="color:#34d399">PT</span></label><input id="f-clGreeting_pt" value="${esc(CL.greeting_pt||'')}" oninput="markUnsaved()"></div>
+      </div>
+
+      <div class="field-pair">
+        <div class="field"><label>Opening — <span style="color:var(--fg3)">EN</span></label><textarea id="f-clOpening" rows="3" oninput="markUnsaved()">${esc(CL.opening||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-clOpening','f-clOpening_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Opening — <span style="color:#34d399">PT</span></label><textarea id="f-clOpening_pt" rows="3" oninput="markUnsaved()">${esc(CL.opening_pt||'')}</textarea></div>
+      </div>
+
+      <div class="field-pair">
+        <div class="field"><label>Body 1 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-clBody1" rows="4" oninput="markUnsaved()">${esc(CL.body1||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-clBody1','f-clBody1_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Body 1 — <span style="color:#34d399">PT</span></label><textarea id="f-clBody1_pt" rows="4" oninput="markUnsaved()">${esc(CL.body1_pt||'')}</textarea></div>
+      </div>
+
+      <div class="field-pair">
+        <div class="field"><label>Body 2 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-clBody2" rows="4" oninput="markUnsaved()">${esc(CL.body2||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-clBody2','f-clBody2_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Body 2 — <span style="color:#34d399">PT</span></label><textarea id="f-clBody2_pt" rows="4" oninput="markUnsaved()">${esc(CL.body2_pt||'')}</textarea></div>
+      </div>
+
+      <div class="field-pair">
+        <div class="field"><label>Closing — <span style="color:var(--fg3)">EN</span></label><textarea id="f-clClosing" rows="2" oninput="markUnsaved()">${esc(CL.closing||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-clClosing','f-clClosing_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Closing — <span style="color:#34d399">PT</span></label><textarea id="f-clClosing_pt" rows="2" oninput="markUnsaved()">${esc(CL.closing_pt||'')}</textarea></div>
+      </div>
+
+      <div class="field-pair">
+        <div class="field"><label>Sign-off — <span style="color:var(--fg3)">EN</span></label><input id="f-clSignoff" value="${esc(CL.signoff||'')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-clSignoff','f-clSignoff_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Sign-off — <span style="color:#34d399">PT</span></label><input id="f-clSignoff_pt" value="${esc(CL.signoff_pt||'')}" oninput="markUnsaved()"></div>
+      </div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveCoverLetterAction()">Apply Changes</button></div>`;
 }
+
+
 function saveCoverLetterToMem(){
   const CL = D.coverLetter = D.coverLetter||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-  CL.accentColor=v('f-clAccent');
-  CL.targetRole=v('f-clRole'); CL.targetCompany=v('f-clCompany');
-  CL.greeting=v('f-clGreeting'); CL.opening=v('f-clOpening');
-  CL.body1=v('f-clBody1'); CL.body2=v('f-clBody2'); CL.body3=v('f-clBody3');
-  CL.closing=v('f-clClosing'); CL.signoff=v('f-clSignoff');
+  CL.greeting=v('f-clGreeting'); CL.greeting_pt=v('f-clGreeting_pt');
+  CL.opening=v('f-clOpening'); CL.opening_pt=v('f-clOpening_pt');
+  CL.body1=v('f-clBody1'); CL.body1_pt=v('f-clBody1_pt');
+  CL.body2=v('f-clBody2'); CL.body2_pt=v('f-clBody2_pt');
+  CL.closing=v('f-clClosing'); CL.closing_pt=v('f-clClosing_pt');
+  CL.signoff=v('f-clSignoff'); CL.signoff_pt=v('f-clSignoff_pt');
 }
+
 function saveCoverLetterAction(){ saveCoverLetterToMem(); saveAll(); }
 
 // ─── Applications editor (CV+CL combined pages) ──────────────────────────

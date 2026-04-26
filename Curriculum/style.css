@@ -219,7 +219,7 @@ body:active .precision-cursor {
 
 /* Mechanical Glitch */
 .glitch-active {
-    filter: invert(1) hue-rotate(180deg);
+    opacity: 0.8;
 }
 
 body::after {

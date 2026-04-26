@@ -92,7 +92,7 @@
                     </div>
                     <div class="nav-label flex-1 flex justify-end items-center gap-4 font-mono">
                         <button class="lang-toggle" onclick="toggleTheme()" title="Toggle Theme" style="margin-right:8px;">◐</button>
-                        <button id="custom-lang-toggle" class="lang-toggle" onclick="toggleLanguage()">PT</button>
+                        <button id="lang-btn" class="lang-toggle" onclick="toggleLanguage()">PT</button>
                         <div class="text-white/30 text-[9px] uppercase tracking-widest hidden sm:block">STATUS_IDLE</div>
                         <div class="flex items-center gap-2">
                             <span class="status-dot" style="background-color:#fff;box-shadow:0 0 10px #fff;"></span>
@@ -499,46 +499,35 @@ document.addEventListener('keydown', function(e) {
 </script>
 
 <!-- Google Translate Integration -->
-<style>
-.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-simple { display: none !important; }
-body { top: 0px !important; }
-#google_translate_element { display: none !important; }
-.lang-toggle { 
-    font-family: monospace; font-size: 10px; cursor: pointer; 
-    border: 1px solid rgba(255,255,255,0.2); background: transparent; 
-    color: white; padding: 4px 8px; transition: all 0.3s; letter-spacing: 0.1em;
-}
-.lang-toggle:hover { background: white; color: black; }
-/* Override Google translation background highlights */
-font[style*="background-color"] { background-color: transparent !important; }
-font[style*="background-color"] { box-shadow: none !important; }
-</style>
-<div id="google_translate_element"></div>
-<script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,pt', autoDisplay: false}, 'google_translate_element');
-  // Check cookie or local storage to set initial button state if needed
-  setTimeout(updateLangButtonState, 1000);
-}
-function updateLangButtonState() {
-  var select = document.querySelector('.goog-te-combo');
-  var btn = document.getElementById('custom-lang-toggle');
-  if(select && btn) {
-      if(select.value === 'pt') btn.innerText = 'EN';
-      else btn.innerText = 'PT';
-  }
-}
-function toggleLanguage() {
-    var select = document.querySelector('.goog-te-combo');
-    if (!select) return;
-    var currentLang = select.value || 'en';
-    var targetLang = currentLang === 'en' ? 'pt' : 'en';
-    select.value = targetLang;
-    select.dispatchEvent(new Event('change'));
-    var btn = document.getElementById('custom-lang-toggle');
-    if(btn) btn.innerText = currentLang === 'en' ? 'EN' : 'PT';
-}
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
+
+
+
+
+
+<script>
+// ── BILINGUAL SYSTEM (Manual EN/PT) ──
+window._PLM_LANG = localStorage.getItem('plm-lang') || 'en';
+
+function applyLang(lang) {
+  window._PLM_LANG = lang;
+  localStorage.setItem('plm-lang', lang);
+  
+  // Static elements with data-en/data-pt
+  document.querySelectorAll('[data-en][data-pt]').forEach(el => {
+    const text = lang === 'pt' ? el.getAttribute('data-pt') : el.getAttribute('data-en');
+    if(text !== null) el.innerHTML = text;
+  });
+  
+  // Update lang button
+  const btn = document.getElementById('lang-btn');
+  if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
+  document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
+  
+  // Dispatch event so dynamic loaders can respond
+  document.dispatchEvent(new CustomEvent('plm-lang-change', { detail: { lang } }));
+}
+function toggleLanguage() { applyLang(window._PLM_LANG === 'en' ? 'pt' : 'en'); }
+document.addEventListener('DOMContentLoaded', () => { applyLang(window._PLM_LANG); });
+</script>
 </body>

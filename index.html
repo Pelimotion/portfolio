@@ -442,5 +442,41 @@ function toggleLanguage() {
 document.addEventListener('DOMContentLoaded', () => { applyLang(window._PLM_LANG); });
 </script>
 
+
+<script>
+async function loadLandingContent() {
+  try {
+    const r = await fetch('/site-content.json?t='+Date.now());
+    if(!r.ok) return;
+    const D = await r.json();
+    const L = D.landing || {};
+    const lang = window._PLM_LANG || 'en';
+    const isPT = lang === 'pt';
+    
+    const set = (id, en, pt) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(en) el.setAttribute('data-en', en);
+      if(pt) el.setAttribute('data-pt', pt);
+      el.innerHTML = isPT ? (pt || en) : en;
+    };
+
+    if(L.brandSub) set('brand-sub', L.brandSub, L.brandSub_pt);
+    if(L.aboutTitle) set('about-title', L.aboutTitle, L.aboutTitle_pt);
+    if(L.aboutParagraph1) set('about-p1', L.aboutParagraph1, L.aboutParagraph1_pt);
+    if(L.aboutParagraph2) set('about-p2', L.aboutParagraph2, L.aboutParagraph2_pt);
+    if(L.contactTitle) set('contact-title', L.contactTitle, L.contactTitle_pt);
+    if(L.contactSub) set('contact-sub', L.contactSub, L.contactSub_pt);
+    
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', loadLandingContent);
+// Also listen for language changes
+const originalApplyLang = window.applyLang;
+window.applyLang = function(lang) {
+  if(originalApplyLang) originalApplyLang(lang);
+  loadLandingContent();
+};
+</script>
 </body>
 </html>
