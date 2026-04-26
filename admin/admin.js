@@ -594,11 +594,6 @@ function saveEntryToMem(){
       });
     }
   }
-};
-  const desc=document.getElementById('f-desc');
-  const rel=document.getElementById('f-release');
-  if(desc) data.description=desc.value.trim();
-  if(rel) data.release=rel.value.trim();
 }
 function saveLandingToMem(){
   const L = D.landing = D.landing||{};
