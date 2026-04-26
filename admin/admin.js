@@ -500,33 +500,120 @@ function openEditor(type, key){ autoSave(); currentSection=type; currentKey=key;
   highlightSb(key);
   const data = (type==='client' ? D.clients : D.categories)[key] || {};
   const isClient = type==='client';
-  document.getElementById('main-content').innerHTML = `
+  
+  let html = `
     <div class="page-header"><div class="page-label">${isClient?'CLIENT':'CATEGORY'}</div><h1 class="page-title">${key}</h1></div>
     
-    <div class="card"><div class="card-title"><span class="icon">📋</span> Description</div>
+    <div class="card"><div class="card-title"><span class="icon">🏷️</span> Card Tagline</div>
       <div class="field-pair">
-        <div class="field"><label>Short Description — <span style="color:var(--fg3)">EN</span></label><textarea id="f-desc" rows="2" oninput="markUnsaved()">${esc(data.description||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-desc','f-desc_pt','en','pt')">↕ Auto-Traduzir</button></div>
-        <div class="field"><label>Short Description — <span style="color:#34d399">PT</span></label><textarea id="f-desc_pt" rows="2" oninput="markUnsaved()">${esc(data.description_pt||'')}</textarea></div>
+        <div class="field"><label>Tagline — <span style="color:var(--fg3)">EN</span></label><textarea id="f-tagline" rows="2" oninput="markUnsaved()">${esc(data.tagline||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-tagline','f-tagline_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Tagline — <span style="color:#34d399">PT</span></label><textarea id="f-tagline_pt" rows="2" oninput="markUnsaved()">${esc(data.tagline_pt||'')}</textarea></div>
       </div>
+      <div class="hint">This text appears on the portfolio grid when hovering over the project.</div>
+    </div>
+
+    <div class="card"><div class="card-title"><span class="icon">📋</span> Main Description</div>
+      <div class="field-pair">
+        <div class="field"><label>Description — <span style="color:var(--fg3)">EN</span></label><textarea id="f-desc" rows="3" oninput="markUnsaved()">${esc(data.description||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-desc','f-desc_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Description — <span style="color:#34d399">PT</span></label><textarea id="f-desc_pt" rows="3" oninput="markUnsaved()">${esc(data.description_pt||'')}</textarea></div>
+      </div>
+      <div class="hint">Main introduction text at the top of the project page.</div>
     </div>
 
     ${isClient?`
-    <div class="card"><div class="card-title"><span class="icon">📰</span> Release Text</div>
+    <div class="card"><div class="card-title"><span class="icon">📰</span> Release / Full Story</div>
       <div class="field-pair">
-        <div class="field"><label>Release Text — <span style="color:var(--fg3)">EN</span></label><textarea id="f-release" rows="4" oninput="markUnsaved()">${esc(data.release||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-release','f-release_pt','en','pt')">↕ Auto-Traduzir</button></div>
-        <div class="field"><label>Release Text — <span style="color:#34d399">PT</span></label><textarea id="f-release_pt" rows="4" oninput="markUnsaved()">${esc(data.release_pt||'')}</textarea></div>
-      </div>
-    </div>`:''}
-
-    <div class="card"><div class="card-title"><span class="icon">🏷️</span> Deliverables</div>
-      <div class="field"><label>Types of work delivered</label>
-        <div class="chips" id="chips-box">${(data.deliverables||[]).map((d,i)=>`<div class="chip">${d}<span class="rm" onclick="removeChip(${i})">✕</span></div>`).join('')}</div>
-        <div class="add-chip"><input type="text" id="chip-input" placeholder="e.g. Social Media Campaign" onkeydown="if(event.key==='Enter'){addChip();event.preventDefault()}"><button class="btn" onclick="addChip()">+ Add</button></div>
+        <div class="field"><label>Release — <span style="color:var(--fg3)">EN</span></label><textarea id="f-release" rows="4" oninput="markUnsaved()">${esc(data.release||'')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-release','f-release_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Release — <span style="color:#34d399">PT</span></label><textarea id="f-release_pt" rows="4" oninput="markUnsaved()">${esc(data.release_pt||'')}</textarea></div>
       </div>
     </div>
+    
+    <div class="card"><div class="card-title"><span class="icon">📂</span> Per-Folder (Category) Texts</div>
+      <div id="sb-categories-editor"></div>
+    </div>`:''}
+    
+    <div class="card"><div class="card-title"><span class="icon">🏷️</span> Deliverables</div>
+      <div class="field"><label>Tags (e.g. Motion Branding, 3D Design)</label>
+        <div class="chips" id="chips-box">${(data.deliverables||[]).map((d,i)=>`<div class="chip">${d}<span class="rm" onclick="removeChip(${i})">✕</span></div>`).join('')}</div>
+        <div class="add-chip"><input type="text" id="chip-input" placeholder="Add tag..." onkeydown="if(event.key==='Enter'){addChip();event.preventDefault()}"><button class="btn" onclick="addChip()">+ Add</button></div>
+      </div>
+    </div>
+
+    ${isClient && data.media && data.media.root ? `
+    <div class="card"><div class="card-title"><span class="icon">🎥</span> Media Titles</div>
+      <div class="hint">Edit titles for each video in this project.</div>
+      <div style="margin-top:15px">
+        ${data.media.root.map((m, idx) => `
+          <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px">
+            <div style="width:60px; height:40px; background:#000"><img src="${m.poster_url}" style="width:100%; height:100%; object-fit:cover; opacity:0.5"></div>
+            <div style="flex:1">
+               <input id="f-media-${idx}" value="${esc(m.title||'')}" placeholder="English Title" oninput="markUnsaved()" style="margin-bottom:4px">
+               <input id="f-media-${idx}_pt" value="${esc(m.title_pt||'')}" placeholder="Título em Português" oninput="markUnsaved()">
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>` : ''}
+
     <div class="actions-bar"><button class="btn primary" onclick="saveAll()">Save & Export</button><button class="btn danger" onclick="clearEntry()">Clear This Entry</button></div>`;
+
+  document.getElementById('main-content').innerHTML = html;
+  
+  // Render sub-categories if client
+  if(isClient && data.categories){
+    let h = '';
+    Object.keys(data.categories).sort().forEach(cat => {
+      const works = data.categories[cat];
+      const desc_en = (data.category_descriptions && data.category_descriptions[cat]) || '';
+      const desc_pt = (data.category_descriptions_pt && data.category_descriptions_pt[cat]) || '';
+      h += `
+      <div class="category-editor-item" style="margin-bottom:24px; padding:16px; border:1px solid var(--border); background:var(--bg-card)">
+        <div style="font-size:10px; font-weight:900; margin-bottom:12px; color:var(--fg2)">FOLDER: ${cat.toUpperCase()}</div>
+        <div class="field-pair">
+          <div class="field"><label>Folder Description (EN)</label><textarea id="f-cat-desc-${cat}" oninput="markUnsaved()" rows="2">${esc(desc_en)}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cat-desc-${cat}','f-cat-desc-${cat}_pt','en','pt')">↕ Auto-Traduzir</button></div>
+          <div class="field"><label>Folder Description (PT)</label><textarea id="f-cat-desc-${cat}_pt" oninput="markUnsaved()" rows="2">${esc(desc_pt)}</textarea></div>
+        </div>
+      </div>`;
+    });
+    const el = document.getElementById('sb-categories-editor');
+    if(el) el.innerHTML = h;
+  }
 }
 
+function saveEntryToMem(){
+  if(!currentKey)return;
+  const store = currentSection==='client'?D.clients:D.categories;
+  const data = store[currentKey] = store[currentKey]||{};
+  const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  
+  data.tagline=v('f-tagline'); data.tagline_pt=v('f-tagline_pt');
+  data.description=v('f-desc'); data.description_pt=v('f-desc_pt');
+  
+  if(currentSection==='client'){ 
+    data.release=v('f-release'); data.release_pt=v('f-release_pt');
+    
+    // Save per-category descriptions
+    data.category_descriptions = data.category_descriptions || {};
+    data.category_descriptions_pt = data.category_descriptions_pt || {};
+    if(data.categories){
+      Object.keys(data.categories).forEach(cat => {
+        const d_en = v(`f-cat-desc-${cat}`);
+        const d_pt = v(`f-cat-desc-${cat}_pt`);
+        if(d_en !== undefined) data.category_descriptions[cat] = d_en;
+        if(d_pt !== undefined) data.category_descriptions_pt[cat] = d_pt;
+      });
+    }
+
+    if(data.media && data.media.root){
+      data.media.root.forEach((item, idx) => {
+        const t_en = v('f-media-'+idx);
+        const t_pt = v('f-media-'+idx+'_pt');
+        if(t_en) item.title = t_en;
+        if(t_pt) item.title_pt = t_pt;
+      });
+    }
+  }
+}
 
 function highlightSb(key){
   document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
@@ -593,8 +680,10 @@ function saveEntryToMem(){
     data.category_descriptions_pt = data.category_descriptions_pt || {};
     if(data.categories){
       Object.keys(data.categories).forEach(cat => {
-        data.category_descriptions[cat] = v(`f-cat-desc-${cat}`);
-        data.category_descriptions_pt[cat] = v(`f-cat-desc-${cat}_pt`);
+        const d_en = v(`f-cat-desc-${cat}`);
+        const d_pt = v(`f-cat-desc-${cat}_pt`);
+        if(d_en !== undefined) data.category_descriptions[cat] = d_en;
+        if(d_pt !== undefined) data.category_descriptions_pt[cat] = d_pt;
       });
     }
 
@@ -607,22 +696,8 @@ function saveEntryToMem(){
       });
     }
   }
-};
-  const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-  data.tagline=v('f-tagline'); data.tagline_pt=v('f-tagline_pt');
-  data.description=v('f-desc'); data.description_pt=v('f-desc_pt');
-  if(currentSection==='client'){ 
-    data.release=v('f-release'); data.release_pt=v('f-release_pt');
-    if(data.media && data.media.root){
-      data.media.root.forEach((item, idx) => {
-        const t_en = v('f-media-'+idx);
-        const t_pt = v('f-media-'+idx+'_pt');
-        if(t_en) item.title = t_en;
-        if(t_pt) item.title_pt = t_pt;
-      });
-    }
-  }
 }
+
 function saveLandingToMem(){
   const L = D.landing = D.landing||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
