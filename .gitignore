@@ -29,3 +29,14 @@ node_modules/
  *.ai
  *.prproj
  *.aep
+
+# Patch scripts and temp files
+patch_*.py
+fix_*.py
+inject_*.py
+check_*.py
+unify_*.py
+add_print.py
+pdf_cropper.py
+temp.js
+specs
