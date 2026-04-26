@@ -89,6 +89,7 @@
                     <a href="#contact" class="nav-link">05.Liaise</a>
                 </nav>
                 <div class="nav-label flex-1 flex justify-end items-center gap-4 font-mono">
+                        <button id="custom-lang-toggle" class="lang-toggle" onclick="toggleLanguage()">PT</button>
                     <div id="section-indicator"
                         class="text-white/30 text-[9px] uppercase tracking-widest hidden sm:block">STATUS_IDLE</div>
                     <div class="flex items-center gap-2">
@@ -785,9 +786,10 @@
   const ccEl = document.getElementById('dyn-contact-cards');
   if(ccEl){
     let cards = [];
-    cards.push(`<a href="/" class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
-        <div class="label-tiny">Portfolio</div>
-        <div class="tag-label mt-3">pelimotion.com</div></a>`);
+    const webUrl = C.contactWebsite && C.contactWebsite.startsWith('http') ? C.contactWebsite : (C.contactWebsite ? 'https://'+C.contactWebsite : 'https://pelimotion.com');
+    cards.push(`<a href="${webUrl}" target="_blank" class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
+        <div class="label-tiny" data-en="Portfolio" data-pt="Portfólio">Portfolio</div>
+        <div class="tag-label mt-3" data-en="visit website" data-pt="visite a página">visit website</div></a>`);
     cards.push(`<div class="contact-card border-t border-l border-white/10">
         <div class="label-tiny">City</div>
         <div class="tag-label mt-3">${C.basedIn || 'Rio de Janeiro'}</div></div>`);
@@ -840,7 +842,7 @@
       const l_in = C.socialLinkedIn ? (C.socialLinkedIn.startsWith('http') ? C.socialLinkedIn : 'https://linkedin.com/in/'+C.socialLinkedIn.split('/').filter(Boolean).pop()) : null;
       const l_ig = C.socialInstagram ? (C.socialInstagram.startsWith('http') ? C.socialInstagram : 'https://instagram.com/'+C.socialInstagram.split('/').filter(Boolean).pop()) : null;
       linksEl.innerHTML = [
-        ['Portfolio','https://pelimotion.com'],
+        ['Portfolio', C.contactWebsite && C.contactWebsite.startsWith('http') ? C.contactWebsite : (C.contactWebsite ? 'https://'+C.contactWebsite : 'https://pelimotion.com')],
         l_in ? ['LinkedIn', l_in] : null,
         l_ig ? ['Instagram', l_ig] : null,
         C.contactEmail ? ['Email','mailto:'+C.contactEmail] : null
@@ -965,4 +967,48 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+
+<!-- Google Translate Integration -->
+<style>
+.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-simple { display: none !important; }
+body { top: 0px !important; }
+#google_translate_element { display: none !important; }
+.lang-toggle { 
+    font-family: monospace; font-size: 10px; cursor: pointer; 
+    border: 1px solid rgba(255,255,255,0.2); background: transparent; 
+    color: white; padding: 4px 8px; transition: all 0.3s; letter-spacing: 0.1em;
+}
+.lang-toggle:hover { background: white; color: black; }
+/* Override Google translation background highlights */
+font[style*="background-color"] { background-color: transparent !important; }
+font[style*="background-color"] { box-shadow: none !important; }
+</style>
+<div id="google_translate_element"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,pt', autoDisplay: false}, 'google_translate_element');
+  // Check cookie or local storage to set initial button state if needed
+  setTimeout(updateLangButtonState, 1000);
+}
+function updateLangButtonState() {
+  var select = document.querySelector('.goog-te-combo');
+  var btn = document.getElementById('custom-lang-toggle');
+  if(select && btn) {
+      if(select.value === 'pt') btn.innerText = 'EN';
+      else btn.innerText = 'PT';
+  }
+}
+function toggleLanguage() {
+    var select = document.querySelector('.goog-te-combo');
+    if (!select) return;
+    var currentLang = select.value || 'en';
+    var targetLang = currentLang === 'en' ? 'pt' : 'en';
+    select.value = targetLang;
+    select.dispatchEvent(new Event('change'));
+    var btn = document.getElementById('custom-lang-toggle');
+    if(btn) btn.innerText = currentLang === 'en' ? 'EN' : 'PT';
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>

@@ -451,6 +451,7 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
     <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social</div>
       <div class="field"><label>Contact Call to Action <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'i')">I</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'br')">↵</button></div></label><textarea id="f-cvContactText" rows="3" oninput="markUnsaved()">${esc(C.contactText||'Open to direction,<br>\n<span class="serif text-white/70">collaborations</span> and<br>\nlong-form briefs<span class="text-white/30">.</span>')}</textarea><div class="hint">The large text in the Contact section of the curriculum.</div></div>
       <div class="field"><label>Email</label><input id="f-cvEmail" value="${esc(C.contactEmail||'')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Website</label><input id="f-cvWebsite" value="${esc(C.contactWebsite||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>WhatsApp</label><input id="f-cvWA" value="${esc(C.contactWhatsApp||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Instagram</label><input id="f-cvIG" value="${esc(C.socialInstagram||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>LinkedIn</label><input id="f-cvLI" value="${esc(C.socialLinkedIn||'')}" oninput="markUnsaved()"></div>
@@ -567,7 +568,7 @@ function saveCurriculumToMem(){
   C.profileParagraph1=v('f-cvP1'); C.profileParagraph2=v('f-cvP2');
   C.stats=[0,1,2,3].map(i=>({value:v(`f-stat${i}v`),label:v(`f-stat${i}l`)}));
   const mq=v('f-cvMarquee'); C.clientMarquee=mq?mq.split(',').map(s=>s.trim()).filter(Boolean):[];
-  C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA');
+  C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA'); C.contactWebsite=v('f-cvWebsite');
   C.socialInstagram=v('f-cvIG'); C.socialLinkedIn=v('f-cvLI'); C.socialBehance=v('f-cvBE');
   C.contactText=v('f-cvContactText');
   // Save skills
