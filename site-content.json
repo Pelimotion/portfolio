@@ -2193,7 +2193,7 @@
   },
   "curriculum": {
     "name": "Felipe Conceição",
-    "title": "Creative Director, motion branding and artistic direction.",
+    "title": "Creative Director, motion branding and creative editing",
     "subtitle": "Eight years translating brand strategy into rhythm, light and image â from generative pipelines to projection mapping.",
     "basedIn": "Rio de Janeiro, BR",
     "disciplines": "Motion · Direction · Branding · CGI",
@@ -2255,7 +2255,7 @@
       },
       {
         "period": "2024 — 2025",
-        "role": "Artistic Collaboration â Duo Sirius",
+        "role": "Artistic Collaboration — Duo Sirius",
         "company": "Interdisciplinary Visual Artist",
         "items": [
           "Focused on high-ticket events, blending painting and video art."
@@ -2272,9 +2272,12 @@
         "company": "Rockset",
         "items": [
           "Owned post-production pipeline for aesthetic excellence.",
-          "Broadcast / Digital Signage assets for financial sectors."
+          "Broadcast / Digital Signage assets for automotive, financial and corporate sector.",
+          "Motion Design for Live Streams and Advertising"
         ],
         "tags": [
+          "MOTION",
+          "LIVE",
           "CGI",
           "POST_PROD",
           "BROADCAST"
@@ -2350,7 +2353,8 @@
     "socialInstagram": "instagram.com/pelimotion",
     "socialLinkedIn": "https://www.linkedin.com/in/pelife/",
     "socialBehance": "be.net/pelimotion",
-    "contactText": "The system is ready. Looking for a <i>full-time creative direction </i>or motion design role — remote, with <span class=\"serif text-white/70\">teams who move fast and think deep.</span>"
+    "contactText": "The system is ready. Looking for a <i>full-time creative direction </i>or motion design role — remote, with <span class=\"serif text-white/70\">teams who move fast and think deep.</span>",
+    "accentColor": "#34d399"
   },
   "coverLetter": {
     "greeting": "Opening",
