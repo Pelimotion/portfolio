@@ -323,22 +323,41 @@ function buildSidebar(){
   }
 }
 
+// ─── Auto-translate helper (MyMemory free API) ───────────────────────────
+async function autoTranslate(fromId, toId, fromLang, toLang) {
+  const el = document.getElementById(fromId);
+  const toEl = document.getElementById(toId);
+  if(!el || !toEl || !el.value.trim()) return;
+  const text = el.value.trim();
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const translated = d.responseData?.translatedText || '';
+    if(!translated) return;
+    const confirmed = confirm(`Tradução sugerida:\n\n"${translated}"\n\nDeseja usar esta tradução?`);
+    if(confirmed) { toEl.value = translated; markUnsaved(); }
+  } catch(e) { console.warn('Translate failed', e); }
+}
+
 // ─── Section openers ──────────────────────────────────────────────────────
 function showLanding(){ autoSave(); currentSection='landing'; currentKey=null; highlightSb(null);
   const L = D.landing || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">LANDING PAGE</div><h1 class="page-title">Index Principal</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> index.html — The main hub page with particle animation and navigation buttons.</div>
+    <div class="preview-ref">📍 <strong>File:</strong> index.html — Página principal com vídeo hero e navegação bilíngue.</div>
     <div class="card"><div class="card-title"><span class="icon">🏷️</span> Brand Identity (Hero)</div>
-      <div class="field"><label>Hero Title (HTML allowed)</label><input id="f-brandName" value="${esc(L.brandName||'Peli<em>motion</em><br>Hub<span style=\'color:rgba(240,237,232,.25)\'>.</span>')}" oninput="markUnsaved()"><div class="hint">Use <code>&lt;em&gt;text&lt;/em&gt;</code> for italic styling.</div></div>
-      <div class="field"><label>Hero Eyebrow (Subtitle)</label><input id="f-brandSub" value="${esc(L.brandSub||'Motion Branding & Creative Direction')}" oninput="markUnsaved()"><div class="hint">Small text above the main title.</div></div>
+      <div class="field"><label>Hero Title (HTML) — <span style="color:var(--fg3)">EN</span></label><input id="f-brandName" value="${esc(L.brandName||'Peli<em>motion</em><br>Hub<span style=\'color:rgba(240,237,232,.25)\'>.</span>')}" oninput="markUnsaved()"><div class="hint">Use <code>&lt;em&gt;text&lt;/em&gt;</code> para itálico.</div></div>
+      <div class="field"><label>Hero Eyebrow — <span style="color:var(--fg3)">EN</span></label><input id="f-brandSub" value="${esc(L.brandSub||'Motion Branding & Creative Direction')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-brandSub','f-brandSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
+      <div class="field"><label>Hero Eyebrow — <span style="color:#34d399">PT</span></label><input id="f-brandSub_pt" value="${esc(L.brandSub_pt||'Motion Branding & Direção Criativa')}" oninput="markUnsaved()"></div>
     </div>
-    
     <div class="card"><div class="card-title"><span class="icon">📝</span> Page Sections</div>
-      <div class="field"><label>About Title</label><input id="f-aboutTitle" value="${esc(L.aboutTitle||'Motion as a <em>strategic</em> language.')}" oninput="markUnsaved()"><div class="hint">Title for the About section. Use <code>&lt;em&gt;text&lt;/em&gt;</code> for italics.</div></div>
-      <div class="field"><label>Contact Title</label><input id="f-contactTitle" value="${esc(L.contactTitle||'Open to direction, <em>collaborations</em> and long-form briefs.')}" oninput="markUnsaved()"><div class="hint">Title for the Contact section.</div></div>
-      <div class="field"><label>Contact Subtext</label><input id="f-contactSub" value="${esc(L.contactSub||'Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.')}" oninput="markUnsaved()"><div class="hint">Text below the contact title.</div></div>
-      <div class="field"><label>Footer Text</label><input id="f-footerText" value="${esc(L.footerText||'Motion Branding & Creative Direction')}" oninput="markUnsaved()"><div class="hint">Secondary line at the bottom of the landing page.</div></div>
+      <div class="field"><label>About Title — <span style="color:var(--fg3)">EN</span></label><input id="f-aboutTitle" value="${esc(L.aboutTitle||'Motion as a <em>strategic</em> language.')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-aboutTitle','f-aboutTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
+      <div class="field"><label>About Title — <span style="color:#34d399">PT</span></label><input id="f-aboutTitle_pt" value="${esc(L.aboutTitle_pt||'Motion como <em>linguagem</em> estratégica.')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Contact Title — <span style="color:var(--fg3)">EN</span></label><input id="f-contactTitle" value="${esc(L.contactTitle||'Open to direction, <em>collaborations</em> and long-form briefs.')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-contactTitle','f-contactTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
+      <div class="field"><label>Contact Title — <span style="color:#34d399">PT</span></label><input id="f-contactTitle_pt" value="${esc(L.contactTitle_pt||'Aberto a direção, <em>colaborações</em> e projetos de longo prazo.')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Contact Subtext — <span style="color:var(--fg3)">EN</span></label><input id="f-contactSub" value="${esc(L.contactSub||'Based in Rio de Janeiro. Working globally.')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-contactSub','f-contactSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
+      <div class="field"><label>Contact Subtext — <span style="color:#34d399">PT</span></label><input id="f-contactSub_pt" value="${esc(L.contactSub_pt||'Baseado no Rio de Janeiro. Atuação global.')}" oninput="markUnsaved()"></div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveLanding()">Apply Changes</button></div>`;
 }
@@ -347,23 +366,20 @@ function showPortfolio(){ autoSave(); currentSection='portfolio'; currentKey=nul
   const P = D.portfolio || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">PORTFOLIO PAGE</div><h1 class="page-title">Portfolio Settings</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> V1/portfolio/index.html — Hero section, contact info, footer quotes and social links.</div>
-    <div class="card"><div class="card-title"><span class="icon">🎬</span> Hero Section</div>
-      <div class="field"><label>Hero Name (large title)</label><input id="f-heroName" value="${esc(P.heroName||'')}" oninput="markUnsaved()"><div class="hint">The massive title in the portfolio hero (e.g. PELIMOTION).</div></div>
-      <div class="field"><label>Hero Subtitle</label><input id="f-heroTitle" value="${esc(P.heroTitle||'')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Hero Release Text</label><textarea id="f-heroRelease" rows="2" oninput="markUnsaved()">${esc(P.heroRelease||'')}</textarea></div>
-    </div>
+    <div class="preview-ref">📍 <strong>File:</strong> V1/portfolio/index.html — Hero, social links, footer quotes.</div>
     <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social</div>
-      <div class="field"><label>WhatsApp Number</label><input id="f-pWhatsApp" value="${esc(P.contactWhatsApp||'')}" oninput="markUnsaved()"><div class="hint">Full number with country code, no spaces. e.g. 5547999664274</div></div>
+      <div class="field"><label>WhatsApp</label><input id="f-pWhatsApp" value="${esc(P.contactWhatsApp||'')}" oninput="markUnsaved()"><div class="hint">Número completo com código do país, sem espaços. Ex: 5547999664274</div></div>
       <div class="field"><label>Email</label><input id="f-pEmail" value="${esc(P.contactEmail||'')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Instagram Username</label><input id="f-pIG" value="${esc(P.socialInstagram||'')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>LinkedIn Username</label><input id="f-pLI" value="${esc(P.socialLinkedIn||'')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Behance Username</label><input id="f-pBE" value="${esc(P.socialBehance||'')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Instagram (apenas username)</label><input id="f-pIG" value="${esc(P.socialInstagram||'')}" oninput="markUnsaved()"><div class="hint">Ex: pelimotion</div></div>
+      <div class="field"><label>LinkedIn (apenas username)</label><input id="f-pLI" value="${esc(P.socialLinkedIn||'')}" oninput="markUnsaved()"><div class="hint">Ex: pelife</div></div>
+      <div class="field"><label>Behance (apenas username)</label><input id="f-pBE" value="${esc(P.socialBehance||'')}" oninput="markUnsaved()"><div class="hint">Ex: pelimotion</div></div>
     </div>
     <div class="card"><div class="card-title"><span class="icon">💬</span> Footer Quotes</div>
-      <div class="field"><label>Quote 1 (bold, large)</label><textarea id="f-fq1" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1||'')}</textarea></div>
-      <div class="field"><label>Quote 2 (italic, smaller)</label><textarea id="f-fq2" rows="2" oninput="markUnsaved()">${esc(P.footerQuote2||'')}</textarea></div>
-      <div class="field"><label>Studio Location</label><input id="f-fLoc" value="${esc(P.footerStudioLocation||'')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Quote 1 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-fq1" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1||'Visual systems built for those who set the pace, not just follow it.')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-fq1','f-fq1_pt','en','pt')">↕ Auto-Traduzir</button></div>
+      <div class="field"><label>Quote 1 — <span style="color:#34d399">PT</span></label><textarea id="f-fq1_pt" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1_pt||'Sistemas visuais para quem define o ritmo, não apenas o acompanha.')}</textarea></div>
+      <div class="field"><label>Quote 2 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-fq2" rows="2" oninput="markUnsaved()">${esc(P.footerQuote2||'Systemize the motion, elevate the branding.')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-fq2','f-fq2_pt','en','pt')">↕ Auto-Traduzir</button></div>
+      <div class="field"><label>Quote 2 — <span style="color:#34d399">PT</span></label><textarea id="f-fq2_pt" rows="2" oninput="markUnsaved()">${esc(P.footerQuote2_pt||'Sistematize o movimento. Eleve o branding.')}</textarea></div>
+      <div class="field"><label>Studio Location</label><input id="f-fLoc" value="${esc(P.footerStudioLocation||'Florianópolis, Brasil')}" oninput="markUnsaved()"></div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="savePortfolio()">Apply Changes</button></div>`;
 }
@@ -544,18 +560,21 @@ function saveEntryToMem(){
 function saveLandingToMem(){
   const L = D.landing = D.landing||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-  L.brandName=v('f-brandName'); L.brandSub=v('f-brandSub'); L.footerText=v('f-footerText');
-  L.aboutTitle=v('f-aboutTitle'); L.contactTitle=v('f-contactTitle'); L.contactSub=v('f-contactSub');
+  L.brandName=v('f-brandName'); L.brandSub=v('f-brandSub'); L.brandSub_pt=v('f-brandSub_pt');
+  L.aboutTitle=v('f-aboutTitle'); L.aboutTitle_pt=v('f-aboutTitle_pt');
+  L.contactTitle=v('f-contactTitle'); L.contactTitle_pt=v('f-contactTitle_pt');
+  L.contactSub=v('f-contactSub'); L.contactSub_pt=v('f-contactSub_pt');
 }
 function saveLanding(){ saveLandingToMem(); saveAll(); }
 
 function savePortfolioToMem(){
   const P = D.portfolio = D.portfolio||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-  P.heroName=v('f-heroName'); P.heroTitle=v('f-heroTitle'); P.heroRelease=v('f-heroRelease');
   P.contactWhatsApp=v('f-pWhatsApp'); P.contactEmail=v('f-pEmail');
   P.socialInstagram=v('f-pIG'); P.socialLinkedIn=v('f-pLI'); P.socialBehance=v('f-pBE');
-  P.footerQuote1=v('f-fq1'); P.footerQuote2=v('f-fq2'); P.footerStudioLocation=v('f-fLoc');
+  P.footerQuote1=v('f-fq1'); P.footerQuote1_pt=v('f-fq1_pt');
+  P.footerQuote2=v('f-fq2'); P.footerQuote2_pt=v('f-fq2_pt');
+  P.footerStudioLocation=v('f-fLoc');
 }
 function savePortfolio(){ savePortfolioToMem(); saveAll(); }
 

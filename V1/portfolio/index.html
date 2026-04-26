@@ -634,7 +634,7 @@
   <a href="../../index.html" class="nav-logo">PLM</a>
   <div class="nav-links">
     <button class="nav-link lang-toggle" onclick="toggleTheme()" title="Toggle Theme">◐</button>
-    <button id="custom-lang-toggle" class="nav-link lang-toggle" onclick="toggleLanguage()">PT</button>
+    <button id="lang-btn" class="nav-link lang-toggle" onclick="toggleLanguage()">PT</button>
     <a href="../../index.html#contact" class="nav-link">CONTACT</a>
   </div>
 </nav>
@@ -1150,15 +1150,23 @@
         const container = document.getElementById('clients-container');
         if(!container || document.getElementById('portfolio-footer-el')) return;
         const P = portfolioData || {};
-        const q1 = P.footerQuote1 || "&ldquo;Visual systems built for those who set the pace,&nbsp;not just follow&nbsp;it.&rdquo;";
-        const q2 = P.footerQuote2 || "&ldquo;Systemize the motion, elevate the branding.&rdquo;";
-        const wa = P.contactWhatsApp ? `href="https://wa.me/\${P.contactWhatsApp.replace(/\\D/g,'')}"` : `href="https://wa.me/5547999664274"`;
-        const em = P.contactEmail ? `href="mailto:\${P.contactEmail}"` : `href="mailto:conceicao.felipe@gmail.com"`;
-        const ig = P.socialInstagram ? `href="https://instagram.com/\${P.socialInstagram}"` : `href="https://instagram.com/pelimotion"`;
-        const li = P.socialLinkedIn ? `href="https://linkedin.com/in/\${P.socialLinkedIn}"` : `href="https://linkedin.com/in/pelife"`;
-        const be = P.socialBehance ? `href="https://behance.net/\${P.socialBehance}"` : `href="https://behance.net/pelimotion"`;
-        const loc = P.footerStudioLocation || "Florianópolis, Brasil<br>Available worldwide";
-
+        const q1en = P.footerQuote1 || 'Visual systems built for those who set the pace, not just follow it.';
+        const q1pt = P.footerQuote1_pt || 'Sistemas visuais para quem define o ritmo, não apenas o acompanha.';
+        const q2en = P.footerQuote2 || 'Systemize the motion, elevate the branding.';
+        const q2pt = P.footerQuote2_pt || 'Sistematize o movimento. Eleve o branding.';
+        const curLang = window._PLM_LANG || 'en';
+        const q1 = curLang === 'pt' ? q1pt : q1en;
+        const q2 = curLang === 'pt' ? q2pt : q2en;
+        const waNum = (P.contactWhatsApp||'5547999664274').replace(/\D/g,'');
+        const wa = `href="https://wa.me/${waNum}"`;
+        const em = `href="mailto:${P.contactEmail||'conceicao.felipe@gmail.com'}"`;
+        const igHandle = (P.socialInstagram||'pelimotion').replace(/^@/,'').replace(/^.*instagram\.com\//,'').replace(/\/$/,'');
+        const ig = `href="https://instagram.com/${igHandle}"`;
+        const liHandle = (P.socialLinkedIn||'pelife').replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//,'').replace(/\/$/,'');
+        const li = `href="https://linkedin.com/in/${liHandle}"`;
+        const beHandle = (P.socialBehance||'pelimotion').replace(/^https?:\/\/(www\.)?behance\.net\//,'').replace(/\/$/,'');
+        const be = `href="https://behance.net/${beHandle}"`;
+        const loc = P.footerStudioLocation || 'Florianópolis, Brasil';
         const footer = document.createElement('section');
         footer.id = 'portfolio-footer-el';
         footer.className = 'portfolio-footer entrance-mask';
@@ -1217,45 +1225,27 @@
 
     </script>
 
-<!-- Google Translate Integration -->
-<style>
-.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-simple { display: none !important; }
-body { top: 0px !important; }
-#google_translate_element { display: none !important; }
-.lang-toggle { 
-    font-family: monospace; font-size: 10px; cursor: pointer; 
-    border: 1px solid rgba(255,255,255,0.2); background: transparent; 
-    color: inherit; padding: 4px 8px; transition: all 0.3s; letter-spacing: 0.1em;
-}
-.lang-toggle:hover { background: var(--fg); color: var(--bg); }
-font[style*="background-color"] { background-color: transparent !important; box-shadow: none !important; }
-</style>
-<div id="google_translate_element"></div>
+
+
+
 <script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,pt', autoDisplay: false}, 'google_translate_element');
-  setTimeout(updateLangButtonState, 1000);
+// ── BILINGUAL SYSTEM (Manual EN/PT) ──
+window._PLM_LANG = localStorage.getItem('plm-lang') || 'en';
+
+function applyLang(lang) {
+  window._PLM_LANG = lang;
+  localStorage.setItem('plm-lang', lang);
+  document.querySelectorAll('[data-en][data-pt]').forEach(el => {
+    const text = lang === 'pt' ? el.getAttribute('data-pt') : el.getAttribute('data-en');
+    if(text !== null) el.innerHTML = text;
+  });
+  const btn = document.getElementById('lang-btn') || document.getElementById('custom-lang-toggle');
+  if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
+  document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
 }
-function updateLangButtonState() {
-  var select = document.querySelector('.goog-te-combo');
-  var btn = document.getElementById('custom-lang-toggle');
-  if(select && btn) {
-      if(select.value === 'pt') btn.innerText = 'EN';
-      else btn.innerText = 'PT';
-  }
-}
-function toggleLanguage() {
-    var select = document.querySelector('.goog-te-combo');
-    if (!select) return;
-    var currentLang = select.value || 'en';
-    var targetLang = currentLang === 'en' ? 'pt' : 'en';
-    select.value = targetLang;
-    select.dispatchEvent(new Event('change'));
-    var btn = document.getElementById('custom-lang-toggle');
-    if(btn) btn.innerText = currentLang === 'en' ? 'EN' : 'PT';
-}
+function toggleLanguage() { applyLang(window._PLM_LANG === 'en' ? 'pt' : 'en'); }
+document.addEventListener('DOMContentLoaded', () => { applyLang(window._PLM_LANG); });
 </script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>

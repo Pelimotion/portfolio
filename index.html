@@ -147,13 +147,13 @@ section{width:100%;border-top:1px solid var(--border)}
 <nav id="site-nav">
   <a href="#hero" class="nav-logo">PLM</a>
   <div class="nav-links" id="nav-links">
-    <a href="#about" class="nav-link">Studio</a>
-    <a href="#portfolio-link" class="nav-link">Work</a>
-    <a href="#contact" class="nav-link">Contact</a>
+    <a href="#about" class="nav-link" data-en="Studio" data-pt="Estúdio">Studio</a>
+    <a href="#portfolio-link" class="nav-link" data-en="Work" data-pt="Trabalhos">Work</a>
+    <a href="#contact" class="nav-link" data-en="Contact" data-pt="Contato">Contact</a>
     <a href="Curriculum/index.html" class="nav-link">CV</a>
-    <a href="V1/portfolio/index.html" class="nav-link cta">View Portfolio →</a>
-    <button class="nav-link lang-toggle theme-toggle" onclick="toggleTheme()" title="Toggle Theme" style="cursor:pointer; background:none; border:none;">◐</button>
-    <button id="custom-lang-toggle" class="nav-link lang-toggle" onclick="toggleLanguage()" style="cursor:pointer; background:none; border:1px solid var(--border); padding:4px 8px;">PT</button>
+    <a href="V1/portfolio/index.html" class="nav-link cta" data-en="View Portfolio →" data-pt="Ver Portfólio →">View Portfolio →</a>
+    <button class="nav-link" onclick="toggleTheme()" title="Toggle Theme" style="cursor:pointer; background:none; border:none; font-size:16px;">◐</button>
+    <button id="lang-btn" class="nav-link" onclick="toggleLanguage()" style="cursor:pointer; background:none; border:1px solid var(--border); padding:4px 10px; font-size:10px; font-weight:700; letter-spacing:.15em;">PT</button>
   </div>
   <div class="nav-toggle" id="nav-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
     <span></span><span></span><span></span>
@@ -171,12 +171,12 @@ section{width:100%;border-top:1px solid var(--border)}
 
   <div class="hero-content">
     <div class="hero-title-wrap">
-      <div class="hero-eyebrow" id="hero-eyebrow">Motion Branding &amp; Creative Direction</div>
+      <div class="hero-eyebrow" id="hero-eyebrow" data-en="Motion Branding &amp; Creative Direction" data-pt="Motion Branding &amp; Direção Criativa">Motion Branding &amp; Creative Direction</div>
       <h1 class="hero-title" id="hero-title">Peli<em>motion</em><br>Hub<span style="color:rgba(240,237,232,.25)">.</span></h1>
     </div>
     <div class="hero-sub">
-      <p class="hero-desc" id="hero-desc">Visual systems built for brands that set the pace, not just follow it.</p>
-      <a href="V1/portfolio/index.html" class="hero-cta">View Full Portfolio <span>→</span></a>
+      <p class="hero-desc" id="hero-desc" data-en="Visual systems built for brands that set the pace, not just follow it." data-pt="Sistemas visuais para marcas que ditam o ritmo, não apenas o seguem.">Visual systems built for brands that set the pace, not just follow it.</p>
+      <a href="V1/portfolio/index.html" class="hero-cta" data-en="View Full Portfolio →" data-pt="Ver Portfólio Completo →">View Full Portfolio <span>→</span></a>
     </div>
   </div>
 
@@ -188,8 +188,8 @@ section{width:100%;border-top:1px solid var(--border)}
   <div class="container" style="padding-top:6rem;padding-bottom:6rem">
     <div class="about-grid">
       <div class="reveal">
-        <div class="about-label">01 — The Studio</div>
-        <h2 class="about-title" id="about-title">Motion as a <em>strategic</em> language.</h2>
+        <div class="about-label" data-en="01 — The Studio" data-pt="01 — O Estúdio">01 — The Studio</div>
+        <h2 class="about-title" id="about-title" data-en="Motion as a <em>strategic</em> language." data-pt="Motion como <em>linguagem</em> estratégica.">Motion as a <em>strategic</em> language.</h2>
         <div class="about-stats">
           <div class="about-stat"><div class="stat-val" id="stat-0-val">08+</div><div class="stat-lbl" id="stat-0-lbl">Years of Practice</div></div>
           <div class="about-stat" style="border-left:1px solid var(--border)"><div class="stat-val" id="stat-1-val">40+</div><div class="stat-lbl" id="stat-1-lbl">Brand Campaigns</div></div>
@@ -198,9 +198,9 @@ section{width:100%;border-top:1px solid var(--border)}
         </div>
       </div>
       <div class="reveal" style="transition-delay:.15s">
-        <div class="about-label">About</div>
-        <p class="about-text" id="about-p1">We work where strategy meets motion. Over eight years we've built visual systems for global brands across automotive, finance, and culture — designing how a brand moves, not only how it looks.</p>
-        <p class="about-text" id="about-p2">Our background in music shapes everything: pacing, weight, silence. Today Pelimotion Hub develops AI-integrated motion pipelines and directs immersive experiences — combining motion design with light and projection for live performances.</p>
+        <div class="about-label" data-en="About" data-pt="Sobre">About</div>
+        <p class="about-text" id="about-p1" data-en="We work where strategy meets motion. Over eight years we've built visual systems for global brands across automotive, finance, and culture — designing how a brand moves, not only how it looks." data-pt="Trabalhamos onde estratégia encontra movimento. Em oito anos, construímos sistemas visuais para marcas globais nos setores automotivo, financeiro e cultural — projetando como uma marca se move, não apenas como ela aparece.">We work where strategy meets motion. Over eight years we've built visual systems for global brands across automotive, finance, and culture — designing how a brand moves, not only how it looks.</p>
+        <p class="about-text" id="about-p2" data-en="Our background in music shapes everything: pacing, weight, silence. Today Pelimotion Hub develops AI-integrated motion pipelines and directs immersive experiences — combining motion design with light and projection for live performances." data-pt="Nossa formação em música molda tudo: ritmo, peso, silêncio. Hoje, o Pelimotion Hub desenvolve pipelines de motion integrados com IA e dirige experiências imersivas — combinando motion design com luz e projeção para espetáculos ao vivo.">Our background in music shapes everything: pacing, weight, silence. Today Pelimotion Hub develops AI-integrated motion pipelines and directs immersive experiences — combining motion design with light and projection for live performances.</p>
         <div class="about-brands" id="about-brands">
           <span class="brand-tag">BMW</span><span class="brand-tag">Subaru</span><span class="brand-tag">Hyundai</span><span class="brand-tag">EQI</span><span class="brand-tag">Motul</span><span class="brand-tag">Suzano</span><span class="brand-tag">O Boticário</span><span class="brand-tag">Colcci</span>
         </div>
@@ -259,35 +259,35 @@ section{width:100%;border-top:1px solid var(--border)}
   <div class="container">
     <div class="contact-grid">
       <div class="reveal">
-        <div class="about-label">03 — Contact</div>
-        <h2 class="contact-title" id="contact-title">Open to direction, <em>collaborations</em> and long-form briefs.</h2>
-        <p class="contact-sub" id="contact-sub">Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.</p>
+        <div class="about-label" data-en="03 — Contact" data-pt="03 — Contato">03 — Contact</div>
+        <h2 class="contact-title" id="contact-title" data-en="Open to direction, <em>collaborations</em> and long-form briefs." data-pt="Aberto a direção, <em>colaborações</em> e projetos de longo prazo.">Open to direction, <em>collaborations</em> and long-form briefs.</h2>
+        <p class="contact-sub" id="contact-sub" data-en="Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish." data-pt="Baseado no Rio de Janeiro. Atuação global. Fluente em Inglês, Português e Espanhol.">Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.</p>
         <a href="mailto:conceicao.felipe@gmail.com" class="contact-email" id="contact-email">conceicao.felipe@gmail.com</a>
         <div class="contact-links">
           <a href="https://linkedin.com/in/pelife" target="_blank" class="contact-link">LinkedIn <span>↗</span></a>
           <a href="https://instagram.com/pelimotion" target="_blank" class="contact-link">Instagram <span>↗</span></a>
           <a href="https://behance.net/pelimotion" target="_blank" class="contact-link">Behance <span>↗</span></a>
-          <a href="Curriculum/index.html" class="contact-link">Curriculum Vitae <span>→</span></a>
+          <a href="Curriculum/index.html" class="contact-link" data-en="Curriculum Vitae →" data-pt="Currículo →">Curriculum Vitae <span>→</span></a>
         </div>
       </div>
       <div class="contact-right reveal" style="transition-delay:.15s">
         <div class="contact-info-item">
-          <div class="contact-info-label">Studio</div>
+          <div class="contact-info-label" data-en="Studio" data-pt="Estúdio">Studio</div>
           <div class="contact-info-val">Pelimotion Hub</div>
         </div>
         <div class="contact-info-item">
-          <div class="contact-info-label">Location</div>
+          <div class="contact-info-label" data-en="Location" data-pt="Localização">Location</div>
           <div class="contact-info-val" id="contact-location">Rio de Janeiro, Brasil</div>
         </div>
         <div class="contact-info-item">
-          <div class="contact-info-label">Disciplines</div>
-          <div class="contact-info-val">Motion Design · Creative Direction · CGI · Brand Systems · AI Integration</div>
+          <div class="contact-info-label" data-en="Disciplines" data-pt="Disciplinas">Disciplines</div>
+          <div class="contact-info-val" data-en="Motion Design · Creative Direction · CGI · Brand Systems · AI Integration" data-pt="Motion Design · Direção Criativa · CGI · Sistemas de Marca · Integração com IA">Motion Design · Creative Direction · CGI · Brand Systems · AI Integration</div>
         </div>
         <div class="contact-info-item" style="border-bottom:none">
-          <div class="contact-info-label">Status</div>
+          <div class="contact-info-label" data-en="Status" data-pt="Status">Status</div>
           <div class="contact-info-val" style="display:flex;align-items:center;gap:8px">
             <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
-            Available for projects
+            <span data-en="Available for projects" data-pt="Disponível para projetos">Available for projects</span>
           </div>
         </div>
       </div>
@@ -297,7 +297,7 @@ section{width:100%;border-top:1px solid var(--border)}
 
 <footer class="site-footer">
   <span id="footer-copy">© 2026 Pelimotion Hub — Rio de Janeiro</span>
-  <span>Motion Branding &amp; Creative Direction</span>
+  <span data-en="Motion Branding &amp; Creative Direction" data-pt="Motion Branding &amp; Direção Criativa">Motion Branding &amp; Creative Direction</span>
 </footer>
 
 <div id="plm-cursor" aria-hidden="true"></div>
@@ -413,48 +413,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<!-- Google Translate Integration -->
-<style>
-.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-simple { display: none !important; }
-body { top: 0px !important; }
-#google_translate_element { display: none !important; }
-.lang-toggle { 
-    font-family: monospace; font-size: 10px; cursor: pointer; 
-    border: 1px solid rgba(255,255,255,0.2); background: transparent; 
-    color: white; padding: 4px 8px; transition: all 0.3s; letter-spacing: 0.1em;
-}
-.lang-toggle:hover { background: white; color: black; }
-/* Override Google translation background highlights */
-font[style*="background-color"] { background-color: transparent !important; }
-font[style*="background-color"] { box-shadow: none !important; }
-</style>
-<div id="google_translate_element"></div>
 <script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,pt', autoDisplay: false}, 'google_translate_element');
-  // Check cookie or local storage to set initial button state if needed
-  setTimeout(updateLangButtonState, 1000);
+// ── BILINGUAL SYSTEM (Manual EN/PT, no external API) ──
+window._PLM_LANG = localStorage.getItem('plm-lang') || 'en';
+
+function applyLang(lang) {
+  window._PLM_LANG = lang;
+  localStorage.setItem('plm-lang', lang);
+  document.querySelectorAll('[data-en][data-pt]').forEach(el => {
+    const text = lang === 'pt' ? el.getAttribute('data-pt') : el.getAttribute('data-en');
+    if(text !== null) el.innerHTML = text;
+  });
+  // Update hero-cta inner text without breaking its <span>
+  document.querySelectorAll('a.hero-cta[data-en]').forEach(el => {
+    const text = lang === 'pt' ? el.getAttribute('data-pt') : el.getAttribute('data-en');
+    el.textContent = text;
+  });
+  const btn = document.getElementById('lang-btn');
+  if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
+  document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
 }
-function updateLangButtonState() {
-  var select = document.querySelector('.goog-te-combo');
-  var btn = document.getElementById('custom-lang-toggle');
-  if(select && btn) {
-      if(select.value === 'pt') btn.innerText = 'EN';
-      else btn.innerText = 'PT';
-  }
-}
+
 function toggleLanguage() {
-    var select = document.querySelector('.goog-te-combo');
-    if (!select) return;
-    var currentLang = select.value || 'en';
-    var targetLang = currentLang === 'en' ? 'pt' : 'en';
-    select.value = targetLang;
-    select.dispatchEvent(new Event('change'));
-    var btn = document.getElementById('custom-lang-toggle');
-    if(btn) btn.innerText = currentLang === 'en' ? 'EN' : 'PT';
+  applyLang(window._PLM_LANG === 'en' ? 'pt' : 'en');
 }
+
+// Apply on load
+document.addEventListener('DOMContentLoaded', () => { applyLang(window._PLM_LANG); });
 </script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
