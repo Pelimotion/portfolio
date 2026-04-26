@@ -620,6 +620,7 @@ function savePortfolioToMem(){
 function savePortfolio(){ savePortfolioToMem(); saveAll(); }
 
 
+
 function saveCurriculumToMem(){
   const C = D.curriculum = D.curriculum||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
@@ -635,8 +636,15 @@ function saveCurriculumToMem(){
   C.contactText=v('f-cvContactText'); C.contactText_pt=v('f-cvContactText_pt');
   C.contactEmail=v('f-cvEmail'); C.contactWhatsApp=v('f-cvWA'); C.contactWebsite=v('f-cvWebsite');
   C.socialInstagram=v('f-cvIG'); C.socialLinkedIn=v('f-cvLI'); C.socialBehance=v('f-cvBE');
-}
 
+  // Save experience
+  const expCount = (C.experience||[]).length;
+  for(let i=0;i<expCount;i++){
+    const e = C.experience[i];
+    e.period=v(`f-exp${i}-period`); e.role=v(`f-exp${i}-role`); e.company=v(`f-exp${i}-company`);
+    e.items = v(`f-exp${i}-items`).split('\n').filter(x=>x.trim());
+    e.tags = v(`f-exp${i}-tags`).split(',').map(x=>x.trim()).filter(x=>x);
+  }
   // Save education
   const eduCount = (C.education||[]).length;
   for(let i=0;i<eduCount;i++){
