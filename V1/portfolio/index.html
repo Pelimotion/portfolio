@@ -32,7 +32,7 @@
             margin:0;cursor:none;overscroll-behavior:none;
             -webkit-tap-highlight-color:transparent;
             transition:background .4s,color .4s;
-            overflow:hidden;height:100vh;width:100vw;
+            overflow:hidden;height:100vh;width:100vw;position:relative;
         }
         @media(max-width:767px){body{cursor:auto;overflow-x:hidden;overflow-y:auto;height:auto}}
         a,button,.interactive{cursor:none;text-decoration:none;color:inherit}
@@ -639,11 +639,11 @@
   </div>
 </nav>
 
-<div id="view-home" class="view-wrapper active" role="main" style="position:static; opacity:1; visibility:visible; pointer-events:all;">
+<div id="view-home" class="view-wrapper active" role="main" style="position:fixed; top:64px; left:0; width:100%; height:calc(100% - 64px); overflow-y:auto; overflow-x:hidden; opacity:1; visibility:visible; pointer-events:all; z-index:10;">
     <section id="port-hero" class="entrance-mask visible">
         <div>
             <div style="font-size:9px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3);margin-bottom:1.2rem;" data-pt="ARQUIVO COMPLETO" data-en="FULL ARCHIVE">FULL ARCHIVE</div>
-            <h1 style="font-size:clamp(3.5rem,8vw,6rem);font-weight:900;letter-spacing:-.03em;line-height:.9;text-transform:uppercase;color:var(--fg)" id="p-hero-name" data-pt="Portfólio" data-en="Portfolio">PORTFOLIO</h1>
+            <h1 style="font-size:clamp(3.5rem,8vw,6rem);font-weight:900;letter-spacing:-.03em;line-height:.9;text-transform:uppercase;color:var(--fg)"  data-pt="Portfólio" data-en="Portfolio">PORTFOLIO</h1>
         </div>
     </section>
 
@@ -656,7 +656,7 @@
     </div>
 
     <!-- VIEW: GALLERY -->
-    <div id="view-gallery" class="view-wrapper" role="main">
+    <div id="view-gallery" class="view-wrapper" role="main" style="top:64px; height:calc(100% - 64px);">
         <div id="gallery-header-sticky">
             <button class="plm-btn interactive" onclick="goHome()" aria-label="Back to collections">← COLLECTIONS</button>
             <div id="gallery-title-main"></div>
@@ -1152,18 +1152,18 @@
         const P = portfolioData || {};
         const q1 = P.footerQuote1 || "&ldquo;Visual systems built for those who set the pace,&nbsp;not just follow&nbsp;it.&rdquo;";
         const q2 = P.footerQuote2 || "&ldquo;Systemize the motion, elevate the branding.&rdquo;";
-        const wa = P.contactWhatsApp ? \`href="https://wa.me/\${P.contactWhatsApp.replace(/\\D/g,'')}"\` : \`href="https://wa.me/5547999664274"\`;
-        const em = P.contactEmail ? \`href="mailto:\${P.contactEmail}"\` : \`href="mailto:conceicao.felipe@gmail.com"\`;
-        const ig = P.socialInstagram ? \`href="https://instagram.com/\${P.socialInstagram}"\` : \`href="https://instagram.com/pelimotion"\`;
-        const li = P.socialLinkedIn ? \`href="https://linkedin.com/in/\${P.socialLinkedIn}"\` : \`href="https://linkedin.com/in/pelife"\`;
-        const be = P.socialBehance ? \`href="https://behance.net/\${P.socialBehance}"\` : \`href="https://behance.net/pelimotion"\`;
+        const wa = P.contactWhatsApp ? `href="https://wa.me/\${P.contactWhatsApp.replace(/\\D/g,'')}"` : `href="https://wa.me/5547999664274"`;
+        const em = P.contactEmail ? `href="mailto:\${P.contactEmail}"` : `href="mailto:conceicao.felipe@gmail.com"`;
+        const ig = P.socialInstagram ? `href="https://instagram.com/\${P.socialInstagram}"` : `href="https://instagram.com/pelimotion"`;
+        const li = P.socialLinkedIn ? `href="https://linkedin.com/in/\${P.socialLinkedIn}"` : `href="https://linkedin.com/in/pelife"`;
+        const be = P.socialBehance ? `href="https://behance.net/\${P.socialBehance}"` : `href="https://behance.net/pelimotion"`;
         const loc = P.footerStudioLocation || "Florianópolis, Brasil<br>Available worldwide";
 
         const footer = document.createElement('section');
         footer.id = 'portfolio-footer-el';
         footer.className = 'portfolio-footer entrance-mask';
         footer.setAttribute('aria-label','Footer');
-        footer.innerHTML = \`
+        footer.innerHTML = `
             <div style="width:100%;padding-bottom:40px;border-bottom:1px solid var(--border);margin-bottom:40px">
                 <p style="font-size:clamp(16px,2.5vw,26px);font-weight:900;letter-spacing:-.01em;line-height:1.3;color:var(--fg);max-width:600px;margin-bottom:20px">
                     \${q1}
