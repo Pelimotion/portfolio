@@ -87,8 +87,8 @@
       "slug": "bc-mapping-festival",
       "lastModified": "2026-04-24",
       "title": "BC MAPPING FESTIVAL",
-      "tagline": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
-      "description": "A full motion branding system developed for one of the south's largest projection mapping festivals. Every asset was engineered to feel kinetic in both digital and outdoor contexts.",
+      "tagline": "",
+      "description": "A comprehensive motion branding system developed for a projection mapping festival in Balneário Camboriú, SC. Every visual asset was engineered to ensure dynamism and consistency, performing seamlessly across digital screens and large-scale architectural projections.",
       "services": [
         "Brand Identity Motion",
         "Media Kit",
@@ -259,14 +259,14 @@
         "total": 11
       },
       "release": "",
-      "category_descriptions": {
-        "Brand Identity": "The core visual language of the festival, designed to be modular and high-impact across all media.",
-        "Projections": "Large-scale architectural mapping pieces developed for the festival's main stage."
-      },
-      "category_descriptions_pt": {
-        "Brand Identity": "A linguagem visual central do festival, projetada para ser modular e de alto impacto em todas as mídias.",
-        "Projections": "Peças de projeção mapeada em grande escala desenvolvidas para o palco principal do festival."
-      }
+      "tagline_pt": "",
+      "description_pt": "Um sistema completo de motion branding desenvolvido para um festival de projeção mapeada em Balneário Camboriú, SC. Cada ativo visual foi estruturado para garantir dinamismo e consistência, funcionando de forma fluida tanto nas telas digitais quanto nas projeções arquitetônicas de grande escala.",
+      "release_pt": "",
+      "deliverables": [
+        "BRANDING MEDIA KIT",
+        "SOCIAL MEDIA",
+        "EVENT DISPLAYS"
+      ]
     },
     "EQI": {
       "status": "public",

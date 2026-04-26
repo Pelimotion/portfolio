@@ -6,8 +6,8 @@
       "slug": "bc-mapping-festival",
       "lastModified": "2026-04-24",
       "title": "BC MAPPING FESTIVAL",
-      "tagline": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
-      "description": "A full motion branding system developed for one of the south's largest projection mapping festivals. Every asset was engineered to feel kinetic in both digital and outdoor contexts.",
+      "tagline": "",
+      "description": "A comprehensive motion branding system developed for a projection mapping festival in Balneário Camboriú, SC. Every visual asset was engineered to ensure dynamism and consistency, performing seamlessly across digital screens and large-scale architectural projections.",
       "services": [
         "Brand Identity Motion",
         "Media Kit",
@@ -177,7 +177,15 @@
         },
         "total": 11
       },
-      "release": ""
+      "release": "",
+      "tagline_pt": "",
+      "description_pt": "Um sistema completo de motion branding desenvolvido para um festival de projeção mapeada em Balneário Camboriú, SC. Cada ativo visual foi estruturado para garantir dinamismo e consistência, funcionando de forma fluida tanto nas telas digitais quanto nas projeções arquitetônicas de grande escala.",
+      "release_pt": "",
+      "deliverables": [
+        "BRANDING MEDIA KIT",
+        "SOCIAL MEDIA",
+        "EVENT DISPLAYS"
+      ]
     },
     "EQI": {
       "status": "public",
@@ -212,12 +220,15 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_85.jpg"
-            ]
+            ],
+            "title_pt": "EQI MAKING OF CIRQUE DU SOLEIL"
           }
         ],
         "categories": {},
         "total": 1
-      }
+      },
+      "tagline_pt": "Produção de conteúdo de bastidores para ativação exclusiva da EQI no Cirque du Soleil.",
+      "description_pt": "Conteúdo exclusivo de making-of produzido para a ativação de marca de alto padrão da EQI no Cirque du Soleil."
     },
     "FAST SHIPPING": {
       "status": "public",
@@ -253,13 +264,16 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_85.jpg"
-            ]
+            ],
+            "title_pt": "FAST SHIPPING - REBRANDING VIVO"
           }
         ],
         "categories": {},
         "total": 1
       },
-      "release": ""
+      "release": "",
+      "tagline_pt": "Conceito de rebranding vivo — um sistema de identidade visual dinâmica que respira e se adapta.",
+      "description_pt": "Uma exploração conceitual de rebranding para a Fast Shipping, traduzindo a promessa de velocidade e confiabilidade em uma identidade de movimento modular."
     },
     "FUNKY ROOM": {
       "status": "public",
@@ -298,7 +312,8 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_85.jpg"
-            ]
+            ],
+            "title_pt": "FUNKY ROOM - MANIFESTO VISUAL"
           },
           {
             "title": "MEDIA KIT EDIÇÃO ESPECIAL FNKD UP",
@@ -745,7 +760,9 @@
           ]
         },
         "total": 34
-      }
+      },
+      "tagline_pt": "Identidade visual rítmica e motion design para o espaço criativo Funky Room.",
+      "description_pt": "Uma jornada visual que celebra o ritmo e a cultura urbana através de sistemas de movimento expressivos."
     },
     "FURB": {
       "status": "public",
@@ -1700,7 +1717,8 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_85.jpg"
-            ]
+            ],
+            "title_pt": "SUZANO - INOVAÇÃO SUSTENTÁVEL"
           },
           {
             "title": "SUZANO LETRAS QUE TRANSFORMAM ALTA2",
@@ -1757,7 +1775,9 @@
         ],
         "categories": {},
         "total": 5
-      }
+      },
+      "tagline_pt": "Motion branding e narrativa visual para a Suzano, gigante global de celulose.",
+      "description_pt": "Série de filmes institucionais e ativos de marca em movimento que comunicam inovação e sustentabilidade."
     },
     "WOLFGARTEN": {
       "status": "public",
