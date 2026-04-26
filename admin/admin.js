@@ -4,19 +4,6 @@ let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
 
-// ─── Exports ───
-window.onPinInput = (el) => { if(el.value.length >= 4) checkPin(); };
-window.checkPin = () => { checkPin(); };
-window.lockAdmin = () => { sessionStorage.removeItem('plm_admin_unlocked'); location.reload(); };
-window.insertFormat = insertFormat;
-window.exportJSON = () => exportJSON();
-window.importJSON = () => document.getElementById('file-input').click();
-window.saveAll = () => saveAll();
-window.openPublishModal = () => openPublishModal();
-window.closePublishModal = () => closePublishModal();
-window.doPublish = () => doPublish();
-
-
 // ─── Text Formatting Helper ───────────────────────────────────────────────
 function insertFormat(id, tag) {
   const el = document.getElementById(id);
@@ -1004,3 +991,15 @@ try {
   console.error('Init error:', e);
   alert('Critical Admin Error: ' + e.message);
 }
+
+// ─── Global Exports ───
+window.onPinInput = onPinInput;
+window.checkPin = checkPin;
+window.lockAdmin = lockAdmin;
+window.insertFormat = insertFormat;
+window.exportJSON = exportJSON;
+window.saveAll = saveAll;
+window.openPublishModal = openPublishModal;
+window.closePublishModal = closePublishModal;
+window.doPublish = doPublish;
+window.importJSON = () => document.getElementById('file-input').click();
