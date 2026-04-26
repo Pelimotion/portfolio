@@ -646,11 +646,12 @@
   <div class="nav-links">
     <button class="nav-link lang-toggle" onclick="toggleTheme()" title="Toggle Theme">◐</button>
     <button id="lang-btn" class="nav-link lang-toggle" onclick="toggleLanguage()">PT</button>
-    <a href="../../index.html#contact" class="nav-link">CONTACT</a>
+    <button id="contact-btn" class="nav-link" onclick="toggleContact()">CONTACT</button>
   </div>
 </nav>
 
-<div id="view-home" class="view-wrapper active" role="main" style="position:fixed; top:64px; left:0; width:100%; height:calc(100% - 64px); overflow-y:auto; overflow-x:hidden; opacity:1; visibility:visible; pointer-events:all; z-index:10;">
+<div class="contact-popover" id="contact-popover"><div class="contact-popover-header" data-en="Direct Contact" data-pt="Contato Direto">Direct Contact</div><a href="mailto:hello@pelimotion.com"><span class="contact-icon">✉</span><span class="contact-label">Email</span></a><a href="https://wa.me/5547999664274" target="_blank"><span class="contact-icon"></span><span class="contact-label">WhatsApp</span></a><a href="https://instagram.com/pelimotion" target="_blank"><span class="contact-icon"></span><span class="contact-label">Instagram</span></a></div>
+    <div id="view-home"  class="view-wrapper active" role="main" style="position:fixed; top:64px; left:0; width:100%; height:calc(100% - 64px); overflow-y:auto; overflow-x:hidden; opacity:1; visibility:visible; pointer-events:all; z-index:10;">
     <section id="port-hero" class="entrance-mask visible">
         <div>
             <div style="font-size:9px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3);margin-bottom:1.2rem;" data-pt="ARQUIVO COMPLETO" data-en="FULL ARCHIVE">FULL ARCHIVE</div>
@@ -1181,7 +1182,8 @@
         contactPopover.classList.toggle('open');
     }
     window.addEventListener('click', e=>{
-        if(!contactPopover.contains(e.target) && e.target !== contactBtn) contactPopover.classList.remove('open');
+        if(contactPopover && !contactPopover.contains(e.target) && e.target !== (window.contactBtn || null)) contactPopover.classList.remove('open');
+        
     });
 
     /* ─── FOOTER ─── */

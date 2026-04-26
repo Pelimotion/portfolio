@@ -580,6 +580,21 @@ function saveEntryToMem(){
   if(!currentKey)return;
   const store = currentSection==='client'?D.clients:D.categories;
   const data = store[currentKey] = store[currentKey]||{};
+  const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  data.tagline=v('f-tagline'); data.tagline_pt=v('f-tagline_pt');
+  data.description=v('f-desc'); data.description_pt=v('f-desc_pt');
+  if(currentSection==='client'){ 
+    data.release=v('f-release'); data.release_pt=v('f-release_pt');
+    if(data.media && data.media.root){
+      data.media.root.forEach((item, idx) => {
+        const t_en = v('f-media-'+idx);
+        const t_pt = v('f-media-'+idx+'_pt');
+        if(t_en) item.title = t_en;
+        if(t_pt) item.title_pt = t_pt;
+      });
+    }
+  }
+};
   const desc=document.getElementById('f-desc');
   const rel=document.getElementById('f-release');
   if(desc) data.description=desc.value.trim();

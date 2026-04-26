@@ -87,7 +87,7 @@
       "slug": "bc-mapping-festival",
       "lastModified": "2026-04-24",
       "title": "BC MAPPING FESTIVAL",
-      "tagline": "Visual identity and motion system for BC Mapping Festival â a large-scale projection mapping event celebrating art, light, and urban architecture.",
+      "tagline": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
       "description": "A full motion branding system developed for one of the south's largest projection mapping festivals. Every asset was engineered to feel kinetic in both digital and outdoor contexts.",
       "services": [
         "Brand Identity Motion",
@@ -101,8 +101,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_50.jpg",
       "seo": {
-        "title": "BC MAPPING FESTIVAL â Pelimotion",
-        "description": "Visual identity and motion system for BC Mapping Festival â a large-scale projection mapping event celebrating art, light, and urban architecture.",
+        "title": "BC MAPPING FESTIVAL — Pelimotion",
+        "description": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BC%20Mapping%20Festival/Media%20Kit/CORES%20-%20verde%20e%20azul_50.jpg"
       },
       "media": {
@@ -276,7 +276,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg",
       "seo": {
-        "title": "EQI â Pelimotion",
+        "title": "EQI — Pelimotion",
         "description": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg"
       },
@@ -293,19 +293,22 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_85.jpg"
-            ]
+            ],
+            "title_pt": "EQI MAKING OF CIRQUE DU SOLEIL"
           }
         ],
         "categories": {},
         "total": 1
-      }
+      },
+      "tagline_pt": "Produção de conteúdo de bastidores para ativação exclusiva da EQI no Cirque du Soleil.",
+      "description_pt": "Conteúdo exclusivo de making-of produzido para a ativação de marca de alto padrão da EQI no Cirque du Soleil."
     },
     "FAST SHIPPING": {
       "status": "public",
       "slug": "fast-shipping",
       "lastModified": "2026-04-24",
       "title": "FAST SHIPPING",
-      "tagline": "Living rebranding concept â a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
+      "tagline": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
       "description": "A concept-driven rebranding exploration for Fast Shipping, translating the brand's core promise of speed and reliability into a living, modular motion identity.",
       "services": [
         "Brand Manifesto",
@@ -317,8 +320,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg",
       "seo": {
-        "title": "FAST SHIPPING â Pelimotion",
-        "description": "Living rebranding concept â a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
+        "title": "FAST SHIPPING — Pelimotion",
+        "description": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg"
       },
       "media": {
@@ -334,13 +337,16 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_85.jpg"
-            ]
+            ],
+            "title_pt": "FAST SHIPPING - REBRANDING VIVO"
           }
         ],
         "categories": {},
         "total": 1
       },
-      "release": ""
+      "release": "",
+      "tagline_pt": "Conceito de rebranding vivo — um sistema de identidade visual dinâmica que respira e se adapta.",
+      "description_pt": "Uma exploração conceitual de rebranding para a Fast Shipping, traduzindo a promessa de velocidade e confiabilidade em uma identidade de movimento modular."
     },
     "FUNKY ROOM": {
       "status": "public",
@@ -348,7 +354,7 @@
       "lastModified": "2026-04-24",
       "title": "FUNKY ROOM",
       "tagline": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
-      "description": "Six editions. One consistent visual language that grows bolder with each release. Funky Room's motion identity was built to live on every screen â from stories to street panels.",
+      "description": "Six editions. One consistent visual language that grows bolder with each release. Funky Room's motion identity was built to live on every screen — from stories to street panels.",
       "services": [
         "Event Identity",
         "Social Media Campaign",
@@ -362,7 +368,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg",
       "seo": {
-        "title": "FUNKY ROOM â Pelimotion",
+        "title": "FUNKY ROOM — Pelimotion",
         "description": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg"
       },
@@ -379,10 +385,11 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_85.jpg"
-            ]
+            ],
+            "title_pt": "FUNKY ROOM - MANIFESTO VISUAL"
           },
           {
-            "title": "MEDIA KIT EDIÃÃO ESPECIAL FNKD UP",
+            "title": "MEDIA KIT EDIÇÃO ESPECIAL FNKD UP",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/MEDIA%20KIT%20-%20EDI%C3%87%C3%83O%20ESPECIAL%20FNKD%20UP.jpg",
@@ -826,15 +833,17 @@
           ]
         },
         "total": 34
-      }
+      },
+      "tagline_pt": "Identidade visual rítmica e motion design para o espaço criativo Funky Room.",
+      "description_pt": "Uma jornada visual que celebra o ritmo e a cultura urbana através de sistemas de movimento expressivos."
     },
     "FURB": {
       "status": "public",
       "slug": "furb",
       "lastModified": "2026-04-24",
       "title": "FURB",
-      "tagline": "Broadcast and institutional campaign work for FURB university â motion design for TV, digital, and event formats including accessible LIBRAS versions.",
-      "description": "A comprehensive broadcast campaign for FURB, designed to reach across channels â from primetime TV to digital platforms â while maintaining full LIBRAS accessibility compliance.",
+      "tagline": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
+      "description": "A comprehensive broadcast campaign for FURB, designed to reach across channels — from primetime TV to digital platforms — while maintaining full LIBRAS accessibility compliance.",
       "services": [
         "TV Spot",
         "Broadcast Campaign",
@@ -847,8 +856,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg",
       "seo": {
-        "title": "FURB â Pelimotion",
-        "description": "Broadcast and institutional campaign work for FURB university â motion design for TV, digital, and event formats including accessible LIBRAS versions.",
+        "title": "FURB — Pelimotion",
+        "description": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_50.jpg"
       },
       "media": {
@@ -945,7 +954,7 @@
       "slug": "heo",
       "lastModified": "2026-04-24",
       "title": "HEO",
-      "tagline": "Complete rebranding motion package for HEO â logo animation, visual system, and brand guidelines in motion.",
+      "tagline": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
       "description": "A precise, minimal logo reveal and brand motion system built for HEO's identity relaunch. Clean execution, maximum brand recall.",
       "services": [
         "Logo Animation",
@@ -957,8 +966,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg",
       "seo": {
-        "title": "HEO â Pelimotion",
-        "description": "Complete rebranding motion package for HEO â logo animation, visual system, and brand guidelines in motion.",
+        "title": "HEO — Pelimotion",
+        "description": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/HEO/HEO_REBRANDING_720_50.jpg"
       },
       "media": {
@@ -986,7 +995,7 @@
       "slug": "lsla",
       "lastModified": "2026-04-24",
       "title": "LSLA",
-      "tagline": "Motion branding, manifesto films, and campaign material for Isla â a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+      "tagline": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
       "description": "From campaign posts to AI-generated food content and cinematic manifesto films, this project spans the full creative spectrum of Isla's coastal brand universe.",
       "services": [
         "Brand Manifesto",
@@ -1000,8 +1009,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
       "seo": {
-        "title": "LSLA â Pelimotion",
-        "description": "Motion branding, manifesto films, and campaign material for Isla â a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+        "title": "LSLA — Pelimotion",
+        "description": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg"
       },
       "media": {
@@ -1283,7 +1292,7 @@
       "slug": "nextron",
       "lastModified": "2026-04-24",
       "title": "NEXTRON",
-      "tagline": "Logo animation and brand signature update for Nextron â clean, technical motion design for a tech brand.",
+      "tagline": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
       "description": "A refined brand signature update for Nextron, expressing precision and forward motion through minimal animation language.",
       "services": [
         "Logo Animation",
@@ -1294,8 +1303,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg",
       "seo": {
-        "title": "NEXTRON â Pelimotion",
-        "description": "Logo animation and brand signature update for Nextron â clean, technical motion design for a tech brand.",
+        "title": "NEXTRON — Pelimotion",
+        "description": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg"
       },
       "media": {
@@ -1323,7 +1332,7 @@
       "slug": "pianissimo",
       "lastModified": "2026-04-24",
       "title": "PIANISSIMO",
-      "tagline": "Stage visuals and real-time visualizers for Pianissimo â ambient, generative motion for live performance environments.",
+      "tagline": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
       "description": "Generative stage visuals designed to breathe with the music. Built for live performance, Pianissimo's visualizers shift between ambient and reactive modes in real time.",
       "services": [
         "Stage Visuals",
@@ -1335,8 +1344,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg",
       "seo": {
-        "title": "PIANISSIMO â Pelimotion",
-        "description": "Stage visuals and real-time visualizers for Pianissimo â ambient, generative motion for live performance environments.",
+        "title": "PIANISSIMO — Pelimotion",
+        "description": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg"
       },
       "media": {
@@ -1390,8 +1399,8 @@
       "slug": "playa",
       "lastModified": "2026-04-24",
       "title": "PLAYA",
-      "tagline": "Comprehensive motion branding for Playa Beach Club â manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
-      "description": "An ongoing creative partnership with Playa Beach Club â building a cohesive visual language across every touchpoint, from high-concept manifesto films to weekly social activations.",
+      "tagline": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
+      "description": "An ongoing creative partnership with Playa Beach Club — building a cohesive visual language across every touchpoint, from high-concept manifesto films to weekly social activations.",
       "services": [
         "Brand Manifesto",
         "Social Media Campaign",
@@ -1405,8 +1414,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_50.jpg",
       "seo": {
-        "title": "PLAYA â Pelimotion",
-        "description": "Comprehensive motion branding for Playa Beach Club â manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
+        "title": "PLAYA — Pelimotion",
+        "description": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/MANIFESTO/BEACH_TENIS%20DO%20PLAYA_50.jpg"
       },
       "media": {
@@ -1546,7 +1555,7 @@
               ]
             },
             {
-              "title": "CHAMADA CARNAPLAYA TERÃA 03",
+              "title": "CHAMADA CARNAPLAYA TERÇA 03",
               "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03.mp4",
               "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03_preview.mp4",
               "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/CHAMADA_CARNAPLAYA_TER%C3%87A_03.jpg",
@@ -1698,8 +1707,8 @@
       "slug": "rio-carnaval",
       "lastModified": "2026-04-24",
       "title": "RIO CARNAVAL",
-      "tagline": "App visualizer and release film for Rio Carnaval â capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
-      "description": "Two films for the Rio Carnaval app launch â one a full release film, one a kinetic visualizer. Both designed to capture the rhythm and spectacle of the world's greatest carnival.",
+      "tagline": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
+      "description": "Two films for the Rio Carnaval app launch — one a full release film, one a kinetic visualizer. Both designed to capture the rhythm and spectacle of the world's greatest carnival.",
       "services": [
         "App Release Film",
         "Motion Visualizer"
@@ -1709,8 +1718,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg",
       "seo": {
-        "title": "RIO CARNAVAL â Pelimotion",
-        "description": "App visualizer and release film for Rio Carnaval â capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
+        "title": "RIO CARNAVAL — Pelimotion",
+        "description": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Rio%20Carnaval/RIO_CARNAVAL_APP_RELEASE_50.jpg"
       },
       "media": {
@@ -1751,8 +1760,8 @@
       "slug": "suzano",
       "lastModified": "2026-04-24",
       "title": "SUZANO",
-      "tagline": "Institutional and event motion design for Suzano â including innovation center presentations, award ceremonies, and internal culture films.",
-      "description": "A series of institutional pieces for Suzano spanning innovation, culture, and recognition â designed to communicate impact at scale across digital and event environments.",
+      "tagline": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
+      "description": "A series of institutional pieces for Suzano spanning innovation, culture, and recognition — designed to communicate impact at scale across digital and event environments.",
       "services": [
         "Institutional Film",
         "Innovation Center Presentation",
@@ -1764,8 +1773,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg",
       "seo": {
-        "title": "SUZANO â Pelimotion",
-        "description": "Institutional and event motion design for Suzano â including innovation center presentations, award ceremonies, and internal culture films.",
+        "title": "SUZANO — Pelimotion",
+        "description": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg"
       },
       "media": {
@@ -1781,7 +1790,8 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_85.jpg"
-            ]
+            ],
+            "title_pt": "SUZANO - INOVAÇÃO SUSTENTÁVEL"
           },
           {
             "title": "SUZANO LETRAS QUE TRANSFORMAM ALTA2",
@@ -1838,15 +1848,17 @@
         ],
         "categories": {},
         "total": 5
-      }
+      },
+      "tagline_pt": "Motion branding e narrativa visual para a Suzano, gigante global de celulose.",
+      "description_pt": "Série de filmes institucionais e ativos de marca em movimento que comunicam inovação e sustentabilidade."
     },
     "WOLFGARTEN": {
       "status": "public",
       "slug": "wolfgarten",
       "lastModified": "2026-04-24",
       "title": "WOLFGARTEN",
-      "tagline": "Motion branding and signature animation for Wolfgarten â a premium European outdoor living brand entering the Brazilian market.",
-      "description": "Brand motion assets for Wolfgarten's Brazilian launch â precise, premium, and built to communicate quality craftsmanship through fluid, confident animation.",
+      "tagline": "Motion branding and signature animation for Wolfgarten — a premium European outdoor living brand entering the Brazilian market.",
+      "description": "Brand motion assets for Wolfgarten's Brazilian launch — precise, premium, and built to communicate quality craftsmanship through fluid, confident animation.",
       "services": [
         "Brand Signature Animation",
         "Preview Reel"
@@ -1856,8 +1868,8 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg",
       "seo": {
-        "title": "WOLFGARTEN â Pelimotion",
-        "description": "Motion branding and signature animation for Wolfgarten â a premium European outdoor living brand entering the Brazilian market.",
+        "title": "WOLFGARTEN — Pelimotion",
+        "description": "Motion branding and signature animation for Wolfgarten — a premium European outdoor living brand entering the Brazilian market.",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Wolfgarten/WOLFEGARTEN_ASSINATURA_50.jpg"
       },
       "media": {
@@ -1897,9 +1909,9 @@
       "status": "public",
       "slug": "prefeitura-timbo",
       "lastModified": "2026-04-24",
-      "title": "PREFEITURA TIMBÃ",
-      "tagline": "Institutional motion campaign for Prefeitura de TimbÃ³ â government communication designed with clarity and civic purpose.",
-      "description": "Public sector motion design for Prefeitura de TimbÃ³, balancing institutional clarity with modern visual language to reach the full breadth of the community.",
+      "title": "PREFEITURA TIMBÓ",
+      "tagline": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
+      "description": "Public sector motion design for Prefeitura de Timbó, balancing institutional clarity with modern visual language to reach the full breadth of the community.",
       "services": [
         "Institutional Campaign",
         "Social Media Motion"
@@ -1909,8 +1921,8 @@
       "projectUrl": "",
       "coverImage": "",
       "seo": {
-        "title": "PREFEITURA TIMBÃ â Pelimotion",
-        "description": "Institutional motion campaign for Prefeitura de TimbÃ³ â government communication designed with clarity and civic purpose.",
+        "title": "PREFEITURA TIMBÓ — Pelimotion",
+        "description": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
         "ogImage": ""
       },
       "media": {
@@ -1932,7 +1944,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
       "seo": {
-        "title": "BEIRAMAR SHOPPING â Pelimotion",
+        "title": "BEIRAMAR SHOPPING — Pelimotion",
         "description": "",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg"
       },
@@ -1969,7 +1981,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
       "seo": {
-        "title": "FIREDOGS â Pelimotion",
+        "title": "FIREDOGS — Pelimotion",
         "description": "",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg"
       },
@@ -2006,7 +2018,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
       "seo": {
-        "title": "NEY SOUZA â Pelimotion",
+        "title": "NEY SOUZA — Pelimotion",
         "description": "",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg"
       },
@@ -2043,7 +2055,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
       "seo": {
-        "title": "R9 LUXEMBOURG â Pelimotion",
+        "title": "R9 LUXEMBOURG — Pelimotion",
         "description": "",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg"
       },
@@ -2071,7 +2083,7 @@
       "status": "public",
       "slug": "simao",
       "lastModified": "2026-04-24",
-      "title": "SIMÃO",
+      "title": "SIMÃO",
       "tagline": "",
       "description": "",
       "services": [],
@@ -2080,7 +2092,7 @@
       "projectUrl": "",
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg",
       "seo": {
-        "title": "SIMÃO â Pelimotion",
+        "title": "SIMÃO — Pelimotion",
         "description": "",
         "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg"
       },
@@ -2107,7 +2119,7 @@
   },
   "categories": {
     "Media Kit": {
-      "description": "Brand assets in motion â color palettes, patterns, and transitions for digital and print application.",
+      "description": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application.",
       "deliverables": [
         "Pattern Animation",
         "Color System",
@@ -2115,7 +2127,7 @@
       ]
     },
     "Motion Campaign": {
-      "description": "Campaign-ready deliverables â social media, OOH, digital ad, and event-specific motion pieces.",
+      "description": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces.",
       "deliverables": [
         "Social Media Post",
         "Story / Reel",
@@ -2124,7 +2136,7 @@
       ]
     },
     "FUNKY 6 - FUNKED UP": {
-      "description": "Edition 06 â Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.",
+      "description": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.",
       "deliverables": [
         "BTS Film",
         "Logo Animation",
@@ -2133,14 +2145,14 @@
       ]
     },
     "FUNKY ROOM 1": {
-      "description": "Edition 01 â The original. First Room, After Party, and the birth of the visual language.",
+      "description": "Edition 01 — The original. First Room, After Party, and the birth of the visual language.",
       "deliverables": [
         "Event Promo",
         "After Party Promo"
       ]
     },
     "FUNKY ROOM 2": {
-      "description": "Edition 02 â Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.",
+      "description": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.",
       "deliverables": [
         "Ticket Drop Animation",
         "Headline Reveal",
@@ -2148,7 +2160,7 @@
       ]
     },
     "FUNKY ROOM 3": {
-      "description": "Edition 03 â Full social media campaign. Multi-format content for feed, stories, and OOH.",
+      "description": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH.",
       "deliverables": [
         "Feed Post",
         "OOH Adaptation",
@@ -2156,7 +2168,7 @@
       ]
     },
     "FUNKY ROOM 4": {
-      "description": "Edition 04 â Blue Edition. Turntable visuals, headline reveals, and artist-specific content.",
+      "description": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content.",
       "deliverables": [
         "Artist Promo",
         "Turntable Visual",
@@ -2164,7 +2176,7 @@
       ]
     },
     "FUNKY ROOM 5": {
-      "description": "Edition 05 â Evolved social media system with refined grid and content hierarchy.",
+      "description": "Edition 05 — Evolved social media system with refined grid and content hierarchy.",
       "deliverables": [
         "Social Media System",
         "Grid Content",
@@ -2172,7 +2184,7 @@
       ]
     },
     "Broadcast Campaign - FURB": {
-      "description": "TV-ready spots and institutional films â multi-format broadcast campaign with LIBRAS accessibility.",
+      "description": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility.",
       "deliverables": [
         "TV Spot",
         "LIBRAS Version",
@@ -2180,7 +2192,7 @@
       ]
     },
     "OOH Campaign - ETEVI": {
-      "description": "Event-specific campaign for ETEVI â multi-resolution adaptations for screens, social, and outdoor.",
+      "description": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor.",
       "deliverables": [
         "LED Screen",
         "Digital OOH",
@@ -2188,7 +2200,7 @@
       ]
     },
     "MANIFESTO": {
-      "description": "Brand manifesto and concept films â high-production narrative pieces that define the brand's soul.",
+      "description": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul.",
       "deliverables": [
         "Brand Manifesto Film",
         "Concept Film",
@@ -2196,7 +2208,7 @@
       ]
     },
     "IA Genenerated": {
-      "description": "AI-assisted visual explorations â experimental food and lifestyle content generated with creative AI tools.",
+      "description": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools.",
       "deliverables": [
         "AI Generated Content",
         "Food & Lifestyle Visual"
@@ -2206,12 +2218,12 @@
   "curriculum": {
     "name": "Felipe Conceição",
     "title": "Creative Director, motion branding and creative editing",
-    "subtitle": "Eight years translating brand strategy into rhythm, light and image â from generative pipelines to projection mapping.",
+    "subtitle": "Eight years translating brand strategy into rhythm, light and image — from generative pipelines to projection mapping.",
     "basedIn": "Rio de Janeiro, BR",
     "disciplines": "Motion · Direction · Branding · CGI",
     "yearsRange": "2017 > Now",
-    "profileParagraph1": "I work where strategy meets motion. Over eight years I've built visual systems for global brands across automotive, finance and culture â designing how a brand moves, not only how it looks.",
-    "profileParagraph2": "My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion Hub, where we develop AI-integrated motion pipelines and direct immersive experiences â combining motion design with light and projection for theater and live performances.",
+    "profileParagraph1": "I work where strategy meets motion. Over eight years I've built visual systems for global brands across automotive, finance and culture — designing how a brand moves, not only how it looks.",
+    "profileParagraph2": "My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion Hub, where we develop AI-integrated motion pipelines and direct immersive experiences — combining motion design with light and projection for theater and live performances.",
     "stats": [
       {
         "value": "08+",
@@ -2396,40 +2408,40 @@
   },
   "categoryMeta": {
     "Media Kit": {
-      "description": "Brand assets in motion â color palettes, patterns, and transitions for digital and print application."
+      "description": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application."
     },
     "Motion Campaign": {
-      "description": "Campaign-ready deliverables â social media, OOH, digital ad, and event-specific motion pieces."
+      "description": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces."
     },
     "FUNKY 6 - FUNKED UP": {
-      "description": "Edition 06 â Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content."
+      "description": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content."
     },
     "FUNKY ROOM 1": {
-      "description": "Edition 01 â The original. First Room, After Party, and the birth of the visual language."
+      "description": "Edition 01 — The original. First Room, After Party, and the birth of the visual language."
     },
     "FUNKY ROOM 2": {
-      "description": "Edition 02 â Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos."
+      "description": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos."
     },
     "FUNKY ROOM 3": {
-      "description": "Edition 03 â Full social media campaign. Multi-format content for feed, stories, and OOH."
+      "description": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH."
     },
     "FUNKY ROOM 4": {
-      "description": "Edition 04 â Blue Edition. Turntable visuals, headline reveals, and artist-specific content."
+      "description": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content."
     },
     "FUNKY ROOM 5": {
-      "description": "Edition 05 â Evolved social media system with refined grid and content hierarchy."
+      "description": "Edition 05 — Evolved social media system with refined grid and content hierarchy."
     },
     "Broadcast Campaign - FURB": {
-      "description": "TV-ready spots and institutional films â multi-format broadcast campaign with LIBRAS accessibility."
+      "description": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility."
     },
     "OOH Campaign - ETEVI": {
-      "description": "Event-specific campaign for ETEVI â multi-resolution adaptations for screens, social, and outdoor."
+      "description": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor."
     },
     "MANIFESTO": {
-      "description": "Brand manifesto and concept films â high-production narrative pieces that define the brand's soul."
+      "description": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul."
     },
     "IA Genenerated": {
-      "description": "AI-assisted visual explorations â experimental food and lifestyle content generated with creative AI tools."
+      "description": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools."
     }
   },
   "applications": [
@@ -2439,7 +2451,7 @@
       "targetRole": "Creative Director",
       "accentColor": "#34d399",
       "createdAt": "2026-04-24",
-      "heroLabel": "Curriculum Vitae â Application / Near",
+      "heroLabel": "Curriculum Vitae — Application / Near",
       "coverLetter": {
         "sections": [
           {
@@ -2448,15 +2460,15 @@
           },
           {
             "title": "WHAT I BRING",
-            "body": "My work lives at the intersection of strategy and execution. I concept, direct, and deliver â in After Effects, Illustrator, Premiere, and Figma â without needing a layer of translation between creative thinking and the timeline. I've produced CGI/motion content for BMW, Subaru, Hyundai, and Motul, and led the full motion branding for a brand relaunch that included both the launch film and a complete Motion Media Kit for ongoing marketing use."
+            "body": "My work lives at the intersection of strategy and execution. I concept, direct, and deliver — in After Effects, Illustrator, Premiere, and Figma — without needing a layer of translation between creative thinking and the timeline. I've produced CGI/motion content for BMW, Subaru, Hyundai, and Motul, and led the full motion branding for a brand relaunch that included both the launch film and a complete Motion Media Kit for ongoing marketing use."
           },
           {
             "title": "WHY DIFFERENT",
-            "body": "I approach motion the way a musician approaches rhythm â timing, weight, silence. That foundation, combined with AI-integrated workflows and a minimalist design philosophy, means I move fast without losing craft. Fluent in async-first communication, accustomed to U.S. client standards, English at professional level."
+            "body": "I approach motion the way a musician approaches rhythm — timing, weight, silence. That foundation, combined with AI-integrated workflows and a minimalist design philosophy, means I move fast without losing craft. Fluent in async-first communication, accustomed to U.S. client standards, English at professional level."
           },
           {
             "title": "WHY NEAR & WHY NOW",
-            "body": "Near's model â connecting LatAm talent with high-growth U.S. companies â is exactly the move I've been building toward. Performance marketing demands motion that works, not just motion that looks good. That tension between aesthetics and results is where I'm most at home. Ready for full-time commitment and the pace this role requires."
+            "body": "Near's model — connecting LatAm talent with high-growth U.S. companies — is exactly the move I've been building toward. Performance marketing demands motion that works, not just motion that looks good. That tension between aesthetics and results is where I'm most at home. Ready for full-time commitment and the pace this role requires."
           }
         ]
       },
