@@ -443,19 +443,19 @@ function navTo(e, file) {
 
 <script>
 function generatePDF() {
-    // Disable all transitions instantly
+    // 1. Reveal everything and disable transitions
     const styleBlock = document.createElement('style');
-    styleBlock.innerHTML = `* { transition: none !important; animation: none !important; }`;
+    styleBlock.innerHTML = `
+        * { transition: none !important; animation: none !important; }
+        .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; visibility: visible !important; }
+    `;
     document.head.appendChild(styleBlock);
 
-    // Reveal everything
     document.querySelectorAll('.reveal-mech, .reveal').forEach(el => {
         el.classList.add('visible', 'active');
-        el.style.opacity = '1';
-        el.style.transform = 'none';
     });
     
-    // Force browser to "see" everything by scrolling
+    // 2. Force browser to layout everything by scrolling and waiting
     window.scrollTo(0, document.body.scrollHeight);
     
     setTimeout(() => {
@@ -464,37 +464,37 @@ function generatePDF() {
         const privBar = document.getElementById('priv-bar');
         const progBar = document.querySelector('.progress-bar-container');
         const mainEl = document.querySelector('main');
-        const header = document.querySelector('header');
+        const footer = document.querySelector('footer');
         const body = document.body;
         
-        // Hide UI elements
         if (privBar) privBar.style.display = 'none';
         if (progBar) progBar.style.display = 'none';
         
-        // Reset layout for measurement
-        let originalHeaderPos = '';
-        if (header) {
-            originalHeaderPos = header.style.position;
-            header.style.position = 'relative';
-        }
-        
         const originalBodyClass = body.className;
         body.classList.remove('min-h-screen');
-        if (mainEl) mainEl.classList.remove('min-h-screen');
+        if (mainEl) {
+            mainEl.classList.remove('min-h-screen');
+            mainEl.style.height = 'auto';
+            mainEl.style.overflow = 'visible';
+        }
         
         body.style.height = 'auto';
         body.style.minHeight = '0';
+        body.style.overflow = 'visible';
         document.documentElement.style.height = 'auto';
-        document.documentElement.style.minHeight = '0';
+        document.documentElement.style.overflow = 'visible';
         
-        // Force layout recalculation
+        // Force layout recalc
         void body.offsetHeight;
         
-        // Measure exact rendered dimensions
+        // 3. Measure height using the most reliable method: the bottom of the last element
+        const lastEl = footer || mainEl || body;
+        const rect = lastEl.getBoundingClientRect();
+        const absoluteBottom = rect.bottom + window.pageYOffset;
+        
         const w = window.innerWidth;
-        // We use offsetHeight of the body which is usually the most accurate for physical length
-        // We subtract a tiny fraction (0.5px) to prevent the "1-pixel spillover" that triggers a 2nd page
-        const h = Math.floor(Math.max(body.scrollHeight, body.offsetHeight, mainEl ? mainEl.offsetHeight : 0)) - 1;
+        // We add 20px padding to be safe, but keep it on ONE page
+        const h = Math.ceil(absoluteBottom) + 20;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -503,7 +503,6 @@ function generatePDF() {
             document.head.appendChild(style);
         }
         
-        // Inject the precise physical size and kill all browser margins
         style.innerHTML = `@media print { 
             @page { size: ${w}px ${h}px !important; margin: 0 !important; } 
             body, html { 
@@ -511,44 +510,42 @@ function generatePDF() {
                 padding: 0 !important; 
                 height: ${h}px !important; 
                 min-height: ${h}px !important;
-                overflow: hidden !important; 
+                overflow: visible !important; 
                 display: block !important;
                 background-color: #050505 !important;
                 -webkit-print-color-adjust: exact !important;
-                break-inside: avoid !important;
             }
             main { 
                 height: auto !important; 
-                min-height: 0 !important; 
-                padding-bottom: 0 !important; 
-                margin: 0 !important;
+                overflow: visible !important;
                 display: block !important;
+                padding-bottom: 20px !important;
             }
-            header { position: relative !important; }
+            section { overflow: visible !important; break-inside: avoid !important; }
             * { break-inside: auto !important; }
-            section, article { break-inside: avoid !important; }
         }`;
         
         window.print();
         
-        // --- CLEANUP ---
         setTimeout(() => {
             styleBlock.remove();
             if (style) style.innerHTML = '';
             if (privBar) privBar.style.display = '';
             if (progBar) progBar.style.display = '';
-            if (header) header.style.position = originalHeaderPos;
             body.className = originalBodyClass;
-            if (mainEl) mainEl.classList.add('min-h-screen');
+            if (mainEl) {
+                mainEl.classList.add('min-h-screen');
+                mainEl.style.height = '';
+                mainEl.style.overflow = '';
+            }
             body.style.height = '';
-            body.style.minHeight = '';
+            body.style.overflow = '';
             document.documentElement.style.height = '';
-            document.documentElement.style.minHeight = '';
+            document.documentElement.style.overflow = '';
         }, 1000);
-    }, 400);
+    }, 800); // 800ms settle time
 }
 
-// Intercept Cmd+P or Ctrl+P
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
