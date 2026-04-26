@@ -666,6 +666,7 @@
   const C = D.curriculum || {};
   const CL = D.coverLetter || {};
 
+  if(C.accentColor) document.documentElement.style.setProperty('--accent-color', C.accentColor);
   // ── Name ──
   const nameEl = document.getElementById('dyn-name');
   if(nameEl && C.name){
@@ -836,10 +837,12 @@
   if(C.socialLinkedIn || C.socialInstagram || C.contactEmail) {
     const linksEl = document.getElementById('cl-links');
     if(linksEl){
+      const l_in = C.socialLinkedIn ? (C.socialLinkedIn.startsWith('http') ? C.socialLinkedIn : 'https://linkedin.com/in/'+C.socialLinkedIn.split('/').filter(Boolean).pop()) : null;
+      const l_ig = C.socialInstagram ? (C.socialInstagram.startsWith('http') ? C.socialInstagram : 'https://instagram.com/'+C.socialInstagram.split('/').filter(Boolean).pop()) : null;
       linksEl.innerHTML = [
         ['Portfolio','https://pelimotion.com'],
-        C.socialLinkedIn ? ['LinkedIn','https://linkedin.com/in/'+C.socialLinkedIn] : null,
-        C.socialInstagram ? ['Instagram','https://instagram.com/'+C.socialInstagram] : null,
+        l_in ? ['LinkedIn', l_in] : null,
+        l_ig ? ['Instagram', l_ig] : null,
         C.contactEmail ? ['Email','mailto:'+C.contactEmail] : null
       ].filter(Boolean).map(([l,h]) => 
         `<a href="${h}" target="_blank" class="flex items-center justify-between border-b border-white/10 pb-2 hover:border-white/50 transition-colors">` +

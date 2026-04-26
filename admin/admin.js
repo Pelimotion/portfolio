@@ -374,6 +374,7 @@ function showCurriculum(){ autoSave(); currentSection='curriculum'; currentKey=n
     <div class="page-header"><div class="page-label">CURRICULUM PAGE</div><h1 class="page-title">Curriculum Vitae</h1></div>
     <div class="preview-ref">📍 <strong>Public:</strong> Curriculum/index.html — <strong>Private:</strong> Curriculum/private/index.html (CV + Cover Letter with PDF download)</div>
     <div class="card"><div class="card-title"><span class="icon">👤</span> Profile</div>
+      <div class="field"><label>Accent Color (Hex)</label><input type="color" id="f-cvAccent" value="${esc(C.accentColor||'#34d399')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Full Name</label><input id="f-cvName" value="${esc(C.name||'')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Title Line</label><input id="f-cvTitle" value="${esc(C.title||'')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director, motion branding and artistic direction."</div></div>
       <div class="field"><label>Subtitle / Tagline <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat(\'f-cvSub\', \'b\')">B</button><button type="button" tabindex="-1" onclick="insertFormat(\'f-cvSub\', \'i\')">I</button></div></label><textarea id="f-cvSub" rows="2" oninput="markUnsaved()">${esc(C.subtitle||'')}</textarea></div>
@@ -560,6 +561,7 @@ function savePortfolio(){ savePortfolioToMem(); saveAll(); }
 function saveCurriculumToMem(){
   const C = D.curriculum = D.curriculum||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  C.accentColor=v('f-cvAccent');
   C.name=v('f-cvName'); C.title=v('f-cvTitle'); C.subtitle=v('f-cvSub');
   C.basedIn=v('f-cvBase'); C.disciplines=v('f-cvDisc'); C.yearsRange=v('f-cvYears');
   C.profileParagraph1=v('f-cvP1'); C.profileParagraph2=v('f-cvP2');
@@ -621,6 +623,7 @@ function showCoverLetter(){ autoSave(); currentSection='coverLetter'; currentKey
     <div class="preview-ref">📍 <strong>File:</strong> Curriculum/private/index.html (Cover Letter tab) — Customizable per application. Download as PDF from the private page.</div>
     <div class="card"><div class="card-title"><span class="icon">🎯</span> Target</div>
       <div class="hint" style="margin-bottom:14px">Customize these for each application. Leave company blank for a generic version.</div>
+      <div class="field"><label>Accent Color (Hex)</label><input type="color" id="f-clAccent" value="${esc(CL.accentColor||'#34d399')}" oninput="markUnsaved()"></div>
       <div class="field"><label>Target Role</label><input id="f-clRole" value="${esc(CL.targetRole||'Creative Director')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director", "Senior Motion Designer"</div></div>
       <div class="field"><label>Target Company (optional)</label><input id="f-clCompany" value="${esc(CL.targetCompany||'')}" oninput="markUnsaved()"><div class="hint">Leave blank for a generic cover letter.</div></div>
     </div>
@@ -639,6 +642,7 @@ function showCoverLetter(){ autoSave(); currentSection='coverLetter'; currentKey
 function saveCoverLetterToMem(){
   const CL = D.coverLetter = D.coverLetter||{};
   const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  CL.accentColor=v('f-clAccent');
   CL.targetRole=v('f-clRole'); CL.targetCompany=v('f-clCompany');
   CL.greeting=v('f-clGreeting'); CL.opening=v('f-clOpening');
   CL.body1=v('f-clBody1'); CL.body2=v('f-clBody2'); CL.body3=v('f-clBody3');
