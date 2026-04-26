@@ -6,7 +6,7 @@
       "slug": "bc-mapping-festival",
       "lastModified": "2026-04-24",
       "title": "BC MAPPING FESTIVAL",
-      "tagline": "",
+      "tagline": "A comprehensive motion branding system developed for a projection mapping festival in Balneário Camboriú, SC.",
       "description": "A comprehensive motion branding system developed for a projection mapping festival in Balneário Camboriú, SC. Every visual asset was engineered to ensure dynamism and consistency, performing seamlessly across digital screens and large-scale architectural projections.",
       "services": [
         "Brand Identity Motion",
@@ -178,14 +178,16 @@
         "total": 11
       },
       "release": "",
-      "tagline_pt": "",
+      "tagline_pt": "Um sistema completo de motion branding desenvolvido para um festival de projeção mapeada em Balneário Camboriú, SC.",
       "description_pt": "Um sistema completo de motion branding desenvolvido para um festival de projeção mapeada em Balneário Camboriú, SC. Cada ativo visual foi estruturado para garantir dinamismo e consistência, funcionando de forma fluida tanto nas telas digitais quanto nas projeções arquitetônicas de grande escala.",
       "release_pt": "",
       "deliverables": [
         "BRANDING MEDIA KIT",
         "SOCIAL MEDIA",
         "EVENT DISPLAYS"
-      ]
+      ],
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     },
     "EQI": {
       "status": "public",
@@ -228,7 +230,11 @@
         "total": 1
       },
       "tagline_pt": "Produção de conteúdo de bastidores para ativação exclusiva da EQI no Cirque du Soleil.",
-      "description_pt": "Conteúdo exclusivo de making-of produzido para a ativação de marca de alto padrão da EQI no Cirque du Soleil."
+      "description_pt": "Conteúdo exclusivo de making-of produzido para a ativação de marca de alto padrão da EQI no Cirque du Soleil.",
+      "release": "",
+      "release_pt": "",
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     },
     "FAST SHIPPING": {
       "status": "public",
@@ -273,7 +279,10 @@
       },
       "release": "",
       "tagline_pt": "Conceito de rebranding vivo — um sistema de identidade visual dinâmica que respira e se adapta.",
-      "description_pt": "Uma exploração conceitual de rebranding para a Fast Shipping, traduzindo a promessa de velocidade e confiabilidade em uma identidade de movimento modular."
+      "description_pt": "Uma exploração conceitual de rebranding para a Fast Shipping, traduzindo a promessa de velocidade e confiabilidade em uma identidade de movimento modular.",
+      "release_pt": "",
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     },
     "FUNKY ROOM": {
       "status": "public",
