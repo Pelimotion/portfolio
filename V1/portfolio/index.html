@@ -651,7 +651,7 @@
 </nav>
 
 <div class="contact-popover" id="contact-popover"><div class="contact-popover-header" data-en="Direct Contact" data-pt="Contato Direto">Direct Contact</div><a href="mailto:hello@pelimotion.com"><span class="contact-icon">✉</span><span class="contact-label">Email</span></a><a href="https://wa.me/5547999664274" target="_blank"><span class="contact-icon"></span><span class="contact-label">WhatsApp</span></a><a href="https://instagram.com/pelimotion" target="_blank"><span class="contact-icon"></span><span class="contact-label">Instagram</span></a></div>
-    <div id="view-home"  class="view-wrapper active" role="main" style="position:fixed; top:64px; left:0; width:100%; height:calc(100% - 64px); overflow-y:auto; overflow-x:hidden; opacity:1; visibility:visible; pointer-events:all; z-index:10;">
+    <div id="view-home" class="view-wrapper active" role="main" style="top:64px; height:calc(100% - 64px);">
     <section id="port-hero" class="entrance-mask visible">
         <div>
             <div style="font-size:9px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3);margin-bottom:1.2rem;" data-pt="ARQUIVO COMPLETO" data-en="FULL ARCHIVE">FULL ARCHIVE</div>
@@ -856,9 +856,25 @@
         clientDescriptions[name] = isPT ? (c.tagline_pt || c.tagline || '') : (c.tagline || '');
       });
 
+      // Map global categories
       Object.keys(d.categoryMeta || {}).forEach(cat => {
         const meta = d.categoryMeta[cat] || {};
         categoryDescriptions[cat] = isPT ? (meta.description_pt || meta.description || '') : (meta.description || '');
+      });
+      // Map client-specific categories if we are in a client view context (or just store them all)
+      Object.keys(d.clients || {}).forEach(cName => {
+        const c = d.clients[cName];
+        if(c.category_descriptions || c.category_descriptions_pt) {
+           // We store these in a nested object: clientCategoryDescriptions[clientName][categoryName]
+           if(!window.clientCategoryDescriptions) window.clientCategoryDescriptions = {};
+           window.clientCategoryDescriptions[cName] = {};
+           const catDescs = c.category_descriptions || {};
+           const catDescsPt = c.category_descriptions_pt || {};
+           const allCats = new Set([...Object.keys(catDescs), ...Object.keys(catDescsPt)]);
+           allCats.forEach(cat => {
+             window.clientCategoryDescriptions[cName][cat] = isPT ? (catDescsPt[cat] || catDescs[cat] || '') : (catDescs[cat] || '');
+           });
+        }
       });
     }
 
@@ -910,7 +926,7 @@
                 <div class="interactive medium-player" style="aspect-ratio:${w.aspect || '16/9'}" onclick="openModal('${w.video_url}', '${w.preview_url || ''}', '${w.aspect || '16/9'}', '${w.title}', currentClientName)">
                     <img src="${poster}" class="work-card-img" loading="lazy">
                     <video class="work-card-img" style="position:absolute;top:0;left:0;opacity:0" width="100%" height="100%" preload="none" muted loop playsinline
-                        onmouseenter="this.style.opacity=1;this.play()" 
+                        onmouseenter="this.style.opacity=1; let p=this.play(); if(p!==undefined)p.catch(()=>{});" 
                         onmouseleave="this.style.opacity=0;this.pause();this.currentTime=0;">
                         <source src="${w.preview_url || w.video_url}" type="video/mp4">
                     </video>
@@ -927,7 +943,7 @@
                     <div class="client-card-img-wrap ${aspectClass}">
                         <img src="${poster}" class="work-card-img" loading="lazy">
                         <video class="work-card-img" style="position:absolute;top:0;left:0;opacity:0" width="100%" height="100%" preload="none" muted loop playsinline
-                            onmouseenter="this.style.opacity=1;this.play()" 
+                            onmouseenter="this.style.opacity=1; let p=this.play(); if(p!==undefined)p.catch(()=>{});" 
                             onmouseleave="this.style.opacity=0;this.pause();this.currentTime=0;">
                             <source src="${w.preview_url || w.video_url}" type="video/mp4">
                         </video>
@@ -946,7 +962,8 @@
 
                 html+='<div class="category-section entrance-mask">';
                 html+='<div class="category-header"><span class="category-name">'+cat+'</span><span class="category-count">'+String(works.length).padStart(2,'0')+' pieces</span></div>';
-                if(categoryDescriptions[cat])html+='<p class="category-desc">'+categoryDescriptions[cat]+'</p>';
+                const cDesc = (window.clientCategoryDescriptions && window.clientCategoryDescriptions[name] && window.clientCategoryDescriptions[name][cat]) || categoryDescriptions[cat];
+                if(cDesc) html+='<p class="category-desc">'+cDesc+'</p>';
                 html+='<div class="grid-works">';
                 works.forEach(w=>{
                     const aspectClass = w.format || 'default';
@@ -955,7 +972,7 @@
                         <div class="client-card-img-wrap ${aspectClass}">
                             <img src="${poster}" class="work-card-img" loading="lazy">
                             <video class="work-card-img" style="position:absolute;top:0;left:0;opacity:0" width="100%" height="100%" preload="none" muted loop playsinline
-                                onmouseenter="this.style.opacity=1;this.play()" 
+                                onmouseenter="this.style.opacity=1; let p=this.play(); if(p!==undefined)p.catch(()=>{});" 
                                 onmouseleave="this.style.opacity=0;this.pause();this.currentTime=0;">
                                 <source src="${w.preview_url || w.video_url}" type="video/mp4">
                             </video>

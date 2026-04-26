@@ -258,7 +258,15 @@
         },
         "total": 11
       },
-      "release": ""
+      "release": "",
+      "category_descriptions": {
+        "Brand Identity": "The core visual language of the festival, designed to be modular and high-impact across all media.",
+        "Projections": "Large-scale architectural mapping pieces developed for the festival's main stage."
+      },
+      "category_descriptions_pt": {
+        "Brand Identity": "A linguagem visual central do festival, projetada para ser modular e de alto impacto em todas as mídias.",
+        "Projections": "Peças de projeção mapeada em grande escala desenvolvidas para o palco principal do festival."
+      }
     },
     "EQI": {
       "status": "public",
