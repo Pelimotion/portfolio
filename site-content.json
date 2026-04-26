@@ -257,7 +257,8 @@
           ]
         },
         "total": 11
-      }
+      },
+      "release": ""
     },
     "EQI": {
       "status": "public",
@@ -338,7 +339,8 @@
         ],
         "categories": {},
         "total": 1
-      }
+      },
+      "release": ""
     },
     "FUNKY ROOM": {
       "status": "public",
@@ -2365,8 +2367,14 @@
     "socialBehance": "be.net/pelimotion",
     "contactText": "The system is ready. Looking for a <i>full-time creative direction </i>or motion design role — remote, with <span class=\"serif text-white/70\">teams who move fast and think deep.</span>",
     "accentColor": "#34d399",
-    "profileParagraph1_pt": "Trabalhamos onde estratégia encontra movimento. Em oito anos, construímos sistemas visuais para marcas globais nos setores automotivo, financeiro e cultural — projetando como uma marca se move, não apenas como ela aparece.",
-    "profileParagraph2_pt": "Nossa formação em música molda tudo: ritmo, peso, silêncio. Hoje, o Pelimotion Hub desenvolve pipelines de motion integrados com IA e dirige experiências imersivas — combinando motion design com luz e projeção para espetáculos ao vivo."
+    "profileParagraph1_pt": "",
+    "profileParagraph2_pt": "",
+    "title_pt": "",
+    "subtitle_pt": "",
+    "basedIn_pt": "",
+    "disciplines_pt": "",
+    "contactText_pt": "",
+    "contactWebsite": ""
   },
   "coverLetter": {
     "greeting": "Opening",
@@ -2378,7 +2386,13 @@
     "signoff": "Looking forward to connecting",
     "targetRole": "Creative Editor / Motion Designer",
     "targetCompany": "Deer Design",
-    "whyCompany": ""
+    "whyCompany": "",
+    "greeting_pt": "",
+    "opening_pt": "",
+    "body1_pt": "",
+    "body2_pt": "",
+    "closing_pt": "",
+    "signoff_pt": ""
   },
   "categoryMeta": {
     "Media Kit": {
