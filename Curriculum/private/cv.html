@@ -56,6 +56,17 @@
 
   article, .skill-group, .edu-item, .exp-item { page-break-inside: avoid; }
   .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; }
+
+  .status-dot { display: none !important; }
+  .status-dot + span { display: inline !important; }
+  .status-dot + span::before {
+    content: "[STABLE] ";
+    font-weight: bold;
+    margin-right: 4px;
+  }
+
+
+
 }
 #cl-links a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
 #cl-links a:hover{border-color:rgba(255,255,255,.6)}

@@ -64,6 +64,17 @@
 
   article, .skill-group, .edu-item, .exp-item { page-break-inside: avoid; }
   .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; }
+
+  .status-dot { display: none !important; }
+  .status-dot + span { display: inline !important; }
+  .status-dot + span::before {
+    content: "[STABLE] ";
+    font-weight: bold;
+    margin-right: 4px;
+  }
+
+
+
 }
 
             
