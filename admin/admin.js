@@ -4,6 +4,18 @@ let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
 
+// ─── Exports ───
+window.onPinInput = (el) => { if(el.value.length >= 4) checkPin(); };
+window.checkPin = () => { checkPin(); };
+window.lockAdmin = () => { sessionStorage.removeItem('plm_admin_unlocked'); location.reload(); };
+window.insertFormat = insertFormat;
+window.exportJSON = () => exportJSON();
+window.importJSON = () => document.getElementById('file-input').click();
+window.saveAll = () => saveAll();
+window.openPublishModal = () => openPublishModal();
+window.closePublishModal = () => closePublishModal();
+window.doPublish = () => doPublish();
+
 
 // ─── Text Formatting Helper ───────────────────────────────────────────────
 function insertFormat(id, tag) {
@@ -99,10 +111,6 @@ function lockAdmin() {
   location.reload();
 }
 
-window.onPinInput = onPinInput;
-window.checkPin = checkPin;
-window.lockAdmin = lockAdmin;
-window.authenticate = checkPin; // Alias if needed
 
 function setActive(el) {
   document.querySelectorAll('.sidebar-nav-item').forEach(e => e.classList.remove('active'));
@@ -223,11 +231,6 @@ function exportJSON() {
   toast('✓ Downloaded site-content.json + content.json');
 }
 
-window.exportJSON = exportJSON;
-window.saveAll = saveAll;
-window.openPublishModal = openPublishModal;
-window.closePublishModal = closePublishModal;
-window.doPublish = doPublish;
 
 
 
@@ -241,8 +244,7 @@ async function loadData(){
         });
         if(ghRes.ok) {
           const ghData = await ghRes.json();
-          const decoded = atob(ghData.content.replace(/
-/g,''));
+          const decoded = atob(ghData.content.replace(/\n/g,''));
           const utf8 = new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0)));
           D = JSON.parse(utf8);
           setStatus('✓ Loaded from GitHub');
@@ -985,11 +987,20 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape') closePublishModal();
 });
 
-// ─── Init ─────────────────────────────────────────────────────────────────
-if(isUnlocked()) {
-  hideAuthOverlay();
-  loadData();
-} else {
-  showAuthOverlay();
-  setTimeout(() => { const p = document.getElementById('auth-pin'); if(p) p.focus(); }, 200);
+
+// ─── Init ───
+try {
+  if(isUnlocked()) {
+    hideAuthOverlay();
+    loadData();
+  } else {
+    showAuthOverlay();
+    setTimeout(() => { 
+      const p = document.getElementById('auth-pin'); 
+      if(p) p.focus(); 
+    }, 500);
+  }
+} catch(e) {
+  console.error('Init error:', e);
+  alert('Critical Admin Error: ' + e.message);
 }
