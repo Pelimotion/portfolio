@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,9 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0a0a0a;--fg:#f0ede8;--accent:#f0ede8;--green:#34d399;--border:rgba(240,237,232,.1)}
+[data-theme="light"] { --bg:#f5f5f5; --fg:#050505; --accent:#050505; --border:rgba(10,10,10,.1); }
+html{background:var(--bg); color:var(--fg);}
+
 html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
@@ -136,6 +139,7 @@ section{width:100%;border-top:1px solid var(--border)}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
 .reveal.visible{opacity:1;transform:none}
 </style>
+<script src="theme.js"></script>
 </head>
 <body>
 
@@ -148,6 +152,8 @@ section{width:100%;border-top:1px solid var(--border)}
     <a href="#contact" class="nav-link">Contact</a>
     <a href="Curriculum/index.html" class="nav-link">CV</a>
     <a href="V1/portfolio/index.html" class="nav-link cta">View Portfolio →</a>
+    <button class="nav-link lang-toggle theme-toggle" onclick="toggleTheme()" title="Toggle Theme" style="cursor:pointer; background:none; border:none;">◐</button>
+    <button id="custom-lang-toggle" class="nav-link lang-toggle" onclick="toggleLanguage()" style="cursor:pointer; background:none; border:1px solid var(--border); padding:4px 8px;">PT</button>
   </div>
   <div class="nav-toggle" id="nav-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
     <span></span><span></span><span></span>
@@ -207,40 +213,40 @@ section{width:100%;border-top:1px solid var(--border)}
 <section id="portfolio-link">
   <div class="container" style="padding-top:5rem;padding-bottom:5rem">
     <div class="section-header-row reveal">
-      <div class="section-label">02 — Selected Work</div>
-      <a href="V1/portfolio/index.html" class="section-link">Full Portfolio →</a>
+      <div class="section-label" data-en="02 — Selected Work" data-pt="02 — Trabalhos Selecionados">02 — Selected Work</div>
+      <a href="V1/portfolio/index.html" class="section-link" data-en="View More Projects →" data-pt="Ver Mais Projetos →">View More Projects →</a>
     </div>
     <div class="port-inner">
       <a href="V1/portfolio/index.html" class="port-card port-full reveal" style="transition-delay:.05s">
         <video autoplay loop muted playsinline>
-          <source src="Medias Portfolio/Pelimotion - Reel 2021.mp4" type="video/mp4">
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4" type="video/mp4">
         </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
-            <div class="port-tag">Motion Branding · CGI · Creative Direction</div>
-            <div class="port-name">Full Portfolio Reel <span class="port-arrow">→</span></div>
+            <div class="port-tag">Visual Systems · Stage Direction</div>
+            <div class="port-name">Funky Room <span class="port-arrow">→</span></div>
           </div>
         </div>
       </a>
       <a href="V1/portfolio/index.html" class="port-card reveal" style="transition-delay:.1s">
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);display:flex;align-items:center;justify-content:center">
-          <div style="font-size:3rem;font-weight:900;letter-spacing:-.04em;color:rgba(240,237,232,.08);text-transform:uppercase">BRAND</div>
-        </div>
+        <video autoplay loop muted playsinline>
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_MANIFESTO.mp4" type="video/mp4">
+        </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
-            <div class="port-tag">Identity · Motion Systems</div>
-            <div class="port-name">Motion Branding <span class="port-arrow">→</span></div>
+            <div class="port-tag">Motion Branding</div>
+            <div class="port-name">Suzano <span class="port-arrow">→</span></div>
           </div>
         </div>
       </a>
       <a href="V1/portfolio/index.html" class="port-card reveal" style="transition-delay:.15s">
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0d0d0d 0%,#161616 100%);display:flex;align-items:center;justify-content:center">
-          <div style="font-size:3rem;font-weight:900;letter-spacing:-.04em;color:rgba(240,237,232,.08);text-transform:uppercase">CGI</div>
-        </div>
+        <video autoplay loop muted playsinline>
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/FURB/Apresentac%CC%A7a%CC%83o_FURB_2021.mp4" type="video/mp4">
+        </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
-            <div class="port-tag">CGI · Post-Production</div>
-            <div class="port-name">Automotive &amp; CGI <span class="port-arrow">→</span></div>
+            <div class="port-tag">Motion Systems</div>
+            <div class="port-name">FURB <span class="port-arrow">→</span></div>
           </div>
         </div>
       </a>
