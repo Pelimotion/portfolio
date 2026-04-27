@@ -2604,6 +2604,35 @@
         ]
       },
       "cvOverrides": {}
+    },
+    {
+      "id": "scale-army",
+      "companyName": "Scale Army",
+      "targetRole": "Senior Designer - Animation & Video (Motion Branding)",
+      "accentColor": "#fef2dd",
+      "createdAt": "2026-04-27",
+      "heroLabel": "CV Application / Scale Army",
+      "coverLetter": {
+        "sections": [
+          {
+            "title": "OPENING",
+            "body": "Eight years editing to rhythm taught me one thing: the best cut is the one the audience never sees — they just feel it. Short-form news content lives or dies by that instinct. I've spent my career building systems that deliver volume without losing impact, and I follow global current events closely — not just as a habit, but as creative fuel. When I saw this role, I recognized the workflow immediately."
+          },
+          {
+            "title": "WHAT I BRING",
+            "body": "My background spans broadcast post-production, social content, and AI-assisted pipelines — exactly the stack this role demands. At Rockset I owned post-production for broadcast and digital signage under tight deadlines. At Pelimotion I built modular systems to maintain output volume across formats without sacrificing quality. I'm proficient in Premiere Pro and After Effects, and already use AI tools (Kling, Veo3, Seedance) to accelerate clip generation and captioning. High volume, fast turnaround, strong output — that's not a challenge for me. That's my default mode."
+          },
+          {
+            "title": "WHY DIFFERENT",
+            "body": "Most editors optimize for polish. I optimize for retention. I think in hooks, pace, and emotional arc — and I do it fast. My music background gave me an internal clock for timing cuts that most technical profiles develop only after years of trial and error. I'm also adaptable by design: I've delivered for automotive, fashion, finance, retail, and live events. News content is a new format, not a new skill set — I find the best solution to maintain impact at the volume required, whatever the brief."
+          },
+          {
+            "title": "WHY SCALE ARMY",
+            "body": "I'm looking for a remote contract role where speed and creativity aren't in conflict — they're the same thing. A team producing timely, high-impact content around current events is exactly where my mix of editorial instinct, technical range, and AI fluency adds real, immediate value. I work U.S. business hours without friction. I'm ready to deliver from day one."
+          }
+        ]
+      },
+      "cvOverrides": {}
     }
   ]
 }
