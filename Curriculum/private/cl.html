@@ -184,7 +184,7 @@
                     <div class="col-span-12 lg:col-span-4 lg:border-l border-white/10 lg:pl-10 mt-10 lg:mt-0 reveal-mech visible">
                         <div class="label-tiny mb-6">Liaise & Links</div>
                         <div id="cl-links" class="flex flex-col gap-4">
-                            <a href="https://pelimotion.com" target="_blank" class="flex items-center justify-between border-b border-white/10 pb-2 hover:border-white/50 transition-colors">
+                            <a href="https://pelimotion.vercel.app" target="_blank" class="flex items-center justify-between border-b border-white/10 pb-2 hover:border-white/50 transition-colors">
                                 <span class="font-mono text-[10px] uppercase tracking-widest">Portfolio</span>
                                 <span class="text-white/30">↗</span>
                             </a>
@@ -365,7 +365,10 @@
     setText('cl-sname', C.name);
   }
   if(C.title) setText('cl-stitle', C.title);
-  if(CL.targetRole || CL.targetCompany) {
+  if(CL.subtitle) {
+    const s = (window._PLM_LANG === 'pt' && CL.subtitle_pt) ? CL.subtitle_pt : CL.subtitle;
+    setHTML('cl-subtitle', s);
+  } else if(CL.targetRole || CL.targetCompany) {
     setText('cl-subtitle', (CL.targetRole||'Creative Director')+(CL.targetCompany?' — '+CL.targetCompany:''));
     setText('cl-role', 'For: '+(CL.targetRole||'Creative Director'));
   }

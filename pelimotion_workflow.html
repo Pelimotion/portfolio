@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelimotion — Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --pink: #E8185A;
+    --pink-dim: rgba(232,24,90,0.1);
+    --gray-num: #2e2e2e;
+    --text: #c8c8c8;
+    --text-dim: #555;
+    --bg: #0f0f0f;
+    --surface: #181818;
+    --border: rgba(255,255,255,0.07);
+    --connector: rgba(232,24,90,0.35);
+  }
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 56px 40px 100px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.5;
+  }
+  .wrapper { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+
+  /* HEADER */
+  .logo { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.35em; color: var(--pink); margin-bottom: 20px; text-transform: uppercase; }
+  .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 80px); line-height: 0.92; color: #fff; letter-spacing: 0.02em; margin-bottom: 16px; }
+  .title span { color: var(--pink); }
+  .subtitle { font-size: 13px; color: var(--text-dim); max-width: 520px; line-height: 1.7; font-weight: 300; margin-bottom: 48px; }
+
+  /* MODE TABS */
+  .mode-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 56px; }
+  .mode-btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .mode-btn:hover { border-color: var(--pink); color: var(--text); }
+  .mode-btn.active { background: var(--pink); border-color: var(--pink); color: #fff; }
+
+  /* PHASES */
+  .phases { display: flex; flex-direction: column; }
+  .phase {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 0 28px;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.55s ease forwards;
+  }
+  .phase:nth-child(1){animation-delay:0.08s}
+  .phase:nth-child(2){animation-delay:0.18s}
+  .phase:nth-child(3){animation-delay:0.28s}
+  .phase:nth-child(4){animation-delay:0.38s}
+  .phase:nth-child(5){animation-delay:0.48s}
+  @keyframes fadeUp { to { opacity:1; transform:none } }
+
+  .phase-num-col { display:flex; flex-direction:column; align-items:center; }
+  .phase-num { font-family:'Bebas Neue',sans-serif; font-size:60px; line-height:1; color:var(--gray-num); }
+  .phase-line { flex:1; width:1px; background:linear-gradient(to bottom,var(--connector),transparent); min-height:20px; margin-top:6px; }
+  .phase:last-child .phase-line { display:none; }
+
+  .phase-content { padding-bottom: 48px; }
+  .phase-label {
+    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em;
+    color:var(--pink); text-transform:uppercase; margin-bottom:6px;
+  }
+  .phase-title {
+    font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:0.04em;
+    color:#fff; margin-bottom:18px; line-height:1;
+  }
+
+  .steps-grid { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+  .step {
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--border);
+    padding:9px 15px; font-size:13px; color:var(--text);
+    transition:border-color 0.2s, background 0.2s; cursor:default;
+  }
+  .step:hover { border-color:rgba(232,24,90,0.4); background:#1e1e1e; }
+  .step.approval {
+    background:var(--pink-dim); border-color:rgba(232,24,90,0.35);
+    color:var(--pink); font-weight:500; width:100%;
+  }
+  .step-dot { width:5px; height:5px; border-radius:50%; background:var(--pink); flex-shrink:0; }
+  .step.approval .step-dot { background:var(--pink); }
+
+  /* mode tags */
+  .mode-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .tag {
+    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.14em;
+    text-transform:uppercase; padding:3px 9px; border:1px solid;
+  }
+  .tag-motion { color:#7EB8F7; border-color:rgba(126,184,247,0.3); }
+  .tag-ai { color:#C084FC; border-color:rgba(192,132,252,0.3); }
+  .tag-vfx { color:#34D399; border-color:rgba(52,211,153,0.3); }
+  .tag-edit { color:#FBBF24; border-color:rgba(251,191,36,0.3); }
+
+  /* tools */
+  .tools-strip { display:flex; gap:6px; flex-wrap:wrap; margin-top:2px; }
+  .tool {
+    font-family:'DM Mono',monospace; font-size:9px; color:var(--text-dim);
+    background:rgba(255,255,255,0.03); padding:3px 9px;
+    border-left:2px solid var(--pink); letter-spacing:0.05em;
+  }
+
+  /* divider between phases */
+  .phase-divider { height:1px; background:var(--border); margin:0 0 0 88px; }
+
+  /* LEGEND */
+  .legend {
+    margin-top:60px; padding-top:24px; border-top:1px solid var(--border);
+    display:flex; gap:28px; flex-wrap:wrap;
+  }
+  .legend-item { display:flex; align-items:center; gap:8px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--text-dim); text-transform:uppercase; }
+  .legend-swatch { width:10px; height:10px; border:1px solid; }
+
+  /* NOTE */
+  .note {
+    margin-top:32px; padding:16px 20px;
+    border-left:2px solid var(--pink); background:var(--pink-dim);
+    font-size:12px; color:var(--text-dim); line-height:1.75; font-style:italic;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="logo">Pelimotion — Processo Criativo</div>
+  <div class="title">WORKFLOW<br><span>PELIMOTION</span></div>
+  <div class="subtitle">Fluxo adaptável por tipo de projeto. Cada fase pode ser expandida ou contraída conforme escopo, prazo e ferramentas envolvidas.</div>
+
+  <div class="mode-bar">
+    <button class="mode-btn active" onclick="setMode('all',this)">Todos</button>
+    <button class="mode-btn" onclick="setMode('motion',this)">Motion Design</button>
+    <button class="mode-btn" onclick="setMode('ai',this)">AI-Driven</button>
+    <button class="mode-btn" onclick="setMode('vfx',this)">VFX / CGI</button>
+    <button class="mode-btn" onclick="setMode('edit',this)">Montagem</button>
+  </div>
+
+  <div class="phases">
+
+    <!-- 1 -->
+    <div class="phase">
+      <div class="phase-num-col">
+        <div class="phase-num">1</div>
+        <div class="phase-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-label">Estratégia & Alinhamento</div>
+        <div class="phase-title">BRIEFING & CONCEPÇÃO</div>
+        <div class="steps-grid">
+          <div class="step"><span class="step-dot"></span>Recebimento da demanda & briefing</div>
+          <div class="step"><span class="step-dot"></span>Pesquisa de referências (Pinterest, Behance, Vimeo, Dribble, Motiongrapher)</div>
+          <div class="step" data-modes="ai vfx"><span class="step-dot"></span>Curadoria de referências para geração de board visual</div>
+          <div class="step"><span class="step-dot"></span>Definição da solução narrativa</div>
+          <div class="step"><span class="step-dot"></span>Análise de viabilidade: créditos, prazo, ferramentas, métricas</div>
+          <div class="step"><span class="step-dot"></span>Alinhamento do projeto & alinhamento visual</div>
+          <div class="step approval"><span class="step-dot"></span>✦ Aprovação Interna</div>
+        </div>
+        <div class="mode-tags">
+          <span class="tag tag-motion">Motion</span>
+          <span class="tag tag-ai">AI-Driven</span>
+          <span class="tag tag-vfx">VFX/CGI</span>
+          <span class="tag tag-edit">Montagem</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="phase">
+      <div class="phase-num-col">
+        <div class="phase-num">2</div>
+        <div class="phase-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-label">Pré-produção</div>
+        <div class="phase-title">ESTRUTURAÇÃO & GERAÇÃO</div>
+        <div class="steps-grid">
+          <div class="step"><span class="step-dot"></span>Estruturação do projeto & desmembramento de cenas/telas</div>
+          <div class="step" data-modes="ai vfx"><span class="step-dot"></span>Criação do mood board visual (referências + board para IA)</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Engenharia de prompts com Claude</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Testes rápidos de geração de imagem</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Geração de frames por etapa: cenários → produto → personagem</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Testes de conversão frame → vídeo (consistência, prompting)</div>
+          <div class="step" data-modes="motion vfx"><span class="step-dot"></span>Storyboard / animatic</div>
+          <div class="step" data-modes="edit"><span class="step-dot"></span>Triagem e organização do material bruto</div>
+          <div class="step approval"><span class="step-dot"></span>✦ Aprovação Interna & Externa</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Geração de imagens estáticas para campanha (se aplicável)</div>
+        </div>
+        <div class="mode-tags">
+          <span class="tag tag-ai">AI-Driven</span>
+          <span class="tag tag-motion">Motion</span>
+          <span class="tag tag-vfx">VFX/CGI</span>
+          <span class="tag tag-edit">Montagem</span>
+        </div>
+        <div class="tools-strip">
+          <span class="tool">Claude</span>
+          <span class="tool">Midjourney</span>
+          <span class="tool">Firefly</span>
+          <span class="tool">NanoBanana</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="phase">
+      <div class="phase-num-col">
+        <div class="phase-num">3</div>
+        <div class="phase-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-label">Produção</div>
+        <div class="phase-title">GERAÇÃO & ANIMAÇÃO</div>
+        <div class="steps-grid">
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Geração de vídeos com IA</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Avaliação da narrativa visual e direção de arte</div>
+          <div class="step" data-modes="ai"><span class="step-dot"></span>Testes de enquadramento e linguagem estética</div>
+          <div class="step" data-modes="motion vfx"><span class="step-dot"></span>Animação da primeira peça (piloto de aprovação)</div>
+          <div class="step" data-modes="motion"><span class="step-dot"></span>Lettering & elementos animados</div>
+          <div class="step" data-modes="motion vfx"><span class="step-dot"></span>Composição e Motion Design</div>
+          <div class="step" data-modes="edit"><span class="step-dot"></span>Montagem no editor de vídeo</div>
+          <div class="step approval"><span class="step-dot"></span>✦ Aprovação Interna</div>
+          <div class="step"><span class="step-dot"></span>Geração / animação das demais peças da campanha</div>
+        </div>
+        <div class="mode-tags">
+          <span class="tag tag-ai">AI-Driven</span>
+          <span class="tag tag-motion">Motion</span>
+          <span class="tag tag-edit">Montagem</span>
+        </div>
+        <div class="tools-strip">
+          <span class="tool">VEO3</span>
+          <span class="tool">Kling</span>
+          <span class="tool">Seedance</span>
+          <span class="tool">After Effects</span>
+          <span class="tool">DaVinci Resolve</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="phase">
+      <div class="phase-num-col">
+        <div class="phase-num">4</div>
+        <div class="phase-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-label">Pós-produção</div>
+        <div class="phase-title">COMPOSIÇÃO & FINALIZAÇÃO</div>
+        <div class="steps-grid">
+          <div class="step" data-modes="vfx"><span class="step-dot"></span>CGI / VFX</div>
+          <div class="step" data-modes="motion vfx"><span class="step-dot"></span>Motion Design avançado</div>
+          <div class="step"><span class="step-dot"></span>Color grading</div>
+          <div class="step"><span class="step-dot"></span>Abertura, assinatura e finalização técnica</div>
+          <div class="step"><span class="step-dot"></span>Sound design</div>
+          <div class="step" data-modes="ai edit motion vfx"><span class="step-dot"></span>Trilha autoral & SFX (quando aplicável)</div>
+          <div class="step approval"><span class="step-dot"></span>✦ Aprovação Externa</div>
+        </div>
+        <div class="mode-tags">
+          <span class="tag tag-vfx">VFX/CGI</span>
+          <span class="tag tag-motion">Motion</span>
+          <span class="tag tag-ai">AI-Driven</span>
+          <span class="tag tag-edit">Montagem</span>
+        </div>
+        <div class="tools-strip">
+          <span class="tool">After Effects</span>
+          <span class="tool">DaVinci Resolve</span>
+          <span class="tool">ElevenLabs</span>
+          <span class="tool">Suno</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="phase">
+      <div class="phase-num-col">
+        <div class="phase-num">5</div>
+        <div class="phase-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-label">Entrega</div>
+        <div class="phase-title">EXPORTAÇÃO & ENTREGA</div>
+        <div class="steps-grid">
+          <div class="step"><span class="step-dot"></span>Exportação nos formatos e specs solicitados</div>
+          <div class="step"><span class="step-dot"></span>Entrega dos arquivos finais</div>
+          <div class="step"><span class="step-dot"></span>Revisões pós-aprovação (se aplicável)</div>
+          <div class="step approval"><span class="step-dot"></span>✦ Aprovação Final</div>
+        </div>
+        <div class="mode-tags">
+          <span class="tag tag-motion">Motion</span>
+          <span class="tag tag-ai">AI-Driven</span>
+          <span class="tag tag-vfx">VFX/CGI</span>
+          <span class="tag tag-edit">Montagem</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phases -->
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#7EB8F7;border-color:#7EB8F7"></div>Motion Design</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#C084FC;border-color:#C084FC"></div>AI-Driven</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#34D399;border-color:#34D399"></div>VFX / CGI</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#FBBF24;border-color:#FBBF24"></div>Montagem</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#E8185A;border-color:#E8185A"></div>Ponto de aprovação</div>
+  </div>
+
+  <div class="note">
+    Este é um modelo base — cada projeto é avaliado individualmente. Fases podem ser fundidas, expandidas ou reordenadas conforme briefing, complexidade, prazo e tipo de entrega.
+  </div>
+
+</div>
+
+<script>
+  function setMode(mode, btn) {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.step[data-modes]').forEach(step => {
+      const modes = step.getAttribute('data-modes').split(' ');
+      step.style.display = (mode === 'all' || modes.includes(mode)) ? 'flex' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

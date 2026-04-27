@@ -2430,7 +2430,7 @@
     "basedIn_pt": "",
     "disciplines_pt": "",
     "contactText_pt": "",
-    "contactWebsite": ""
+    "contactWebsite": "https://pelimotion.vercel.app"
   },
   "coverLetter": {
     "greeting": "Dear Flo Hiring Team",
@@ -2440,8 +2440,10 @@
     "body3": "",
     "closing": "Flo stands out as a company that combines scale, purpose, and product thinking in a way that feels especially relevant right now. I’d value the chance to contribute to a team that moves fast, cares deeply about craft, and is building creative work that supports a global health mission with real impact.",
     "signoff": "I’d be glad to share more of my work and creative approach through my portfolio: https://pelimotion.vercel.app",
-    "targetRole": "Creative Editor / Motion Designer",
-    "targetCompany": "Deer Design",
+    "targetCompany": "Flo",
+    "targetRole": "Senior Motion / Video Designer",
+    "subtitle": "Creative Director, motion branding and artistic direction.",
+    "subtitle_pt": "Diretor Criativo, motion branding e direção artística.",
     "whyCompany": "",
     "greeting_pt": "",
     "opening_pt": "",
