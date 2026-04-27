@@ -30,3 +30,6 @@ Implementamos um campo dedicado para o subtítulo no sistema de conteúdo unific
 3. Altere o "Hero Subtitle".
 4. Salve e verifique na página `cl.html` (o texto abaixo de Felipe Conceição deve refletir a mudança).
 5. Verifique se o link "Portfolio" no menu lateral aponta para `pelimotion.vercel.app`.
+
+## NOTA DE DEPLOY
+Durante o deploy, houve um conflito no `site-content.json` devido a uma atualização remota para a aplicação da **Flo**. O conflito foi resolvido manualmente, preservando o conteúdo da carta para a Flo e integrando os novos campos de subtítulo e o link atualizado do portfólio.
