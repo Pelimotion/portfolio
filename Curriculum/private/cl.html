@@ -496,8 +496,8 @@ function generatePDF() {
         const absoluteBottom = rect.bottom + window.pageYOffset;
         
         const w = window.innerWidth;
-        // We add 20px padding to be safe, but keep it on ONE page
-        const h = Math.ceil(absoluteBottom) + 20;
+        // We add 100px padding to be safe, ensuring everything fits on ONE page
+        const h = Math.ceil(absoluteBottom) + 100;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -522,10 +522,10 @@ function generatePDF() {
                 height: auto !important; 
                 overflow: visible !important;
                 display: block !important;
-                padding-bottom: 20px !important;
+                padding-bottom: 50px !important;
             }
-            section { overflow: visible !important; break-inside: avoid !important; }
-            * { break-inside: auto !important; }
+            section { overflow: visible !important; break-inside: avoid !important; position: relative !important; }
+            * { break-inside: auto !important; -webkit-print-color-adjust: exact !important; }
         }`;
         
         window.print();
