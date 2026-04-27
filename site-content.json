@@ -2250,8 +2250,8 @@
     "basedIn": "Rio de Janeiro, BR",
     "disciplines": "Motion · Branding  · Post Production",
     "yearsRange": "2017 > Now",
-    "profileParagraph1": "I work where strategy meets motion. Over eight years I've built visual systems for global brands across automotive, finance and culture — designing how a brand moves, not only how it looks.",
-    "profileParagraph2": "My background as a musician shapes everything: pacing, weight, silence. Today I lead Pelimotion Hub, where we develop AI-integrated motion pipelines and direct immersive experiences — combining motion design with light and projection for theater and live performances.",
+    "profileParagraph1": "I've spent eight years working in the space where design decisions become timing decisions — because timing is what the audience actually remembers. My background in music trained that instinct before motion design gave it a medium.",
+    "profileParagraph2": "Today I apply it across industries, formats, and scales: building brands that don't just look right, but land at the right moment.",
     "stats": [
       {
         "value": "08+",
@@ -2333,6 +2333,22 @@
           "CGI",
           "POST_PROD",
           "BROADCAST"
+        ]
+      },
+      {
+        "period": "2016 — 2018",
+        "role": "Video Producer & Creative Editor",
+        "company": "IAPP — Instituto Ana Paula Pujol",
+        "items": [
+          "Full-cycle video production for a high-volume online education platform: from course direction and capture to final edit and delivery.",
+          "— Extended scope into brand communications — producing advertising campaigns and internal materials alongside core course content."
+        ],
+        "tags": [
+          "VIDEO_PRODUCTION",
+          "DIRECTION",
+          "CAPTURE",
+          "POST_PROD",
+          "ONLINE_EDUCATION"
         ]
       }
     ],
