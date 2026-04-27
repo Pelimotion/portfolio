@@ -8,7 +8,8 @@ Você é o assistente principal deste projeto. Sua função é escrever código 
 
 ## 2. ATUALIZAÇÃO DA MEMÓRIA E DEPLOY
 - Quando resolvermos um problema complexo ou finalizarmos um script, crie um arquivo na pasta `_ai_memory/` resumindo a solução.
-- **DEPLOY OBRIGATÓRIO:** Após cada alteração bem-sucedida, você DEVE rodar o script de deploy (`python3 deploy_system.py`) para garantir que a Vercel esteja sincronizada.
+- **DEPLOY OBRIGATÓRIO (SITE):** Após cada alteração bem-sucedida, você DEVE rodar o script de deploy rápido (`python3 deploy_site.py`). Isso sincroniza o código e as correções na Vercel sem varrer a pasta de mídias.
+- **DEPLOY DE PORTFÓLIO (MÍDIAS):** Apenas rode o deploy completo (`python3 deploy_system.py`) quando eu solicitar explicitamente o deploy dos arquivos do portfólio ou novas mídias.
 - Sempre use este cabeçalho no arquivo de memória:
   ```yaml
   ---

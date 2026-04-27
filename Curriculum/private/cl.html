@@ -446,6 +446,7 @@ function navTo(e, file) {
 
 <script>
 function generatePDF() {
+    console.log('Generating PDF...');
     // 1. Reveal everything and disable transitions
     const styleBlock = document.createElement('style');
     styleBlock.innerHTML = `
@@ -491,10 +492,9 @@ function generatePDF() {
         void body.offsetHeight;
         
         // 3. Measure height using the most reliable method: the bottom of the last visible element
-        const mainEl = document.querySelector('main');
-        const sections = mainEl.querySelectorAll('section, header, footer');
+        const contentSections = mainEl.querySelectorAll('section, header, footer');
         let maxBottom = 0;
-        sections.forEach(el => {
+        contentSections.forEach(el => {
             const r = el.getBoundingClientRect();
             const b = r.bottom + window.pageYOffset;
             if (b > maxBottom) maxBottom = b;
@@ -555,6 +555,7 @@ function generatePDF() {
         }, 1000);
     }, 800); // 800ms settle time
 }
+window.generatePDF = generatePDF;
 
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
