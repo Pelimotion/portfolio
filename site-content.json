@@ -2530,6 +2530,35 @@
         ]
       },
       "cvOverrides": {}
+    },
+    {
+      "id": "pens",
+      "companyName": "Deer Design (Copy)",
+      "targetRole": "Creative Editor - Motion Designer",
+      "accentColor": "#090a57",
+      "createdAt": "2026-04-27",
+      "heroLabel": "CV Application / Pens.com",
+      "coverLetter": {
+        "sections": [
+          {
+            "title": "OPENING",
+            "body": "I design how brands move — and how movement builds brands. Eight years translating strategy into motion: broadcast campaigns, rebranding films, motion media kits, and immersive visual systems for names like BMW, Hyundai, Suzano, O Boticário, and Colcci. My background is in motion design and post-production, but my thinking is always in brand."
+          },
+          {
+            "title": "WHAT I BRING",
+            "body": "Advanced command of After Effects, Premiere, DaVinci Resolve, and Blender — combined with an active AI pipeline using Runway, Kling, Veo3, and Seedance in real production workflows. I work sound-on and sound-off, short-form and long-form, social-first and broadcast-grade. I've led creative output, managed direct reports, and presented work directly to clients and stakeholders across Brazil and internationally."
+          },
+          {
+            "title": "WHY DIFFERENT",
+            "body": "My foundation is music. As a producer, I think in rhythm, pacing, and silence — which means my motion work isn't just visually considered, it's temporally precise. I don't animate elements. I choreograph communication. That instinct, combined with systems thinking and AI fluency, lets me move fast without losing craft."
+          },
+          {
+            "title": "WHY PENS & WHY NOW",
+            "body": "I've spent years building independently. What I'm looking for now is to bring that range inside a team — with a Global Creative Director to push against, marketing and brand partners to collaborate with, and a volume of work that demands the kind of multi-layered thinking I operate at. Pens.com is scaling creative across 22 countries. That's the right context for what I do."
+          }
+        ]
+      },
+      "cvOverrides": {}
     }
   ]
 }
