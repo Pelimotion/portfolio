@@ -196,7 +196,7 @@
                     </div>
                 </div>
             </section>
-  </div></div></footer></main>
+        </main>
 <script src="/Curriculum/script.js"></script>
 <script id="inject-script">
 (async function(){
@@ -490,14 +490,19 @@ function generatePDF() {
         // Force layout recalc
         void body.offsetHeight;
         
-        // 3. Measure height using the most reliable method: the bottom of the last element
-        const lastEl = footer || mainEl || body;
-        const rect = lastEl.getBoundingClientRect();
-        const absoluteBottom = rect.bottom + window.pageYOffset;
+        // 3. Measure height using the most reliable method: the bottom of the last visible element
+        const mainEl = document.querySelector('main');
+        const sections = mainEl.querySelectorAll('section, header, footer');
+        let maxBottom = 0;
+        sections.forEach(el => {
+            const r = el.getBoundingClientRect();
+            const b = r.bottom + window.pageYOffset;
+            if (b > maxBottom) maxBottom = b;
+        });
         
         const w = window.innerWidth;
-        // We add 100px padding to be safe, ensuring everything fits on ONE page
-        const h = Math.ceil(absoluteBottom) + 100;
+        // Add 60px padding to ensure no browser rounding issues trigger a new page
+        const h = Math.ceil(maxBottom) + 60;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {
@@ -513,7 +518,8 @@ function generatePDF() {
                 padding: 0 !important; 
                 height: ${h}px !important; 
                 min-height: ${h}px !important;
-                overflow: visible !important; 
+                max-height: ${h}px !important;
+                overflow: hidden !important; 
                 display: block !important;
                 background-color: #050505 !important;
                 -webkit-print-color-adjust: exact !important;
@@ -522,7 +528,8 @@ function generatePDF() {
                 height: auto !important; 
                 overflow: visible !important;
                 display: block !important;
-                padding-bottom: 50px !important;
+                padding-bottom: 20px !important;
+                margin: 0 !important;
             }
             section { overflow: visible !important; break-inside: avoid !important; position: relative !important; }
             * { break-inside: auto !important; -webkit-print-color-adjust: exact !important; }
