@@ -116,7 +116,6 @@
             mix-blend-mode: difference; transition: width .3s, height .3s;
             display: none;
         }
-        body.plm-cursor-enabled #plm-cursor { display: block; }
         #plm-cursor.hover { width: 40px; height: 40px; background: transparent; border: 1.5px solid var(--fg); }
 
         /* ─── STRIPS ─── */
@@ -124,6 +123,39 @@
         .ca-stripe-right{left:auto;right:0;border-right:none;border-left:1px solid var(--border)}
         @media(max-width:1100px){.ca-stripe{display:none}}
 
+        /* ─── GALLERY ELEMENTS ─── */
+        .btn-brutal {
+            font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: .25em; text-transform: uppercase;
+            padding: 12px 24px; border: 1.5px solid var(--fg); background: transparent; color: var(--fg);
+            cursor: pointer; transition: all .2s; text-decoration: none; display: inline-block;
+        }
+        .btn-brutal:hover { background: var(--fg); color: var(--bg); }
+
+        /* ─── MODAL PLAYER V2 ─── */
+        #modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity .4s;
+        }
+        #modal.active { display: flex; opacity: 1; }
+        .close-modal { position: absolute; top: 30px; right: 30px; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; z-index: 10; opacity: 0.5; transition: opacity .2s; }
+        .close-modal:hover { opacity: 1; }
+        
+        .player-outer { width: 90%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; }
+        .player-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+        .player-container video { width: 100%; height: 100%; object-fit: contain; }
+        
+        .player-nav { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 20px; }
+        .player-nav-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; font-size: 10px; font-weight: 900; cursor: pointer; transition: all .2s; }
+        .player-nav-btn:hover { background: #fff; color: #000; border-color: #fff; }
+        .player-nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        .player-meta { padding: 10px 0; color: #fff; }
+        .player-title { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 5px; }
+        .player-client { font-size: 10px; font-weight: 700; letter-spacing: 0.3em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+
+        .theme-icon { width: 18px; height: 18px; fill: currentColor; display: block; }
+        
         .gallery-release { font-size: 14px; line-height: 1.75; color: var(--fg2); max-width: 640px; margin-top: 14px; }
         .gallery-deliverables { font-size: 9px; font-weight: 900; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); margin-top: 14px; }
         .gallery-deliverables span { color: var(--fg2); }
@@ -144,7 +176,10 @@
         <div class="nav-links">
             <a href="../../index.html#about" class="nav-link" data-pt="ESTÚDIO" data-en="STUDIO">STUDIO</a>
             <a href="../../index.html#portfolio-link" class="nav-link" data-pt="TRABALHOS" data-en="WORK">WORK</a>
-            <a href="#" class="nav-link" onclick="toggleTheme()" id="theme-btn">DARK</a>
+            <button class="nav-link" onclick="toggleTheme()" id="theme-btn" style="background:none;border:none;padding:0">
+                <svg class="theme-icon" viewBox="0 0 24 24" id="moon-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg class="theme-icon" viewBox="0 0 24 24" id="sun-icon" style="display:none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
             <a href="#" class="nav-link" onclick="toggleLang()" id="lang-btn">PT</a>
             <a href="../../index.html#contact" class="nav-link cta" data-pt="CONTATO" data-en="CONTACT">CONTACT</a>
         </div>
@@ -184,22 +219,35 @@
                 <!-- Populated by JS -->
             </div>
             <div style="margin-top:80px; text-align:center">
-                <button class="nav-link cta" onclick="goHome()" data-pt="← VOLTAR" data-en="← BACK">← BACK</button>
+                <button class="btn-brutal" onclick="goHome()" data-pt="← VOLTAR" data-en="← BACK">← BACK</button>
             </div>
         </div>
     </div>
 
     <div id="modal">
-        <button class="close-modal" onclick="closeModal()">CLOSE ✕</button>
+        <button class="close-modal" onclick="closeModal()">✕</button>
         <div class="player-outer">
             <div class="player-container">
                 <video id="modal-video" controls autoplay playsinline></video>
+            </div>
+            <div class="player-nav">
+                <div class="player-meta">
+                    <div id="modal-title" class="player-title">Project Title</div>
+                    <div id="modal-client" class="player-client">Client Name</div>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <button class="player-nav-btn" onclick="prevMedia()">← PREV</button>
+                    <button class="player-nav-btn" onclick="nextMedia()">NEXT →</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         let plmContent = {};
+        let currentPlaylist = [];
+        let currentIndex = -1;
+        let currentClientName = '';
         window._PLM_LANG = localStorage.getItem('plm-lang') || 'en';
 
         // ─── INIT ───
@@ -223,7 +271,7 @@
         function initTheme() {
             const saved = localStorage.getItem('plm-theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
-            document.getElementById('theme-btn').textContent = saved.toUpperCase();
+            updateThemeIcons(saved);
         }
 
         function toggleTheme() {
@@ -231,7 +279,17 @@
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('plm-theme', next);
-            document.getElementById('theme-btn').textContent = next.toUpperCase();
+            updateThemeIcons(next);
+        }
+
+        function updateThemeIcons(theme) {
+            const moon = document.getElementById('moon-icon');
+            const sun = document.getElementById('sun-icon');
+            if (theme === 'dark') {
+                moon.style.display = 'block'; sun.style.display = 'none';
+            } else {
+                moon.style.display = 'none'; sun.style.display = 'block';
+            }
         }
 
         function initCursor() {
@@ -241,7 +299,7 @@
             window.addEventListener('mousemove', e => {
                 c.style.left = e.clientX + 'px';
                 c.style.top = e.clientY + 'px';
-                if(e.target.closest('a, button, .client-card, .nav-link')) c.classList.add('hover');
+                if(e.target.closest('a, button, .client-card, .nav-link, .player-nav-btn')) c.classList.add('hover');
                 else c.classList.remove('hover');
             });
         }
@@ -287,7 +345,6 @@
                 if(client.status !== 'public') return;
                 const cover = client.coverImage || '';
                 const count = client.media ? (client.media.total || 0) : 0;
-                const tagline = (window._PLM_LANG === 'pt' ? client.tagline_pt : client.tagline) || client.tagline || '';
                 
                 html += `
                     <div class="client-card entrance-mask" onclick="openGallery('${name}')">
@@ -312,24 +369,28 @@
             const client = plmContent.clients[name];
             if(!client) return;
             
+            currentClientName = name;
+            currentPlaylist = [];
+            
             document.getElementById('gallery-title').textContent = name;
             document.getElementById('gallery-desc').textContent = (window._PLM_LANG === 'pt' ? client.description_pt : client.description) || client.description || '';
             
             const grid = document.getElementById('gallery-grid');
             let html = '';
             
-            // Handle root media
+            // Collect all media for the playlist
             const rootMedia = client.media?.root || [];
-            rootMedia.forEach(m => {
-                html += renderMediaCard(m, name);
+            rootMedia.forEach((m, idx) => {
+                currentPlaylist.push({...m, index: currentPlaylist.length});
+                html += renderMediaCard(m, currentPlaylist.length - 1);
             });
             
-            // Handle categories
             const cats = client.media?.categories || {};
             Object.entries(cats).forEach(([catName, items]) => {
                 html += `<div class="grid-span-all" style="grid-column:1/-1; margin-top:40px; border-bottom:1.5px solid var(--border); padding-bottom:10px; font-size:12px; font-weight:900; color:var(--fg3)">${catName}</div>`;
                 items.forEach(m => {
-                    html += renderMediaCard(m, name);
+                    currentPlaylist.push({...m, index: currentPlaylist.length});
+                    html += renderMediaCard(m, currentPlaylist.length - 1);
                 });
             });
             
@@ -343,11 +404,11 @@
             history.pushState({view: 'gallery', client: name}, '', '#' + name);
         }
 
-        function renderMediaCard(m, clientName) {
+        function renderMediaCard(m, playlistIndex) {
             const title = (window._PLM_LANG === 'pt' ? m.title_pt : m.title) || m.title || '';
             const poster = m.poster_url || m.mosaic?.[1] || '';
             return `
-                <div class="client-card entrance-mask" onclick="openModal('${m.video_url}', '${title}', '${clientName}')">
+                <div class="client-card entrance-mask" onclick="openModal(${playlistIndex})">
                     <div class="client-card-img-wrap">
                         <img src="${poster}" class="client-card-img" alt="${title}">
                         <video class="client-card-video" muted loop playsinline preload="none" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0">
@@ -367,10 +428,19 @@
             history.pushState({view: 'home'}, '', window.location.pathname);
         }
 
-        function openModal(url, title, client) {
+        function openModal(index) {
+            currentIndex = index;
+            const item = currentPlaylist[index];
+            if(!item) return;
+
             const v = document.getElementById('modal-video');
-            v.src = url;
+            v.src = item.video_url;
+            
+            document.getElementById('modal-title').textContent = (window._PLM_LANG === 'pt' ? item.title_pt : item.title) || item.title || '';
+            document.getElementById('modal-client').textContent = currentClientName;
+            
             document.getElementById('modal').classList.add('active');
+            updateNavBtns();
         }
 
         function closeModal() {
@@ -379,12 +449,16 @@
             document.getElementById('modal-video').pause();
         }
 
-        // ─── UI CONTROLS ───
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            document.getElementById('theme-btn').textContent = next.toUpperCase();
+        function nextMedia() {
+            if(currentIndex < currentPlaylist.length - 1) openModal(currentIndex + 1);
+        }
+        function prevMedia() {
+            if(currentIndex > 0) openModal(currentIndex - 1);
+        }
+        function updateNavBtns() {
+            const btns = document.querySelectorAll('.player-nav-btn');
+            btns[0].disabled = currentIndex <= 0;
+            btns[1].disabled = currentIndex >= currentPlaylist.length - 1;
         }
 
         function toggleLang() {
@@ -392,6 +466,7 @@
             localStorage.setItem('plm-lang', window._PLM_LANG);
             updateUI();
             renderHome();
+            if(document.getElementById('view-gallery').classList.contains('active')) openGallery(currentClientName);
         }
 
         function updateUI() {
@@ -402,26 +477,10 @@
             document.getElementById('lang-btn').textContent = lang === 'en' ? 'PT' : 'EN';
         }
 
-        // ─── CURSOR ───
-        function initCursor() {
-            const c = document.getElementById('plm-cursor');
-            if(!c || 'ontouchstart' in window) {
-                document.body.classList.remove('plm-cursor-active');
-                return;
-            }
-            window.addEventListener('mousemove', e => {
-                c.style.left = e.clientX + 'px';
-                c.style.top = e.clientY + 'px';
-                if(e.target.closest('a, button, .client-card')) c.classList.add('hover');
-                else c.classList.remove('hover');
-            });
-        }
-
-        // ─── SCROLL ───
         function initScroll() {
             window.addEventListener('scroll', () => {
                 const nav = document.getElementById('site-nav');
-                if(window.scrollY > 50) nav.style.background = 'var(--overlay)';
+                if(window.scrollY > 50) nav.style.background = 'rgba(10,10,10,0.8)';
                 else nav.style.background = 'var(--bg)';
             });
         }
