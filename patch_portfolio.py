@@ -151,16 +151,7 @@ if "(function(){" not in html or "plm-cursor" not in html.split("<script>")[-1]:
     html = html.replace("    window.addEventListener('DOMContentLoaded'", cursor_js + "\n    window.addEventListener('DOMContentLoaded'")
     changes.append("Injected cursor JS")
 
-# ── 6. Inject plmContent if missing ────────────────────────────────────────
-if "const plmContent =" not in html:
-    html = html.replace(
-        "    /* ─── DATA ─── */",
-        f"    /* ─── EDITORIAL CONTENT ─── */\n    const plmContent = {content_js};\n\n    /* ─── DATA ─── */"
-    )
-    changes.append("Injected plmContent")
-else:
-    html = re.sub(r'const plmContent = \{.*?\};', f'const plmContent = {content_js};', html, count=1, flags=re.DOTALL)
-    changes.append("Updated plmContent")
+# Data injection removed - now handled by fetch('content.json') in index.html
 
 # ── 7. URL hash navigation ────────────────────────────────────────────────
 if "encodeURIComponent(name)" not in html:

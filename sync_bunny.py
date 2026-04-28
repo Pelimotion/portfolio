@@ -3,6 +3,7 @@ import re
 import urllib.request
 import json
 import ssl
+import time
 from urllib.parse import quote
 
 # Bunny Storage API details
@@ -90,7 +91,10 @@ def scan_bunny():
             continue
             
         client_name = client_folder["ObjectName"].upper()
-        clients[client_name] = {"root": [], "categories": {}, "total": 0}
+        clients[client_name] = {
+            "media": {"root": [], "categories": {}, "total": 0},
+            "coverImage": ""
+        }
         
         # Scan client root
         client_path = f"/Medias Portfolio/{client_folder['ObjectName']}/"
@@ -111,7 +115,7 @@ def scan_bunny():
                 if any(i['ObjectName'] == preview_filename for i in folder_items):
                     preview_url = f"{base_cdn_path}/{quote(preview_filename)}"
                 
-                parent_list.append({
+                item_data = {
                     "title": clean_title(name),
                     "video_url": vid_url,
                     "preview_url": preview_url,
@@ -123,99 +127,84 @@ def scan_bunny():
                         vid_url.rsplit('.', 1)[0] + "_50.jpg",
                         vid_url.rsplit('.', 1)[0] + "_85.jpg"
                     ]
-                })
+                }
+                parent_list.append(item_data)
+                
+                # Auto-assign cover image if none
+                if not clients[client_name]["coverImage"]:
+                    clients[client_name]["coverImage"] = item_data["mosaic"][1] # use the 50% frame
+                
                 return True
             return False
 
         for item in client_items:
             if item.get("IsDirectory"):
                 cat_name = item["ObjectName"]
-                if cat_name not in clients[client_name]["categories"]:
-                    clients[client_name]["categories"][cat_name] = []
+                if cat_name not in clients[client_name]["media"]["categories"]:
+                    clients[client_name]["media"]["categories"][cat_name] = []
                 
                 cat_path = f"{client_path}{cat_name}/"
                 cat_cdn = f"{CDN_BASE}/{quote(client_folder['ObjectName'])}/{quote(cat_name)}"
                 cat_items = api_get(cat_path)
                 for cat_item in cat_items:
                     if not cat_item.get("IsDirectory"):
-                        if process_item(cat_item, clients[client_name]["categories"][cat_name], cat_cdn, cat_items):
-                            clients[client_name]["total"] += 1
+                        if process_item(cat_item, clients[client_name]["media"]["categories"][cat_name], cat_cdn, cat_items):
+                            clients[client_name]["media"]["total"] += 1
             else:
                 root_cdn = f"{CDN_BASE}/{quote(client_folder['ObjectName'])}"
-                if process_item(item, clients[client_name]["root"], root_cdn, client_items):
-                    clients[client_name]["total"] += 1
+                if process_item(item, clients[client_name]["media"]["root"], root_cdn, client_items):
+                    clients[client_name]["media"]["total"] += 1
                     
     return clients
 
 if __name__ == "__main__":
     clients_data = scan_bunny()
-    with open(HTML_FILE, 'r', encoding='utf-8') as f:
-        html = f.read()
-        
-    # Replace clientsData safely using match method
-    json_data = json.dumps(clients_data, separators=(',', ':'))
     
-    client_desc = {
-        "BC MAPPING FESTIVAL": "Visual identity and motion system for BC Mapping Festival — a large-scale projection mapping event celebrating art, light, and urban architecture.",
-        "EQI": "Behind the scenes content production for EQI Investimentos' exclusive activation at Cirque du Soleil.",
-        "FAST SHIPPING": "Living rebranding concept — a dynamic visual identity system that breathes, evolves, and adapts across digital touchpoints.",
-        "FUNKY ROOM": "Full creative direction and motion branding for Funky Room, a recurring underground party series. Six editions of visual identity, campaign material, and brand animation.",
-        "FURB": "Broadcast and institutional campaign work for FURB university — motion design for TV, digital, and event formats including accessible LIBRAS versions.",
-        "HEO": "Complete rebranding motion package for HEO — logo animation, visual system, and brand guidelines in motion.",
-        "ISLA": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
-        "LSLA": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
-        "NEXTRON": "Logo animation and brand signature update for Nextron — clean, technical motion design for a tech brand.",
-        "PIANISSIMO": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
-        "PLAYA": "Comprehensive motion branding for Playa Beach Club — manifesto films, weekly campaigns, event promos, and seasonal visual identity across 40+ deliverables.",
-        "RIO CARNAVAL": "App visualizer and release film for Rio Carnaval — capturing the kinetic energy of Brazil's biggest cultural event through motion design.",
-        "SUZANO": "Institutional and event motion design for Suzano — including innovation center presentations, award ceremonies, and internal culture films.",
-        "VARIADOS": "Selected personal and experimental motion work — reels, explorations, and cross-discipline projects.",
-    }
+    # ─── SYNC site-content.json (Admin & Site Source) ───
+    if os.path.exists('site-content.json'):
+        try:
+            with open('site-content.json', 'r', encoding='utf-8') as f:
+                site_data = json.load(f)
+            
+            existing_clients = site_data.get('clients', {})
+            new_clients = {}
+            
+            for name, data in clients_data.items():
+                if name in existing_clients:
+                    # Preserve all manual metadata from existing client
+                    existing = existing_clients[name]
+                    # Update only the media part (from Bunny)
+                    existing['media'] = data['media']
+                    # Ensure coverImage is preserved if manual, or updated if new
+                    if not existing.get('coverImage'): existing['coverImage'] = data.get('coverImage')
+                    new_clients[name] = existing
+                else:
+                    # New client found on Bunny
+                    data['status'] = 'public' # default status
+                    new_clients[name] = data
+            
+            site_data['clients'] = new_clients
+            site_data['lastSync'] = time.strftime('%Y-%m-%d %H:%M:%S')
+            
+            with open('site-content.json', 'w', encoding='utf-8') as f:
+                json.dump(site_data, f, indent=2, ensure_ascii=False)
+            print(f"✅ Updated site-content.json with {len(new_clients)} clients.")
+            
+            # ─── SYNC content.json (Legacy Portfolio Source) ───
+            # content.json should be a subset of site-content.json (just clients and categories)
+            legacy_data = {
+                "clients": site_data['clients'],
+                "categories": site_data.get('categories', {})
+            }
+            with open('content.json', 'w', encoding='utf-8') as f:
+                json.dump(legacy_data, f, indent=4, ensure_ascii=False)
+            print(f"✅ Updated content.json (Legacy).")
 
-    category_desc = {
-        "Media Kit": "Brand assets in motion — color palettes, patterns, and transitions for digital and print application.",
-        "Motion Campaign": "Campaign-ready deliverables — social media, OOH, digital ad, and event-specific motion pieces.",
-        "FUNKY 6 - FUNKED UP": "Edition 06 — Funked Up. A rawer, grittier take on the Funky Room identity with conceptual slogans and BTS content.",
-        "FUNKY ROOM 1": "Edition 01 — The original. First Room, After Party, and the birth of the visual language.",
-        "FUNKY ROOM 2": "Edition 02 — Drop culture meets nightlife. Ticket reveals, headline animations, and urgency-driven promos.",
-        "FUNKY ROOM 3": "Edition 03 — Full social media campaign. Multi-format content for feed, stories, and OOH.",
-        "FUNKY ROOM 4": "Edition 04 — Blue Edition. Turntable visuals, headline reveals, and artist-specific content.",
-        "FUNKY ROOM 5": "Edition 05 — Evolved social media system with refined grid and content hierarchy.",
-        "Broadcast Campaign - FURB": "TV-ready spots and institutional films — multi-format broadcast campaign with LIBRAS accessibility.",
-        "OOH Campaign - ETEVI": "Event-specific campaign for ETEVI — multi-resolution adaptations for screens, social, and outdoor.",
-        "MANIFESTO": "Brand manifesto and concept films — high-production narrative pieces that define the brand's soul.",
-        "IA Genenerated": "AI-assisted visual explorations — experimental food and lifestyle content generated with creative AI tools.",
-    }
-
-    client_desc_json  = json.dumps(client_desc,    separators=(',', ':'))
-    cat_desc_json     = json.dumps(category_desc,  separators=(',', ':'))
-    replacement_block = (
-        f'const clientDescriptions = {client_desc_json};\n'
-        f'    const categoryDescriptions = {cat_desc_json};\n'
-        f'    const clientsData = {json_data};'
-    )
-
-    # Pattern 1: pre-hub format (clientDescriptions, categoryDescriptions, clientsData)
-    pat1 = re.compile(
-        r'const clientDescriptions = \{.*?\};\s*'
-        r'const categoryDescriptions = \{.*?\};\s*'
-        r'const clientsData = \{.*?\};',
-        re.DOTALL
-    )
-    new_html = pat1.sub(lambda m: replacement_block, html, count=1)
-
-    # Pattern 2: old format (clientsData only or clientsData + clientDescriptions)
-    if new_html == html:
-        pat2 = re.compile(
-            r'const clientsData = \{.*?\};\s*(?:const clientDescriptions = \{.*?\};)?',
-            re.DOTALL
-        )
-        simple_block = f'const clientsData = {json_data};\nconst clientDescriptions = {client_desc_json};'
-        new_html = pat2.sub(lambda m: simple_block, html, count=1)
-
-    if new_html != html:
-        with open(HTML_FILE, 'w', encoding='utf-8') as f:
-            f.write(new_html)
-        print(f"Updated {HTML_FILE} with {len(clients_data)} clients.")
+        except Exception as e:
+            print(f"❌ Error syncing site-content.json: {e}")
     else:
-        print(f"No data changes for {HTML_FILE}. Skipping write.")
+        # Fallback if site-content.json missing
+        final_data = {"clients": clients_data}
+        with open('content.json', 'w', encoding='utf-8') as f:
+            json.dump(final_data, f, indent=4, ensure_ascii=False)
+        print(f"Updated content.json only (site-content.json not found).")

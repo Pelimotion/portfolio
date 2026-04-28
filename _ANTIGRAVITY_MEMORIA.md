@@ -8,9 +8,10 @@ Você é o assistente principal deste projeto. Sua função é escrever código 
 
 ## 2. ARQUITETURA E DEPLOY
 - **Landing Page:** O `index.html` na raiz é a página de entrada com o vídeo hero e animação de primeiro frame.
-- **Portfólio Completo:** O arquivo `V1/portfolio/index.html` é o portfólio SPA otimizado (design brutalista preto).
+- **Portfólio Completo:** O arquivo `V1/portfolio/index.html` é o portfólio SPA otimizado (design brutalista preto). Ele consome dados dinamicamente de `content.json`.
+- **Fonte da Verdade:** O arquivo `content.json` contém todos os metadados dos projetos.
 - **Deploy Rápido:** Use `python3 deploy_site.py` para subir alterações de código.
-- **Sincronização:** Sempre que houver novos clientes no Bunny, rode `python3 sync_bunny.py` (ele atualiza o arquivo em `V1/portfolio/`).
+- **Sincronização:** Sempre que houver novos clientes no Bunny, rode `python3 sync_bunny.py`. Ele atualiza o `content.json` preservando as descrições manuais.
 
 ## 3. SEGURANÇA E BACKUP
 - **Backup Obrigatório:** NUNCA modifique um arquivo sem antes criar uma cópia de segurança na pasta `backups/` do projeto.

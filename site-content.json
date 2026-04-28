@@ -274,6 +274,200 @@
       "category_descriptions": {},
       "category_descriptions_pt": {}
     },
+    "BMW": {
+      "media": {
+        "root": [
+          {
+            "title": "BMW MY APP",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/BMW/BMW_MY%20APP_50.jpg",
+      "status": "public"
+    },
+    "BEIRAMAR SHOPPING": {
+      "status": "public",
+      "slug": "beiramar-shopping",
+      "lastModified": "2026-04-24",
+      "title": "BEIRAMAR SHOPPING",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
+      "seo": {
+        "title": "BEIRAMAR SHOPPING — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "BEIRAMAR SHOPPING DIA DOS PAIS VT V4 1080",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
+    },
+    "BELEZA NA WEB": {
+      "media": {
+        "root": [
+          {
+            "title": "01 VINHETA DE ABERTURA GERAL",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_85.jpg"
+            ]
+          },
+          {
+            "title": "BELEZA EXPERIENCE REEL 1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_1_85.jpg"
+            ]
+          },
+          {
+            "title": "BELEZA EXPERIENCE REEL 2 1920X1080",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080.jpg",
+            "format": "wide",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080_85.jpg"
+            ]
+          },
+          {
+            "title": "BELEZA EXPERIENCE REEL 62",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62_85.jpg"
+            ]
+          },
+          {
+            "title": "BELEZA EXPERIENCE REEL 7",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_7.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_7_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_7.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_7_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_7_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_7_85.jpg"
+            ]
+          },
+          {
+            "title": "BELEZA EXPERIENCE STORY SAVE THE DATE",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/Beleza%20Experience%20-%20Story%20-%20Save%20the%20Date.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/Beleza%20Experience%20-%20Story%20-%20Save%20the%20Date_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/Beleza%20Experience%20-%20Story%20-%20Save%20the%20Date.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/Beleza%20Experience%20-%20Story%20-%20Save%20the%20Date_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/Beleza%20Experience%20-%20Story%20-%20Save%20the%20Date_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/Beleza%20Experience%20-%20Story%20-%20Save%20the%20Date_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 6
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_50.jpg",
+      "status": "public"
+    },
+    "COBLUE": {
+      "media": {
+        "root": [
+          {
+            "title": "COBLUE INSTITUCIONAL",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Coblue/Coblue%20%20-%20Institucional%20-%20V2_50.jpg",
+      "status": "public"
+    },
+    "COLCCI": {
+      "media": {
+        "root": [
+          {
+            "title": "AMC TEXTIL V02",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Colcci/AMC_TEXTIL_V02_50.jpg",
+      "status": "public"
+    },
     "EQI": {
       "status": "public",
       "slug": "eqi",
@@ -307,8 +501,7 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/EQI/EQI_Making%20Of_Cirque_du_Soleil_85.jpg"
-            ],
-            "title_pt": "EQI MAKING OF CIRQUE DU SOLEIL"
+            ]
           }
         ],
         "categories": {},
@@ -355,8 +548,7 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Fast%20Shipping/FAST_SHIPPING_living_REBRANDING_85.jpg"
-            ],
-            "title_pt": "FAST SHIPPING - REBRANDING VIVO"
+            ]
           }
         ],
         "categories": {},
@@ -368,6 +560,43 @@
       "release_pt": "",
       "category_descriptions": {},
       "category_descriptions_pt": {}
+    },
+    "FIREDOGS": {
+      "status": "public",
+      "slug": "firedogs",
+      "lastModified": "2026-04-24",
+      "title": "FIREDOGS",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
+      "seo": {
+        "title": "FIREDOGS — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "FIREDOGS ROCK AT THE BAR 1080",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      }
     },
     "FUNKY ROOM": {
       "status": "public",
@@ -406,8 +635,7 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW_85.jpg"
-            ],
-            "title_pt": "FUNKY ROOM - MANIFESTO VISUAL"
+            ]
           },
           {
             "title": "MEDIA KIT EDIÇÃO ESPECIAL FNKD UP",
@@ -612,19 +840,6 @@
           ],
           "FUNKY ROOM 2": [
             {
-              "title": "DROP 01 2",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_85.jpg"
-              ]
-            },
-            {
               "title": "DROP 01",
               "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001.mp4",
               "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_preview.mp4",
@@ -635,6 +850,19 @@
                 "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_15.jpg",
                 "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_50.jpg",
                 "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_85.jpg"
+              ]
+            },
+            {
+              "title": "DROP 01 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%202/DROP%2001_2_85.jpg"
               ]
             },
             {
@@ -813,19 +1041,6 @@
               ]
             },
             {
-              "title": "SOCIAL MEDIA 02 2",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_85.jpg"
-              ]
-            },
-            {
               "title": "SOCIAL MEDIA 02",
               "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002.mp4",
               "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_preview.mp4",
@@ -836,6 +1051,19 @@
                 "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_15.jpg",
                 "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_50.jpg",
                 "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_85.jpg"
+              ]
+            },
+            {
+              "title": "SOCIAL MEDIA 02 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%205/SOCIAL%20MEDIA%2002_2_85.jpg"
               ]
             },
             {
@@ -1011,302 +1239,116 @@
         "total": 1
       }
     },
-    "LSLA": {
-      "status": "public",
-      "slug": "lsla",
-      "lastModified": "2026-04-24",
-      "title": "LSLA",
-      "tagline": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
-      "description": "From campaign posts to AI-generated food content and cinematic manifesto films, this project spans the full creative spectrum of Isla's coastal brand universe.",
-      "services": [
-        "Brand Manifesto",
-        "Social Media Campaign",
-        "AI Generated Content",
-        "Event Promotion",
-        "Weekly Campaign"
-      ],
-      "tools": [],
-      "year": "",
-      "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
-      "seo": {
-        "title": "LSLA — Pelimotion",
-        "description": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg"
-      },
+    "LOGO REVEALS": {
       "media": {
         "root": [
           {
-            "title": "CHAMADA 07 03 26 L CIO",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.jpg",
+            "title": "03 LOGO REVEAL 16X9",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9.mov",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9.jpg",
+            "format": "wide",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9_85.jpg"
+            ]
+          },
+          {
+            "title": "DELIMA REBELO",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Delima%20Rebelo%20.mov",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Delima%20Rebelo%20_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Delima%20Rebelo%20.jpg",
             "format": "default",
             "aspect": "16/9",
             "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_85.jpg"
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Delima%20Rebelo%20_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Delima%20Rebelo%20_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Delima%20Rebelo%20_85.jpg"
+            ]
+          },
+          {
+            "title": "FUEL",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Fuel.mov",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Fuel_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Fuel.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Fuel_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Fuel_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/Fuel_85.jpg"
+            ]
+          },
+          {
+            "title": "ZAH LOGO REVEAL 9X16",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16.mov",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16.jpg",
+            "format": "vertical",
+            "aspect": "9/16",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16_85.jpg"
             ]
           }
         ],
-        "categories": {
-          "IA Genenerated": [
-            {
-              "title": "PRATOS E DRINKS 1",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_85.jpg"
-              ]
-            },
-            {
-              "title": "PRATOS E DRINKS 2",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_85.jpg"
-              ]
-            },
-            {
-              "title": "PRATOS E DRINKS 5",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_85.jpg"
-              ]
-            },
-            {
-              "title": "PRATOS E DRINKS",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_85.jpg"
-              ]
-            }
-          ],
-          "MANIFESTO": [
-            {
-              "title": "ISLA AFTERMOVIE",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA BRAVA LUA CONCEPT",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA NAO VIRE",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_85.jpg"
-              ]
-            },
-            {
-              "title": "POST MARE",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_85.jpg"
-              ]
-            }
-          ],
-          "Motion Campaign": [
-            {
-              "title": "CHAMADA 24 01 26 CHELINA MANUHUTU",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_85.jpg"
-              ]
-            },
-            {
-              "title": "CHAMADA 25 10 25 MARCEL COELHO 1",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA 01 VIRADA LOTE 2",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA LINE BALIMOON 12 11 1080 1920",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA NEGRONI WEEK",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA RESTAURANTE VIRADA DE LOTE SLIDE01",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_85.jpg"
-              ]
-            },
-            {
-              "title": "ISLA RESTAURENTE SALMAO VIDEO",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_85.jpg"
-              ]
-            },
-            {
-              "title": "LINE BLUE 2",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_85.jpg"
-              ]
-            },
-            {
-              "title": "LINE UP 08 11 1080 1920 1",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_85.jpg"
-              ]
-            },
-            {
-              "title": "LINE UP 23 10 1080 1920 1",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_85.jpg"
-              ]
-            },
-            {
-              "title": "PROGRAMACAO SEMANAL RESTAURANTE",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_85.jpg"
-              ]
-            }
-          ]
-        },
-        "total": 20
-      }
+        "categories": {},
+        "total": 4
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Logo%20Reveals/03%20LOGO_REVEAL%2016x9_50.jpg",
+      "status": "public"
+    },
+    "LUPA": {
+      "media": {
+        "root": [
+          {
+            "title": "STAGE EP02 1MIN 1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1_85.jpg"
+            ]
+          },
+          {
+            "title": "STAGE EP03 1MIN 5 1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP03_1min_5_1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP03_1min_5_1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP03_1min_5_1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP03_1min_5_1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP03_1min_5_1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP03_1min_5_1_85.jpg"
+            ]
+          },
+          {
+            "title": "STAGE EP07 2 1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP07_2_1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP07_2_1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP07_2_1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP07_2_1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP07_2_1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP07_2_1_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 3
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1_50.jpg",
+      "status": "public"
     },
     "NEXTRON": {
       "status": "public",
@@ -1331,7 +1373,7 @@
       "media": {
         "root": [
           {
-            "title": "NEXTRON - EXPLAINER LAUNCH VIDEO",
+            "title": "NEXTRON ALTERACAO ASSINATURA",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA.jpg",
@@ -1341,8 +1383,7 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Nextron/NEXTRON_ALTERACAO_ASSINATURA_85.jpg"
-            ],
-            "title_pt": "NEXTRON - VIDEO DE LANÇAMENTO EXPLAINER"
+            ]
           }
         ],
         "categories": {},
@@ -1355,72 +1396,65 @@
       "category_descriptions": {},
       "category_descriptions_pt": {}
     },
-    "PIANISSIMO": {
-      "status": "public",
-      "slug": "pianissimo",
+    "NEY SOUZA": {
+      "status": "private",
+      "slug": "ney-souza",
       "lastModified": "2026-04-24",
-      "title": "PIANISSIMO",
-      "tagline": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
-      "description": "Generative stage visuals designed to breathe with the music. Built for live performance, Pianissimo's visualizers shift between ambient and reactive modes in real time.",
-      "services": [
-        "Stage Visuals",
-        "Live Visualizer",
-        "Generative Motion"
-      ],
+      "title": "NEY SOUZA",
+      "tagline": "",
+      "description": "",
+      "services": [],
       "tools": [],
       "year": "",
       "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
       "seo": {
-        "title": "PIANISSIMO — Pelimotion",
-        "description": "Stage visuals and real-time visualizers for Pianissimo — ambient, generative motion for live performance environments.",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg"
+        "title": "NEY SOUZA — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg"
       },
       "media": {
         "root": [
           {
-            "title": "STAGE PIANISSIMO VISUALIZER 3",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203.jpg",
+            "title": "NEY SOUZA CARAVANA DO AMANHA",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA.jpg",
             "format": "default",
             "aspect": "16/9",
             "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%203_85.jpg"
-            ]
-          },
-          {
-            "title": "STAGE PIANISSIMO VISUALIZER 4",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204.jpg",
-            "format": "default",
-            "aspect": "16/9",
-            "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER%204_85.jpg"
-            ]
-          },
-          {
-            "title": "STAGE PIANISSIMO VISUALIZER 1",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1.jpg",
-            "format": "default",
-            "aspect": "16/9",
-            "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Pianissimo/stage%20PIANISSIMO%20VISUALIZER_1_85.jpg"
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_85.jpg"
             ]
           }
         ],
         "categories": {},
-        "total": 3
+        "total": 1
       }
+    },
+    "PLACARSOFT": {
+      "media": {
+        "root": [
+          {
+            "title": "PLACARSOFT LANCAMENTO ALTA",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta_50.jpg",
+      "status": "public"
     },
     "PLAYA": {
       "status": "public",
@@ -1635,6 +1669,19 @@
               ]
             },
             {
+              "title": "PLAYACHAMADA 19 04 26 KVSH 01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_85.jpg"
+              ]
+            },
+            {
               "title": "PLAYA CHAMADA 20 04 26 MEGA BAILE DO PETROSKI FUNKY",
               "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY.mp4",
               "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYA_CHAMADA_20_04_26_MEGA%20BAILE%20DO%20PETROSKI_FUNKY_preview.mp4",
@@ -1700,19 +1747,6 @@
               ]
             },
             {
-              "title": "PLAYACHAMADA 19 04 26 KVSH 01",
-              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.mp4",
-              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_preview.mp4",
-              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01.jpg",
-              "format": "default",
-              "aspect": "16/9",
-              "mosaic": [
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_15.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_50.jpg",
-                "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/PLAYACHAMADA_19_04_26_KVSH_01_85.jpg"
-              ]
-            },
-            {
               "title": "SEG 22.12 MOTION",
               "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION.mp4",
               "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Playa/Motion%20Campaign/SEG_22.12_MOTION_preview.mp4",
@@ -1728,6 +1762,79 @@
           ]
         },
         "total": 21
+      }
+    },
+    "PREFEITURA TIMBÓ": {
+      "media": {
+        "root": [
+          {
+            "title": "TIMBO IPTU V9",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9_85.jpg"
+            ]
+          },
+          {
+            "title": "TIMBO IPTU VERTICAL V3",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_VERTICAL_V3.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_VERTICAL_V3_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_VERTICAL_V3.jpg",
+            "format": "vertical",
+            "aspect": "9/16",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_VERTICAL_V3_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_VERTICAL_V3_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_VERTICAL_V3_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 2
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Prefeitura%20Timbo%CC%81/TIMBO_IPTU_V9_50.jpg",
+      "status": "public"
+    },
+    "R9 LUXEMBOURG": {
+      "status": "public",
+      "slug": "r9-luxembourg",
+      "lastModified": "2026-04-24",
+      "title": "R9 LUXEMBOURG",
+      "tagline": "",
+      "description": "",
+      "services": [],
+      "tools": [],
+      "year": "",
+      "projectUrl": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
+      "seo": {
+        "title": "R9 LUXEMBOURG — Pelimotion",
+        "description": "",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg"
+      },
+      "media": {
+        "root": [
+          {
+            "title": "R9 LUXEMBURGO V1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
       }
     },
     "RIO CARNAVAL": {
@@ -1783,6 +1890,29 @@
         "total": 2
       }
     },
+    "SULITA": {
+      "media": {
+        "root": [
+          {
+            "title": "SULITA COMPANHA RENATA FAN V04",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04_50.jpg",
+      "status": "public"
+    },
     "SUZANO": {
       "status": "public",
       "slug": "suzano",
@@ -1818,8 +1948,7 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO%20CENTRO%20INOVACAO_V5_85.jpg"
-            ],
-            "title_pt": "SUZANO - INOVAÇÃO SUSTENTÁVEL"
+            ]
           },
           {
             "title": "SUZANO LETRAS QUE TRANSFORMAM ALTA2",
@@ -1880,6 +2009,104 @@
       "tagline_pt": "Motion branding e narrativa visual para a Suzano, gigante global de celulose.",
       "description_pt": "Série de filmes institucionais e ativos de marca em movimento que comunicam inovação e sustentabilidade."
     },
+    "UNIVALI": {
+      "media": {
+        "root": [
+          {
+            "title": "JUES ABERTURA WEB 1",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 1
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/UNIVALI/JUES_ABERTURA_WEB_1_50.jpg",
+      "status": "public"
+    },
+    "VIDEOANIMATE": {
+      "media": {
+        "root": [
+          {
+            "title": "AGRICOLA LUSIA CTA02",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02_85.jpg"
+            ]
+          },
+          {
+            "title": "ASTE BUSINESS IMMOBILIARI CTA02",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02.mov",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02_85.jpg"
+            ]
+          },
+          {
+            "title": "ASTE BUSSINESS CTA02",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSSINESS_CTA02.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSSINESS_CTA02_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSSINESS_CTA02.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSSINESS_CTA02_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSSINESS_CTA02_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/ASTE_BUSSINESS_CTA02_85.jpg"
+            ]
+          },
+          {
+            "title": "E KILLER CTA01 3",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/E_KILLER_CTA01_3.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/E_KILLER_CTA01_3_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/E_KILLER_CTA01_3.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/E_KILLER_CTA01_3_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/E_KILLER_CTA01_3_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/E_KILLER_CTA01_3_85.jpg"
+            ]
+          },
+          {
+            "title": "MADOUT CTA01 ALTA",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/MADOUT_CTA01_ALTA.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/MADOUT_CTA01_ALTA_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/MADOUT_CTA01_ALTA.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/MADOUT_CTA01_ALTA_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/MADOUT_CTA01_ALTA_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/MADOUT_CTA01_ALTA_85.jpg"
+            ]
+          }
+        ],
+        "categories": {},
+        "total": 5
+      },
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/VideoAnimate/AGRICOLA_LUSIA_CTA02_50.jpg",
+      "status": "public"
+    },
     "WOLFGARTEN": {
       "status": "public",
       "slug": "wolfgarten",
@@ -1933,215 +2160,301 @@
         "total": 2
       }
     },
-    "PREFEITURA TIMBÃÂ": {
+    "LSLA": {
       "status": "public",
-      "slug": "prefeitura-timbo",
+      "slug": "lsla",
       "lastModified": "2026-04-24",
-      "title": "PREFEITURA TIMBÓ",
-      "tagline": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
-      "description": "Public sector motion design for Prefeitura de Timbó, balancing institutional clarity with modern visual language to reach the full breadth of the community.",
+      "title": "LSLA",
+      "tagline": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+      "description": "From campaign posts to AI-generated food content and cinematic manifesto films, this project spans the full creative spectrum of Isla's coastal brand universe.",
       "services": [
-        "Institutional Campaign",
-        "Social Media Motion"
+        "Brand Manifesto",
+        "Social Media Campaign",
+        "AI Generated Content",
+        "Event Promotion",
+        "Weekly Campaign"
       ],
       "tools": [],
       "year": "",
       "projectUrl": "",
-      "coverImage": "",
+      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
       "seo": {
-        "title": "PREFEITURA TIMBÓ — Pelimotion",
-        "description": "Institutional motion campaign for Prefeitura de Timbó — government communication designed with clarity and civic purpose.",
-        "ogImage": ""
-      },
-      "media": {
-        "root": [],
-        "categories": {},
-        "total": 0
-      }
-    },
-    "BEIRAMAR SHOPPING": {
-      "status": "public",
-      "slug": "beiramar-shopping",
-      "lastModified": "2026-04-24",
-      "title": "BEIRAMAR SHOPPING",
-      "tagline": "",
-      "description": "",
-      "services": [],
-      "tools": [],
-      "year": "",
-      "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
-      "seo": {
-        "title": "BEIRAMAR SHOPPING — Pelimotion",
-        "description": "",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg"
+        "title": "LSLA — Pelimotion",
+        "description": "Motion branding, manifesto films, and campaign material for Isla — a beachside venue blending gastronomy, nightlife, and coastal aesthetics.",
+        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg"
       },
       "media": {
         "root": [
           {
-            "title": "BEIRAMAR SHOPPING DIA DOS PAIS VT V4 1080",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080.jpg",
+            "title": "CHAMADA 07 03 26 L CIO",
+            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.mp4",
+            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_preview.mp4",
+            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO.jpg",
             "format": "default",
             "aspect": "16/9",
             "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beiramar%20Shopping/BEIRAMAR_Shopping_DIA_DOS_PAIS_VT_V4_1080_85.jpg"
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_15.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
+              "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/CHAMADA_07_03_26_L_CIO_85.jpg"
             ]
           }
         ],
-        "categories": {},
-        "total": 1
-      }
-    },
-    "FIREDOGS": {
-      "status": "public",
-      "slug": "firedogs",
-      "lastModified": "2026-04-24",
-      "title": "FIREDOGS",
-      "tagline": "",
-      "description": "",
-      "services": [],
-      "tools": [],
-      "year": "",
-      "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
-      "seo": {
-        "title": "FIREDOGS — Pelimotion",
-        "description": "",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg"
-      },
-      "media": {
-        "root": [
-          {
-            "title": "FIREDOGS ROCK AT THE BAR 1080",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080.jpg",
-            "format": "default",
-            "aspect": "16/9",
-            "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Firedogs/FIREDOGS_ROCK_AT_THE_BAR_1080_85.jpg"
-            ]
-          }
-        ],
-        "categories": {},
-        "total": 1
-      }
-    },
-    "NEY SOUZA": {
-      "status": "private",
-      "slug": "ney-souza",
-      "lastModified": "2026-04-24",
-      "title": "NEY SOUZA",
-      "tagline": "",
-      "description": "",
-      "services": [],
-      "tools": [],
-      "year": "",
-      "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
-      "seo": {
-        "title": "NEY SOUZA — Pelimotion",
-        "description": "",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg"
-      },
-      "media": {
-        "root": [
-          {
-            "title": "NEY SOUZA CARAVANA DO AMANHA",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA.jpg",
-            "format": "default",
-            "aspect": "16/9",
-            "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Ney%20Souza/NEY_SOUZA_CARAVANA_DO_AMANHA_85.jpg"
-            ]
-          }
-        ],
-        "categories": {},
-        "total": 1
-      }
-    },
-    "R9 LUXEMBOURG": {
-      "status": "public",
-      "slug": "r9-luxembourg",
-      "lastModified": "2026-04-24",
-      "title": "R9 LUXEMBOURG",
-      "tagline": "",
-      "description": "",
-      "services": [],
-      "tools": [],
-      "year": "",
-      "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
-      "seo": {
-        "title": "R9 LUXEMBOURG — Pelimotion",
-        "description": "",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg"
-      },
-      "media": {
-        "root": [
-          {
-            "title": "R9 LUXEMBURGO V1",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1.mp4",
-            "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_preview.mp4",
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1.jpg",
-            "format": "default",
-            "aspect": "16/9",
-            "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/R9%20Luxembourg/R9_LUXEMBURGO_V1_85.jpg"
-            ]
-          }
-        ],
-        "categories": {},
-        "total": 1
-      }
-    },
-    "SIMÃÂO": {
-      "status": "public",
-      "slug": "simao",
-      "lastModified": "2026-04-24",
-      "title": "SIMÃO",
-      "tagline": "",
-      "description": "",
-      "services": [],
-      "tools": [],
-      "year": "",
-      "projectUrl": "",
-      "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg",
-      "seo": {
-        "title": "SIMÃO — Pelimotion",
-        "description": "",
-        "ogImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg"
-      },
-      "media": {
-        "root": [
-          {
-            "title": "SIMAO DISPLAY",
-            "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY.mp4",
-            "preview_url": null,
-            "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY.jpg",
-            "format": "default",
-            "aspect": "16/9",
-            "mosaic": [
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_15.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_50.jpg",
-              "https://pelimotion.b-cdn.net/Medias%20Portfolio/Sim%C3%A3o/SIMAO_DISPLAY_85.jpg"
-            ]
-          }
-        ],
-        "categories": {},
-        "total": 1
+        "categories": {
+          "IA Genenerated": [
+            {
+              "title": "PRATOS E DRINKS",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_85.jpg"
+              ]
+            },
+            {
+              "title": "PRATOS E DRINKS 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_1_85.jpg"
+              ]
+            },
+            {
+              "title": "PRATOS E DRINKS 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_2_85.jpg"
+              ]
+            },
+            {
+              "title": "PRATOS E DRINKS 5",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/IA%20Genenerated/PRATOS%20E%20DRINKS_5_85.jpg"
+              ]
+            }
+          ],
+          "MANIFESTO": [
+            {
+              "title": "ISLA AFTERMOVIE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA BRAVA LUA CONCEPT",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA%20-%20BRAVA%20LUA%20CONCEPT_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA NAO VIRE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/ISLA_NAO_VIRE_85.jpg"
+              ]
+            },
+            {
+              "title": "POST MARE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/MANIFESTO/POST_MARE_85.jpg"
+              ]
+            }
+          ],
+          "Motion Campaign": [
+            {
+              "title": "CHAMADA 24 01 26 CHELINA MANUHUTU",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_24_01_26_CHELINA_MANUHUTU_85.jpg"
+              ]
+            },
+            {
+              "title": "CHAMADA 25 10 25 MARCEL COELHO 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/CHAMADA_25_10_25_MARCEL_COELHO_1_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA 01 VIRADA LOTE 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA%2001%20-%20VIRADA%20LOTE%202_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA LINE BALIMOON 12 11 1080 1920",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_LINE_BALIMOON_12_11_1080_1920_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA NEGRONI WEEK",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_NEGRONI_WEEK_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA RESTAURANTE VIRADA DE LOTE SLIDE01",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURANTE_VIRADA_DE_LOTE_SLIDE01_85.jpg"
+              ]
+            },
+            {
+              "title": "ISLA RESTAURENTE SALMAO VIDEO",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/ISLA_RESTAURENTE_SALMAO_VIDEO_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE BLUE 2",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE%20BLUE%202_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE UP 08 11 1080 1920 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_08_11_1080_1920_1_85.jpg"
+              ]
+            },
+            {
+              "title": "LINE UP 23 10 1080 1920 1",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/LINE_UP_23_10_1080_1920_1_85.jpg"
+              ]
+            },
+            {
+              "title": "PROGRAMACAO SEMANAL RESTAURANTE",
+              "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.mp4",
+              "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_preview.mp4",
+              "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.jpg",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_15.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_50.jpg",
+                "https://pelimotion.b-cdn.net/Medias%20Portfolio/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_85.jpg"
+              ]
+            }
+          ]
+        },
+        "total": 20
       }
     }
   },
@@ -2636,5 +2949,6 @@
       },
       "cvOverrides": {}
     }
-  ]
+  ],
+  "lastSync": "2026-04-28 14:46:56"
 }
