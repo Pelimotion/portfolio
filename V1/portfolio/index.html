@@ -55,8 +55,9 @@
         .hero-title { font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; line-height: 0.9; text-transform: uppercase; letter-spacing: -0.04em; }
         .hero-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: lowercase; font-size: 0.8em; }
         
-        .hero-right { position: relative; overflow: hidden; background: #000; }
-        .hero-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+        .hero-right { position: relative; overflow: hidden; background: #000; cursor: pointer; }
+        .hero-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; filter: grayscale(1); transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hero-right:hover .hero-video { filter: grayscale(0); }
         
         @media(max-width: 900px) {
             #hero-brutalist { grid-template-columns: 1fr; height: auto; }
@@ -204,8 +205,8 @@
                     2024—26
                 </h1>
             </div>
-            <div class="hero-right entrance-mask">
-                <video class="hero-video" autoplay muted loop playsinline>
+            <div class="hero-right entrance-mask" onclick="toggleHeroVideo(this)">
+                <video class="hero-video" autoplay muted loop playsinline poster="https://pelimotion.b-cdn.net/Medias%20Portfolio/Pelimotion/Institutional/Institutional_CARTAO_10_1920_1080_1.jpg">
                     <source src="https://pelimotion.b-cdn.net/hero_bg_optimized.mp4" type="video/mp4">
                 </video>
             </div>
@@ -502,7 +503,7 @@
         function initScroll() {
             window.addEventListener('scroll', () => {
                 const nav = document.getElementById('site-nav');
-                if(window.scrollY > 50) nav.style.background = 'rgba(10,10,10,0.8)';
+                if(window.scrollY > 50) nav.style.background = 'var(--bg)';
                 else nav.style.background = 'var(--bg)';
             });
         }
@@ -518,6 +519,12 @@
             if(e.state && e.state.view === 'gallery') openGallery(e.state.client);
             else goHome();
         };
+
+        function toggleHeroVideo(container) {
+            const v = container.querySelector('video');
+            if(v.paused) v.play();
+            else v.pause();
+        }
 
         initApp();
     </script>

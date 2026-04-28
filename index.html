@@ -49,10 +49,10 @@ button { color: inherit; font-family: inherit; }
 .nav-link.cta:hover { background: var(--fg); color: var(--bg); }
 .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
 .nav-toggle span { display: block; width: 22px; height: 1.5px; background: var(--fg); transition: all .3s; }
-#site-nav:hover { background: var(--fg) !important; color: var(--bg) !important; }
-#site-nav:hover .nav-link, #site-nav:hover .nav-logo, #site-nav:hover .nav-toggle span { color: var(--bg) !important; background-color: var(--bg); }
-#site-nav:hover .nav-logo svg { fill: var(--bg); }
-#site-nav:hover #lang-btn { border-color: var(--bg); }
+#site-nav:hover { background: var(--bg) !important; color: var(--fg) !important; }
+#site-nav:hover .nav-link, #site-nav:hover .nav-logo, #site-nav:hover .nav-toggle span { color: var(--fg) !important; background-color: var(--fg); }
+#site-nav:hover .nav-logo svg { fill: var(--fg); }
+#site-nav:hover #lang-btn { border-color: var(--fg); }
 
 /* ── HERO ── */
 #hero { position: relative; height: 100vh; width: 100%; display: flex; align-items: flex-end; overflow: hidden; background: var(--bg); }
@@ -267,8 +267,8 @@ section { width: 100%; border-top: 1px solid var(--border); }
         </div>
       </a>
       <a href="V1/portfolio/index.html" class="port-card reveal" style="transition-delay:.15s">
-        <video autoplay loop muted playsinline poster="https://pelimotion.b-cdn.net/Medias%20Portfolio/FURB/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1.jpg">
-          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/FURB/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_preview.mp4" type="video/mp4">
+        <video autoplay loop muted playsinline poster="https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1.jpg">
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/Furb/Broadcast%20Campaign%20-%20FURB/FURB_CARTAO_10_1920_1080_1_preview.mp4" type="video/mp4">
         </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
@@ -450,8 +450,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dist = Math.sqrt(Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2));
                 const threshold = 120; // Radius in pixels
                 if(dist < threshold) {
-                    item.style.background = 'var(--fg)';
-                    item.style.color = 'var(--bg)';
+                    item.style.background = 'var(--bg)';
+                    item.style.color = 'var(--fg)';
                 } else {
                     item.style.background = 'transparent';
                     item.style.color = item.classList.contains('hero-eyebrow') ? 'var(--fg)' : 'var(--fg2)';
