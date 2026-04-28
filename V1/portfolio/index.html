@@ -55,7 +55,7 @@
         .hero-title { font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; line-height: 0.9; text-transform: uppercase; letter-spacing: -0.04em; }
         .hero-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: lowercase; font-size: 0.8em; }
         
-        .hero-right { position: relative; width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: var(--bg); }
+        .hero-right { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: var(--bg); }
         .hero-video { width: 100%; height: 100%; object-fit: cover; opacity: 0; filter: grayscale(1); transition: opacity 1s ease, filter 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .hero-right:hover .hero-video { filter: grayscale(0); }
         .hero-video.ready { opacity: 0.85; }
@@ -472,12 +472,25 @@
             };
 
             const revealVideo = () => {
-                video.classList.add('ready');
-                canvas.classList.add('fade-out');
-                setTimeout(() => {
-                    cancelAnimationFrame(animationId);
-                    canvas.style.display = 'none';
-                }, 1500);
+                if(video.classList.contains('ready')) return;
+                
+                // Force a solid background on the canvas for a cleaner transition
+                // If light mode and video starts white, this helps blend
+                ctx.fillStyle = colors.bg;
+                ctx.fillRect(0, 0, w, h);
+
+                video.play().then(() => {
+                    video.classList.add('ready');
+                    canvas.classList.add('fade-out');
+                    setTimeout(() => {
+                        cancelAnimationFrame(animationId);
+                        canvas.style.display = 'none';
+                    }, 800); // Faster fade out for immediate start
+                }).catch(e => {
+                    // Fallback if play() fails (e.g. user interaction required)
+                    video.classList.add('ready');
+                    canvas.classList.add('fade-out');
+                });
             };
 
             // Event listeners for video states
