@@ -2961,7 +2961,7 @@
       "id": "buildgood",
       "companyName": "BuildGood",
       "targetRole": "Senior Designer - Animation & Video (Motion Branding)",
-      "accentColor": "#fef2dd",
+      "accentColor": "#1e7ff2",
       "createdAt": "2026-04-28",
       "heroLabel": "CV Application / BuildGood",
       "coverLetter": {
@@ -2987,5 +2987,5 @@
       "cvOverrides": {}
     }
   ],
-  "lastSync": "2026-04-28 15:58:47"
+  "lastSync": "2026-04-28 15:33:30"
 }
