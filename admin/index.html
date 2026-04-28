@@ -203,6 +203,13 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 <!-- FILE INPUT -->
 <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleImport(this)">
 
-<script src="admin.js?v=3.8"></script>
+<script>
+  (function() {
+    var s = document.createElement('script');
+    var isLocal = window.location.protocol === 'file:';
+    s.src = (isLocal ? '' : '/admin/') + 'admin.js?v=3.9';
+    document.body.appendChild(s);
+  })();
+</script>
 </body>
 </html>
