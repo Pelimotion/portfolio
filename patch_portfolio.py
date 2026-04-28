@@ -2,7 +2,7 @@
 """patch_portfolio.py — applies all UX/UI fixes to V1/portfolio/index.html"""
 import re, os, json
 
-OUTPUT = "index.html"
+OUTPUT = "V1/portfolio/index.html"
 CONTENT_JSON = "content.json"
 
 with open(OUTPUT, "r", encoding="utf-8") as f:
@@ -20,7 +20,7 @@ changes = []
 
 # ── 1. EXIT → HOME icon button ─────────────────────────────────────────────
 old_exit = '<a href="../../index.html" class="exit-link" aria-label="Back to main hub">← EXIT</a>'
-new_exit = '<a href="landing_page_v2.html" class="exit-link" aria-label="Home" title="Home">⌂</a>'
+new_exit = '<a href="../../index.html" class="exit-link" aria-label="Home" title="Home">⌂</a>'
 if old_exit in html:
     html = html.replace(old_exit, new_exit)
     changes.append("EXIT → Home icon")
@@ -235,7 +235,7 @@ if "background: var(--bg)" not in html.split(".theme-toggle{")[1].split("}")[0] 
     changes.append("Button backgrounds for legibility")
 
 # ── 14. Fix Logo Path ──────────────────────────────────────────────────────
-html = html.replace("url('logo.png')", "url('contra_pipeline/medias/logo.png')")
+html = html.replace("url('logo.png')", "url('logo.png')")
 changes.append("Fixed logo path")
 
 # ── Write ──────────────────────────────────────────────────────────────────
