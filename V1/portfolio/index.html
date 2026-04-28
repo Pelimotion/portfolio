@@ -116,6 +116,7 @@
             mix-blend-mode: difference; transition: width .3s, height .3s;
             display: none;
         }
+        body.plm-cursor-enabled #plm-cursor { display: block; }
         #plm-cursor.hover { width: 40px; height: 40px; background: transparent; border: 1.5px solid var(--fg); }
 
         /* ─── STRIPS ─── */
@@ -131,28 +132,36 @@
         }
         .btn-brutal:hover { background: var(--fg); color: var(--bg); }
 
-        /* ─── MODAL PLAYER V2 ─── */
+        /* ─── MODAL PLAYER V3 ─── */
         #modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity .4s;
+            opacity: 0; transition: opacity .4s; padding: 40px;
         }
         #modal.active { display: flex; opacity: 1; }
-        .close-modal { position: absolute; top: 30px; right: 30px; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; z-index: 10; opacity: 0.5; transition: opacity .2s; }
+        .close-modal { position: absolute; top: 30px; right: 30px; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; z-index: 6000; opacity: 0.5; transition: opacity .2s; }
         .close-modal:hover { opacity: 1; }
         
-        .player-outer { width: 90%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; }
-        .player-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+        .player-outer { width: 100%; max-width: 1400px; position: relative; display: flex; flex-direction: column; }
+        .player-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; box-shadow: 0 40px 100px rgba(0,0,0,0.8); overflow: hidden; }
         .player-container video { width: 100%; height: 100%; object-fit: contain; }
         
-        .player-nav { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 20px; }
-        .player-nav-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; font-size: 10px; font-weight: 900; cursor: pointer; transition: all .2s; }
-        .player-nav-btn:hover { background: #fff; color: #000; border-color: #fff; }
+        /* Pause Overlay Info */
+        .player-overlay-info {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: center; padding: 10%;
+            opacity: 0; pointer-events: none; transition: opacity .4s; z-index: 10;
+        }
+        .player-container.paused .player-overlay-info { opacity: 1; pointer-events: auto; }
+        
+        .player-nav { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 24px; }
+        .player-nav-btn { background: transparent; border: 1.5px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 24px; font-size: 10px; font-weight: 900; letter-spacing: 0.2em; cursor: pointer; transition: all .2s; }
+        .player-nav-btn:hover:not(:disabled) { background: #fff; color: #000; border-color: #fff; }
         .player-nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
-        .player-meta { padding: 10px 0; color: #fff; }
-        .player-title { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 5px; }
-        .player-client { font-size: 10px; font-weight: 700; letter-spacing: 0.3em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+        .player-meta { color: #fff; }
+        .player-title { font-size: clamp(24px, 4vw, 48px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; margin-bottom: 8px; }
+        .player-client { font-size: 12px; font-weight: 700; letter-spacing: 0.4em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
 
         .theme-icon { width: 18px; height: 18px; fill: currentColor; display: block; }
         
@@ -227,17 +236,20 @@
     <div id="modal">
         <button class="close-modal" onclick="closeModal()">✕</button>
         <div class="player-outer">
-            <div class="player-container">
-                <video id="modal-video" controls autoplay playsinline></video>
-            </div>
-            <div class="player-nav">
-                <div class="player-meta">
+            <div class="player-container" id="player-container">
+                <video id="modal-video" controls autoplay playsinline onplay="onVideoPlay()" onpause="onVideoPause()"></video>
+                <div class="player-overlay-info">
                     <div id="modal-title" class="player-title">Project Title</div>
                     <div id="modal-client" class="player-client">Client Name</div>
                 </div>
+            </div>
+            <div class="player-nav">
                 <div style="display:flex;gap:10px">
                     <button class="player-nav-btn" onclick="prevMedia()">← PREV</button>
                     <button class="player-nav-btn" onclick="nextMedia()">NEXT →</button>
+                </div>
+                <div class="player-meta" style="text-align:right">
+                    <span id="player-index-count" style="font-size:10px; font-weight:900; color:rgba(255,255,255,0.4)">01 / 12</span>
                 </div>
             </div>
         </div>
@@ -438,8 +450,10 @@
             
             document.getElementById('modal-title').textContent = (window._PLM_LANG === 'pt' ? item.title_pt : item.title) || item.title || '';
             document.getElementById('modal-client').textContent = currentClientName;
+            document.getElementById('player-index-count').textContent = `${String(index + 1).padStart(2, '0')} / ${String(currentPlaylist.length).padStart(2, '0')}`;
             
             document.getElementById('modal').classList.add('active');
+            document.getElementById('player-container').classList.remove('paused');
             updateNavBtns();
         }
 
@@ -447,6 +461,14 @@
             const m = document.getElementById('modal');
             m.classList.remove('active');
             document.getElementById('modal-video').pause();
+            document.getElementById('player-container').classList.remove('paused');
+        }
+
+        function onVideoPlay() {
+            document.getElementById('player-container').classList.remove('paused');
+        }
+        function onVideoPause() {
+            document.getElementById('player-container').classList.add('paused');
         }
 
         function nextMedia() {
