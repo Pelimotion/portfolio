@@ -11,3 +11,7 @@ Você é o assistente principal deste projeto. Sua função é escrever código 
 - **Portfólio Completo:** O arquivo `V1/portfolio/index.html` é o portfólio SPA otimizado (design brutalista preto).
 - **Deploy Rápido:** Use `python3 deploy_site.py` para subir alterações de código.
 - **Sincronização:** Sempre que houver novos clientes no Bunny, rode `python3 sync_bunny.py` (ele atualiza o arquivo em `V1/portfolio/`).
+
+## 3. SEGURANÇA E BACKUP
+- **Backup Obrigatório:** Antes de cada modificação significativa, ou após finalizar uma rodada de edições, faça um backup do arquivo original na pasta `backups/`.
+- **Formato:** Use o padrão `nome_arquivo_backup_YYYYMMDD_HHMMSS.ext`.
