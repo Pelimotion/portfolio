@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelimotion — Motion Branding & Creative Direction</title>
+<meta name="description" content="Pelimotion — Premium motion design studio. Kinetic visual experiences, brand systems, and creative direction from Rio de Janeiro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--fg:#f0ede8;--accent:#f0ede8;--green:#34d399;--border:rgba(240,237,232,.1)}
+[data-theme="light"] { --bg:#f5f5f5; --fg:#050505; --accent:#050505; --border:rgba(10,10,10,.1); }
+html{background:var(--bg); color:var(--fg);}
+
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── NAV ── */
+#site-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;border-bottom:1px solid transparent;transition:background .4s,border-color .4s}
+#site-nav.scrolled{background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-color:var(--border)}
+.nav-logo{font-size:13px;font-weight:900;letter-spacing:.3em;text-transform:uppercase;color:var(--fg);text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-link{font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,237,232,.55);text-decoration:none;transition:color .2s}
+.nav-link:hover{color:var(--fg)}
+.nav-link.cta{border:1px solid var(--border);padding:8px 16px;color:var(--fg)}
+.nav-link.cta:hover{background:var(--fg);color:#000}
+.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-toggle span{display:block;width:22px;height:1.5px;background:var(--fg);transition:all .3s}
+
+/* ── HERO ── */
+#hero{position:relative;height:100vh;width:100%;display:flex;align-items:flex-end;overflow:hidden}
+.hero-video-wrapper.loaded { clip-path: inset(0 0 0 0); }
+.hero-poster {
+  position: absolute; inset: 0; width: 100%; height: 100%; 
+  background: url('hero_first_frame.png') center/cover no-repeat;
+  z-index: 0; transform: scale(1.33);
+  animation: posterZoom 1.5s cubic-bezier(0, 0, 0.2, 1) forwards;
+  transition: opacity 1.2s ease;
+}
+.hero-video-wrapper.loaded ~ .hero-poster { opacity: 0; pointer-events: none; }
+@keyframes posterZoom {
+  from { transform: scale(1.33); }
+  to { transform: scale(1); }
+}
+.hero-video {
+  position: absolute; inset: -5%; width: 110%; height: 110%; object-fit: cover; opacity: .55;
+  z-index: 2; transform: scale(1.1); transition: transform 2s ease-out;
+}
+.hero-video-wrapper {
+  position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+  clip-path: inset(0 100% 0 100%);
+  transition: clip-path 1.5s cubic-bezier(0.85, 0, 0.15, 1);
+  z-index: 2;
+}
+.hero-video-wrapper.loaded .hero-video { transform: scale(1); }
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,.95) 0%,rgba(10,10,10,.2) 60%,transparent 100%)}
+.hero-content{position:relative;z-index:2;width:100%;padding:4rem 2.5rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem}
+.hero-title-wrap{}
+.hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:rgba(240,237,232,.4);margin-bottom:1.2rem}
+.hero-title{font-size:clamp(3.5rem,9vw,8rem);font-weight:900;letter-spacing:-.03em;line-height:.9;text-transform:uppercase;color:var(--fg)}
+.hero-title em{font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;font-size:.65em;letter-spacing:0}
+.hero-sub{max-width:320px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:1.5rem}
+.hero-desc{font-size:12px;color:rgba(240,237,232,.55);line-height:1.7;font-weight:400}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--fg);text-decoration:none;border:1px solid rgba(240,237,232,.3);padding:12px 20px;transition:all .3s}
+.hero-cta:hover{background:var(--fg);color:#000;border-color:var(--fg)}
+.hero-cta span{transition:transform .3s}
+.hero-cta:hover span{transform:translateX(4px)}
+.hero-scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:8px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(240,237,232,.3);animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* ── SECTIONS ── */
+section{width:100%;border-top:1px solid var(--border)}
+.container{max-width:1280px;margin:0 auto;padding:0 2.5rem}
+
+/* ── ABOUT ── */
+#about{padding:6rem 0}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.about-label{font-size:9px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:rgba(240,237,232,.35);margin-bottom:1.5rem}
+.about-title{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:2rem}
+.about-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+.about-text{font-size:14px;line-height:1.8;color:rgba(240,237,232,.65);font-weight:400;margin-bottom:1.5rem}
+.about-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:3rem;border:1px solid var(--border)}
+.about-stat{padding:1.5rem;border:1px solid transparent}
+.about-stat:not(:last-child){border-right:1px solid var(--border)}
+.stat-val{font-size:2rem;font-weight:900;letter-spacing:-.04em;margin-bottom:.25rem}
+.stat-lbl{font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,237,232,.4)}
+.about-brands{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:2rem}
+.brand-tag{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;border:1px solid var(--border);padding:5px 10px;color:rgba(240,237,232,.4)}
+
+/* ── PORTFOLIO LINK ── */
+#portfolio-link{padding:5rem 0}
+.port-inner{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.port-card{position:relative;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/9;cursor:pointer;text-decoration:none;display:block}
+.port-card video,.port-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.port-card:hover video,.port-card:hover img{transform:scale(1.04)}
+.port-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,.9) 0%,transparent 60%);z-index:1;display:flex;align-items:flex-end;padding:2rem;transition:background .3s}
+.port-card:hover .port-card-overlay{background:linear-gradient(to top,rgba(10,10,10,.95) 0%,rgba(10,10,10,.1) 60%)}
+.port-card-content{z-index:2;position:relative}
+.port-tag{font-size:8px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(240,237,232,.5);margin-bottom:.5rem}
+.port-name{font-size:1.4rem;font-weight:900;letter-spacing:-.02em;color:var(--fg);display:flex;align-items:center;gap:.75rem}
+.port-arrow{transition:transform .3s}
+.port-card:hover .port-arrow{transform:translateX(6px)}
+.port-full{grid-column:1/-1;aspect-ratio:21/7}
+.section-header-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem}
+.section-label{font-size:9px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:rgba(240,237,232,.35)}
+.section-link{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;transition:border-color .2s}
+.section-link:hover{border-color:var(--fg)}
+
+/* ── CONTACT / FOOTER ── */
+#contact{padding:6rem 0}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.contact-title{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:1rem}
+.contact-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+.contact-sub{font-size:13px;color:rgba(240,237,232,.55);line-height:1.7;margin-bottom:2rem}
+.contact-email{font-size:1.1rem;font-weight:700;color:var(--fg);text-decoration:none;border-bottom:2px solid rgba(240,237,232,.2);padding-bottom:4px;display:inline-block;transition:border-color .2s}
+.contact-email:hover{border-color:var(--fg)}
+.contact-links{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);margin-top:3rem}
+.contact-link{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.5rem;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,237,232,.55);text-decoration:none;border-bottom:1px solid var(--border);transition:all .2s}
+.contact-link:last-child{border-bottom:none}
+.contact-link:hover{background:rgba(240,237,232,.04);color:var(--fg)}
+.contact-right{padding-top:.5rem}
+.contact-info-item{display:flex;flex-direction:column;gap:.3rem;padding:1.5rem 0;border-bottom:1px solid var(--border)}
+.contact-info-label{font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(240,237,232,.3)}
+.contact-info-val{font-size:13px;font-weight:500;color:rgba(240,237,232,.75)}
+.site-footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,237,232,.25)}
+
+/* ── CURSOR ── */
+*,*::before,*::after{cursor:none!important}
+@media(hover:none),(pointer:coarse){*,*::before,*::after{cursor:auto!important}}
+#plm-cursor{position:fixed;z-index:99999;pointer-events:none;width:10px;height:10px;border:1.5px solid rgba(240,237,232,.7);border-radius:50%;transform:translate(-50%,-50%);top:0;left:0;transition:width .2s,height .2s,background .2s,border-color .2s}
+#plm-cursor.hover{width:22px;height:22px;background:rgba(240,237,232,.1)}
+@media(hover:none),(pointer:coarse){#plm-cursor{display:none}}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .hero-content{flex-direction:column;align-items:flex-start;padding:2rem 1.5rem}
+  .hero-sub{max-width:100%;text-align:left;align-items:flex-start}
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .port-inner{grid-template-columns:1fr}
+  .port-full{grid-column:1}
+  .about-stats{grid-template-columns:1fr 1fr}
+  .container{padding:0 1.5rem}
+  #site-nav{padding:0 1.5rem}
+  .nav-links{display:none;position:fixed;inset:0;top:64px;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:2.5rem}
+  .nav-links.open{display:flex}
+  .nav-link{font-size:14px}
+  .nav-toggle{display:flex}
+}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+</style>
+<script src="assets/js/theme.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="site-nav">
+  <a href="#hero" class="nav-logo">PLM</a>
+  <div class="nav-links" id="nav-links">
+    <a href="#about" class="nav-link" data-en="Studio" data-pt="Estúdio">Studio</a>
+    <a href="#portfolio-link" class="nav-link" data-en="Work" data-pt="Trabalhos">Work</a>
+    <a href="#contact" class="nav-link" data-en="Contact" data-pt="Contato">Contact</a>
+    <a href="Curriculum/index.html" class="nav-link">CV</a>
+    <a href="V1/portfolio/index.html" class="nav-link cta" data-en="View Portfolio →" data-pt="Ver Portfólio →">View Portfolio →</a>
+    <button class="nav-link" onclick="toggleTheme()" title="Toggle Theme" style="cursor:pointer; background:none; border:none; font-size:16px;">◐</button>
+    <button id="lang-btn" class="nav-link" onclick="toggleLanguage()" style="cursor:pointer; background:none; border:1px solid var(--border); padding:4px 10px; font-size:10px; font-weight:700; letter-spacing:.15em;">PT</button>
+  </div>
+  <div class="nav-toggle" id="nav-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-video-wrapper" id="hero-reel-wrap">
+    <video class="hero-video" id="hero-reel" loop muted playsinline preload="auto">
+      <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/Pelimotion%20-%20Reel%202021.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-poster" id="hero-poster"></div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-title-wrap">
+      <div class="hero-eyebrow" id="hero-eyebrow" data-en="Motion Branding &amp; Creative Direction" data-pt="Motion Branding &amp; Direção Criativa">Motion Branding &amp; Creative Direction</div>
+      <h1 class="hero-title" id="hero-title">Peli<em>motion</em><br>Hub<span style="color:rgba(240,237,232,.25)">.</span></h1>
+    </div>
+    <div class="hero-sub">
+      <p class="hero-desc" id="hero-desc" data-en="Visual systems built for brands that set the pace, not just follow it." data-pt="Sistemas visuais para marcas que ditam o ritmo, não apenas o seguem.">Visual systems built for brands that set the pace, not just follow it.</p>
+      <a href="V1/portfolio/index.html" class="hero-cta" data-en="View Full Portfolio →" data-pt="Ver Portfólio Completo →">View Full Portfolio <span>→</span></a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">SCROLL</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container" style="padding-top:6rem;padding-bottom:6rem">
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="about-label" data-en="01 — The Studio" data-pt="01 — O Estúdio">01 — The Studio</div>
+        <h2 class="about-title" id="about-title" data-en="Motion as a <em>strategic</em> language." data-pt="Motion como <em>linguagem</em> estratégica.">Motion as a <em>strategic</em> language.</h2>
+        <div class="about-stats">
+          <div class="about-stat"><div class="stat-val" id="stat-0-val">08+</div><div class="stat-lbl" id="stat-0-lbl">Years of Practice</div></div>
+          <div class="about-stat" style="border-left:1px solid var(--border)"><div class="stat-val" id="stat-1-val">40+</div><div class="stat-lbl" id="stat-1-lbl">Brand Campaigns</div></div>
+          <div class="about-stat" style="border-top:1px solid var(--border)"><div class="stat-val" id="stat-2-val">12</div><div class="stat-lbl" id="stat-2-lbl">Countries Reached</div></div>
+          <div class="about-stat" style="border-left:1px solid var(--border);border-top:1px solid var(--border)"><div class="stat-val" id="stat-3-val">∞</div><div class="stat-lbl" id="stat-3-lbl">Frames Per Second</div></div>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.15s">
+        <div class="about-label" data-en="About" data-pt="Sobre">About</div>
+        <p class="about-text" id="about-p1" data-en="We work where strategy meets motion. Over eight years we've built visual systems for global brands across automotive, finance, and culture — designing how a brand moves, not only how it looks." data-pt="Trabalhamos onde estratégia encontra movimento. Em oito anos, construímos sistemas visuais para marcas globais nos setores automotivo, financeiro e cultural — projetando como uma marca se move, não apenas como ela aparece.">We work where strategy meets motion. Over eight years we've built visual systems for global brands across automotive, finance, and culture — designing how a brand moves, not only how it looks.</p>
+        <p class="about-text" id="about-p2" data-en="Our background in music shapes everything: pacing, weight, silence. Today Pelimotion Hub develops AI-integrated motion pipelines and directs immersive experiences — combining motion design with light and projection for live performances." data-pt="Nossa formação em música molda tudo: ritmo, peso, silêncio. Hoje, o Pelimotion Hub desenvolve pipelines de motion integrados com IA e dirige experiências imersivas — combinando motion design com luz e projeção para espetáculos ao vivo.">Our background in music shapes everything: pacing, weight, silence. Today Pelimotion Hub develops AI-integrated motion pipelines and directs immersive experiences — combining motion design with light and projection for live performances.</p>
+        <div class="about-brands" id="about-brands">
+          <span class="brand-tag">BMW</span><span class="brand-tag">Subaru</span><span class="brand-tag">Hyundai</span><span class="brand-tag">EQI</span><span class="brand-tag">Motul</span><span class="brand-tag">Suzano</span><span class="brand-tag">O Boticário</span><span class="brand-tag">Colcci</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO LINK -->
+<section id="portfolio-link">
+  <div class="container" style="padding-top:5rem;padding-bottom:5rem">
+    <div class="section-header-row reveal">
+      <div class="section-label" data-en="02 — Selected Work" data-pt="02 — Trabalhos Selecionados">02 — Selected Work</div>
+      <a href="V1/portfolio/index.html" class="section-link" data-en="View More Projects →" data-pt="Ver Mais Projetos →">View More Projects →</a>
+    </div>
+    <div class="port-inner">
+      <a href="V1/portfolio/index.html" class="port-card port-full reveal" style="transition-delay:.05s">
+        <video autoplay loop muted playsinline>
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-tag">Visual Systems · Stage Direction</div>
+            <div class="port-name">Funky Room <span class="port-arrow">→</span></div>
+          </div>
+        </div>
+      </a>
+      <a href="V1/portfolio/index.html" class="port-card reveal" style="transition-delay:.1s">
+        <video autoplay loop muted playsinline>
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/Suzano/SUZANO_MANIFESTO.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-tag">Motion Branding</div>
+            <div class="port-name">Suzano <span class="port-arrow">→</span></div>
+          </div>
+        </div>
+      </a>
+      <a href="V1/portfolio/index.html" class="port-card reveal" style="transition-delay:.15s">
+        <video autoplay loop muted playsinline>
+          <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/FURB/Apresentac%CC%A7a%CC%83o_FURB_2021.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-tag">Motion Systems</div>
+            <div class="port-name">FURB <span class="port-arrow">→</span></div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="about-label" data-en="03 — Contact" data-pt="03 — Contato">03 — Contact</div>
+        <h2 class="contact-title" id="contact-title" data-en="Open to direction, <em>collaborations</em> and long-form briefs." data-pt="Aberto a direção, <em>colaborações</em> e projetos de longo prazo.">Open to direction, <em>collaborations</em> and long-form briefs.</h2>
+        <p class="contact-sub" id="contact-sub" data-en="Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish." data-pt="Baseado no Rio de Janeiro. Atuação global. Fluente em Inglês, Português e Espanhol.">Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.</p>
+        <a href="mailto:conceicao.felipe@gmail.com" class="contact-email" id="contact-email">conceicao.felipe@gmail.com</a>
+        <div class="contact-links">
+          <a href="https://linkedin.com/in/pelife" target="_blank" class="contact-link">LinkedIn <span>↗</span></a>
+          <a href="https://instagram.com/pelimotion" target="_blank" class="contact-link">Instagram <span>↗</span></a>
+          <a href="https://behance.net/pelimotion" target="_blank" class="contact-link">Behance <span>↗</span></a>
+          <a href="Curriculum/index.html" class="contact-link" data-en="Curriculum Vitae →" data-pt="Currículo →">Curriculum Vitae <span>→</span></a>
+        </div>
+      </div>
+      <div class="contact-right reveal" style="transition-delay:.15s">
+        <div class="contact-info-item">
+          <div class="contact-info-label" data-en="Studio" data-pt="Estúdio">Studio</div>
+          <div class="contact-info-val">Pelimotion Hub</div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-label" data-en="Location" data-pt="Localização">Location</div>
+          <div class="contact-info-val" id="contact-location">Rio de Janeiro, Brasil</div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-label" data-en="Disciplines" data-pt="Disciplinas">Disciplines</div>
+          <div class="contact-info-val" data-en="Motion Design · Creative Direction · CGI · Brand Systems · AI Integration" data-pt="Motion Design · Direção Criativa · CGI · Sistemas de Marca · Integração com IA">Motion Design · Creative Direction · CGI · Brand Systems · AI Integration</div>
+        </div>
+        <div class="contact-info-item" style="border-bottom:none">
+          <div class="contact-info-label" data-en="Status" data-pt="Status">Status</div>
+          <div class="contact-info-val" style="display:flex;align-items:center;gap:8px">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
+            <span data-en="Available for projects" data-pt="Disponível para projetos">Available for projects</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <span id="footer-copy">© 2026 Pelimotion Hub — Rio de Janeiro</span>
+  <span data-en="Motion Branding &amp; Creative Direction" data-pt="Motion Branding &amp; Direção Criativa">Motion Branding &amp; Creative Direction</span>
+</footer>
+
+<div id="plm-cursor" aria-hidden="true"></div>
+
+<script>
+// ── Nav scroll state ──
+const nav = document.getElementById('site-nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, {passive:true});
+
+// ── Cursor ──
+const cur = document.getElementById('plm-cursor');
+if(cur && window.matchMedia('(hover:hover)').matches){
+  window.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX+'px';
+    cur.style.top = e.clientY+'px';
+    cur.classList.toggle('hover', !!e.target.closest('a,button'));
+  }, {passive:true});
+}
+
+// ── Reveal on scroll ──
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── Dynamic content from site-content.json ──
+(async function(){
+  try {
+    const r = await fetch('/site-content.json?t='+Date.now());
+    if(!r.ok) return;
+    const D = await r.json();
+    const C = D.curriculum || {};
+    const P = D.portfolio || {};
+    const L = D.landing || {};
+
+    // Landing
+    if(L.brandName) { const el=document.getElementById('hero-title'); if(el) el.innerHTML=L.brandName; }
+    if(L.brandSub) { const el=document.getElementById('hero-eyebrow'); if(el) el.innerHTML=L.brandSub; }
+    if(L.footerText) { const el=document.getElementById('footer-copy'); if(el) el.innerHTML=L.footerText; }
+    if(L.aboutTitle) { const el=document.getElementById('about-title'); if(el) el.innerHTML=L.aboutTitle; }
+    if(L.contactTitle) { const el=document.getElementById('contact-title'); if(el) el.innerHTML=L.contactTitle; }
+    if(L.contactSub) { const el=document.getElementById('contact-sub'); if(el) el.innerHTML=L.contactSub; }
+
+    // Hero
+    if(P.heroRelease) { const el=document.getElementById('hero-desc'); if(el) el.textContent=P.heroRelease; }
+
+    // About stats
+    (C.stats||[]).forEach((s,i) => {
+      const v=document.getElementById('stat-'+i+'-val');
+      const l=document.getElementById('stat-'+i+'-lbl');
+      if(v) v.textContent=s.value;
+      if(l) l.textContent=s.label;
+    });
+
+    // About text
+    if(C.profileParagraph1) { const el=document.getElementById('about-p1'); if(el) el.textContent=C.profileParagraph1; }
+    if(C.profileParagraph2) { const el=document.getElementById('about-p2'); if(el) el.textContent=C.profileParagraph2; }
+
+    // Brands
+    if((C.clientMarquee||[]).length) {
+      const el=document.getElementById('about-brands');
+      if(el) el.innerHTML = C.clientMarquee.map(b=>`<span class="brand-tag">${b}</span>`).join('');
+    }
+
+    // Contact
+    if(C.contactEmail) {
+      const el=document.getElementById('contact-email');
+      if(el){ el.href='mailto:'+C.contactEmail; el.textContent=C.contactEmail; }
+    }
+    if(C.basedIn) { const el=document.getElementById('contact-location'); if(el) el.textContent=C.basedIn; }
+    if(P.footerStudioLocation) { const el=document.getElementById('footer-copy'); if(el) el.textContent='© 2026 Pelimotion Hub — '+P.footerStudioLocation; }
+  } catch(e){}
+})();
+</script>
+
+<script>
+// ── HERO VIDEO REEEL LOGIC ──
+document.addEventListener("DOMContentLoaded", () => {
+    const video = document.getElementById('hero-reel');
+    const wrap = document.getElementById('hero-reel-wrap');
+    if(!video || !wrap) return;
+    
+    let isLoaded = false;
+    const playAndReveal = () => {
+        if(isLoaded) return;
+        isLoaded = true;
+        video.play().then(() => { wrap.classList.add('loaded'); }).catch(e => { wrap.classList.add('loaded'); });
+    };
+
+    video.addEventListener('canplaythrough', playAndReveal);
+    video.addEventListener('loadeddata', () => { setTimeout(playAndReveal, 500); });
+    setTimeout(playAndReveal, 2000); // Fallback
+
+    window.addEventListener('scroll', () => {
+        const scroll = window.scrollY;
+        const heroHeight = window.innerHeight;
+        if(wrap.classList.contains('loaded')) {
+            if (scroll > 10) {
+                const maxInset = window.innerWidth > 768 ? 3 : 1.5;
+                const progress = Math.min(scroll / (heroHeight * 0.6), 1);
+                const currentInset = progress * maxInset;
+                const currentRadius = progress * 16;
+                wrap.style.clipPath = `inset(${currentInset}% ${currentInset}% ${currentInset}% ${currentInset}% round ${currentRadius}px)`;
+                video.style.transform = `translateY(${scroll * 0.25}px)`;
+            } else {
+                wrap.style.clipPath = `inset(0 0 0 0 round 0px)`;
+                video.style.transform = `translateY(0)`;
+            }
+        }
+    });
+});
+</script>
+
+<script>
+// ── BILINGUAL SYSTEM (Manual EN/PT, no external API) ──
+window._PLM_LANG = localStorage.getItem('plm-lang') || 'en';
+
+function applyLang(lang) {
+  window._PLM_LANG = lang;
+  localStorage.setItem('plm-lang', lang);
+  document.querySelectorAll('[data-en][data-pt]').forEach(el => {
+    const text = lang === 'pt' ? el.getAttribute('data-pt') : el.getAttribute('data-en');
+    if(text !== null) el.innerHTML = text;
+  });
+  // Update hero-cta inner text without breaking its <span>
+  document.querySelectorAll('a.hero-cta[data-en]').forEach(el => {
+    const text = lang === 'pt' ? el.getAttribute('data-pt') : el.getAttribute('data-en');
+    el.textContent = text;
+  });
+  const btn = document.getElementById('lang-btn');
+  if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
+  document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
+}
+
+function toggleLanguage() {
+  applyLang(window._PLM_LANG === 'en' ? 'pt' : 'en');
+}
+
+// Apply on load
+document.addEventListener('DOMContentLoaded', () => { applyLang(window._PLM_LANG); });
+</script>
+
+
+<script>
+async function loadLandingContent() {
+  try {
+    const r = await fetch('/site-content.json?t='+Date.now());
+    if(!r.ok) return;
+    const D = await r.json();
+    const L = D.landing || {};
+    const lang = window._PLM_LANG || 'en';
+    const isPT = lang === 'pt';
+    
+    const set = (id, en, pt) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(en) el.setAttribute('data-en', en);
+      if(pt) el.setAttribute('data-pt', pt);
+      el.innerHTML = isPT ? (pt || en) : en;
+    };
+
+    if(L.brandSub) set('brand-sub', L.brandSub, L.brandSub_pt);
+    if(L.aboutTitle) set('about-title', L.aboutTitle, L.aboutTitle_pt);
+    if(L.aboutParagraph1) set('about-p1', L.aboutParagraph1, L.aboutParagraph1_pt);
+    if(L.aboutParagraph2) set('about-p2', L.aboutParagraph2, L.aboutParagraph2_pt);
+    if(L.contactTitle) set('contact-title', L.contactTitle, L.contactTitle_pt);
+    if(L.contactSub) set('contact-sub', L.contactSub, L.contactSub_pt);
+    
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', loadLandingContent);
+// Also listen for language changes
+const originalApplyLang = window.applyLang;
+window.applyLang = function(lang) {
+  if(originalApplyLang) originalApplyLang(lang);
+  loadLandingContent();
+};
+</script>
+</body>
+</html>

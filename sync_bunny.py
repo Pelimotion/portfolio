@@ -11,7 +11,7 @@ ZONE_NAME = "pelimotion-assets"
 BASE_URL = f"https://storage.bunnycdn.com/{ZONE_NAME}/Medias Portfolio/"
 CDN_BASE = "https://pelimotion.b-cdn.net/Medias%20Portfolio"
 
-HTML_FILE = "V1/portfolio/index.html"
+HTML_FILE = "index.html"
 
 def clean_title(filename):
     """

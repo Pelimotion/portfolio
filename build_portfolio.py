@@ -12,7 +12,7 @@ all clientsData/clientDescriptions injection automatically on each deploy.
 import os, re, shutil
 
 SRC    = "index_backup_pre_hub_redesign.html"
-OUTPUT = "V1/portfolio/index.html"
+OUTPUT = "index.html"
 
 # ── 1. Read source ────────────────────────────────────────────────────────────
 with open(SRC, "r", encoding="utf-8") as f:

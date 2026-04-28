@@ -89,9 +89,11 @@
 <body class="bg-black text-white selection:bg-white/20">
 
     <div id="priv-bar" class="sticky top-0 z-[100] bg-black border-b border-white/10 flex items-center px-4 sm:px-8">
-      <span class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block cursor-pointer hover:text-white/70 transition-colors" onclick="event.preventDefault(); generatePDF()" title="Save as PDF">[PRIVATE_ACCESS]</span>
+      <span class="font-mono text-[9px] tracking-[0.4em] uppercase text-white/30 mr-auto hidden sm:inline-block cursor-pointer hover:text-white/70 transition-colors" onclick="generatePDF()" title="Save as PDF">[PRIVATE_ACCESS]</span>
       <div class="flex">
-          <a href="index.html" onclick="navTo(event, \'index.html\')" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">← BACK</a>
+          <a href="cv.html" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">RESUME</a>
+          <a href="cl.html" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white border-b-2 border-white">COVER LETTER</a>
+          <a href="index.html" onclick="navTo(event, 'index.html')" class="font-mono text-[10px] tracking-widest uppercase py-4 px-6 transition-colors text-white/40 border-b-2 border-transparent hover:text-white/70">← BACK</a>
       </div>
     </div>
 
@@ -501,8 +503,8 @@ function generatePDF() {
         });
         
         const w = window.innerWidth;
-        // Add 60px padding to ensure no browser rounding issues trigger a new page
-        const h = Math.ceil(maxBottom) + 60;
+        // Reduce padding to ensure single page
+        const h = Math.ceil(maxBottom) + 10;
         
         let style = document.getElementById('dynamic-print-style');
         if (!style) {

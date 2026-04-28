@@ -20,10 +20,13 @@ def run_python(script_path):
 def main():
     log("Iniciando deploy rápido (Apenas Site, pulando mídias)...")
 
-    # 1. Build portfolio from template
+    # 1. Build portfolio base
     run_python("build_portfolio.py")
 
-    # 2. Aplicar patches UX/UI
+    # 2. Sync dynamic data from Bunny
+    run_python("sync_bunny.py")
+
+    # 3. Aplicar patches UX/UI
     run_python("patch_portfolio.py")
     
     # 3. Verificar mudanças no Git
