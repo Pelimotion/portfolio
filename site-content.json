@@ -1348,7 +1348,15 @@
         "total": 3
       },
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Lupa/stage_EP02_1min_1_50.jpg",
-      "status": "public"
+      "status": "public",
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": "",
+      "release": "",
+      "release_pt": "",
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     },
     "NEXTRON": {
       "status": "public",
@@ -2944,6 +2952,35 @@
           {
             "title": "WHY SCALE ARMY",
             "body": "I'm looking for a remote contract role where speed and creativity aren't in conflict — they're the same thing. A team producing timely, high-impact content around current events is exactly where my mix of editorial instinct, technical range, and AI fluency adds real, immediate value. I work U.S. business hours without friction. I'm ready to deliver from day one."
+          }
+        ]
+      },
+      "cvOverrides": {}
+    },
+    {
+      "id": "buildgood",
+      "companyName": "BuildGood",
+      "targetRole": "Senior Designer - Animation & Video (Motion Branding)",
+      "accentColor": "#fef2dd",
+      "createdAt": "2026-04-28",
+      "heroLabel": "CV Application / BuildGood",
+      "coverLetter": {
+        "sections": [
+          {
+            "title": "OPENING",
+            "body": "I'm a motion designer and creative director based in Rio de Janeiro, with eight years producing video content and brand assets across agency, broadcast, and direct-response environments. I'm applying for the Multi-Media Content Producer role because the work you're describing — content that moves people toward action — is precisely the discipline I've built my practice around."
+          },
+          {
+            "title": "WHAT I BRING",
+            "body": "My core stack is Adobe Premiere Pro, After Effects, and DaVinci Resolve, applied across a wide range of formats: podcast production, digital ad campaigns, social media content, motion graphics, and print-ready design assets. I've worked inside agency pipelines managing multiple client briefs simultaneously, delivering on-brand, on-deadline across digital and physical formats. Recent projects include post-production for a university advertising campaign (FURB), corporate video elevated to broadcast standard for Suzano, and a full motion media kit for an events brand deployed across digital, OOH, and live projection."
+          },
+          {
+            "title": "WHY DIFFERENT",
+            "body": "Beyond execution, I approach every project from a strategic angle — asking what the content needs to do before deciding how it should look. In a fundraising context, that distinction matters: donor-facing content has to earn attention and trust in the first few seconds. I'm comfortable working with that constraint, and I understand that design serves the mission, not the other way around."
+          },
+          {
+            "title": "WHY BUILDGOOD",
+            "body": "The model you've built — agency-level expertise applied to the nonprofit sector at scale — is genuinely rare. The opportunity to contribute to campaigns that fund meaningful work, across a variety of organizations and causes, is a strong pull. The part-time, remote, and Latin America-based structure fits my current setup exactly. I'm available to start promptly and work independently from day one."
           }
         ]
       },
