@@ -39,7 +39,7 @@
     }
   },
   "landing": {
-    "brandName": "Peli<em>motion</em>",
+    "brandName": "HUB",
     "brandSub": "Motion Branding & Creative Direction",
     "navButtons": [
       {
@@ -57,7 +57,7 @@
     "aboutTitle": "Motion as a <em>strategic</em> language.",
     "contactTitle": "Open to direction, <em>collaborations</em> and long-form briefs.",
     "contactSub": "Based in Rio de Janeiro. Working globally.",
-    "brandName_pt": "Peli<em>motion</em><br>Hub<span style=\"color:rgba(240,237,232,.25)\">.</span>",
+    "brandName_pt": "HUB",
     "brandSub_pt": "Motion Branding & Direção Criativa",
     "aboutTitle_pt": "Motion como <em>linguagem</em> estratégica.",
     "contactTitle_pt": "Aberto a direção, <em>colaborações</em> e projetos de longo prazo.",
@@ -2987,5 +2987,5 @@
       "cvOverrides": {}
     }
   ],
-  "lastSync": "2026-04-28 15:33:30"
+  "lastSync": "2026-04-28 16:13:56"
 }
