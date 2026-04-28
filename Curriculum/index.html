@@ -19,6 +19,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: ['selector', '[data-theme="dark"]'],
             theme: {
                 extend: {}
             }
@@ -27,50 +28,6 @@
 
     <!-- Custom Style (overrides Tailwind where needed) -->
     <link rel="stylesheet" href="style.css">
-<style>
-.container-custom-flush { padding: 0 1.25rem; }
-@media (min-width: 640px) { .container-custom-flush { padding: 0 2rem; } }
-@media print{
-  #priv-bar{display:none!important}
-  
-  body {
-    background-color: #050505 !important;
-    color: #fff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .bg-black { background-color: #050505 !important; }
-  .text-white { color: #ffffff !important; }
-  .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
-  .border-white\/5 { border-color: rgba(255,255,255,0.05) !important; }
-  .text-white\/40 { color: rgba(255,255,255,0.4) !important; }
-  .text-white\/30 { color: rgba(255,255,255,0.3) !important; }
-  .text-white\/20 { color: rgba(255,255,255,0.2) !important; }
-  .text-white\/55 { color: rgba(255,255,255,0.55) !important; }
-  .text-white\/70 { color: rgba(255,255,255,0.7) !important; }
-  
-  header { position: relative !important; top: auto !important; }
-  /* Hide the progress bar on print */
-  .progress-bar-container { display: none !important; }
-
-  article, .skill-group, .edu-item, .exp-item { page-break-inside: avoid; }
-  .reveal-mech, .reveal { opacity: 1 !important; transform: none !important; }
-}
-#cl-links a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
-#cl-links a:hover{border-color:rgba(255,255,255,.6)}
-</style>
-
-    <style>
-    [data-theme="light"] { --bg: #f5f5f5; --fg: #050505; --border: rgba(10,10,10,.1); }
-    [data-theme="light"] body { background: var(--bg); color: var(--fg); }
-    [data-theme="light"] .text-white { color: var(--fg); }
-    [data-theme="light"] .bg-black { background: var(--bg); }
-    [data-theme="light"] .border-white\/10 { border-color: var(--border); }
-    [data-theme="light"] .text-white\/40, [data-theme="light"] .text-white\/50, [data-theme="light"] .text-white\/70 { color: rgba(5,5,5,.5); }
-    [data-theme="light"] .hover\:bg-white\/5:hover { background: rgba(5,5,5,.05); }
-    [data-theme="light"] .bg-white { background: var(--fg); }
-    [data-theme="light"] .text-black { color: var(--bg); }
-    </style>
     
 <script src="../../theme.js"></script>
 </head>

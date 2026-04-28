@@ -19,6 +19,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: ['selector', '[data-theme="dark"]'],
             theme: {
                 extend: {}
             }
@@ -26,24 +27,8 @@
     </script>
 
     <!-- Custom Style (overrides Tailwind where needed) -->
-    <link rel="stylesheet" href="/Curriculum/style.css">
-<style>
-.container-custom-flush { padding: 0 1.25rem; }
-@media (min-width: 640px) { .container-custom-flush { padding: 0 2rem; } }
-@media print{
-  #priv-bar{display:none!important}
-  body{background:#fff!important;color:#000!important}
-  .hero-title,.section-title,.exp-title,.contact-cta{color:#000!important}
-  .text-white\/85,.text-white\/65,.text-white\/70,.text-white\/90{color:#333!important}
-  .text-white\/40,.text-white\/30,.text-white\/20,.text-white\/50,.mono-label,.label-tiny{color:#666!important}
-  .hairline{border-color:#ddd!important}
-  .border-white\/10,.border-white\/5{border-color:#eee!important}
-  .bg-black\/90{background:transparent!important}
-  section, article, .skill-group { page-break-inside: avoid; }
-}
-#cl-links a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding:4px 8px;font-family:monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .2s}
-#cl-links a:hover{border-color:rgba(255,255,255,.6)}
-</style>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../../theme.js"></script>
 </head>
 <body class="bg-black text-white selection:bg-white/20 min-h-screen flex flex-col items-center py-20 sm:py-32 relative overflow-x-hidden">
     <!-- Animated bg -->
