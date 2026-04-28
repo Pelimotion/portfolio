@@ -174,6 +174,20 @@
         .player-meta-title { font-size: clamp(14px,2vw,22px); font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; color: var(--fg); }
         .player-meta-release { font-size: 13px; line-height: 1.7; color: var(--fg2); max-width: 680px; }
         .player-meta-deliverable { font-size: 9px; font-weight: 900; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); padding-top: 6px; border-top: 1px solid var(--border); }
+
+        /* ═══ EXIT LINK ═══ */
+        .exit-link {
+            position: fixed; bottom: 1.6rem; right: 1.6rem; z-index: 960;
+            font-size: 18px; font-weight: 400;
+            color: var(--fg); width: 34px; height: 34px;
+            border: 1.5px solid var(--fg); display: flex;
+            align-items: center; justify-content: center;
+            background: var(--bg); transition: all 0.2s;
+            text-decoration: none; line-height: 1;
+        }
+        .exit-link:hover { background: var(--fg); color: var(--bg); }
+        @media (max-width: 767px) { .exit-link { bottom: 4rem; right: 1rem; } }
+
     </style>
 </head>
 <body>
@@ -207,7 +221,7 @@
             </div>
             <div class="hero-right entrance-mask" onclick="toggleHeroVideo(this)">
                 <video class="hero-video" autoplay muted loop playsinline poster="https://pelimotion.b-cdn.net/Medias%20Portfolio/Pelimotion/Institutional/Institutional_CARTAO_10_1920_1080_1.jpg">
-                    <source src="https://pelimotion.b-cdn.net/hero_bg_optimized.mp4" type="video/mp4">
+                    <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/PELIMOTION_WHAT_WE_DO.mp4" type="video/mp4">
                 </video>
             </div>
         </section>
