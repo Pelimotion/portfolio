@@ -13,5 +13,6 @@ Você é o assistente principal deste projeto. Sua função é escrever código 
 - **Sincronização:** Sempre que houver novos clientes no Bunny, rode `python3 sync_bunny.py` (ele atualiza o arquivo em `V1/portfolio/`).
 
 ## 3. SEGURANÇA E BACKUP
-- **Backup Obrigatório:** Antes de cada modificação significativa, ou após finalizar uma rodada de edições, faça um backup do arquivo original na pasta `backups/`.
-- **Formato:** Use o padrão `nome_arquivo_backup_YYYYMMDD_HHMMSS.ext`.
+- **Backup Obrigatório:** NUNCA modifique um arquivo sem antes criar uma cópia de segurança na pasta `backups/` do projeto.
+- **Regra de Ouro:** Toda e qualquer modificação em arquivos do código (especialmente o `index.html`) deve ser precedida ou sucedida por um backup datado.
+- **Formato de Nome:** Use o padrão `nome_arquivo_backup_YYYYMMDD_HHMMSS.ext`.
