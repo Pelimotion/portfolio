@@ -380,85 +380,115 @@
             let w, h, particles = [];
             let progress = 0;
             let animationId;
-            let colors = { fg: '#000', fg2: '#666', bg: 'rgba(255,255,255,0.1)' };
+            let colors = { fg: '#000', fg2: '#666', bg: 'rgba(255,255,255,1)' };
 
             const updateColors = () => {
                 const style = getComputedStyle(document.documentElement);
                 const theme = document.documentElement.getAttribute('data-theme') || 'dark';
                 colors.fg = style.getPropertyValue('--fg').trim();
                 colors.fg2 = style.getPropertyValue('--fg2').trim();
-                colors.bg = theme === 'dark' ? 'rgba(8,8,8,0.1)' : 'rgba(245,245,245,0.1)';
+                colors.bg = theme === 'dark' ? 'rgb(8,8,8)' : 'rgb(245,245,245)';
             };
 
             const resize = () => {
-                w = canvas.width = canvas.offsetWidth;
-                h = canvas.height = canvas.offsetHeight;
+                const rect = canvas.parentElement.getBoundingClientRect();
+                w = canvas.width = rect.width;
+                h = canvas.height = rect.height;
                 initParticles();
                 updateColors();
             };
 
             function initParticles() {
                 particles = [];
-                const count = Math.min(1200, (w * h) / 400);
+                // Fewer, longer-lived "worms" for line-based organic feel
+                const count = 150;
                 for(let i=0; i<count; i++){
                     particles.push({
                         x: Math.random() * w,
                         y: Math.random() * h,
                         vx: 0, vy: 0,
-                        size: Math.random() * 2 + 0.5,
-                        type: Math.random() > 0.3 ? 'fg' : 'fg2'
+                        history: [], // Store recent positions for line drawing
+                        maxLength: Math.random() * 20 + 10,
+                        type: Math.random() > 0.5 ? 'fg' : 'fg2'
                     });
                 }
             }
 
             const noise = (x, y, t) => {
-                return Math.sin(x * 0.005 + t) * Math.cos(y * 0.005 - t) * Math.PI * 2;
+                return Math.sin(x * 0.003 + t) * Math.cos(y * 0.003 - t) * Math.PI * 2;
             };
 
             const draw = (t) => {
-                const time = t * 0.0005;
-                ctx.fillStyle = colors.bg;
+                const time = t * 0.0002; // Slower time
+                
+                // Clear with slight opacity for trails
+                ctx.fillStyle = colors.bg.replace('rgb', 'rgba').replace(')', ', 0.08)');
                 ctx.fillRect(0, 0, w, h);
 
-                if(video.buffered.length > 0){
+                // Progress calculation with safety
+                if(video.duration && video.buffered.length > 0){
                     const end = video.buffered.end(video.buffered.length - 1);
-                    progress = end / video.duration;
+                    progress = Math.min(end / video.duration, 1);
                 }
+                
+                // If video is actually playing or ready, force progress
+                if(video.readyState >= 3 || !video.paused) progress = 1;
 
                 particles.forEach(p => {
                     const angle = noise(p.x, p.y, time);
-                    const speed = 0.4 + progress * 2.8;
-                    p.vx += Math.cos(angle) * 0.2;
-                    p.vy += Math.sin(angle) * 0.2;
-                    p.vx *= 0.95; p.vy *= 0.95;
+                    const speed = 0.3 + progress * 0.7; // Slower movement
+                    p.vx += Math.cos(angle) * 0.1;
+                    p.vy += Math.sin(angle) * 0.1;
+                    p.vx *= 0.97; p.vy *= 0.97;
                     p.x += p.vx * speed;
                     p.y += p.vy * speed;
 
-                    if(p.x < 0) p.x = w; if(p.x > w) p.x = 0;
-                    if(p.y < 0) p.y = h; if(p.y > h) p.y = 0;
+                    p.history.push({x: p.x, y: p.y});
+                    if(p.history.length > p.maxLength) p.history.shift();
 
-                    ctx.fillStyle = p.type === 'fg' ? colors.fg : colors.fg2;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fill();
+                    if(p.x < 0) { p.x = w; p.history = []; }
+                    if(p.x > w) { p.x = 0; p.history = []; }
+                    if(p.y < 0) { p.y = h; p.history = []; }
+                    if(p.y > h) { p.y = 0; p.history = []; }
+
+                    if(p.history.length > 1){
+                        ctx.strokeStyle = p.type === 'fg' ? colors.fg : colors.fg2;
+                        ctx.lineWidth = 1.5;
+                        ctx.lineCap = 'round';
+                        ctx.beginPath();
+                        ctx.moveTo(p.history[0].x, p.history[0].y);
+                        for(let i=1; i<p.history.length; i++){
+                            ctx.lineTo(p.history[i].x, p.history[i].y);
+                        }
+                        ctx.stroke();
+                    }
                 });
 
                 if(progress < 0.99) {
                     animationId = requestAnimationFrame(draw);
                 } else {
-                    video.classList.add('ready');
-                    canvas.classList.add('fade-out');
-                    setTimeout(() => {
-                        cancelAnimationFrame(animationId);
-                        canvas.style.display = 'none';
-                    }, 1500);
+                    revealVideo();
                 }
             };
 
-            video.addEventListener('canplaythrough', () => { progress = 1; });
-            video.addEventListener('loadeddata', () => { if(video.readyState >= 3) progress = 1; });
+            const revealVideo = () => {
+                video.classList.add('ready');
+                canvas.classList.add('fade-out');
+                setTimeout(() => {
+                    cancelAnimationFrame(animationId);
+                    canvas.style.display = 'none';
+                }, 1500);
+            };
+
+            // Event listeners for video states
+            video.addEventListener('canplaythrough', revealVideo);
+            video.addEventListener('playing', revealVideo);
             
-            // Re-update colors when theme changes
+            // Fallback: If after 5 seconds it's still not "ready", check if it can play
+            setTimeout(() => {
+                if(video.readyState >= 2) revealVideo();
+            }, 5000);
+
             const observer = new MutationObserver(updateColors);
             observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
