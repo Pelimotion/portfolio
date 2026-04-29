@@ -49,7 +49,7 @@ exit_css = """
 if '.exit-link' not in html:
     html = html.replace('    </style>', exit_css + '\n    </style>', 1)
 
-exit_html = '\n    <a href="../../index.html" class="exit-link" aria-label="Back to main hub">← EXIT</a>'
+exit_html = '\n    <a href="/" class="exit-link" aria-label="Back to main hub">← EXIT</a>'
 if 'exit-link' not in html or exit_html.strip() not in html:
     html = html.replace(
         '<button class="theme-toggle',
