@@ -194,7 +194,8 @@ if __name__ == "__main__":
             # content.json should be a subset of site-content.json (just clients and categories)
             legacy_data = {
                 "clients": site_data['clients'],
-                "categories": site_data.get('categories', {})
+                "categories": site_data.get('categories', {}),
+                "clientOrder": site_data.get('clientOrder', [])
             }
             with open('content.json', 'w', encoding='utf-8') as f:
                 json.dump(legacy_data, f, indent=4, ensure_ascii=False)

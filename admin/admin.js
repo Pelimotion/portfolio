@@ -521,7 +521,18 @@ function openEditor(type, key) {
   const isClient = type === 'client';
 
   let html = `
-    <div class="page-header"><div class="page-label">${isClient ? 'CLIENT' : 'CATEGORY'}</div><h1 class="page-title">${key}</h1></div>
+    <div class="page-header">
+      <div class="page-label">${isClient ? 'CLIENT' : 'CATEGORY'}</div>
+      <div style="display:flex; align-items:center; gap:15px">
+        <h1 class="page-title" id="page-title-display">${key}</h1>
+        ${isClient ? `<button class="btn" style="font-size:8px; padding:4px 8px" onclick="startRename()">✎ Rename</button>` : ''}
+      </div>
+      <div id="rename-box" style="display:none; margin-top:10px; gap:8px; align-items:center">
+        <input type="text" id="rename-input" value="${esc(key)}" style="width:200px">
+        <button class="btn green" onclick="confirmRename()">OK</button>
+        <button class="btn" onclick="cancelRename()">Cancel</button>
+      </div>
+    </div>
     
     <div class="card"><div class="card-title"><span class="icon">🏷️</span> Card Tagline</div>
       <div class="field-pair">
@@ -1203,6 +1214,42 @@ function moveClient(dir, idx) {
   buildSidebar();
 }
 
+function startRename() {
+  document.getElementById('rename-box').style.display = 'flex';
+  document.getElementById('rename-input').focus();
+}
+
+function cancelRename() {
+  document.getElementById('rename-box').style.display = 'none';
+}
+
+function confirmRename() {
+  const newName = document.getElementById('rename-input').value.trim().toUpperCase();
+  const oldName = currentKey;
+  if (!newName || newName === oldName) { cancelRename(); return; }
+  
+  if (D.clients[newName]) {
+    alert('A client with this name already exists.');
+    return;
+  }
+
+  // 1. Copy data to new key
+  D.clients[newName] = JSON.parse(JSON.stringify(D.clients[oldName]));
+  // 2. Delete old key
+  delete D.clients[oldName];
+  // 3. Update clientOrder
+  if (D.clientOrder) {
+    const idx = D.clientOrder.indexOf(oldName);
+    if (idx !== -1) D.clientOrder[idx] = newName;
+  }
+  
+  currentKey = newName;
+  markUnsaved();
+  buildSidebar();
+  openEditor('client', newName);
+  toast('Client renamed to ' + newName);
+}
+
 // ─── Global Exports ───
 window.onPinInput = onPinInput;
 window.checkPin = checkPin;
@@ -1215,4 +1262,7 @@ window.closePublishModal = closePublishModal;
 window.doPublish = doPublish;
 window.showReorder = showReorder;
 window.moveClient = moveClient;
+window.startRename = startRename;
+window.confirmRename = confirmRename;
+window.cancelRename = cancelRename;
 window.importJSON = () => document.getElementById('file-input').click();
