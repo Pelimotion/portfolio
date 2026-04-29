@@ -283,11 +283,26 @@ function buildSidebar() {
   sc.innerHTML = '';
   scat.innerHTML = '';
 
+  // Order item
+  const orderDiv = document.createElement('div');
+  orderDiv.className = 'sidebar-item';
+  orderDiv.style.borderLeftColor = 'var(--yellow)';
+  orderDiv.innerHTML = `<div class="dot" style="background:var(--yellow)"></div><span style="flex:1">⇅ REORDER LIST</span>`;
+  orderDiv.onclick = () => showReorder();
+  sc.appendChild(orderDiv);
+  sc.appendChild(document.createElement('hr')).style.cssText = 'border:0;border-top:1px solid var(--border);margin:8px 16px';
+
   // Count missing for status
   let missing = 0;
 
-  Object.keys(D.clients || {}).sort().forEach(name => {
+  // Initialize clientOrder if missing
+  if (!D.clientOrder || D.clientOrder.length !== Object.keys(D.clients || {}).length) {
+    D.clientOrder = Object.keys(D.clients || {}).sort();
+  }
+
+  D.clientOrder.forEach(name => {
     const c = D.clients[name];
+    if (!c) return;
     const hasDesc = !!(c.description && c.description.trim());
     const hasAny = !!(c.description || c.release || (c.deliverables || []).length);
     if (!hasDesc) missing++;
@@ -1138,6 +1153,56 @@ try {
   alert('Critical Admin Error: ' + e.message);
 }
 
+function showReorder() {
+  currentSection = 'reorder';
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-header">
+      <div class="page-label">System — Portfolio</div>
+      <h1 class="page-title">Client Sequence</h1>
+    </div>
+    <div class="card">
+      <div class="card-title">Drag to reorder clients or use buttons</div>
+      <div id="reorder-list" style="display:flex; flex-direction:column; gap:10px"></div>
+    </div>
+    <div class="actions-bar">
+      <button class="btn primary" onclick="exportJSON()">💾 Save Order</button>
+    </div>
+  `;
+
+  renderReorderList();
+}
+
+function renderReorderList() {
+  const list = document.getElementById('reorder-list');
+  list.innerHTML = '';
+  D.clientOrder.forEach((name, idx) => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex; align-items:center; gap:15px; background:rgba(255,255,255,0.03); padding:12px 16px; border:1px solid var(--border); border-radius:4px';
+    item.innerHTML = `
+      <div style="font-size:12px; font-weight:700; color:var(--fg3); width:20px">${idx + 1}</div>
+      <div style="flex:1; font-weight:700">${name}</div>
+      <div style="display:flex; gap:5px">
+        <button class="btn" style="padding:4px 10px" onclick="moveClient(-1, ${idx})">↑</button>
+        <button class="btn" style="padding:4px 10px" onclick="moveClient(1, ${idx})">↓</button>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function moveClient(dir, idx) {
+  const target = idx + dir;
+  if (target < 0 || target >= D.clientOrder.length) return;
+  const arr = [...D.clientOrder];
+  const item = arr.splice(idx, 1)[0];
+  arr.splice(target, 0, item);
+  D.clientOrder = arr;
+  markUnsaved();
+  renderReorderList();
+  buildSidebar();
+}
+
 // ─── Global Exports ───
 window.onPinInput = onPinInput;
 window.checkPin = checkPin;
@@ -1148,4 +1213,6 @@ window.saveAll = saveAll;
 window.openPublishModal = openPublishModal;
 window.closePublishModal = closePublishModal;
 window.doPublish = doPublish;
+window.showReorder = showReorder;
+window.moveClient = moveClient;
 window.importJSON = () => document.getElementById('file-input').click();

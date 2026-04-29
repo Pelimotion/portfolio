@@ -522,8 +522,12 @@
             if(!plmContent.clients) return;
             
             let html = '';
-            Object.entries(plmContent.clients).forEach(([name, client]) => {
-                if(client.status !== 'public') return;
+            // Respect custom order if available
+            const order = plmContent.clientOrder || Object.keys(plmContent.clients).sort();
+            
+            order.forEach(name => {
+                const client = plmContent.clients[name];
+                if(!client || client.status === 'private') return;
                 const cover = client.coverImage || '';
                 const count = client.media ? (client.media.total || 0) : 0;
                 
