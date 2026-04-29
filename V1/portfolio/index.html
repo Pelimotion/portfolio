@@ -61,8 +61,9 @@
         .hero-video.ready { opacity: 0.85; }
         
         /* ─── GENERATIVE ART LOADER ─── */
-        #hero-generative-art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; transition: opacity 1.5s ease; }
+        #hero-generative-art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; transition: opacity 1.5s ease; opacity: 1; }
         #hero-generative-art.fade-out { opacity: 0; }
+        #hero-generative-art.buffering { opacity: 0.35; z-index: 10; }
         
         @media(max-width: 900px) {
             #hero-brutalist { grid-template-columns: 1fr; height: auto; }
@@ -418,25 +419,25 @@
                 return Math.sin(x * 0.003 + t) * Math.cos(y * 0.003 - t) * Math.PI * 2;
             };
 
+            let isBuffering = false;
+
             const draw = (t) => {
-                const time = t * 0.0002; // Slower time
+                const time = t * 0.0002;
                 
-                // Clear with slight opacity for trails
+                // Trails
                 ctx.fillStyle = colors.bg.replace('rgb', 'rgba').replace(')', ', 0.08)');
                 ctx.fillRect(0, 0, w, h);
 
-                // Progress calculation with safety
                 if(video.duration && video.buffered.length > 0){
                     const end = video.buffered.end(video.buffered.length - 1);
                     progress = Math.min(end / video.duration, 1);
                 }
                 
-                // If video is actually playing or ready, force progress
-                if(video.readyState >= 3 || !video.paused) progress = 1;
+                if(video.readyState >= 3 && !isBuffering) progress = 1;
 
                 particles.forEach(p => {
                     const angle = noise(p.x, p.y, time);
-                    const speed = 0.3 + progress * 0.7; // Slower movement
+                    const speed = 0.3 + (progress * 0.7);
                     p.vx += Math.cos(angle) * 0.1;
                     p.vy += Math.sin(angle) * 0.1;
                     p.vx *= 0.97; p.vy *= 0.97;
@@ -453,18 +454,16 @@
 
                     if(p.history.length > 1){
                         ctx.strokeStyle = p.type === 'fg' ? colors.fg : colors.fg2;
-                        ctx.lineWidth = 1.5;
+                        ctx.lineWidth = 1.2;
                         ctx.lineCap = 'round';
                         ctx.beginPath();
                         ctx.moveTo(p.history[0].x, p.history[0].y);
-                        for(let i=1; i<p.history.length; i++){
-                            ctx.lineTo(p.history[i].x, p.history[i].y);
-                        }
+                        for(let i=1; i<p.history.length; i++) ctx.lineTo(p.history[i].x, p.history[i].y);
                         ctx.stroke();
                     }
                 });
 
-                if(progress < 0.99) {
+                if(progress < 0.99 || isBuffering) {
                     animationId = requestAnimationFrame(draw);
                 } else {
                     revealVideo();
@@ -472,35 +471,44 @@
             };
 
             const revealVideo = () => {
-                if(video.classList.contains('ready')) return;
+                if(video.classList.contains('ready') && !isBuffering) return;
                 
-                // Force a solid background on the canvas for a cleaner transition
-                // If light mode and video starts white, this helps blend
-                ctx.fillStyle = colors.bg;
-                ctx.fillRect(0, 0, w, h);
+                if(!isBuffering) {
+                    ctx.fillStyle = colors.bg;
+                    ctx.fillRect(0, 0, w, h);
+                }
 
                 video.play().then(() => {
                     video.classList.add('ready');
+                    canvas.classList.remove('buffering');
                     canvas.classList.add('fade-out');
-                    setTimeout(() => {
-                        cancelAnimationFrame(animationId);
-                        canvas.style.display = 'none';
-                    }, 800); // Faster fade out for immediate start
-                }).catch(e => {
-                    // Fallback if play() fails (e.g. user interaction required)
+                    isBuffering = false;
+                }).catch(() => {
                     video.classList.add('ready');
                     canvas.classList.add('fade-out');
                 });
             };
 
-            // Event listeners for video states
+            const onWaiting = () => {
+                isBuffering = true;
+                canvas.classList.remove('fade-out');
+                canvas.classList.add('buffering');
+                if(!animationId) animationId = requestAnimationFrame(draw);
+            };
+
+            const onPlaying = () => {
+                isBuffering = false;
+                if(video.readyState >= 3) {
+                    revealVideo();
+                }
+            };
+
+            video.addEventListener('waiting', onWaiting);
+            video.addEventListener('stalled', onWaiting);
+            video.addEventListener('playing', onPlaying);
             video.addEventListener('canplaythrough', revealVideo);
-            video.addEventListener('playing', revealVideo);
             
-            // Fallback: If after 5 seconds it's still not "ready", check if it can play
-            setTimeout(() => {
-                if(video.readyState >= 2) revealVideo();
-            }, 5000);
+            setTimeout(() => { if(video.readyState >= 2) revealVideo(); }, 5000);
 
             const observer = new MutationObserver(updateColors);
             observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
