@@ -338,7 +338,7 @@
       "media": {
         "root": [
           {
-            "title": "OPENER DISPLAY",
+            "title": "01 VINHETA DE ABERTURA GERAL",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral.jpg",
@@ -348,8 +348,7 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_85.jpg"
-            ],
-            "title_pt": "DISPLAY DE ABERTURA"
+            ]
           },
           {
             "title": "BELEZA EXPERIENCE REEL 1",
@@ -365,7 +364,7 @@
             ]
           },
           {
-            "title": "ADVERSITING 02",
+            "title": "BELEZA EXPERIENCE REEL 2 1920X1080",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080.jpg",
@@ -378,7 +377,7 @@
             ]
           },
           {
-            "title": "ADVERSITING 03",
+            "title": "BELEZA EXPERIENCE REEL 62",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62.jpg",
@@ -3008,7 +3007,7 @@
       "cvOverrides": {}
     }
   ],
-  "lastSync": "2026-04-29 00:49:17",
+  "lastSync": "2026-04-29 15:44:08",
   "clientOrder": [
     "BMW",
     "BEIRAMAR SHOPPING",
