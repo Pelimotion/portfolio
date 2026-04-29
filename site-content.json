@@ -338,7 +338,7 @@
       "media": {
         "root": [
           {
-            "title": "01 VINHETA DE ABERTURA GERAL",
+            "title": "OPENER DISPLAY",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral.jpg",
@@ -348,7 +348,8 @@
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_15.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_50.jpg",
               "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_85.jpg"
-            ]
+            ],
+            "title_pt": "DISPLAY DE ABERTURA"
           },
           {
             "title": "BELEZA EXPERIENCE REEL 1",
@@ -364,7 +365,7 @@
             ]
           },
           {
-            "title": "BELEZA EXPERIENCE REEL 2 1920X1080",
+            "title": "ADVERSITING 02",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_2_1920x1080.jpg",
@@ -377,7 +378,7 @@
             ]
           },
           {
-            "title": "BELEZA EXPERIENCE REEL 62",
+            "title": "ADVERSITING 03",
             "video_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62.mp4",
             "preview_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62_preview.mp4",
             "poster_url": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/BELEZA_EXPERIENCE_REEL_62.jpg",
@@ -420,7 +421,15 @@
         "total": 6
       },
       "coverImage": "https://pelimotion.b-cdn.net/Medias%20Portfolio/Beleza%20na%20Web/01%20Vinheta%20de%20Abertura%20Geral_50.jpg",
-      "status": "public"
+      "status": "public",
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": "",
+      "release": "",
+      "release_pt": "",
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     },
     "COBLUE": {
       "media": {
@@ -2463,7 +2472,13 @@
           ]
         },
         "total": 20
-      }
+      },
+      "tagline_pt": "",
+      "description_pt": "",
+      "release": "",
+      "release_pt": "",
+      "category_descriptions": {},
+      "category_descriptions_pt": {}
     }
   },
   "categories": {
@@ -2562,6 +2577,12 @@
         "AI Generated Content",
         "Food & Lifestyle Visual"
       ]
+    },
+    "BEIRAMAR SHOPPING": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
     }
   },
   "curriculum": {
@@ -2987,5 +3008,34 @@
       "cvOverrides": {}
     }
   ],
-  "lastSync": "2026-04-29 00:49:17"
+  "lastSync": "2026-04-29 00:49:17",
+  "clientOrder": [
+    "BMW",
+    "BEIRAMAR SHOPPING",
+    "BELEZA NA WEB",
+    "COLCCI",
+    "LSLA",
+    "FAST SHIPPING",
+    "FUNKY ROOM",
+    "RIO CARNAVAL",
+    "VIDEOANIMATE",
+    "FURB",
+    "PLAYA",
+    "LUPA",
+    "SUZANO",
+    "SULITA",
+    "EQI",
+    "NEXTRON",
+    "LOGO REVEALS",
+    "COBLUE",
+    "HEO",
+    "FIREDOGS",
+    "PLACARSOFT",
+    "R9 LUXEMBOURG",
+    "NEY SOUZA",
+    "PREFEITURA TIMBÓ",
+    "WOLFGARTEN",
+    "UNIVALI",
+    "BC MAPPING FESTIVAL"
+  ]
 }
