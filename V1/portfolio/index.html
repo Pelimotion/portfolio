@@ -284,6 +284,37 @@
         let currentClientName = '';
         window._PLM_LANG = localStorage.getItem('plm-lang') || 'en';
 
+        function slugify(text) {
+            if (!text) return "";
+            return text.toString().toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
+        function handleRouting() {
+            const path = window.location.pathname;
+            const parts = path.split('/').filter(p => p);
+            if (parts[0] === 'portfolio' && parts[1]) {
+                const clientSlug = parts[1];
+                const projectSlug = parts[2];
+                const clientName = Object.keys(plmContent.clients).find(k => slugify(k) === clientSlug);
+                if (clientName) {
+                    openGallery(clientName, true);
+                    if (projectSlug) {
+                        const pIdx = currentPlaylist.findIndex(m => slugify(m.title) === projectSlug);
+                        if (pIdx !== -1) setTimeout(() => openModal(pIdx, true), 600);
+                    }
+                }
+            } else if (window.location.hash) {
+                const hashName = window.location.hash.substring(1);
+                if (plmContent.clients[hashName]) openGallery(hashName, true);
+            }
+        }
+
         // ─── INIT ───
         async function initApp() {
             initTheme();
@@ -297,6 +328,7 @@
                 initAutomata('canvas-r');
                 initGenerativeArt();
                 updateUI();
+                handleRouting();
             } catch (e) {
                 console.error("Initialization failed:", e);
                 document.getElementById('main-grid').innerHTML = '<p>Error loading projects. Please refresh.</p>';
@@ -588,7 +620,11 @@
             gallery.classList.add('active');
             window.scrollTo(0,0);
             observeMasks();
-            history.pushState({view: 'gallery', client: name}, '', '#' + name);
+            
+            if (!arguments[1]) {
+                const newPath = '/portfolio/' + slugify(name);
+                history.pushState({view: 'gallery', client: name}, '', newPath);
+            }
         }
 
         function renderMediaCard(m, playlistIndex) {
@@ -612,10 +648,12 @@
         function goHome() {
             document.getElementById('view-gallery').classList.remove('active');
             document.getElementById('view-home').style.display = 'block';
-            history.pushState({view: 'home'}, '', window.location.pathname);
+            if (!arguments[0]) {
+                history.pushState({view: 'home'}, '', '/');
+            }
         }
 
-        function openModal(index) {
+        function openModal(index, silent = false) {
             currentIndex = index;
             const item = currentPlaylist[index];
             if(!item) return;
@@ -623,13 +661,19 @@
             const v = document.getElementById('modal-video');
             v.src = item.video_url;
             
-            document.getElementById('modal-title').textContent = (window._PLM_LANG === 'pt' ? item.title_pt : item.title) || item.title || '';
+            const title = (window._PLM_LANG === 'pt' ? item.title_pt : item.title) || item.title || '';
+            document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-client').textContent = currentClientName;
             document.getElementById('player-index-count').textContent = `${String(index + 1).padStart(2, '0')} / ${String(currentPlaylist.length).padStart(2, '0')}`;
             
             document.getElementById('modal').classList.add('active');
             document.getElementById('player-container').classList.remove('paused');
             updateNavBtns();
+
+            if (!silent) {
+                const newPath = '/portfolio/' + slugify(currentClientName) + '/' + slugify(item.title);
+                history.pushState({view: 'project', client: currentClientName, index: index}, '', newPath);
+            }
         }
 
         function closeModal() {
@@ -637,6 +681,10 @@
             m.classList.remove('active');
             document.getElementById('modal-video').pause();
             document.getElementById('player-container').classList.remove('paused');
+            
+            // Revert URL to client gallery
+            const newPath = '/portfolio/' + slugify(currentClientName);
+            history.pushState({view: 'gallery', client: currentClientName}, '', newPath);
         }
 
         function onVideoPlay() {
@@ -690,8 +738,16 @@
         }
 
         window.onpopstate = (e) => {
-            if(e.state && e.state.view === 'gallery') openGallery(e.state.client);
-            else goHome();
+            if(e.state) {
+                if(e.state.view === 'gallery') openGallery(e.state.client, true);
+                else if(e.state.view === 'project') {
+                    openGallery(e.state.client, true);
+                    openModal(e.state.index, true);
+                }
+                else goHome(true);
+            } else {
+                handleRouting();
+            }
         };
 
         function toggleHeroVideo(container) {

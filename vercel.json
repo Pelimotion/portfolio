@@ -7,6 +7,8 @@
   "rewrites": [
     { "source": "/v1/", "destination": "/V1/portfolio/index.html" },
     { "source": "/v1/:path*", "destination": "/V1/portfolio/:path*" },
+    { "source": "/portfolio", "destination": "/V1/portfolio/index.html" },
+    { "source": "/portfolio/:path*", "destination": "/V1/portfolio/index.html" },
     { "source": "/curriculum", "destination": "/Curriculum/index.html" },
     { "source": "/curriculum/:path*", "destination": "/Curriculum/:path*" },
     { "source": "/admin", "destination": "/admin/index.html" },
