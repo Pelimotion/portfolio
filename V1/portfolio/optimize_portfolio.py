@@ -7,8 +7,8 @@ import ssl
 from urllib.parse import quote
 
 # ─── CONFIGURATION ───
-API_KEY = "9268ef2d-28c0-4827-a29127346d24-5d2b-47a1"
-ZONE_NAME = "pelimotion-assets"
+API_KEY = "864ea13e-6fa0-4de2-aedddb2e0480-84d2-439a"
+ZONE_NAME = "pelimotion-portfolio"
 STORAGE_ENDPOINT = "https://storage.bunnycdn.com"
 FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg"
 FFPROBE_PATH = "/opt/homebrew/bin/ffprobe"
@@ -71,9 +71,11 @@ def process_video(local_path, manifest):
     base_name = os.path.basename(local_path).rsplit('.', 1)[0]
     local_dir = os.path.dirname(local_path)
     
-    # Remote path on Bunny
-    # e.g. Medias Portfolio/Client/Video.mp4 -> Medias Portfolio/Client/
-    remote_dir_path = local_path.rsplit('/', 1)[0] if '/' in local_path else BASE_DIR
+    # Remote path on Bunny (strip the local BASE_DIR prefix to upload to root)
+    if local_path.startswith(BASE_DIR):
+        remote_dir_path = os.path.dirname(local_path[len(BASE_DIR):].lstrip('/'))
+    else:
+        remote_dir_path = os.path.dirname(local_path)
 
     # 1. Preview Video (Ultra lightweight)
     preview_filename = f"{base_name}_preview.mp4"

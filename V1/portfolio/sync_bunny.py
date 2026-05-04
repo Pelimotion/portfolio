@@ -6,15 +6,10 @@ import ssl
 from urllib.parse import quote
 
 # Bunny Storage API details
-API_KEY = os.environ.get("BUNNY_API_KEY")
-
-if not API_KEY:
-    print("Erro: A variável de ambiente BUNNY_API_KEY não está configurada.")
-    exit(1)
-
-ZONE_NAME = "pelimotion-assets"
-BASE_URL = f"https://storage.bunnycdn.com/{ZONE_NAME}/Medias Portfolio/"
-CDN_BASE = "https://pelimotion.b-cdn.net/Medias%20Portfolio"
+API_KEY = "864ea13e-6fa0-4de2-aedddb2e0480-84d2-439a"
+ZONE_NAME = "pelimotion-portfolio"
+BASE_URL = f"https://storage.bunnycdn.com/{ZONE_NAME}/"
+CDN_BASE = f"https://{ZONE_NAME}.b-cdn.net"
 
 # HTML_FILE = "index.html"
 # Use the correct path for the V1 portfolio's index.html
@@ -88,8 +83,8 @@ def detect_format(filename):
     return 'default', '16/9'
 
 def scan_bunny():
-    print("Scanning Bunny.net Medias Portfolio...")
-    root_items = api_get("/Medias Portfolio/")
+    print(f"Scanning Bunny.net {ZONE_NAME} root...")
+    root_items = api_get("/")
     clients = {}
     
     for client_folder in root_items:
@@ -100,7 +95,7 @@ def scan_bunny():
         clients[client_name] = {"root": [], "categories": {}, "total": 0}
         
         # Scan client root
-        client_path = f"/Medias Portfolio/{client_folder['ObjectName']}/"
+        client_path = f"/{client_folder['ObjectName']}/"
         client_items = api_get(client_path)
         
         def process_item(item, parent_list, base_cdn_path, folder_items):
