@@ -135,6 +135,36 @@ def scan_bunny():
                     clients[client_name]["coverImage"] = item_data["mosaic"][1] # use the 50% frame
                 
                 return True
+                
+            elif ext in ['.jpg', '.png', '.jpeg', '.webp']:
+                # Skip generated frames
+                if name.endswith('_15.jpg') or name.endswith('_50.jpg') or name.endswith('_85.jpg'):
+                    return False
+                    
+                # Skip if there's a video with the exact same base name
+                base_name = name.rsplit('.', 1)[0]
+                if any(i['ObjectName'].rsplit('.', 1)[0] == base_name and i['ObjectName'].lower().endswith(('.mp4', '.mov', '.webm')) for i in folder_items):
+                    return False
+                    
+                fmt_class, aspect = detect_format(name)
+                img_url = f"{base_cdn_path}/{quote(name)}"
+                
+                item_data = {
+                    "title": clean_title(name),
+                    "video_url": "",
+                    "preview_url": "",
+                    "poster_url": img_url,
+                    "format": fmt_class,
+                    "aspect": aspect,
+                    "mosaic": [img_url, img_url, img_url] # Fallback to itself
+                }
+                parent_list.append(item_data)
+                
+                if not clients[client_name]["coverImage"]:
+                    clients[client_name]["coverImage"] = img_url
+                    
+                return True
+                
             return False
 
         for item in client_items:

@@ -5,6 +5,8 @@ import hashlib
 import urllib.request
 import ssl
 from urllib.parse import quote
+import cv2
+import numpy as np
 
 # ─── CONFIGURATION ───
 API_KEY = "864ea13e-6fa0-4de2-aedddb2e0480-84d2-439a"
@@ -51,6 +53,43 @@ def get_video_duration(filepath):
     except:
         return 0
 
+def extract_smart_frame(video_path, out_path, target_time_sec):
+    """Uses OpenCV to extract a frame near target_time_sec that has good brightness and variance (avoids black/empty frames)."""
+    cap = cv2.VideoCapture(video_path)
+    cap.set(cv2.CAP_PROP_POS_MSEC, target_time_sec * 1000)
+    
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if not fps or fps <= 0: fps = 30
+    
+    max_frames_to_try = int(fps * 2) # check up to 2 seconds forward
+    
+    best_frame = None
+    best_score = -1
+    
+    for _ in range(max_frames_to_try):
+        ret, frame = cap.read()
+        if not ret: break
+        
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        mean = np.mean(gray)
+        variance = np.var(gray)
+        
+        if 20 < mean < 235 and variance > 150:
+            cv2.imwrite(out_path, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
+            cap.release()
+            return True
+            
+        score = variance
+        if score > best_score:
+            best_score = score
+            best_frame = frame
+            
+    if best_frame is not None:
+        cv2.imwrite(out_path, best_frame, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
+    
+    cap.release()
+    return True
+
 # ─── OPTIMIZATION ENGINE ───
 def process_video(local_path, manifest):
     """Generates preview, poster and frames locally then uploads."""
@@ -87,22 +126,19 @@ def process_video(local_path, manifest):
         preview_local
     ], capture_output=True)
     
-    # 2. Mosaic Frames & Poster
+    # 2. Mosaic Frames & Poster (Using Smart OpenCV Extraction)
     artifacts = [preview_local]
     frames = [15, 50, 85]
     for pct in frames:
         out_name = f"{base_name}_{pct}.jpg"
         out_path = os.path.join(local_dir, out_name)
         time = duration * (pct / 100)
-        subprocess.run([
-            FFMPEG_PATH, "-y", "-ss", str(time), "-i", local_path,
-            "-vframes", "1", "-q:v", "5", out_path
-        ], capture_output=True)
+        extract_smart_frame(local_path, out_path, time)
         artifacts.append(out_path)
         
     poster_name = f"{base_name}.jpg"
     poster_path = os.path.join(local_dir, poster_name)
-    subprocess.run([FFMPEG_PATH, "-y", "-ss", str(duration/2), "-i", local_path, "-vframes", "1", poster_path], capture_output=True)
+    extract_smart_frame(local_path, poster_path, duration / 2)
     artifacts.append(poster_path)
 
     # 3. Upload Artifacts + Main Video to Bunny

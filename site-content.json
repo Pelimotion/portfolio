@@ -1257,7 +1257,7 @@
           {
             "title": "PLACARSOFT LANCAMENTO ALTA",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Placarsoft/Placarsoft%20-Lancamento%20-%20Alta.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1658,11 +1658,25 @@
     },
     "SIMÃO": {
       "media": {
-        "root": [],
+        "root": [
+          {
+            "title": "SIMAO DISPLAY",
+            "video_url": "",
+            "preview_url": "",
+            "poster_url": "https://pelimotion-portfolio.b-cdn.net/Sim%C3%A3o/SIMAO_DISPLAY.jpg",
+            "format": "default",
+            "aspect": "16/9",
+            "mosaic": [
+              "https://pelimotion-portfolio.b-cdn.net/Sim%C3%A3o/SIMAO_DISPLAY.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/Sim%C3%A3o/SIMAO_DISPLAY.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/Sim%C3%A3o/SIMAO_DISPLAY.jpg"
+            ]
+          }
+        ],
         "categories": {},
-        "total": 0
+        "total": 1
       },
-      "coverImage": "",
+      "coverImage": "https://pelimotion-portfolio.b-cdn.net/Sim%C3%A3o/SIMAO_DISPLAY.jpg",
       "status": "public"
     },
     "SULITA": {
@@ -2155,6 +2169,32 @@
               ]
             },
             {
+              "title": "PROGRAMACAO SUMMER ISLA",
+              "video_url": "",
+              "preview_url": "",
+              "poster_url": "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-03.png",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-03.png",
+                "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-03.png",
+                "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-03.png"
+              ]
+            },
+            {
+              "title": "PROGRAMACAO SUMMER ISLA",
+              "video_url": "",
+              "preview_url": "",
+              "poster_url": "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-04.png",
+              "format": "default",
+              "aspect": "16/9",
+              "mosaic": [
+                "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-04.png",
+                "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-04.png",
+                "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO%20SUMMER%20ISLA%202026-04.png"
+              ]
+            },
+            {
               "title": "PROGRAMACAO SEMANAL RESTAURANTE",
               "video_url": "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE.mp4",
               "preview_url": "https://pelimotion-portfolio.b-cdn.net/lsla/Motion%20Campaign/PROGRAMACAO_SEMANAL_RESTAURANTE_preview.mp4",
@@ -2169,7 +2209,7 @@
             }
           ]
         },
-        "total": 20
+        "total": 22
       },
       "coverImage": "https://pelimotion-portfolio.b-cdn.net/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
       "status": "public"
@@ -2702,7 +2742,7 @@
       "cvOverrides": {}
     }
   ],
-  "lastSync": "2026-05-06 16:28:49",
+  "lastSync": "2026-05-06 18:04:46",
   "clientOrder": [
     "BMW",
     "BEIRAMAR SHOPPING",
