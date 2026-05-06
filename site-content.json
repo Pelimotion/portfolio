@@ -249,7 +249,7 @@
           {
             "title": "BMW MY APP",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -383,7 +383,7 @@
           {
             "title": "COBLUE INSTITUCIONAL",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Coblue/Coblue%20%20-%20Institucional%20-%20V2.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Coblue/Coblue%20%20-%20Institucional%20-%20V2_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Coblue/Coblue%20%20-%20Institucional%20-%20V2.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -406,7 +406,7 @@
           {
             "title": "AMC TEXTIL V02",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1091,7 +1091,7 @@
           {
             "title": "DELIMA REBELO",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/Delima%20Rebelo%20.mov",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/Delima%20Rebelo%20_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/Delima%20Rebelo%20.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1104,7 +1104,7 @@
           {
             "title": "FUEL",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/Fuel.mov",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/Fuel_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/Fuel.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1130,7 +1130,7 @@
           {
             "title": "ZAH LOGO REVEAL 9X16",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16.mov",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Logo%20Reveals/ZAH%20-%20Logo%20Reveal%20-%209x16.jpg",
             "format": "vertical",
             "aspect": "9/16",
@@ -1671,7 +1671,7 @@
           {
             "title": "SULITA COMPANHA RENATA FAN V04",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/Sulita/SULITA_COMPANHA%20RENATA%20FAN_V04.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1769,7 +1769,7 @@
           {
             "title": "JUES ABERTURA WEB 1",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/UNIVALI/JUES_ABERTURA_WEB_1.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/UNIVALI/JUES_ABERTURA_WEB_1_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/UNIVALI/JUES_ABERTURA_WEB_1.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1792,7 +1792,7 @@
           {
             "title": "AGRICOLA LUSIA CTA02",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/AGRICOLA_LUSIA_CTA02.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/AGRICOLA_LUSIA_CTA02_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/AGRICOLA_LUSIA_CTA02.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1805,7 +1805,7 @@
           {
             "title": "ASTE BUSINESS IMMOBILIARI CTA02",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02.mov",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/ASTE_BUSINESS_IMMOBILIARI_CTA02.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1818,7 +1818,7 @@
           {
             "title": "ASTE BUSSINESS CTA02",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/ASTE_BUSSINESS_CTA02.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/ASTE_BUSSINESS_CTA02_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/ASTE_BUSSINESS_CTA02.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1831,7 +1831,7 @@
           {
             "title": "E KILLER CTA01 3",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/E_KILLER_CTA01_3.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/E_KILLER_CTA01_3_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/E_KILLER_CTA01_3.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -1844,7 +1844,7 @@
           {
             "title": "MADOUT CTA01 ALTA",
             "video_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/MADOUT_CTA01_ALTA.mp4",
-            "preview_url": null,
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/MADOUT_CTA01_ALTA_preview.mp4",
             "poster_url": "https://pelimotion-portfolio.b-cdn.net/VideoAnimate/MADOUT_CTA01_ALTA.jpg",
             "format": "default",
             "aspect": "16/9",
@@ -2702,7 +2702,7 @@
       "cvOverrides": {}
     }
   ],
-  "lastSync": "2026-05-04 15:04:06",
+  "lastSync": "2026-05-06 16:28:49",
   "clientOrder": [
     "BMW",
     "BEIRAMAR SHOPPING",
