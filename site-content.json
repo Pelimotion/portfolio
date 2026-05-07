@@ -3562,12 +3562,12 @@
     },
     "LSLA": {
       "slug": "lsla",
-      "displayName": "LSLA",
+      "displayName": "ISLA",
       "description": "",
       "description_pt": "",
       "tags": [],
       "services": [],
-      "since": "",
+      "since": "2025",
       "externalUrl": "",
       "status": "public",
       "order": 4,
@@ -3578,7 +3578,7 @@
         "ogImage": "https://pelimotion-portfolio.b-cdn.net/lsla/CHAMADA_07_03_26_L_CIO_50.jpg"
       },
       "createdAt": "2026-05-07T16:12:34Z",
-      "updatedAt": "2026-05-07T16:12:34Z",
+      "updatedAt": "2026-05-07T21:12:34.739Z",
       "coverImage": "https://pelimotion-portfolio.b-cdn.net/lsla/CHAMADA_07_03_26_L_CIO_50.jpg",
       "syncedAt": "2026-05-07T21:11:54Z",
       "media": {
