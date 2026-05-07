@@ -118,7 +118,10 @@ function closePublishModal() {
   document.getElementById('publish-modal').classList.remove('open');
 }
 
+let isPublishing = false;
 async function doPublish() {
+  if (isPublishing) return toast('Publish already in progress...', true);
+  isPublishing = true;
   const inp = document.getElementById('gh-token-modal');
   const btn = document.getElementById('publish-btn');
   const errEl = document.getElementById('publish-error');
@@ -172,6 +175,7 @@ async function doPublish() {
   } finally {
     if (btn) { btn.textContent = '🚀 Push to GitHub'; btn.disabled = false; }
     if (mainBtn) { mainBtn.textContent = oldMainText; mainBtn.disabled = false; }
+    isPublishing = false;
   }
 }
 
@@ -179,7 +183,9 @@ async function getFileSha(path, token) {
   const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + path + '?ref=main&t=' + Date.now(), {
     headers: {
       'Authorization': 'token ' + token,
-      'Accept': 'application/vnd.github.v3+json'
+      'Accept': 'application/vnd.github.v3+json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache'
     }
   });
   if (res.status === 404) return null;
