@@ -257,6 +257,7 @@ function buildSidebarV4(context = 'main') {
 
 // ─── DASHBOARD (Client List) ───
 function showDashboard() {
+    document.removeEventListener('keydown', playerKeyHandler);
     autoSave(); currentSection = 'dashboard'; currentKey = null;
     buildSidebarV4('main');
     updateBreadcrumbs([]);
@@ -306,6 +307,7 @@ function showDashboard() {
 
 // ─── CLIENT HUB ───
 function showClientHub(key) {
+    document.removeEventListener('keydown', playerKeyHandler);
     autoSave(); currentSection = 'clientHub'; currentKey = key;
     buildSidebarV4(`client:${key}`);
     const c = D.clients[key];
@@ -455,8 +457,33 @@ function showMediaEditor(clientKey, idx) {
         </div>
     </div>
     
-    <div class="card" style="padding:0;overflow:hidden">
-        <video src="${m.preview_url || m.video_url || ''}" style="width:100%;max-height:300px;object-fit:contain;background:#000" controls poster="${m.poster_url||m.mosaic?.[1]||''}"></video>
+    <div class="card" style="padding:0;overflow:hidden;position:relative">
+        <video id="precision-video" src="${m.preview_url || m.video_url || ''}" style="width:100%;max-height:400px;object-fit:contain;background:#000" playsinline crossorigin="anonymous"></video>
+        <video id="hd-video" src="${m.video_url}" style="display:none" crossorigin="anonymous" preload="auto"></video>
+        
+        <div class="player-controls" style="padding:10px;background:var(--card);display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px">
+                <button class="btn sm" onclick="togglePlay()">▶</button>
+                <input type="range" id="timeline" min="0" max="100" value="0" step="0.01" style="flex:1" oninput="scrubVideo()">
+                <div id="timecode" style="font-family:monospace;font-size:12px;color:var(--yellow)">00:00.000</div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <div style="display:flex;gap:5px">
+                    <button class="btn sm" onclick="stepFrame(-1)">-1f</button>
+                    <button class="btn sm" onclick="stepFrame(1)">+1f</button>
+                </div>
+                <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+                    <button class="btn sm primary" onclick="captureFrame('${clientKey}', ${idx})">📸 Capture Frame</button>
+                    <div style="width:1px;height:20px;background:var(--border);margin:0 5px"></div>
+                    <button class="btn sm" onclick="markIn()">IN</button>
+                    <div id="mark-in-display" style="font-size:10px;font-family:monospace;width:60px">--</div>
+                    <button class="btn sm" onclick="markOut()">OUT</button>
+                    <div id="mark-out-display" style="font-size:10px;font-family:monospace;width:60px">--</div>
+                    <button class="btn sm primary" onclick="generateGIF('${clientKey}', ${idx})">🎬 Generate GIF</button>
+                </div>
+            </div>
+            <div id="capture-output" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"></div>
+        </div>
     </div>
     
     <div class="card"><div class="card-title">Details</div>
@@ -511,6 +538,7 @@ function showMediaEditor(clientKey, idx) {
     </div>`;
     
     document.getElementById('main-content').innerHTML = html;
+    setTimeout(initPrecisionPlayer, 50);
 }
 
 function saveMediaEditor(clientKey, idx) {
@@ -616,6 +644,207 @@ function removeManualFrame(clientKey, idx, slot) {
         saveAll();
         showMediaEditor(clientKey, idx);
         toast('Manual frame removed');
+    }
+}
+
+// ─── PLAYER & EXPORT LOGIC ───
+let playerState = { vid: null, hdVid: null, inPoint: null, outPoint: null, fps: 30 };
+
+function initPrecisionPlayer() {
+    playerState.vid = document.getElementById('precision-video');
+    playerState.hdVid = document.getElementById('hd-video');
+    playerState.inPoint = null;
+    playerState.outPoint = null;
+    
+    if(!playerState.vid) return;
+    
+    playerState.vid.addEventListener('timeupdate', () => {
+        if(!playerState.vid.duration) return;
+        document.getElementById('timeline').value = (playerState.vid.currentTime / playerState.vid.duration) * 100;
+        document.getElementById('timecode').textContent = formatTimecode(playerState.vid.currentTime);
+    });
+    
+    document.addEventListener('keydown', playerKeyHandler);
+}
+
+function playerKeyHandler(e) {
+    if(currentSection !== 'mediaItem' || !playerState.vid) return;
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    if(e.key === ' ') {
+        e.preventDefault();
+        togglePlay();
+    } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        stepFrame(-1);
+    } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        stepFrame(1);
+    }
+}
+
+function togglePlay() {
+    if(!playerState.vid) return;
+    if(playerState.vid.paused) playerState.vid.play();
+    else playerState.vid.pause();
+}
+
+function scrubVideo() {
+    if(!playerState.vid || !playerState.vid.duration) return;
+    const val = document.getElementById('timeline').value;
+    playerState.vid.currentTime = (val / 100) * playerState.vid.duration;
+}
+
+function stepFrame(dir) {
+    if(!playerState.vid) return;
+    playerState.vid.pause();
+    playerState.vid.currentTime += dir * (1/playerState.fps);
+}
+
+function formatTimecode(sec) {
+    const d = new Date(sec * 1000);
+    return d.toISOString().substr(14, 9); // 00:00.000
+}
+
+function markIn() {
+    if(!playerState.vid) return;
+    playerState.inPoint = playerState.vid.currentTime;
+    document.getElementById('mark-in-display').textContent = formatTimecode(playerState.inPoint);
+    checkDuration();
+}
+
+function markOut() {
+    if(!playerState.vid) return;
+    playerState.outPoint = playerState.vid.currentTime;
+    document.getElementById('mark-out-display').textContent = formatTimecode(playerState.outPoint);
+    checkDuration();
+}
+
+function checkDuration() {
+    if(playerState.inPoint !== null && playerState.outPoint !== null) {
+        const dur = playerState.outPoint - playerState.inPoint;
+        if (dur > 4) {
+            toast(`Aviso: Duração do GIF é de ${dur.toFixed(1)}s (Ideal < 4s)`, true);
+        }
+    }
+}
+
+async function captureFrame(clientKey, idx) {
+    if(!playerState.vid || !playerState.hdVid) return;
+    playerState.vid.pause();
+    
+    const time = playerState.vid.currentTime;
+    const hd = playerState.hdVid;
+    
+    toast('Carregando Frame HD...');
+    
+    hd.currentTime = time;
+    
+    await new Promise(resolve => {
+        const onSeeked = () => {
+            hd.removeEventListener('seeked', onSeeked);
+            resolve();
+        };
+        hd.addEventListener('seeked', onSeeked);
+        // Fallback in case seeked doesn't fire
+        setTimeout(resolve, 1000);
+    });
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = hd.videoWidth || playerState.vid.videoWidth || 1920;
+    canvas.height = hd.videoHeight || playerState.vid.videoHeight || 1080;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(hd, 0, 0, canvas.width, canvas.height);
+    
+    canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const out = document.getElementById('capture-output');
+        out.style.display = 'block';
+        out.innerHTML = `
+            <div style="font-size:10px;color:var(--yellow);margin-bottom:5px">Captured HD Frame (${canvas.width}x${canvas.height})</div>
+            <img src="${url}" style="width:100%;max-width:300px;border:1px solid var(--border)">
+            <div style="margin-top:5px;display:flex;gap:5px">
+                <a href="${url}" download="${D.clients[clientKey].media.root[idx].title.replace(/ /g,'_')}_${time.toFixed(2)}.jpg" class="btn sm primary">Download JPG</a>
+                <button class="btn sm" onclick="alert('Após baixar, use os botões \\'Substituir\\' acima para fazer o upload da capa.')">Como usar?</button>
+            </div>
+        `;
+        toast('Frame capturado com sucesso!');
+    }, 'image/jpeg', 0.95);
+}
+
+let ffmpeg = null;
+
+async function generateGIF(clientKey, idx) {
+    if (!window.FFmpegWASM || !window.FFmpegUtil) {
+        return toast('FFmpeg scripts not loaded.', true);
+    }
+    
+    if(playerState.inPoint === null || playerState.outPoint === null) {
+        return toast('Marque IN e OUT primeiro', true);
+    }
+    
+    const dur = playerState.outPoint - playerState.inPoint;
+    if(dur <= 0) return toast('Ponto OUT deve ser após o IN', true);
+    
+    toast('Carregando FFmpeg (Single-Threaded)...');
+    const out = document.getElementById('capture-output');
+    out.style.display = 'block';
+    out.innerHTML = `<div style="font-size:10px;color:var(--blue)">Carregando FFmpeg WASM...</div>`;
+    
+    try {
+        if (!ffmpeg) {
+            ffmpeg = new FFmpegWASM.FFmpeg();
+            ffmpeg.on('progress', ({ progress, time }) => {
+                out.innerHTML = `<div style="font-size:10px;color:var(--yellow)">Renderizando GIF: ${(progress * 100).toFixed(1)}%</div>
+                <div style="width:100%;height:4px;background:var(--border);margin-top:4px"><div style="width:${progress*100}%;height:100%;background:var(--yellow)"></div></div>`;
+            });
+            await ffmpeg.load({
+                coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+                wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+            });
+        }
+        
+        const m = D.clients[clientKey].media.root[idx];
+        const videoUrl = m.video_url;
+        
+        out.innerHTML = `<div style="font-size:10px;color:var(--blue)">Baixando Vídeo HD do Bunny.net...</div>`;
+        
+        const { fetchFile } = FFmpegUtil;
+        const videoData = await fetchFile(videoUrl);
+        await ffmpeg.writeFile('input.mp4', videoData);
+        
+        out.innerHTML = `<div style="font-size:10px;color:var(--blue)">Processando GIF (Isso pode demorar alguns minutos)...</div>`;
+        
+        const safeTitle = (m.title || 'video').replace(/[^a-z0-9]/gi, '_');
+        const outName = `${safeTitle}.gif`;
+        
+        // Command: extract duration, scale to 720 width, generate palette, use palette
+        await ffmpeg.exec([
+            '-ss', playerState.inPoint.toString(),
+            '-t', dur.toString(),
+            '-i', 'input.mp4',
+            '-vf', 'fps=15,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5',
+            '-loop', '0',
+            outName
+        ]);
+        
+        const data = await ffmpeg.readFile(outName);
+        const blob = new Blob([data.buffer], { type: 'image/gif' });
+        const url = URL.createObjectURL(blob);
+        
+        out.innerHTML = `
+            <div style="font-size:10px;color:var(--green);margin-bottom:5px">GIF Gerado com Sucesso!</div>
+            <img src="${url}" style="width:100%;max-width:300px;border:1px solid var(--border)">
+            <div style="margin-top:5px">
+                <a href="${url}" download="${outName}" class="btn sm primary">Download GIF</a>
+            </div>
+        `;
+        toast('GIF gerado com sucesso!');
+        
+    } catch (err) {
+        console.error(err);
+        out.innerHTML = `<div style="font-size:10px;color:var(--red)">Erro: ${err.message}. Verifique o console.</div>`;
+        toast('Erro ao gerar GIF', true);
     }
 }
 
