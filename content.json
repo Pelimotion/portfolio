@@ -1,4 +1,5 @@
 {
+  "_note": "Unified content layer for the entire Pelimotion site. Edit via admin/index.html or directly here.",
   "clients": {
     "BC MAPPING FESTIVAL": {
       "slug": "bc-mapping-festival",
@@ -3865,35 +3866,42 @@
       "tagline_pt": "",
       "description": "",
       "description_pt": ""
+    },
+    "BC MAPPING FESTIVAL": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "LSLA": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "FAST SHIPPING": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "FURB": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "FUNKY ROOM": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "FUNKY ROOM:0": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
     }
-  },
-  "clientOrder": [
-    "BMW",
-    "BEIRAMAR SHOPPING",
-    "BELEZA NA WEB",
-    "COLCCI",
-    "LSLA",
-    "FAST SHIPPING",
-    "FUNKY ROOM",
-    "RIO CARNAVAL",
-    "VIDEOANIMATE",
-    "FURB",
-    "PLAYA",
-    "LUPA",
-    "SUZANO",
-    "SULITA",
-    "EQI",
-    "NEXTRON",
-    "LOGO REVEALS",
-    "COBLUE",
-    "HEO",
-    "FIREDOGS",
-    "PLACARSOFT",
-    "R9 LUXEMBOURG",
-    "NEY SOUZA",
-    "PREFEITURA TIMBÓ",
-    "WOLFGARTEN",
-    "UNIVALI",
-    "BC MAPPING FESTIVAL"
-  ]
+  }
 }
