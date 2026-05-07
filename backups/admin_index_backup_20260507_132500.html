@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLM Admin — Site Content Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--fg:#f0f0f0;--fg2:#888;--fg3:#444;--border:#222;--card:#111;--green:#00d084;--red:#ff4757;--yellow:#ffa502}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;min-height:100vh}
+.shell{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:260px;min-width:220px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.main{flex:1;overflow-y:auto;padding:40px 48px 80px}
+@media(max-width:768px){.shell{flex-direction:column}.sidebar{width:100%;height:auto;max-height:200px}.main{padding:24px 20px 80px}}
+.sidebar-header{padding:24px 20px 14px;border-bottom:1px solid var(--border)}
+.sidebar-logo{font-size:10px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--fg3);margin-bottom:4px}
+.sidebar-title{font-size:16px;font-weight:700;color:var(--fg)}
+.sidebar-section{padding:14px 16px 6px;font-size:8px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3)}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:11px;font-weight:500;color:var(--fg2);cursor:pointer;transition:all .15s;border-left:2px solid transparent}
+.sidebar-item:hover{color:var(--fg);background:rgba(255,255,255,.04)}
+.sidebar-item.active{color:var(--fg);background:rgba(255,255,255,.06);border-left-color:var(--fg)}
+.sidebar-item .dot{width:5px;height:5px;border-radius:50%;background:var(--fg3);flex-shrink:0}
+.sidebar-item.has-content .dot{background:var(--green)}
+.sidebar-item .warn-badge{font-size:8px;font-weight:700;letter-spacing:.05em;background:var(--yellow);color:#000;padding:1px 5px;border-radius:2px;margin-left:auto;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border)}
+.status-bar{position:fixed;bottom:0;left:260px;right:0;height:34px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:50;font-size:10px;color:var(--fg3)}
+@media(max-width:768px){.status-bar{left:0}}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.status-dot.warn{background:var(--yellow)}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:9px 18px;border:1.5px solid var(--border);background:transparent;color:var(--fg);cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.btn:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.primary:hover{background:transparent;color:var(--fg)}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger:hover{background:var(--red);color:#fff}
+.btn.green{border-color:var(--green);color:var(--green)}
+.btn.green:hover{background:var(--green);color:#000}
+.field{margin-bottom:22px}
+.field label{display:block;font-size:8px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;background:var(--card);border:1.5px solid var(--border);color:var(--fg);padding:10px 12px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--fg2)}
+.field textarea{min-height:70px}
+.field .hint{font-size:10px;color:var(--fg3);margin-top:5px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border:1px solid var(--border);color:var(--fg2)}
+.chip .rm{cursor:pointer;color:var(--fg3);line-height:1}
+.chip .rm:hover{color:var(--red)}
+.add-chip{display:flex;gap:6px;margin-top:6px}
+.add-chip input{flex:1}
+.page-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.page-label{font-size:8px;font-weight:700;letter-spacing:.5em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px}
+.page-title{font-size:clamp(20px,3vw,36px);font-weight:700;letter-spacing:-.02em;color:var(--fg)}
+.card{background:var(--card);border:1px solid var(--border);padding:24px;margin-bottom:20px}
+.card-title{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:14px}
+.toast{position:fixed;top:20px;right:20px;z-index:9999;padding:12px 22px;background:var(--fg);color:var(--bg);font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;transform:translateY(-80px);opacity:0;transition:all .25s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:var(--red);color:#fff}
+.actions-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.unsaved{display:none;font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--yellow);align-self:center}
+.unsaved.visible{display:block}
+.preview-ref{font-size:9px;color:var(--fg3);padding:6px 10px;background:rgba(255,255,255,.03);border:1px dashed var(--border);margin-bottom:14px;line-height:1.6}
+.preview-ref strong{color:var(--fg2)}
+.exp-block{border:1px solid var(--border);padding:20px;margin-bottom:16px;background:rgba(255,255,255,.01)}
+.exp-block-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:14px}
+
+/* ── AUTH OVERLAY ── */
+.auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:380px;padding:40px}
+.auth-badge{font-size:9px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+.auth-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.auth-sub{font-size:12px;color:var(--fg2);margin-bottom:28px;line-height:1.6}
+.auth-input{width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);color:var(--fg);padding:14px 16px;font-family:'Space Grotesk',monospace;font-size:18px;letter-spacing:.3em;text-align:center;outline:none;transition:border-color .2s;margin-bottom:8px}
+.auth-input:focus{border-color:var(--green)}
+.auth-error{height:18px;font-size:11px;color:var(--red);margin-bottom:16px;text-align:center;font-weight:500}
+.auth-btn{width:100%;padding:14px;background:var(--fg);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s}
+.auth-btn:hover{background:var(--green);color:#000}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed}
+.auth-hint{margin-top:18px;font-size:10px;color:var(--fg3);text-align:center;line-height:1.6}
+.auth-hint code{background:rgba(255,255,255,.06);padding:2px 8px;font-family:monospace;color:var(--fg2)}
+
+/* ── PUBLISH MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:480px;padding:32px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.modal-sub{font-size:12px;color:var(--fg2);margin-bottom:24px;line-height:1.6}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-badge">PLM Admin · Secured</div>
+    <div class="auth-title">Enter Access PIN</div>
+    <div class="auth-sub">Type your 4-digit admin PIN to access the content editor.</div>
+    <input type="password" inputmode="numeric" maxlength="4" id="auth-pin" class="auth-input" placeholder="••••" autocomplete="off" oninput="onPinInput(this)">
+    <div class="auth-error" id="auth-error"></div>
+    <button class="auth-btn" id="auth-btn" onclick="checkPin()">Unlock →</button>
+    <div class="auth-hint">Security: Only authorized editors.</div>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-bg" id="publish-modal">
+  <div class="modal-card">
+    <div class="auth-badge">GitHub API</div>
+    <div class="modal-title">Publish to Vercel</div>
+    <div class="modal-sub">Enter your GitHub Personal Access Token (Classic, with <strong>repo</strong> scope) to push changes directly to the live site. The token is used once and not stored.</div>
+    <div class="field">
+      <label>GitHub Token</label>
+      <input type="password" id="gh-token-modal" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" onkeydown="if(event.key==='Enter') doPublish()">
+      <div class="hint">Generate at: github.com → Settings → Developer Settings → Personal Access Tokens → Classic</div>
+    </div>
+    <div class="auth-error" id="publish-error" style="text-align:left;height:auto;margin:0 0 8px"></div>
+    <div class="modal-actions">
+      <button class="btn primary" id="publish-btn" onclick="doPublish()">🚀 Push to GitHub</button>
+      <button class="btn" onclick="closePublishModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Pelimotion</div>
+      <div class="sidebar-title">Site Admin v3</div>
+    </div>
+
+    <div class="sidebar-section">Pages</div>
+    <div class="sidebar-item sidebar-nav-item" onclick="showLanding();setActive(this)">
+      <div class="dot" style="background:var(--yellow)"></div><span>🏠 Landing Page</span>
+    </div>
+    <div class="sidebar-item sidebar-nav-item" onclick="showPortfolio();setActive(this)">
+      <div class="dot" style="background:var(--yellow)"></div><span>🎬 Portfolio</span>
+    </div>
+    <div class="sidebar-item sidebar-nav-item" onclick="showCurriculum();setActive(this)">
+      <div class="dot" style="background:var(--yellow)"></div><span style="font-size:11px">📄 Curriculum <br><small style="opacity:0.5;margin-left:22px;display:block;margin-top:2px">(Público & Privado)</small></span>
+    </div>
+    <div class="sidebar-item sidebar-nav-item" onclick="showCoverLetter();setActive(this)">
+      <div class="dot" style="background:var(--yellow)"></div><span style="font-size:11px">✉️ Cover Letter <br><small style="opacity:0.5;margin-left:22px;display:block;margin-top:2px">(Privado / Personalizada)</small></span>
+    </div>
+    <div class="sidebar-item sidebar-nav-item" onclick="showApplications();setActive(this)">
+      <div class="dot" style="background:var(--yellow)"></div><span style="font-size:11px">📎 Applications <br><small style="opacity:0.5;margin-left:22px;display:block;margin-top:2px">(CV + Cover Letter)</small></span>
+    </div>
+
+    <div class="sidebar-section">Portfolio — Clients</div>
+    <div id="sb-clients"></div>
+
+    <div class="sidebar-section">Portfolio — Categories</div>
+    <div id="sb-categories"></div>
+
+    <div class="sidebar-footer">
+      <button class="btn green" id="btn-publish" style="width:100%;margin-bottom:8px" onclick="openPublishModal()">🚀 Publish to Vercel</button>
+      <button class="btn primary" style="width:100%;margin-bottom:8px" onclick="exportJSON()">💾 Export JSON</button>
+      <button class="btn" style="width:100%;font-size:8px" onclick="lockAdmin()">⎋ Lock</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main-content">
+    <div class="page-header">
+      <div class="page-label">PLM Admin Panel v3</div>
+      <h1 class="page-title">Site Content Editor</h1>
+    </div>
+
+    <div class="actions-bar">
+      <button class="btn green" onclick="openPublishModal()">🚀 Publish to Vercel</button>
+      <button class="btn primary" onclick="exportJSON()">💾 Export JSON</button>
+      <button class="btn" onclick="importJSON()">📂 Import JSON</button>
+      <button class="btn" onclick="copyJSON()">📋 Copy JSON</button>
+      <span class="unsaved" id="unsaved-label">● Unsaved changes</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📖</span> How to use</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--fg2)">
+        <p><strong style="color:var(--fg)">1.</strong> Select a section from the sidebar to edit its content.</p>
+        <p><strong style="color:var(--fg)">2.</strong> Make your changes — they auto-save in memory when you switch sections.</p>
+        <p><strong style="color:var(--fg)">3.</strong> Click <strong style="color:var(--green)">🚀 Publish to Vercel</strong> to push directly to the live site via GitHub API.</p>
+        <p><strong style="color:var(--fg)">4.</strong> Or click <strong style="color:var(--fg)">💾 Export JSON</strong> to download files and deploy manually.</p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+        <p style="color:var(--fg3)"><strong>Tip:</strong> <kbd style="border:1px solid var(--border);padding:1px 6px">⌘S</kbd> / <kbd style="border:1px solid var(--border);padding:1px 6px">Ctrl+S</kbd> to quick-export.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">Loading...</span>
+  <span style="margin-left:auto;font-size:9px;letter-spacing:.15em">PLM ADMIN v3.0</span>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FILE INPUT -->
+<input type="file" id="file-input" accept=".json" style="display:none" onchange="handleImport(this)">
+
+<script>
+  (function() {
+    var s = document.createElement('script');
+    var isLocal = window.location.protocol === 'file:';
+    s.src = (isLocal ? '' : '/admin/') + 'admin.js?v=3.9';
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>

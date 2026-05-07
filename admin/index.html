@@ -3,90 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLM Admin — Site Content Editor</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<title>PLM Admin v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0a;--fg:#f0f0f0;--fg2:#888;--fg3:#444;--border:#222;--card:#111;--green:#00d084;--red:#ff4757;--yellow:#ffa502}
+:root{--bg:#080808;--bg2:#0f0f0f;--fg:#f0f0f0;--fg2:#888;--fg3:#444;--border:#1e1e1e;--card:#111;--green:#00c47d;--red:#ff4455;--yellow:#f5a623;--blue:#4f8ef7;--sidebar-w:240px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;min-height:100vh}
-.shell{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:260px;min-width:220px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
-.main{flex:1;overflow-y:auto;padding:40px 48px 80px}
-@media(max-width:768px){.shell{flex-direction:column}.sidebar{width:100%;height:auto;max-height:200px}.main{padding:24px 20px 80px}}
-.sidebar-header{padding:24px 20px 14px;border-bottom:1px solid var(--border)}
-.sidebar-logo{font-size:10px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--fg3);margin-bottom:4px}
-.sidebar-title{font-size:16px;font-weight:700;color:var(--fg)}
-.sidebar-section{padding:14px 16px 6px;font-size:8px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--fg3)}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:11px;font-weight:500;color:var(--fg2);cursor:pointer;transition:all .15s;border-left:2px solid transparent}
-.sidebar-item:hover{color:var(--fg);background:rgba(255,255,255,.04)}
-.sidebar-item.active{color:var(--fg);background:rgba(255,255,255,.06);border-left-color:var(--fg)}
-.sidebar-item .dot{width:5px;height:5px;border-radius:50%;background:var(--fg3);flex-shrink:0}
-.sidebar-item.has-content .dot{background:var(--green)}
-.sidebar-item .warn-badge{font-size:8px;font-weight:700;letter-spacing:.05em;background:var(--yellow);color:#000;padding:1px 5px;border-radius:2px;margin-left:auto;flex-shrink:0}
-.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border)}
-.status-bar{position:fixed;bottom:0;left:260px;right:0;height:34px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:50;font-size:10px;color:var(--fg3)}
-@media(max-width:768px){.status-bar{left:0}}
-.status-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
-.status-dot.warn{background:var(--yellow)}
-.btn{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:9px 18px;border:1.5px solid var(--border);background:transparent;color:var(--fg);cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow:hidden}
+
+/* ── SHELL ── */
+.shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;height:100vh}
+.main-area{display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:10}
+.sb-top{padding:16px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-logo{font-size:9px;font-weight:700;letter-spacing:.45em;color:var(--fg3);text-transform:uppercase;margin-bottom:2px}
+.sb-title{font-size:14px;font-weight:700;color:var(--fg)}
+.sb-search{margin-top:10px;display:flex;align-items:center;gap:7px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
+.sb-search:hover{border-color:var(--fg3)}
+.sb-search span{font-size:10px;color:var(--fg3);flex:1}
+.sb-search kbd{font-size:9px;color:var(--fg3);border:1px solid var(--border);padding:1px 5px;border-radius:3px}
+.sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0}
+.sb-scroll::-webkit-scrollbar{width:3px}.sb-scroll::-webkit-scrollbar-thumb{background:var(--border)}
+.sb-section{padding:12px 14px 4px;font-size:8px;font-weight:700;letter-spacing:.5em;text-transform:uppercase;color:var(--fg3)}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:11px;font-weight:500;color:var(--fg2);cursor:pointer;transition:all .12s;border-left:2px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.sb-item:hover{color:var(--fg);background:rgba(255,255,255,.03)}
+.sb-item.active{color:var(--fg);background:rgba(255,255,255,.05);border-left-color:var(--fg)}
+.sb-item .dot{width:5px;height:5px;border-radius:50%;background:var(--fg3);flex-shrink:0}
+.sb-item .dot.green{background:var(--green)}
+.sb-item .dot.yellow{background:var(--yellow)}
+.sb-item .badge{margin-left:auto;font-size:8px;font-weight:700;background:var(--yellow);color:#000;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.sb-item .status-pill{margin-left:auto;font-size:8px;padding:1px 6px;border-radius:10px;flex-shrink:0}
+.sb-item .status-pill.public{background:rgba(0,196,125,.15);color:var(--green)}
+.sb-item .status-pill.private{background:rgba(255,68,85,.1);color:var(--red)}
+.sb-item .status-pill.draft{background:rgba(245,166,35,.1);color:var(--yellow)}
+.sb-item.indent{padding-left:26px}
+.sb-divider{height:1px;background:var(--border);margin:6px 14px}
+.sb-back{color:var(--fg3);font-size:10px}
+.sb-back::before{content:'←  '}
+
+/* ── DEPLOY CENTRAL ── */
+.deploy-central{flex-shrink:0;border-top:1px solid var(--border);padding:12px}
+.deploy-label{font-size:8px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--fg3);margin-bottom:8px}
+.deploy-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;background:transparent;border:1px solid var(--border);color:var(--fg2);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;text-align:left;margin-bottom:6px}
+.deploy-btn:hover{border-color:var(--green);color:var(--green);background:rgba(0,196,125,.05)}
+.deploy-btn.sync:hover{border-color:var(--blue);color:var(--blue);background:rgba(79,142,247,.05)}
+.deploy-btn .icon{font-size:14px;flex-shrink:0}
+.deploy-btn .info{display:flex;flex-direction:column}
+.deploy-btn .info span:first-child{font-size:10px;font-weight:700;color:inherit}
+.deploy-btn .info span:last-child{font-size:9px;color:var(--fg3);margin-top:1px}
+.deploy-log{background:var(--bg);border:1px solid var(--border);padding:10px;font-size:9px;font-family:monospace;color:var(--green);max-height:120px;overflow-y:auto;display:none;margin-top:6px;line-height:1.7}
+.deploy-log.visible{display:block}
+
+/* ── TOP BAR / BREADCRUMBS ── */
+.topbar{height:48px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:8px;flex-shrink:0;background:var(--bg)}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg3);flex:1}
+.breadcrumb .crumb{cursor:pointer;transition:color .12s}
+.breadcrumb .crumb:hover{color:var(--fg)}
+.breadcrumb .crumb.active{color:var(--fg);font-weight:600;cursor:default}
+.breadcrumb .sep{color:var(--fg3);opacity:.4}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+
+/* ── MAIN CONTENT ── */
+.main-content{flex:1;overflow-y:auto;padding:32px 36px 80px}
+.main-content::-webkit-scrollbar{width:4px}.main-content::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:8px 16px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
 .btn:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .btn.primary:hover{background:transparent;color:var(--fg)}
-.btn.danger{border-color:var(--red);color:var(--red)}
-.btn.danger:hover{background:var(--red);color:#fff}
 .btn.green{border-color:var(--green);color:var(--green)}
 .btn.green:hover{background:var(--green);color:#000}
-.field{margin-bottom:22px}
-.field label{display:block;font-size:8px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px}
-.field input,.field textarea,.field select{width:100%;background:var(--card);border:1.5px solid var(--border);color:var(--fg);padding:10px 12px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;resize:vertical}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger:hover{background:var(--red);color:#fff}
+.btn.sm{padding:5px 10px;font-size:8px}
+
+/* ── CARDS / FORMS ── */
+.page-header{margin-bottom:28px}
+.page-label{font-size:8px;font-weight:700;letter-spacing:.5em;text-transform:uppercase;color:var(--fg3);margin-bottom:4px}
+.page-title{font-size:clamp(20px,3vw,32px);font-weight:700;letter-spacing:-.02em}
+.card{background:var(--card);border:1px solid var(--border);padding:20px;margin-bottom:16px}
+.card-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:8px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--fg3);margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:9px 11px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;resize:vertical}
 .field input:focus,.field textarea:focus{border-color:var(--fg2)}
-.field textarea{min-height:70px}
-.field .hint{font-size:10px;color:var(--fg3);margin-top:5px;line-height:1.5}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border:1px solid var(--border);color:var(--fg2)}
-.chip .rm{cursor:pointer;color:var(--fg3);line-height:1}
-.chip .rm:hover{color:var(--red)}
-.add-chip{display:flex;gap:6px;margin-top:6px}
-.add-chip input{flex:1}
-.page-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.page-label{font-size:8px;font-weight:700;letter-spacing:.5em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px}
-.page-title{font-size:clamp(20px,3vw,36px);font-weight:700;letter-spacing:-.02em;color:var(--fg)}
-.card{background:var(--card);border:1px solid var(--border);padding:24px;margin-bottom:20px}
-.card-title{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.card-title .icon{font-size:14px}
-.toast{position:fixed;top:20px;right:20px;z-index:9999;padding:12px 22px;background:var(--fg);color:var(--bg);font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;transform:translateY(-80px);opacity:0;transition:all .25s}
+.field .hint{font-size:10px;color:var(--fg3);margin-top:4px;line-height:1.5}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center}
+.unsaved{font-size:9px;font-weight:700;color:var(--yellow);display:none}
+.unsaved.visible{display:block}
+
+/* ── ADVANCED SECTION (Progressive Disclosure) ── */
+.advanced-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 0;font-size:10px;color:var(--fg3);user-select:none;border-top:1px solid var(--border);margin-top:4px}
+.advanced-toggle:hover{color:var(--fg)}
+.advanced-toggle .chevron{transition:transform .2s;font-size:10px}
+.advanced-toggle.open .chevron{transform:rotate(90deg)}
+.advanced-body{display:none}
+.advanced-body.open{display:block}
+
+/* ── VISIBILITY TOGGLE ── */
+.vis-toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+.vis-switch{width:30px;height:16px;background:var(--border);border-radius:8px;position:relative;transition:background .2s;flex-shrink:0}
+.vis-switch.on{background:var(--green)}
+.vis-switch::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .2s}
+.vis-switch.on::after{transform:translateX(14px)}
+.vis-label{font-size:10px;font-weight:600;color:var(--fg2)}
+
+/* ── CLIENT LIST (HOME) ── */
+.client-list{display:flex;flex-direction:column;gap:4px}
+.client-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:border-color .12s}
+.client-row:hover{border-color:var(--fg3)}
+.client-row .thumb{width:48px;height:32px;object-fit:cover;background:var(--bg);flex-shrink:0;border:1px solid var(--border)}
+.client-row .info{flex:1;min-width:0}
+.client-row .info .name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+.client-row .info .meta{font-size:10px;color:var(--fg3);margin-top:1px}
+.client-row .row-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:20px;right:20px;z-index:9999;padding:10px 20px;background:var(--fg);color:var(--bg);font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;transform:translateY(-80px);opacity:0;transition:all .25s}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.error{background:var(--red);color:#fff}
-.actions-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
-.unsaved{display:none;font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--yellow);align-self:center}
-.unsaved.visible{display:block}
-.preview-ref{font-size:9px;color:var(--fg3);padding:6px 10px;background:rgba(255,255,255,.03);border:1px dashed var(--border);margin-bottom:14px;line-height:1.6}
-.preview-ref strong{color:var(--fg2)}
-.exp-block{border:1px solid var(--border);padding:20px;margin-bottom:16px;background:rgba(255,255,255,.01)}
-.exp-block-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg2);margin-bottom:14px}
 
-/* ── AUTH OVERLAY ── */
+/* ── COMMAND PALETTE ── */
+.palette-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8000;display:none;align-items:flex-start;justify-content:center;padding-top:15vh;backdrop-filter:blur(4px)}
+.palette-bg.open{display:flex}
+.palette-box{background:var(--bg2);border:1px solid var(--fg3);width:100%;max-width:560px;max-height:60vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.8)}
+.palette-input-wrap{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.palette-input-wrap .icon{color:var(--fg3);font-size:14px;flex-shrink:0}
+.palette-input{flex:1;background:transparent;border:none;outline:none;color:var(--fg);font-family:inherit;font-size:14px;font-weight:500}
+.palette-esc{font-size:9px;color:var(--fg3);border:1px solid var(--border);padding:2px 6px}
+.palette-results{overflow-y:auto;flex:1}
+.palette-results::-webkit-scrollbar{width:3px}.palette-results::-webkit-scrollbar-thumb{background:var(--border)}
+.palette-group{padding:8px 0 4px}
+.palette-group-label{font-size:8px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--fg3);padding:0 16px 6px}
+.palette-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:12px;transition:background .1s}
+.palette-item:hover,.palette-item.selected{background:rgba(255,255,255,.06)}
+.palette-item .pi-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0}
+.palette-item .pi-text{flex:1;min-width:0}
+.palette-item .pi-sub{font-size:10px;color:var(--fg3)}
+.palette-item .pi-tag{font-size:9px;color:var(--fg3);border:1px solid var(--border);padding:1px 6px;flex-shrink:0}
+.palette-empty{padding:32px 16px;text-align:center;font-size:12px;color:var(--fg3)}
+
+/* ── AUTH ── */
 .auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:380px;padding:40px}
-.auth-badge{font-size:9px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
-.auth-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
-.auth-sub{font-size:12px;color:var(--fg2);margin-bottom:28px;line-height:1.6}
-.auth-input{width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);color:var(--fg);padding:14px 16px;font-family:'Space Grotesk',monospace;font-size:18px;letter-spacing:.3em;text-align:center;outline:none;transition:border-color .2s;margin-bottom:8px}
+.auth-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:360px;padding:36px}
+.auth-badge{font-size:9px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+.auth-title{font-size:20px;font-weight:700;margin-bottom:6px}
+.auth-sub{font-size:12px;color:var(--fg2);margin-bottom:24px;line-height:1.6}
+.auth-input{width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);color:var(--fg);padding:13px 16px;font-family:monospace;font-size:20px;letter-spacing:.4em;text-align:center;outline:none;transition:border-color .2s;margin-bottom:6px}
 .auth-input:focus{border-color:var(--green)}
-.auth-error{height:18px;font-size:11px;color:var(--red);margin-bottom:16px;text-align:center;font-weight:500}
-.auth-btn{width:100%;padding:14px;background:var(--fg);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s}
+.auth-error{height:18px;font-size:11px;color:var(--red);margin-bottom:14px;text-align:center}
+.auth-btn{width:100%;padding:13px;background:var(--fg);color:var(--bg);font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s}
 .auth-btn:hover{background:var(--green);color:#000}
 .auth-btn:disabled{opacity:.4;cursor:not-allowed}
-.auth-hint{margin-top:18px;font-size:10px;color:var(--fg3);text-align:center;line-height:1.6}
-.auth-hint code{background:rgba(255,255,255,.06);padding:2px 8px;font-family:monospace;color:var(--fg2)}
 
-/* ── PUBLISH MODAL ── */
+/* ── MODAL ── */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-bg.open{display:flex}
-.modal-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:480px;padding:32px}
-.modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
-.modal-sub{font-size:12px;color:var(--fg2);margin-bottom:24px;line-height:1.6}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-card{background:var(--card);border:1px solid var(--border);width:100%;max-width:460px;padding:28px}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.modal-sub{font-size:12px;color:var(--fg2);margin-bottom:20px;line-height:1.6}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+
+/* ── MISC ── */
+.format-toolbar{display:inline-flex;gap:4px;margin-left:8px}
+.format-toolbar button{padding:1px 6px;font-size:10px;border:1px solid var(--border);background:transparent;color:var(--fg3);cursor:pointer;font-family:monospace}
+.format-toolbar button:hover{background:var(--fg);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border);color:var(--fg2)}
+.chip .rm{cursor:pointer;color:var(--fg3)}.chip .rm:hover{color:var(--red)}
+.add-chip{display:flex;gap:6px;margin-top:6px}
+.add-chip input{flex:1}
+.exp-block{border:1px solid var(--border);padding:16px;margin-bottom:12px;background:rgba(255,255,255,.01)}
+.exp-block-title{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--fg2);margin-bottom:12px}
+.status-bar{height:32px;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;background:var(--bg2);font-size:9px;color:var(--fg3)}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
+.status-dot.warn{background:var(--yellow)}
+.field-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.preview-ref{font-size:9px;color:var(--fg3);padding:6px 10px;background:rgba(255,255,255,.02);border:1px dashed var(--border);margin-bottom:14px;line-height:1.6}
+.preview-ref strong{color:var(--fg2)}
+
+/* ── MEDIA LIST IN CLIENT HUB ── */
+.media-item-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);margin-bottom:6px;background:var(--bg)}
+.media-item-row .thumb-s{width:56px;height:36px;object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.media-item-row .mi-info{flex:1;min-width:0}
+.media-item-row .mi-title{font-size:11px;font-weight:700}
+.media-item-row .mi-url{font-size:9px;color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
+
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .field-pair,.field-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -100,7 +210,6 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
     <input type="password" inputmode="numeric" maxlength="4" id="auth-pin" class="auth-input" placeholder="••••" autocomplete="off" oninput="onPinInput(this)">
     <div class="auth-error" id="auth-error"></div>
     <button class="auth-btn" id="auth-btn" onclick="checkPin()">Unlock →</button>
-    <div class="auth-hint">Security: Only authorized editors.</div>
   </div>
 </div>
 
@@ -109,11 +218,11 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
   <div class="modal-card">
     <div class="auth-badge">GitHub API</div>
     <div class="modal-title">Publish to Vercel</div>
-    <div class="modal-sub">Enter your GitHub Personal Access Token (Classic, with <strong>repo</strong> scope) to push changes directly to the live site. The token is used once and not stored.</div>
+    <div class="modal-sub">Enter your GitHub Personal Access Token (Classic, <strong>repo</strong> scope) to push changes to the live site.</div>
     <div class="field">
       <label>GitHub Token</label>
       <input type="password" id="gh-token-modal" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" onkeydown="if(event.key==='Enter') doPublish()">
-      <div class="hint">Generate at: github.com → Settings → Developer Settings → Personal Access Tokens → Classic</div>
+      <div class="hint">Generate at: github.com → Settings → Developer Settings → Tokens (Classic)</div>
     </div>
     <div class="auth-error" id="publish-error" style="text-align:left;height:auto;margin:0 0 8px"></div>
     <div class="modal-actions">
@@ -123,93 +232,99 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
   </div>
 </div>
 
+<!-- COMMAND PALETTE -->
+<div class="palette-bg" id="palette-bg" onclick="if(event.target===this)closePalette()">
+  <div class="palette-box">
+    <div class="palette-input-wrap">
+      <span class="icon">⌘</span>
+      <input class="palette-input" id="palette-input" placeholder="Search clients, actions, pages…" oninput="renderPalette(this.value)" onkeydown="palettNav(event)" autocomplete="off">
+      <span class="palette-esc">ESC</span>
+    </div>
+    <div class="palette-results" id="palette-results"></div>
+  </div>
+</div>
+
 <div class="shell">
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">Pelimotion</div>
-      <div class="sidebar-title">Site Admin v3</div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo">Pelimotion</div>
+      <div class="sb-title" id="sb-title">Admin v4</div>
+      <div class="sb-search" onclick="openPalette()">
+        <span>⌘</span>
+        <span>Search…</span>
+        <kbd>⌘K</kbd>
+      </div>
     </div>
 
-    <div class="sidebar-section">Pages</div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showLanding();setActive(this)">
-      <div class="dot" style="background:var(--yellow)"></div><span>🏠 Landing Page</span>
-    </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showPortfolio();setActive(this)">
-      <div class="dot" style="background:var(--yellow)"></div><span>🎬 Portfolio</span>
-    </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showCurriculum();setActive(this)">
-      <div class="dot" style="background:var(--yellow)"></div><span style="font-size:11px">📄 Curriculum <br><small style="opacity:0.5;margin-left:22px;display:block;margin-top:2px">(Público & Privado)</small></span>
-    </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showCoverLetter();setActive(this)">
-      <div class="dot" style="background:var(--yellow)"></div><span style="font-size:11px">✉️ Cover Letter <br><small style="opacity:0.5;margin-left:22px;display:block;margin-top:2px">(Privado / Personalizada)</small></span>
-    </div>
-    <div class="sidebar-item sidebar-nav-item" onclick="showApplications();setActive(this)">
-      <div class="dot" style="background:var(--yellow)"></div><span style="font-size:11px">📎 Applications <br><small style="opacity:0.5;margin-left:22px;display:block;margin-top:2px">(CV + Cover Letter)</small></span>
+    <div class="sb-scroll" id="sb-scroll">
+      <!-- populated by JS -->
     </div>
 
-    <div class="sidebar-section">Portfolio — Clients</div>
-    <div id="sb-clients"></div>
-
-    <div class="sidebar-section">Portfolio — Categories</div>
-    <div id="sb-categories"></div>
-
-    <div class="sidebar-footer">
-      <button class="btn green" id="btn-publish" style="width:100%;margin-bottom:8px" onclick="openPublishModal()">🚀 Publish to Vercel</button>
-      <button class="btn primary" style="width:100%;margin-bottom:8px" onclick="exportJSON()">💾 Export JSON</button>
-      <button class="btn" style="width:100%;font-size:8px" onclick="lockAdmin()">⎋ Lock</button>
+    <!-- DEPLOY CENTRAL -->
+    <div class="deploy-central">
+      <div class="deploy-label">Deploy</div>
+      <button class="deploy-btn" id="btn-soft-deploy" onclick="softDeploy()">
+        <span class="icon">⚡</span>
+        <span class="info">
+          <span>Publicar Site</span>
+          <span>Textos e visibilidade</span>
+        </span>
+      </button>
+      <button class="deploy-btn sync" id="btn-full-sync" onclick="fullSync()">
+        <span class="icon">🔄</span>
+        <span class="info">
+          <span>Sync + Deploy</span>
+          <span>Bunny.net + rebuild</span>
+        </span>
+      </button>
+      <div class="deploy-log" id="deploy-log"></div>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="main" id="main-content">
-    <div class="page-header">
-      <div class="page-label">PLM Admin Panel v3</div>
-      <h1 class="page-title">Site Content Editor</h1>
-    </div>
-
-    <div class="actions-bar">
-      <button class="btn green" onclick="openPublishModal()">🚀 Publish to Vercel</button>
-      <button class="btn primary" onclick="exportJSON()">💾 Export JSON</button>
-      <button class="btn" onclick="importJSON()">📂 Import JSON</button>
-      <button class="btn" onclick="copyJSON()">📋 Copy JSON</button>
-      <span class="unsaved" id="unsaved-label">● Unsaved changes</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon">📖</span> How to use</div>
-      <div style="font-size:12px;line-height:1.8;color:var(--fg2)">
-        <p><strong style="color:var(--fg)">1.</strong> Select a section from the sidebar to edit its content.</p>
-        <p><strong style="color:var(--fg)">2.</strong> Make your changes — they auto-save in memory when you switch sections.</p>
-        <p><strong style="color:var(--fg)">3.</strong> Click <strong style="color:var(--green)">🚀 Publish to Vercel</strong> to push directly to the live site via GitHub API.</p>
-        <p><strong style="color:var(--fg)">4.</strong> Or click <strong style="color:var(--fg)">💾 Export JSON</strong> to download files and deploy manually.</p>
-        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
-        <p style="color:var(--fg3)"><strong>Tip:</strong> <kbd style="border:1px solid var(--border);padding:1px 6px">⌘S</kbd> / <kbd style="border:1px solid var(--border);padding:1px 6px">Ctrl+S</kbd> to quick-export.</p>
+  <!-- MAIN AREA -->
+  <div class="main-area">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <nav class="breadcrumb" id="breadcrumb">
+        <span class="crumb" onclick="showDashboard()">Admin</span>
+      </nav>
+      <div class="topbar-actions">
+        <span class="unsaved" id="unsaved-label">● Unsaved</span>
+        <button class="btn sm" onclick="exportJSON()">💾 Export</button>
+        <button class="btn sm" onclick="lockAdmin()">⎋ Lock</button>
       </div>
     </div>
-  </main>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="main-content">
+      <div style="padding:80px 0;text-align:center;color:var(--fg3)">Loading…</div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Initializing…</span>
+      <span style="margin-left:auto;letter-spacing:.1em">PLM ADMIN v4.0</span>
+    </div>
+  </div>
 </div>
 
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="status-dot" id="status-dot"></div>
-  <span id="status-text">Loading...</span>
-  <span style="margin-left:auto;font-size:9px;letter-spacing:.15em">PLM ADMIN v3.0</span>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- FILE INPUT -->
 <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleImport(this)">
 
 <script>
-  (function() {
-    var s = document.createElement('script');
-    var isLocal = window.location.protocol === 'file:';
-    s.src = (isLocal ? '' : '/admin/') + 'admin.js?v=3.9';
-    document.body.appendChild(s);
-  })();
+// Load admin.js first (legacy logic), then admin-v4.js (new UI layer)
+(function(){
+  var s1 = document.createElement('script');
+  s1.src = (location.protocol==='file:' ? '' : '/admin/') + 'admin.js?v=4.0';
+  s1.onload = function(){
+    var s2 = document.createElement('script');
+    s2.src = (location.protocol==='file:' ? '' : '/admin/') + 'admin-v4.js?v=4.0';
+    document.body.appendChild(s2);
+  };
+  document.body.appendChild(s1);
+})();
 </script>
 </body>
 </html>
