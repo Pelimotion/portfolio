@@ -189,53 +189,175 @@ def scan_bunny():
 
 if __name__ == "__main__":
     clients_data = scan_bunny()
-    
-    # ─── SYNC site-content.json (Admin & Site Source) ───
+
+    # ─── SMART MERGE: site-content.json (v3 unified schema) ─────────────────
+    # RULE: Fields owned by Bunny (auto-generated) are always refreshed.
+    #       Fields owned by Admin (editorial) are NEVER overwritten.
+    #
+    # Bunny-owned (refreshed every sync):
+    #   video_url, preview_url, poster_url, mosaic, format, aspect,
+    #   media.total, syncedAt, coverImage (only if admin hasn't set one)
+    #
+    # Admin-owned (preserved forever):
+    #   slug, displayName, description, description_pt, tags, services,
+    #   since, externalUrl, status, order, mosaicAssets, seo,
+    #   title_pt, description (per item), tags (per item), status (per item),
+    #   createdAt, updatedAt
+    # ─────────────────────────────────────────────────────────────────────────
+
     if os.path.exists('site-content.json'):
         try:
             with open('site-content.json', 'r', encoding='utf-8') as f:
                 site_data = json.load(f)
-            
+
             existing_clients = site_data.get('clients', {})
-            new_clients = {}
-            
-            for name, data in clients_data.items():
-                if name in existing_clients:
-                    # Preserve all manual metadata from existing client
-                    existing = existing_clients[name]
-                    # Update only the media part (from Bunny)
-                    existing['media'] = data['media']
-                    # Ensure coverImage is preserved if manual, or updated if new
-                    if not existing.get('coverImage'): existing['coverImage'] = data.get('coverImage')
-                    new_clients[name] = existing
+            sync_ts = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+
+            merged_clients = {}
+
+            for name, bunny_data in clients_data.items():
+                existing = existing_clients.get(name)
+
+                if existing:
+                    # ── Merge media items (smart per-item merge) ──────────
+                    def merge_media_list(bunny_items, existing_items):
+                        """
+                        Match new Bunny items to existing items by video_url.
+                        Refresh Bunny-owned fields; preserve editorial fields.
+                        Append new items; remove items no longer on Bunny.
+                        """
+                        existing_by_url = {
+                            m.get('video_url') or m.get('poster_url'): m
+                            for m in existing_items
+                        }
+                        merged = []
+                        for idx, bunny_item in enumerate(bunny_items):
+                            key = bunny_item.get('video_url') or bunny_item.get('poster_url')
+                            old = existing_by_url.get(key, {})
+
+                            merged.append({
+                                # ── Identity ──
+                                'id':    old.get('id')    or bunny_item.get('id', f'item-{idx}'),
+                                'order': old.get('order', idx),
+
+                                # ── Bunny-owned (always refreshed) ──
+                                'title':       bunny_item.get('title', ''),
+                                'video_url':   bunny_item.get('video_url', ''),
+                                'preview_url': bunny_item.get('preview_url', ''),
+                                'poster_url':  bunny_item.get('poster_url', ''),
+                                'mosaic':      bunny_item.get('mosaic', []),
+                                'format':      bunny_item.get('format', 'default'),
+                                'aspect':      bunny_item.get('aspect', '16/9'),
+
+                                # ── Admin-owned (preserved) ──
+                                'title_pt':       old.get('title_pt', ''),
+                                'description':    old.get('description', ''),
+                                'description_pt': old.get('description_pt', ''),
+                                'tags':           old.get('tags', []),
+                                'status':         old.get('status', 'public'),
+                                'updatedAt':      old.get('updatedAt', sync_ts),
+                            })
+                        return merged
+
+                    # Merge root and categories media
+                    merged_root = merge_media_list(
+                        bunny_data['media'].get('root', []),
+                        existing.get('media', {}).get('root', [])
+                    )
+                    merged_cats = {}
+                    for cat_name, bunny_items in bunny_data['media'].get('categories', {}).items():
+                        existing_cat_items = existing.get('media', {}).get('categories', {}).get(cat_name, [])
+                        merged_cats[cat_name] = merge_media_list(bunny_items, existing_cat_items)
+
+                    # ── Build merged client ───────────────────────────────
+                    merged_clients[name] = {
+                        # Admin-owned (always preserved)
+                        'slug':         existing.get('slug', name.lower().replace(' ', '-')),
+                        'displayName':  existing.get('displayName', name),
+                        'description':  existing.get('description', ''),
+                        'description_pt': existing.get('description_pt', ''),
+                        'tags':         existing.get('tags', []),
+                        'services':     existing.get('services', []),
+                        'since':        existing.get('since', ''),
+                        'externalUrl':  existing.get('externalUrl', ''),
+                        'status':       existing.get('status', 'public'),
+                        'order':        existing.get('order', 999),
+                        'mosaicAssets': existing.get('mosaicAssets', []),
+                        'seo':          existing.get('seo', {
+                            'title': f'{name} — Pelimotion',
+                            'description': '',
+                            'ogImage': bunny_data.get('coverImage', ''),
+                        }),
+                        'createdAt':    existing.get('createdAt', sync_ts),
+                        'updatedAt':    existing.get('updatedAt', sync_ts),
+
+                        # Bunny-owned (refreshed)
+                        'coverImage':   existing.get('coverImage') or bunny_data.get('coverImage', ''),
+                        'syncedAt':     sync_ts,
+                        'media': {
+                            'root':       merged_root,
+                            'categories': merged_cats,
+                            'total':      bunny_data['media'].get('total', 0),
+                        },
+                    }
                 else:
-                    # New client found on Bunny
-                    data['status'] = 'public' # default status
-                    new_clients[name] = data
-            
-            site_data['clients'] = new_clients
-            site_data['lastSync'] = time.strftime('%Y-%m-%d %H:%M:%S')
-            
+                    # ── New client discovered on Bunny ────────────────────
+                    import re as _re
+                    slug = _re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
+                    merged_clients[name] = {
+                        'slug':         slug,
+                        'displayName':  name,
+                        'description':  '',
+                        'description_pt': '',
+                        'tags':         [],
+                        'services':     [],
+                        'since':        '',
+                        'externalUrl':  '',
+                        'status':       'public',
+                        'order':        999,
+                        'mosaicAssets': [],
+                        'seo': {
+                            'title': f'{name} — Pelimotion',
+                            'description': '',
+                            'ogImage': bunny_data.get('coverImage', ''),
+                        },
+                        'coverImage':   bunny_data.get('coverImage', ''),
+                        'createdAt':    sync_ts,
+                        'updatedAt':    sync_ts,
+                        'syncedAt':     sync_ts,
+                        'media':        bunny_data['media'],
+                    }
+                    print(f"  🆕 New client: {name}")
+
+            # Preserve existing clients NOT found on Bunny (private/archived)
+            for name, existing in existing_clients.items():
+                if name not in merged_clients:
+                    merged_clients[name] = existing
+                    print(f"  📦 Preserved (not on Bunny): {name}")
+
+            site_data['clients']  = merged_clients
+            site_data['lastSync'] = sync_ts
+
             with open('site-content.json', 'w', encoding='utf-8') as f:
                 json.dump(site_data, f, indent=2, ensure_ascii=False)
-            print(f"✅ Updated site-content.json with {len(new_clients)} clients.")
-            
-            # ─── SYNC content.json (Legacy Portfolio Source) ───
-            # content.json should be a subset of site-content.json (just clients and categories)
+            print(f"\n✅ site-content.json updated — {len(merged_clients)} clients (v3 smart merge).")
+
+            # ─── Sync content.json (legacy portfolio source) ──────────────
             legacy_data = {
-                "clients": site_data['clients'],
-                "categories": site_data.get('categories', {}),
-                "clientOrder": site_data.get('clientOrder', [])
+                "clients":     site_data['clients'],
+                "categories":  site_data.get('categories', {}),
+                "clientOrder": site_data.get('clientOrder', []),
             }
             with open('content.json', 'w', encoding='utf-8') as f:
-                json.dump(legacy_data, f, indent=4, ensure_ascii=False)
-            print(f"✅ Updated content.json (Legacy).")
+                json.dump(legacy_data, f, indent=2, ensure_ascii=False)
+            print("✅ content.json (legacy) updated.")
 
         except Exception as e:
-            print(f"❌ Error syncing site-content.json: {e}")
+            import traceback
+            print(f"❌ Error during smart merge: {e}")
+            traceback.print_exc()
     else:
-        # Fallback if site-content.json missing
-        final_data = {"clients": clients_data}
+        # Fallback: no site-content.json yet
         with open('content.json', 'w', encoding='utf-8') as f:
-            json.dump(final_data, f, indent=4, ensure_ascii=False)
-        print(f"Updated content.json only (site-content.json not found).")
+            json.dump({"clients": clients_data}, f, indent=2, ensure_ascii=False)
+        print("⚠️  site-content.json not found. Wrote content.json only.")

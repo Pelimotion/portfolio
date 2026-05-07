@@ -609,48 +609,53 @@
             if(!plmContent.clients) return;
             
             let html = '';
-            // Respect custom order if available
-            const order = plmContent.clientOrder || Object.keys(plmContent.clients).sort();
+            // Respect explicit order field, then clientOrder array, then alpha
+            const allNames = Object.keys(plmContent.clients);
+            const order = plmContent.clientOrder
+                || allNames.sort((a,b) => (plmContent.clients[a].order||999) - (plmContent.clients[b].order||999));
             
             order.forEach(name => {
                 const client = plmContent.clients[name];
-                if(!client || client.status === 'private') return;
+                if(!client || client.status === 'private' || client.status === 'draft') return;
+                const displayName = client.displayName || name;
                 const count = client.media ? (client.media.total || 0) : 0;
                 
-                let allMedia = [...(client.media?.root || [])];
-                if (client.media?.categories) {
-                    for (let cat in client.media.categories) {
-                        allMedia.push(...client.media.categories[cat]);
-                    }
-                }
-                allMedia = allMedia.filter(m => m.video_url || m.preview_url);
-                
+                // Priority 1: manually curated mosaicAssets from admin
                 let items = [];
-                if (allMedia.length >= 3) {
-                    items = [
-                        { img: allMedia[0].mosaic?.[1] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                        { img: allMedia[1].mosaic?.[1] || allMedia[1].poster_url, vid: allMedia[1].preview_url || allMedia[1].video_url },
-                        { img: allMedia[2].mosaic?.[1] || allMedia[2].poster_url, vid: allMedia[2].preview_url || allMedia[2].video_url }
-                    ];
-                } else if (allMedia.length === 2) {
-                    items = [
-                        { img: allMedia[0].mosaic?.[0] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                        { img: allMedia[0].mosaic?.[2] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                        { img: allMedia[1].mosaic?.[1] || allMedia[1].poster_url, vid: allMedia[1].preview_url || allMedia[1].video_url }
-                    ];
-                } else if (allMedia.length === 1) {
-                    items = [
-                        { img: allMedia[0].mosaic?.[0] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                        { img: allMedia[0].mosaic?.[1] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                        { img: allMedia[0].mosaic?.[2] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url }
-                    ];
+                if (client.mosaicAssets && client.mosaicAssets.length >= 3) {
+                    items = client.mosaicAssets.slice(0, 3).map(url => ({ img: url, vid: '' }));
                 } else {
-                    const cover = client.coverImage || '';
-                    items = [
-                        { img: cover, vid: '' },
-                        { img: cover, vid: '' },
-                        { img: cover, vid: '' }
-                    ];
+                    // Priority 2: auto-select from media, 1 frame per video
+                    let allMedia = [...(client.media?.root || [])];
+                    if (client.media?.categories) {
+                        for (let cat in client.media.categories) {
+                            allMedia.push(...client.media.categories[cat]);
+                        }
+                    }
+                    allMedia = allMedia.filter(m => (m.video_url || m.preview_url) && m.status !== 'private');
+                    
+                    if (allMedia.length >= 3) {
+                        items = [
+                            { img: allMedia[0].mosaic?.[1] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: allMedia[1].mosaic?.[1] || allMedia[1].poster_url, vid: allMedia[1].preview_url || allMedia[1].video_url },
+                            { img: allMedia[2].mosaic?.[1] || allMedia[2].poster_url, vid: allMedia[2].preview_url || allMedia[2].video_url }
+                        ];
+                    } else if (allMedia.length === 2) {
+                        items = [
+                            { img: allMedia[0].mosaic?.[0] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: allMedia[0].mosaic?.[2] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: allMedia[1].mosaic?.[1] || allMedia[1].poster_url, vid: allMedia[1].preview_url || allMedia[1].video_url }
+                        ];
+                    } else if (allMedia.length === 1) {
+                        items = [
+                            { img: allMedia[0].mosaic?.[0] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: allMedia[0].mosaic?.[1] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: allMedia[0].mosaic?.[2] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url }
+                        ];
+                    } else {
+                        const cover = client.coverImage || '';
+                        items = [{ img: cover, vid: '' }, { img: cover, vid: '' }, { img: cover, vid: '' }];
+                    }
                 }
                 
                 html += `
@@ -658,21 +663,21 @@
                         <div class="client-card-img-wrap">
                             <div class="mosaic-wrap">
                                 <div class="mosaic-item" onmouseenter="startPreview(this, '${items[0].vid}')" onmouseleave="stopPreview(this)">
-                                    <img src="${items[0].img}" alt="${name} frame 1" loading="lazy">
+                                    <img src="${items[0].img}" alt="${displayName} frame 1" loading="lazy">
                                     <div class="preview-loader" style="display:none;"></div>
                                 </div>
                                 <div class="mosaic-item" onmouseenter="startPreview(this, '${items[1].vid}')" onmouseleave="stopPreview(this)">
-                                    <img src="${items[1].img}" alt="${name} frame 2" loading="lazy">
+                                    <img src="${items[1].img}" alt="${displayName} frame 2" loading="lazy">
                                     <div class="preview-loader" style="display:none;"></div>
                                 </div>
                                 <div class="mosaic-item" onmouseenter="startPreview(this, '${items[2].vid}')" onmouseleave="stopPreview(this)">
-                                    <img src="${items[2].img}" alt="${name} frame 3" loading="lazy">
+                                    <img src="${items[2].img}" alt="${displayName} frame 3" loading="lazy">
                                     <div class="preview-loader" style="display:none;"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="client-card-info">
-                            <div class="client-name">${name}</div>
+                            <div class="client-name">${displayName}</div>
                             <div class="client-count">${String(count).padStart(2, '0')}</div>
                         </div>
                     </div>
@@ -689,8 +694,9 @@
             currentClientName = name;
             currentPlaylist = [];
             
-            document.getElementById('gallery-title').textContent = name;
-            document.getElementById('gallery-desc').textContent = (window._PLM_LANG === 'pt' ? client.description_pt : client.description) || client.description || '';
+            const displayName = client.displayName || name;
+            document.getElementById('gallery-title').textContent = displayName;
+            document.getElementById('gallery-desc').textContent = (window._PLM_LANG === 'pt' ? client.description_pt : client.description) || '';
             
             const grid = document.getElementById('gallery-grid');
             let html = '';
