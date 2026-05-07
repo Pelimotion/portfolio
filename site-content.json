@@ -3141,8 +3141,15 @@
             "description_pt": "",
             "tags": [],
             "status": "public",
-            "manualFrames": [],
-            "updatedAt": "2026-05-07T16:12:34Z"
+            "manualFrames": [
+              {
+                "slot": 0,
+                "url": "https://pelimotion-portfolio.b-cdn.net/frames/1778193001498-SULITA_COMPANHA_RENATA_FAN_V04_7.18.jpg",
+                "source": "manual",
+                "uploaded_at": "2026-05-07T22:30:02.347Z"
+              }
+            ],
+            "updatedAt": "2026-05-07T22:30:02.347Z"
           }
         ],
         "categories": {},
@@ -4229,6 +4236,18 @@
       "description_pt": ""
     },
     "FUNKY ROOM:0": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "SULITA": {
+      "tagline": "",
+      "tagline_pt": "",
+      "description": "",
+      "description_pt": ""
+    },
+    "SULITA:0": {
       "tagline": "",
       "tagline_pt": "",
       "description": "",
