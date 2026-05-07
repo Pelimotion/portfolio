@@ -634,23 +634,28 @@
                     }
                     allMedia = allMedia.filter(m => (m.video_url || m.preview_url) && m.status !== 'private');
                     
+                    const getImg = (m, slot) => {
+                        const man = (m.manualFrames || []).find(f => f.slot === slot);
+                        return man ? man.url : (m.mosaic?.[slot] || m.poster_url);
+                    };
+                    
                     if (allMedia.length >= 3) {
                         items = [
-                            { img: allMedia[0].mosaic?.[1] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                            { img: allMedia[1].mosaic?.[1] || allMedia[1].poster_url, vid: allMedia[1].preview_url || allMedia[1].video_url },
-                            { img: allMedia[2].mosaic?.[1] || allMedia[2].poster_url, vid: allMedia[2].preview_url || allMedia[2].video_url }
+                            { img: getImg(allMedia[0], 1), vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: getImg(allMedia[1], 1), vid: allMedia[1].preview_url || allMedia[1].video_url },
+                            { img: getImg(allMedia[2], 1), vid: allMedia[2].preview_url || allMedia[2].video_url }
                         ];
                     } else if (allMedia.length === 2) {
                         items = [
-                            { img: allMedia[0].mosaic?.[0] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                            { img: allMedia[0].mosaic?.[2] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                            { img: allMedia[1].mosaic?.[1] || allMedia[1].poster_url, vid: allMedia[1].preview_url || allMedia[1].video_url }
+                            { img: getImg(allMedia[0], 0), vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: getImg(allMedia[0], 2), vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: getImg(allMedia[1], 1), vid: allMedia[1].preview_url || allMedia[1].video_url }
                         ];
                     } else if (allMedia.length === 1) {
                         items = [
-                            { img: allMedia[0].mosaic?.[0] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                            { img: allMedia[0].mosaic?.[1] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url },
-                            { img: allMedia[0].mosaic?.[2] || allMedia[0].poster_url, vid: allMedia[0].preview_url || allMedia[0].video_url }
+                            { img: getImg(allMedia[0], 0), vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: getImg(allMedia[0], 1), vid: allMedia[0].preview_url || allMedia[0].video_url },
+                            { img: getImg(allMedia[0], 2), vid: allMedia[0].preview_url || allMedia[0].video_url }
                         ];
                     } else {
                         const cover = client.coverImage || '';
@@ -732,9 +737,16 @@
         }
 
         function renderMediaCard(m, playlistIndex) {
+            if(m.status === 'private') return '';
             const title = (window._PLM_LANG === 'pt' ? m.title_pt : m.title) || m.title || '';
             const poster = m.poster_url || m.mosaic?.[1] || '';
-            const mosaic = m.mosaic || [poster, poster, poster];
+            
+            const getImg = (slot) => {
+                const man = (m.manualFrames || []).find(f => f.slot === slot);
+                return man ? man.url : (m.mosaic?.[slot] || poster);
+            };
+            
+            const mosaic = [getImg(0), getImg(1), getImg(2)];
             const vid = m.preview_url || m.video_url || '';
             return `
                 <div class="client-card entrance-mask" onclick="openModal(${playlistIndex})">

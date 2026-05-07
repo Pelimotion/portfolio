@@ -353,7 +353,7 @@ function showClientHub(key) {
                 <img src="${m.poster_url||m.mosaic?.[1]||''}" class="thumb-s">
                 <div class="mi-info">
                     <div class="mi-title">${esc(m.title||`Item ${idx}`)}</div>
-                    <div class="mi-url">${esc(m.video_url||'')}</div>
+                    <div class="mi-url">${m.project_folder ? `<span style="color:var(--yellow)">📁 ${esc(m.project_folder)}</span> · ` : ''}${esc(m.video_url||'')}</div>
                 </div>
                 <div class="status-pill ${m.status||'public'}">${m.status||'public'}</div>
                 <div style="color:var(--fg3);font-size:12px">✎</div>
@@ -477,6 +477,35 @@ function showMediaEditor(clientKey, idx) {
         </div>
     </div>
     
+    <div class="card"><div class="card-title">Frames de Capa</div>
+        <div class="hint" style="margin-bottom:12px">Upload manual frames to override auto-generated mosaics. Prioridade sobre imagens geradas do CDN.</div>
+        <div class="field-row" style="grid-template-columns: 1fr 1fr 1fr">
+            ${[0,1,2].map(slot => {
+                const manual = (m.manualFrames || []).find(f => f.slot === slot);
+                const currentUrl = manual ? manual.url : (m.mosaic?.[slot] || m.poster_url || '');
+                const isManual = !!manual;
+                return `
+                <div class="field" style="border:1px solid var(--border);padding:10px;background:var(--bg)">
+                    <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                        Capa ${slot + 1}
+                        ${isManual ? '<span class="status-pill public">MANUAL</span>' : '<span class="status-pill draft">AUTO</span>'}
+                    </label>
+                    <div style="width:100%;aspect-ratio:16/9;background:#000;margin-bottom:10px;position:relative">
+                        <img src="${esc(currentUrl)}" style="width:100%;height:100%;object-fit:cover;opacity:0.8">
+                    </div>
+                    <div style="display:flex;gap:6px">
+                        <label class="btn sm" style="flex:1;justify-content:center;text-align:center">
+                            Substituir
+                            <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleFrameUpload(this, '${clientKey}', ${idx}, ${slot})">
+                        </label>
+                        ${isManual ? `<button class="btn danger sm" onclick="removeManualFrame('${clientKey}', ${idx}, ${slot})">✕</button>` : ''}
+                    </div>
+                </div>
+                `;
+            }).join('')}
+        </div>
+    </div>
+    
     <div class="actions-bar">
         <button class="btn primary" onclick="saveMediaEditor('${clientKey}', ${idx})">Save Changes</button>
     </div>`;
@@ -519,6 +548,75 @@ function toggleMediaStatus(clientKey, idx) {
     
     markUnsaved();
     buildSidebarV4(`client:${clientKey}`);
+}
+
+async function handleFrameUpload(input, clientKey, idx, slot) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    input.value = ''; // reset
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        return toast('Invalid format. Use JPG, PNG or WebP.', true);
+    }
+    
+    // Read file as base64
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const base64Data = e.target.result.split(',')[1];
+        toast(`Uploading Capa ${slot + 1}...`);
+        
+        try {
+            const res = await fetch('/api/upload-frame', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filename: file.name,
+                    contentType: file.type,
+                    base64Data: base64Data
+                })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Upload failed');
+            
+            // Success, update model
+            const c = D.clients[clientKey];
+            const m = c.media.root[idx];
+            m.manualFrames = m.manualFrames || [];
+            
+            // Remove existing slot
+            m.manualFrames = m.manualFrames.filter(f => f.slot !== slot);
+            
+            m.manualFrames.push({
+                slot: slot,
+                url: data.url,
+                source: 'manual',
+                uploaded_at: new Date().toISOString()
+            });
+            m.updatedAt = new Date().toISOString();
+            
+            saveAll();
+            showMediaEditor(clientKey, idx);
+            toast('Frame uploaded successfully!');
+        } catch (err) {
+            console.error(err);
+            toast(err.message, true);
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeManualFrame(clientKey, idx, slot) {
+    const c = D.clients[clientKey];
+    if(!c) return;
+    const m = c.media.root[idx];
+    if(m && m.manualFrames) {
+        m.manualFrames = m.manualFrames.filter(f => f.slot !== slot);
+        m.updatedAt = new Date().toISOString();
+        saveAll();
+        showMediaEditor(clientKey, idx);
+        toast('Manual frame removed');
+    }
 }
 
 // ─── DEPLOY OPERATIONS ───

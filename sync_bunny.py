@@ -100,7 +100,7 @@ def scan_bunny():
         client_path = f"/{client_folder['ObjectName']}/"
         client_items = api_get(client_path)
         
-        def process_item(item, parent_list, base_cdn_path, folder_items):
+        def process_item(item, parent_list, base_cdn_path, folder_items, project_folder=""):
             name = item["ObjectName"]
             ext = os.path.splitext(name)[1].lower()
             
@@ -126,7 +126,8 @@ def scan_bunny():
                         vid_url.rsplit('.', 1)[0] + "_15.jpg",
                         vid_url.rsplit('.', 1)[0] + "_50.jpg",
                         vid_url.rsplit('.', 1)[0] + "_85.jpg"
-                    ]
+                    ],
+                    "project_folder": project_folder
                 }
                 parent_list.append(item_data)
                 
@@ -156,7 +157,8 @@ def scan_bunny():
                     "poster_url": img_url,
                     "format": fmt_class,
                     "aspect": aspect,
-                    "mosaic": [img_url, img_url, img_url] # Fallback to itself
+                    "mosaic": [img_url, img_url, img_url], # Fallback to itself
+                    "project_folder": project_folder
                 }
                 parent_list.append(item_data)
                 
@@ -167,24 +169,22 @@ def scan_bunny():
                 
             return False
 
-        for item in client_items:
-            if item.get("IsDirectory"):
-                cat_name = item["ObjectName"]
-                if cat_name not in clients[client_name]["media"]["categories"]:
-                    clients[client_name]["media"]["categories"][cat_name] = []
-                
-                cat_path = f"{client_path}{cat_name}/"
-                cat_cdn = f"{CDN_BASE}/{quote(client_folder['ObjectName'])}/{quote(cat_name)}"
-                cat_items = api_get(cat_path)
-                for cat_item in cat_items:
-                    if not cat_item.get("IsDirectory"):
-                        if process_item(cat_item, clients[client_name]["media"]["categories"][cat_name], cat_cdn, cat_items):
-                            clients[client_name]["media"]["total"] += 1
-            else:
-                root_cdn = f"{CDN_BASE}/{quote(client_folder['ObjectName'])}"
-                if process_item(item, clients[client_name]["media"]["root"], root_cdn, client_items):
-                    clients[client_name]["media"]["total"] += 1
-                    
+        def crawl(path, cdn_path, project_folder=""):
+            items = api_get(path)
+            for item in items:
+                if item.get("IsDirectory"):
+                    sub_name = item["ObjectName"]
+                    new_path = f"{path}{sub_name}/"
+                    new_cdn = f"{cdn_path}/{quote(sub_name)}"
+                    new_folder = f"{project_folder} / {sub_name}" if project_folder else sub_name
+                    crawl(new_path, new_cdn, new_folder)
+                else:
+                    if process_item(item, clients[client_name]["media"]["root"], cdn_path, items, project_folder):
+                        clients[client_name]["media"]["total"] += 1
+
+        root_cdn = f"{CDN_BASE}/{quote(client_folder['ObjectName'])}"
+        crawl(client_path, root_cdn)
+        
     return clients
 
 if __name__ == "__main__":
@@ -248,6 +248,7 @@ if __name__ == "__main__":
                                 'mosaic':      bunny_item.get('mosaic', []),
                                 'format':      bunny_item.get('format', 'default'),
                                 'aspect':      bunny_item.get('aspect', '16/9'),
+                                'project_folder': bunny_item.get('project_folder', ''),
 
                                 # ── Admin-owned (preserved) ──
                                 'title_pt':       old.get('title_pt', ''),
@@ -255,6 +256,7 @@ if __name__ == "__main__":
                                 'description_pt': old.get('description_pt', ''),
                                 'tags':           old.get('tags', []),
                                 'status':         old.get('status', 'public'),
+                                'manualFrames':   old.get('manualFrames', []),
                                 'updatedAt':      old.get('updatedAt', sync_ts),
                             })
                         return merged
