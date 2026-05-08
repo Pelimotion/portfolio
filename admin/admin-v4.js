@@ -116,6 +116,10 @@ function renderPalette(query) {
         {title: 'Portfolio Settings', sub: 'Social links, footer', icon: '🎬', action: showPortfolio},
         {title: 'Curriculum', sub: 'CV Content', icon: '📄', action: showCurriculum}
     ]);
+
+    addGroup('Tools', [
+        {title: 'Conversor de GIF', sub: 'Otimizar GIFs • max 10MB • 1080p', icon: '🎞️', action: showGifConverter}
+    ]);
     
     // Actions
     addGroup('Actions', [
@@ -212,7 +216,11 @@ function buildSidebarV4(context = 'main') {
         html += `<div class="sb-item ${currentSection==='curriculum'?'active':''}" onclick="showCurriculum()">
             <div class="dot yellow"></div>Curriculum</div>`;
             
-        html += `<div class="sb-section" style="margin-top:10px">Clients & Projects</div>`;
+        html += `<div class="sb-section" style="margin-top:10px">Tools</div>`;
+        html += `<div class="sb-item ${currentSection==='gifConverter'?'active':''}" onclick="showGifConverter()">
+            <div class="dot" style="background:var(--blue)"></div>Conversor de GIF</div>`;
+            
+        html += `<div class="sb-section" style="margin-top:10px">Clients &amp; Projects</div>`;
         
         const order = D.clientOrder || Object.keys(D.clients || {}).sort();
         order.forEach(k => {
@@ -875,4 +883,236 @@ function fullSync() {
 function esc(str) {
     if (typeof str !== 'string') return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ─── GIF CONVERTER ───
+let gifConverterFFmpeg = null;
+
+function showGifConverter() {
+    document.removeEventListener('keydown', playerKeyHandler);
+    currentSection = 'gifConverter'; currentKey = null;
+    buildSidebarV4('main');
+    updateBreadcrumbs([{label: 'Conversor de GIF', action: 'showGifConverter()'}]);
+
+    const html = `
+    <div class="page-header">
+        <div class="page-label">TOOLS</div>
+        <h1 class="page-title">Conversor de GIF</h1>
+        <div style="font-size:12px;color:var(--fg3);margin-top:6px;line-height:1.6">
+            Otimiza qualquer GIF para ≤ 10 MB e máx 1080p usando FFmpeg.wasm (2-pass local, sem upload).
+        </div>
+    </div>
+
+    <div class="card" id="gc-dropzone" style="border:2px dashed var(--border);text-align:center;padding:40px 20px;cursor:pointer;transition:border-color .2s"
+        onclick="document.getElementById('gc-file-input').click()"
+        ondragover="event.preventDefault(); this.style.borderColor='var(--blue)'"
+        ondragleave="this.style.borderColor='var(--border)'"
+        ondrop="event.preventDefault(); this.style.borderColor='var(--border)'; handleGifDrop(event.dataTransfer.files[0])">
+        <div style="font-size:32px;margin-bottom:12px">🎞️</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Arraste um GIF aqui</div>
+        <div style="font-size:11px;color:var(--fg3)">ou clique para selecionar</div>
+        <input type="file" id="gc-file-input" accept="image/gif" style="display:none" onchange="handleGifDrop(this.files[0])">
+    </div>
+
+    <div id="gc-info" style="display:none" class="card">
+        <div class="card-title">Arquivo Original</div>
+        <div id="gc-info-body" style="font-size:12px;line-height:2;color:var(--fg2)"></div>
+        <div style="margin-top:16px">
+            <button class="btn primary" onclick="runGifConvert()">🚀 Converter e Otimizar</button>
+        </div>
+    </div>
+
+    <div id="gc-progress" style="display:none" class="card">
+        <div class="card-title" id="gc-progress-title">Processando…</div>
+        <div style="width:100%;height:6px;background:var(--border);margin:8px 0;border-radius:3px">
+            <div id="gc-progress-bar" style="height:100%;width:0%;background:var(--blue);border-radius:3px;transition:width .3s"></div>
+        </div>
+        <div id="gc-progress-label" style="font-size:10px;color:var(--fg3);font-family:monospace"></div>
+    </div>
+
+    <div id="gc-result" style="display:none" class="card">
+        <div class="card-title" style="color:var(--green)">✅ GIF Otimizado!</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+            <div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--fg3);margin-bottom:8px">Preview</div>
+                <img id="gc-result-img" style="width:100%;border:1px solid var(--border);background:#000">
+            </div>
+            <div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--fg3);margin-bottom:12px">Resultado</div>
+                <div id="gc-result-body" style="font-size:12px;line-height:2.2;color:var(--fg2)"></div>
+                <div style="margin-top:20px">
+                    <a id="gc-download-btn" class="btn primary" download>⬇ Download GIF</a>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById('main-content').innerHTML = html;
+}
+
+let _gcSourceFile = null;
+let _gcSourceMeta = null;
+
+function handleGifDrop(file) {
+    if (!file || file.type !== 'image/gif') return toast('Selecione um arquivo .gif', true);
+    _gcSourceFile = file;
+
+    const sizeKB = (file.size / 1024).toFixed(1);
+    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+
+    // Read to detect dimensions and frame count
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+        _gcSourceMeta = { w: img.naturalWidth, h: img.naturalHeight, sizeMB: parseFloat(sizeMB), url };
+
+        const infoEl = document.getElementById('gc-info');
+        const infoBody = document.getElementById('gc-info-body');
+        if (!infoEl || !infoBody) return;
+
+        infoBody.innerHTML = `
+            <span style="color:var(--fg3)">Nome:</span> <strong>${esc(file.name)}</strong><br>
+            <span style="color:var(--fg3)">Tamanho:</span> <strong style="color:${parseFloat(sizeMB)>10?'var(--red)':'var(--fg)'}">${sizeMB} MB (${sizeKB} KB)</strong><br>
+            <span style="color:var(--fg3)">Dimensões:</span> <strong>${img.naturalWidth} × ${img.naturalHeight} px</strong>
+        `;
+        infoEl.style.display = 'block';
+        document.getElementById('gc-result').style.display = 'none';
+        document.getElementById('gc-progress').style.display = 'none';
+    };
+    img.src = url;
+}
+
+function gcSetProgress(label, pct) {
+    const bar = document.getElementById('gc-progress-bar');
+    const lbl = document.getElementById('gc-progress-label');
+    const title = document.getElementById('gc-progress-title');
+    if (bar) bar.style.width = pct + '%';
+    if (lbl) lbl.textContent = label;
+    if (title) title.textContent = label;
+}
+
+async function runGifConvert() {
+    if (!_gcSourceFile || !_gcSourceMeta) return toast('Nenhum GIF carregado', true);
+    if (!window.FFmpegWASM || !window.FFmpegUtil) return toast('FFmpeg scripts não carregados.', true);
+
+    const progressEl = document.getElementById('gc-progress');
+    const resultEl = document.getElementById('gc-result');
+    if (!progressEl) return;
+    progressEl.style.display = 'block';
+    resultEl.style.display = 'none';
+    gcSetProgress('Inicializando FFmpeg…', 5);
+
+    try {
+        // Init FFmpeg if needed
+        if (!gifConverterFFmpeg) {
+            gcSetProgress('Carregando motor FFmpeg.wasm…', 10);
+            gifConverterFFmpeg = new FFmpegWASM.FFmpeg();
+            const baseURL = new URL('/assets/ffmpeg/', window.location.origin).href;
+            await gifConverterFFmpeg.load({
+                coreURL: baseURL + 'ffmpeg-core.js',
+                wasmURL: baseURL + 'ffmpeg-core.wasm'
+            });
+        }
+
+        const ff = gifConverterFFmpeg;
+        const { fetchFile } = FFmpegUtil;
+        const { w, h, sizeMB } = _gcSourceMeta;
+
+        gcSetProgress('Carregando arquivo GIF…', 20);
+        const inputData = await fetchFile(_gcSourceFile);
+        await ff.writeFile('input.gif', inputData);
+
+        // Determine scale
+        const MAX_DIM = 1080;
+        let scaleFilter = 'scale=trunc(iw/2)*2:trunc(ih/2)*2'; // ensure divisible by 2, no resize
+        if (w > MAX_DIM || h > MAX_DIM) {
+            if (w >= h) {
+                scaleFilter = `scale=${MAX_DIM}:trunc(ow/a/2)*2`;
+            } else {
+                scaleFilter = `scale=trunc(oh*a/2)*2:${MAX_DIM}`;
+            }
+        }
+
+        // Try FPS values in priority order: original (via -r passthrough = high), 15, 10
+        const fpsTrials = [null, 15, 10]; // null = keep original
+        let outputData = null;
+        let usedFps = 'original';
+        let finalSizeMB = 0;
+
+        for (const fps of fpsTrials) {
+            const fpsLabel = fps === null ? 'original' : `${fps}fps`;
+            gcSetProgress(`Pass 1/2: Gerando paleta (${fpsLabel})…`, 35);
+
+            const vfPass1 = fps === null
+                ? `${scaleFilter},palettegen=max_colors=256:stats_mode=diff`
+                : `fps=${fps},${scaleFilter},palettegen=max_colors=256:stats_mode=diff`;
+
+            await ff.exec(['-i', 'input.gif', '-vf', vfPass1, '-y', 'palette.png']);
+
+            gcSetProgress(`Pass 2/2: Convertendo GIF (${fpsLabel})…`, 60);
+
+            const vfPass2 = fps === null
+                ? `${scaleFilter}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`
+                : `fps=${fps},${scaleFilter}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`;
+
+            await ff.exec(['-i', 'input.gif', '-i', 'palette.png', '-lavfi', vfPass2, '-y', 'output.gif']);
+
+            outputData = await ff.readFile('output.gif');
+            finalSizeMB = outputData.byteLength / 1024 / 1024;
+            usedFps = fpsLabel;
+
+            gcSetProgress(`Verificando tamanho (${finalSizeMB.toFixed(2)} MB)…`, 80);
+
+            if (finalSizeMB <= 10) break; // within limit, done
+            // else loop and try lower fps
+        }
+
+        if (!outputData) throw new Error('Falha ao converter o GIF');
+
+        if (finalSizeMB > 10) {
+            toast(`Aviso: GIF final é ${finalSizeMB.toFixed(2)} MB — acima de 10 MB mesmo no mínimo FPS.`, true);
+        }
+
+        gcSetProgress('Finalizando…', 95);
+
+        const blob = new Blob([outputData.buffer], { type: 'image/gif' });
+        const resultUrl = URL.createObjectURL(blob);
+
+        const origSizeMB = _gcSourceMeta.sizeMB;
+        const reduction = origSizeMB > 0 ? ((1 - finalSizeMB / origSizeMB) * 100).toFixed(1) : '—';
+
+        // Get output dimensions via image element
+        const outImg = new Image();
+        outImg.onload = () => {
+            const resultBody = document.getElementById('gc-result-body');
+            if (resultBody) {
+                resultBody.innerHTML = `
+                    <span style="color:var(--fg3)">Tamanho:</span> <strong style="color:${finalSizeMB<=10?'var(--green)':'var(--red)'}">${finalSizeMB.toFixed(2)} MB</strong><br>
+                    <span style="color:var(--fg3)">Redução:</span> <strong style="color:var(--green)">${reduction}%</strong><br>
+                    <span style="color:var(--fg3)">Dimensões:</span> <strong>${outImg.naturalWidth} × ${outImg.naturalHeight} px</strong><br>
+                    <span style="color:var(--fg3)">FPS usado:</span> <strong>${usedFps}</strong>
+                `;
+            }
+        };
+        outImg.src = resultUrl;
+
+        const resultImgEl = document.getElementById('gc-result-img');
+        const dlBtn = document.getElementById('gc-download-btn');
+        if (resultImgEl) resultImgEl.src = resultUrl;
+        if (dlBtn) {
+            dlBtn.href = resultUrl;
+            const outName = _gcSourceFile.name.replace(/\.gif$/i, '_otimizado.gif');
+            dlBtn.setAttribute('download', outName);
+        }
+
+        progressEl.style.display = 'none';
+        resultEl.style.display = 'block';
+        gcSetProgress('Concluído!', 100);
+        toast('GIF convertido com sucesso!');
+
+    } catch (err) {
+        console.error('[GIF Converter]', err);
+        gcSetProgress(`Erro: ${err.message}`, 0);
+        toast('Erro na conversão. Veja o console.', true);
+    }
 }
