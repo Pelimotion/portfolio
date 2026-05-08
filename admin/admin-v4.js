@@ -802,7 +802,7 @@ async function generateGIF(clientKey, idx) {
             await ffmpeg.load({
                 coreURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-core.js',
                 wasmURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-core.wasm',
-                classWorkerURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/814.ffmpeg.js',
+                classWorkerURL: '/assets/ffmpeg/814.ffmpeg.js',
             });
         }
         
