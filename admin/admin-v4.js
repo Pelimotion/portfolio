@@ -793,22 +793,15 @@ async function generateGIF(clientKey, idx) {
     
     try {
         if (!ffmpeg) {
-            const { toBlobURL } = FFmpegUtil;
             out.innerHTML = `<div style="font-size:10px;color:var(--blue)">Downloading FFmpeg Engine...</div>`;
-            const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-            const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
-            const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
-            const workerURL = await toBlobURL('https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js', 'text/javascript');
-
             ffmpeg = new FFmpegWASM.FFmpeg();
             ffmpeg.on('progress', ({ progress, time }) => {
                 out.innerHTML = `<div style="font-size:10px;color:var(--yellow)">Renderizando GIF: ${(progress * 100).toFixed(1)}%</div>
                 <div style="width:100%;height:4px;background:var(--border);margin-top:4px"><div style="width:${progress*100}%;height:100%;background:var(--yellow)"></div></div>`;
             });
             await ffmpeg.load({
-                coreURL: coreURL,
-                wasmURL: wasmURL,
-                classWorkerURL: workerURL
+                coreURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-core.js',
+                wasmURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-core.wasm',
             });
         }
         
