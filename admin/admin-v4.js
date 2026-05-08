@@ -801,7 +801,6 @@ async function generateGIF(clientKey, idx) {
             });
             const baseURL = new URL('/assets/ffmpeg/', window.location.origin).href;
             await ffmpeg.load({
-                classWorkerURL: baseURL + '814.ffmpeg.js',
                 coreURL: baseURL + 'ffmpeg-core.js',
                 wasmURL: baseURL + 'ffmpeg-core.wasm'
             });
