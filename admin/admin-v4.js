@@ -799,10 +799,11 @@ async function generateGIF(clientKey, idx) {
                 out.innerHTML = `<div style="font-size:10px;color:var(--yellow)">Renderizando GIF: ${(progress * 100).toFixed(1)}%</div>
                 <div style="width:100%;height:4px;background:var(--border);margin-top:4px"><div style="width:${progress*100}%;height:100%;background:var(--yellow)"></div></div>`;
             });
+            const workerPath = new URL('/assets/ffmpeg/814.ffmpeg.js', window.location.origin).href;
             await ffmpeg.load({
                 coreURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-core.js',
                 wasmURL: 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-core.wasm',
-                classWorkerURL: '/assets/ffmpeg/814.ffmpeg.js',
+                classWorkerURL: workerPath,
             });
         }
         
