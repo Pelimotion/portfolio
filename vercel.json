@@ -5,10 +5,10 @@
     { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/v1/", "destination": "/V1/portfolio/index.html" },
-    { "source": "/v1/:path*", "destination": "/V1/portfolio/:path*" },
-    { "source": "/portfolio", "destination": "/V1/portfolio/index.html" },
-    { "source": "/portfolio/:path*", "destination": "/V1/portfolio/index.html" },
+    { "source": "/v1/", "destination": "/legacy/V1/portfolio/index.html" },
+    { "source": "/v1/:path*", "destination": "/legacy/V1/portfolio/:path*" },
+    { "source": "/portfolio", "destination": "/legacy/V1/portfolio/index.html" },
+    { "source": "/portfolio/:path*", "destination": "/legacy/V1/portfolio/index.html" },
     { "source": "/curriculum", "destination": "/Curriculum/index.html" },
     { "source": "/curriculum/:path*", "destination": "/Curriculum/:path*" },
     { "source": "/admin", "destination": "/admin/index.html" },

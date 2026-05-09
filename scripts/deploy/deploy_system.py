@@ -11,12 +11,15 @@ V1_DIR = os.path.join(ROOT_DIR, "V1", "portfolio")
 def log(msg):
     print(f"\n🚀 [PELIMOTION-DEPLOY] {msg}")
 
-def run_python(script_path, working_dir):
+def run_python(script_path):
     try:
-        log(f"Executando {os.path.basename(script_path)} em {working_dir}...")
+        # Resolve path relative to project root
+        abs_path = os.path.join(ROOT_DIR, script_path)
+        log(f"Executando {script_path}...")
+        
         result = subprocess.run(
-            [sys.executable, os.path.basename(script_path)],
-            cwd=working_dir,
+            [sys.executable, abs_path],
+            cwd=ROOT_DIR,
             capture_output=True,
             text=True
         )
@@ -31,16 +34,10 @@ def main():
     log("Iniciando ciclo de otimização e deploy...")
 
     # 1. Otimizar Mídias (FFMPEG -> Bunny.net)
-    run_python("optimize_portfolio.py", ROOT_DIR)
+    run_python("scripts/processing/optimize_portfolio.py")
 
-    # 2. Build portfolio from source template
-    run_python("build_portfolio.py", ROOT_DIR)
-
-    # 3. Sincronizar Index V1 Portfolio (injeta clientsData fresco)
-    run_python("sync_bunny.py", ROOT_DIR)
-
-    # 4. Aplicar patches UX/UI
-    run_python("patch_portfolio.py", ROOT_DIR)
+    # 2. Sincronizar dados do Bunny.net com site-content.json
+    run_python("scripts/sync/sync_bunny.py")
     
     # 4. Verificar mudanças no Git
     status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True).stdout.strip()

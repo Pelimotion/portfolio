@@ -5,14 +5,27 @@ import json
 import ssl
 import time
 from urllib.parse import quote
+import sys
+
+# Load local utils
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.env_loader import load_env
+
+load_env()
 
 # Bunny Storage API details
-API_KEY = "864ea13e-6fa0-4de2-aedddb2e0480-84d2-439a"
-ZONE_NAME = "pelimotion-portfolio"
+API_KEY = os.getenv("BUNNY_API_KEY")
+ZONE_NAME = os.getenv("BUNNY_STORAGE_ZONE")
+
+if not API_KEY or not ZONE_NAME:
+    print("❌ ERROR: BUNNY_API_KEY or BUNNY_STORAGE_ZONE not set in .env")
+    sys.exit(1)
+
 BASE_URL = f"https://storage.bunnycdn.com/{ZONE_NAME}/"
 CDN_BASE = f"https://{ZONE_NAME}.b-cdn.net"
 
-HTML_FILE = "V1/portfolio/index.html"
+# Target file for unified site content
+SITE_CONTENT_FILE = "site-content.json"
 
 def clean_title(filename):
     """
@@ -205,9 +218,9 @@ if __name__ == "__main__":
     #   createdAt, updatedAt
     # ─────────────────────────────────────────────────────────────────────────
 
-    if os.path.exists('site-content.json'):
+    if os.path.exists(SITE_CONTENT_FILE):
         try:
-            with open('site-content.json', 'r', encoding='utf-8') as f:
+            with open(SITE_CONTENT_FILE, 'r', encoding='utf-8') as f:
                 site_data = json.load(f)
 
             existing_clients = site_data.get('clients', {})
@@ -340,19 +353,9 @@ if __name__ == "__main__":
             site_data['clients']  = merged_clients
             site_data['lastSync'] = sync_ts
 
-            with open('site-content.json', 'w', encoding='utf-8') as f:
+            with open(SITE_CONTENT_FILE, 'w', encoding='utf-8') as f:
                 json.dump(site_data, f, indent=2, ensure_ascii=False)
-            print(f"\n✅ site-content.json updated — {len(merged_clients)} clients (v3 smart merge).")
-
-            # ─── Sync content.json (legacy portfolio source) ──────────────
-            legacy_data = {
-                "clients":     site_data['clients'],
-                "categories":  site_data.get('categories', {}),
-                "clientOrder": site_data.get('clientOrder', []),
-            }
-            with open('content.json', 'w', encoding='utf-8') as f:
-                json.dump(legacy_data, f, indent=2, ensure_ascii=False)
-            print("✅ content.json (legacy) updated.")
+            print(f"\n✅ {SITE_CONTENT_FILE} updated — {len(merged_clients)} clients (v3 smart merge).")
 
         except Exception as e:
             import traceback
@@ -360,6 +363,12 @@ if __name__ == "__main__":
             traceback.print_exc()
     else:
         # Fallback: no site-content.json yet
-        with open('content.json', 'w', encoding='utf-8') as f:
-            json.dump({"clients": clients_data}, f, indent=2, ensure_ascii=False)
-        print("⚠️  site-content.json not found. Wrote content.json only.")
+        site_data = {
+            "_note": "Unified content layer for the entire Pelimotion site.",
+            "_version": "3.0",
+            "clients": clients_data,
+            "lastSync": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        }
+        with open(SITE_CONTENT_FILE, 'w', encoding='utf-8') as f:
+            json.dump(site_data, f, indent=2, ensure_ascii=False)
+        print(f"✅ Created initial {SITE_CONTENT_FILE}.")

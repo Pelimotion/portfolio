@@ -329,7 +329,7 @@
         async function initApp() {
             initTheme();
             try {
-                const resp = await fetch('../../content.json');
+                const resp = await fetch('../../../site-content.json');
                 plmContent = await resp.json();
                 renderHome();
                 initCursor();

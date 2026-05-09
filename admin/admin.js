@@ -150,11 +150,9 @@ async function doPublish() {
   const jsonContent = JSON.stringify(D, null, 2);
   const legacyContent = JSON.stringify(legacy, null, 2);
 
-  try {
-    const sha1 = await getFileSha('site-content.json', token);
-    await commitFile('site-content.json', jsonContent, sha1, 'Admin: Update site-content.json', token);
-    const sha2 = await getFileSha('content.json', token);
-    await commitFile('content.json', legacyContent, sha2, 'Admin: Update content.json', token);
+    try {
+        const sha1 = await getFileSha('site-content.json', token);
+        await commitFile('site-content.json', jsonContent, sha1, 'Admin: Update site-content.json', token);
 
     hasUnsaved = false;
     const unsavedLabel = document.getElementById('unsaved-label');
@@ -216,12 +214,10 @@ function saveAll() {
 
 function exportJSON() {
   autoSave();
-  const legacy = { _note: D._note || '', clients: D.clients || {}, categories: D.categories || {} };
   download(JSON.stringify(D, null, 2), 'site-content.json');
-  setTimeout(() => download(JSON.stringify(legacy, null, 2), 'content.json'), 500);
   hasUnsaved = false;
   document.getElementById('unsaved-label').classList.remove('visible');
-  toast('✓ Downloaded site-content.json + content.json');
+  toast('✓ Downloaded site-content.json');
 }
 
 

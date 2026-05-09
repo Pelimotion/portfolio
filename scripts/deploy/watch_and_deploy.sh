@@ -25,7 +25,7 @@ while true; do
     LAST_MEDIA_COUNT=$CURRENT_MEDIA_COUNT
     
     # Executa o sistema de deploy que já faz a otimização, sync e git push
-    python3 deploy_system.py
+    python3 scripts/deploy/deploy_system.py
     
     echo "✅ Pipeline executado! Voltando a patrulhar..."
     echo "--------------------------------------------------------"

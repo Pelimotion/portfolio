@@ -7,13 +7,25 @@ import ssl
 from urllib.parse import quote
 import cv2
 import numpy as np
+import sys
+
+# Load local utils
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.env_loader import load_env
+
+load_env()
 
 # ─── CONFIGURATION ───
-API_KEY = "864ea13e-6fa0-4de2-aedddb2e0480-84d2-439a"
-ZONE_NAME = "pelimotion-portfolio"
+API_KEY = os.getenv("BUNNY_API_KEY")
+ZONE_NAME = os.getenv("BUNNY_STORAGE_ZONE")
+
+if not API_KEY or not ZONE_NAME:
+    print("❌ ERROR: BUNNY_API_KEY or BUNNY_STORAGE_ZONE not set in .env")
+    sys.exit(1)
+
 STORAGE_ENDPOINT = "https://storage.bunnycdn.com"
-FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg"
-FFPROBE_PATH = "/opt/homebrew/bin/ffprobe"
+FFMPEG_PATH = os.getenv("FFMPEG_PATH", "/opt/homebrew/bin/ffmpeg")
+FFPROBE_PATH = os.getenv("FFPROBE_PATH", "/opt/homebrew/bin/ffprobe")
 MANIFEST_FILE = "media_manifest.json"
 BASE_DIR = "Medias Portfolio"
 
