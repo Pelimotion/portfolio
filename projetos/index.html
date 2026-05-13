@@ -46,7 +46,7 @@
       </div>
       <div class="header-actions">
         <span id="header-user" class="header-user"></span>
-        <button id="btn-new-project" class="btn btn-primary" onclick="openModal()">+ Novo Projeto</button>
+        <button id="btn-new-project" class="btn btn-primary" onclick="openModal()" disabled>+ Novo Projeto</button>
         <button class="btn btn-ghost" onclick="signOut()">Sair</button>
       </div>
     </header>
@@ -126,39 +126,45 @@
   <script src="kanban.js"></script>
 
   <script>
-    // ── Bootstrap ───────────────────────────────────────────────────────
+    // ── Singleton guard: garante que db vem de app.js e não foi recriado ──
+    // db está definido em app.js (carregado antes deste bloco)
+
+    // ── Bootstrap ─────────────────────────────────────────────────────────
+    // O botão "Novo Projeto" começa desabilitado (ver HTML) e só é liberado
+    // após a sessão ser confirmada pelo onAuthStateChange.
     let isInitialized = false;
 
     db.auth.onAuthStateChange(async (event, session) => {
       if (!session) {
+        // Sem sessão: mostra tela de login, bloqueia UI
         document.getElementById('app').setAttribute('hidden', '');
         document.getElementById('login-screen').removeAttribute('hidden');
+        document.getElementById('btn-new-project').disabled = true;
         return;
       }
 
-      // Se já carregou antes, não refaz o fetch (evita loop no SIGNED_IN)
+      // SIGNED_IN ou TOKEN_REFRESHED: libera UI apenas uma vez
       if (isInitialized) return;
       isInitialized = true;
 
-      // Exibe área autenticada
       document.getElementById('login-screen').setAttribute('hidden', '');
       document.getElementById('app').removeAttribute('hidden');
       document.getElementById('header-user').textContent = session.user.email;
+      // Libera o botão somente depois de confirmar sessão
+      document.getElementById('btn-new-project').disabled = false;
 
       await loadProjects();
-      initKanban(
-        document.querySelectorAll('.column-cards'),
-        'projects'
-      );
+      initKanban(document.querySelectorAll('.column-cards'), 'projects');
     });
 
+    // Verificação inicial: restaura sessão do storage local (pós-redirect OAuth)
     (async function init() {
-      // Tenta pegar a sessão logo de cara por precaução
-      const { data } = await db.auth.getSession();
-      if (!data.session) {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) {
         document.getElementById('app').setAttribute('hidden', '');
         document.getElementById('login-screen').removeAttribute('hidden');
       }
+      // Se sessão existe, o onAuthStateChange já dispara SIGNED_IN e cuida do resto
     })();
 
     // ── Carregar projetos ────────────────────────────────────────────────
@@ -250,15 +256,23 @@
       btn.disabled = true;
       btn.textContent = 'Criando…';
 
-      const form = e.target;
-      const payload = {
-        title:           form.title.value.trim(),
-        description:     form.description.value.trim() || null,
-        drive_folder_url: form.drive_folder_url.value.trim() || null,
-        status:          'briefing',
-      };
-
       try {
+        // ── Guard: verifica sessão ativa antes de qualquer request ────────
+        // Isso garante que o JWT do usuário (Bearer) está no header,
+        // não a chave anon. A SDK anexa o token automaticamente.
+        const { data: authData, error: authErr } = await db.auth.getSession();
+        if (authErr) throw authErr;
+        if (!authData.session) throw new Error('Sessão expirada. Faça login novamente.');
+
+        const form = e.target;
+        const payload = {
+          title:            form.title.value.trim(),
+          description:      form.description.value.trim() || null,
+          drive_folder_url: form.drive_folder_url.value.trim() || null,
+          status:           'briefing',
+        };
+
+        // ── Insert via SDK (JWT é anexado automaticamente) ────────────────
         const { data, error } = await db
           .from('projects')
           .insert(payload)
