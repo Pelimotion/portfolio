@@ -127,23 +127,38 @@
 
   <script>
     // ── Bootstrap ───────────────────────────────────────────────────────
-    (async function init() {
-      const { data } = await db.auth.getSession();
+    let isInitialized = false;
 
-      if (!data.session) {
+    db.auth.onAuthStateChange(async (event, session) => {
+      if (!session) {
+        document.getElementById('app').setAttribute('hidden', '');
         document.getElementById('login-screen').removeAttribute('hidden');
         return;
       }
 
+      // Se já carregou antes, não refaz o fetch (evita loop no SIGNED_IN)
+      if (isInitialized) return;
+      isInitialized = true;
+
       // Exibe área autenticada
+      document.getElementById('login-screen').setAttribute('hidden', '');
       document.getElementById('app').removeAttribute('hidden');
-      document.getElementById('header-user').textContent = data.session.user.email;
+      document.getElementById('header-user').textContent = session.user.email;
 
       await loadProjects();
       initKanban(
         document.querySelectorAll('.column-cards'),
         'projects'
       );
+    });
+
+    (async function init() {
+      // Tenta pegar a sessão logo de cara por precaução
+      const { data } = await db.auth.getSession();
+      if (!data.session) {
+        document.getElementById('app').setAttribute('hidden', '');
+        document.getElementById('login-screen').removeAttribute('hidden');
+      }
     })();
 
     // ── Carregar projetos ────────────────────────────────────────────────
