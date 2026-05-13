@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Detalhe do projeto e Kanban de cenas — Pelimotion." />
+  <title>Projeto — Pelimotion</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Banner de erro -->
+  <div id="error-banner" class="error-banner" hidden></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  HEADER                                                               -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <header class="app-header">
+    <div class="header-brand">
+      <a href="index.html" class="btn btn-ghost back-btn" aria-label="Voltar para projetos">← Projetos</a>
+    </div>
+    <div class="header-actions">
+      <span id="header-user" class="header-user"></span>
+      <button id="btn-new-scene" class="btn btn-primary" onclick="openModal()">+ Nova Cena</button>
+      <button class="btn btn-ghost" onclick="signOut()">Sair</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  DETALHE DO PROJETO                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <section class="project-detail">
+    <div class="project-meta">
+      <h1 id="project-title" class="project-title">…</h1>
+      <a id="project-drive-link" class="drive-link" target="_blank" rel="noopener noreferrer" hidden>
+        📁 Abrir pasta no Drive
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  KANBAN DE CENAS                                                      -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <main class="kanban-wrapper">
+    <div class="kanban-board" id="kanban-board">
+
+      <div class="kanban-column" id="col-a_fazer">
+        <div class="column-header">
+          <span class="column-dot dot-a_fazer"></span>
+          A fazer
+        </div>
+        <div class="column-cards" id="cards-a_fazer" data-status="a_fazer"></div>
+      </div>
+
+      <div class="kanban-column" id="col-em_progresso">
+        <div class="column-header">
+          <span class="column-dot dot-em_progresso"></span>
+          Em progresso
+        </div>
+        <div class="column-cards" id="cards-em_progresso" data-status="em_progresso"></div>
+      </div>
+
+      <div class="kanban-column" id="col-revisao">
+        <div class="column-header">
+          <span class="column-dot dot-revisao"></span>
+          Em revisão
+        </div>
+        <div class="column-cards" id="cards-revisao" data-status="revisao"></div>
+      </div>
+
+      <div class="kanban-column" id="col-concluido">
+        <div class="column-header">
+          <span class="column-dot dot-concluido"></span>
+          Concluído
+        </div>
+        <div class="column-cards" id="cards-concluido" data-status="concluido"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  MODAL: Nova Cena                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay" hidden onclick="closeModalOnOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+      <div class="modal-header">
+        <h2 id="modal-heading" class="modal-title">Nova Cena</h2>
+        <button class="modal-close" onclick="closeModal()" aria-label="Fechar">✕</button>
+      </div>
+      <form id="form-new-scene" class="modal-form" onsubmit="submitNewScene(event)">
+        <label for="input-title" class="form-label">Título <span class="required">*</span></label>
+        <input id="input-title" name="title" type="text" class="form-input" placeholder="Nome da cena" required />
+
+        <label for="input-desc" class="form-label">Descrição</label>
+        <textarea id="input-desc" name="description" class="form-textarea" rows="3" placeholder="Breve descrição da cena"></textarea>
+
+        <label for="input-drive" class="form-label">URL no Drive</label>
+        <input id="input-drive" name="drive_url" type="url" class="form-input" placeholder="https://drive.google.com/..." />
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+          <button id="btn-submit-scene" type="submit" class="btn btn-primary">Criar Cena</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── CDN ──────────────────────────────────────────────────────────── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="app.js"></script>
+  <script src="kanban.js"></script>
+
+  <script>
+    let projectId = null;
+
+    // ── Bootstrap ─────────────────────────────────────────────────────────
+    (async function init() {
+      const session = await checkAuth();    // redireciona se não autenticado
+      if (!session) return;
+
+      document.getElementById('header-user').textContent = session.user.email;
+
+      projectId = getParam('id');
+      if (!projectId) {
+        showError('ID do projeto não encontrado na URL.');
+        return;
+      }
+
+      await loadProject();
+      await loadScenes();
+
+      initKanban(
+        document.querySelectorAll('.column-cards'),
+        'scenes'
+      );
+    })();
+
+    // ── Carregar dados do projeto ──────────────────────────────────────────
+    async function loadProject() {
+      try {
+        const { data, error } = await db
+          .from('projects')
+          .select('*')
+          .eq('id', projectId)
+          .single();
+        if (error) throw error;
+
+        document.getElementById('project-title').textContent = data.title;
+        document.title = data.title + ' — Pelimotion';
+
+        if (data.drive_folder_url) {
+          const link = document.getElementById('project-drive-link');
+          link.href = data.drive_folder_url;
+          link.removeAttribute('hidden');
+        }
+      } catch (err) {
+        showError('Erro ao carregar projeto: ' + err.message);
+      }
+    }
+
+    // ── Carregar cenas ────────────────────────────────────────────────────
+    async function loadScenes() {
+      try {
+        const { data, error } = await db
+          .from('scenes')
+          .select('*')
+          .eq('project_id', projectId)
+          .order('position');
+        if (error) throw error;
+
+        document.querySelectorAll('.column-cards').forEach(c => {
+          while (c.firstChild) c.removeChild(c.firstChild);
+        });
+
+        data.forEach(renderSceneCard);
+      } catch (err) {
+        showError('Erro ao carregar cenas: ' + err.message);
+      }
+    }
+
+    // ── Renderizar card de cena ───────────────────────────────────────────
+    function renderSceneCard(scene) {
+      const col = document.getElementById('cards-' + scene.status);
+      if (!col) return;
+
+      const card = document.createElement('div');
+      card.className = 'kanban-card';
+      card.dataset.id = scene.id;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+
+      const title = document.createElement('p');
+      title.className = 'card-title';
+      title.textContent = scene.title;
+      card.appendChild(title);
+
+      if (scene.description) {
+        const desc = document.createElement('p');
+        desc.className = 'card-desc';
+        desc.textContent = scene.description;
+        card.appendChild(desc);
+      }
+
+      if (scene.drive_url) {
+        const link = document.createElement('a');
+        link.className = 'card-drive-link';
+        link.href = scene.drive_url;
+        link.textContent = '📁 Drive';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.addEventListener('click', e => e.stopPropagation());
+        card.appendChild(link);
+      }
+
+      card.addEventListener('click', () => {
+        window.location.href = 'cena.html?id=' + scene.id;
+      });
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          window.location.href = 'cena.html?id=' + scene.id;
+        }
+      });
+
+      col.appendChild(card);
+    }
+
+    // ── Modal ──────────────────────────────────────────────────────────────
+    function openModal() {
+      document.getElementById('modal-overlay').removeAttribute('hidden');
+      document.getElementById('input-title').focus();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').setAttribute('hidden', '');
+      document.getElementById('form-new-scene').reset();
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    }
+
+    async function submitNewScene(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-scene');
+      btn.disabled = true;
+      btn.textContent = 'Criando…';
+
+      const form = e.target;
+
+      // Posição = nº de cenas já existentes na coluna a_fazer
+      const colCards = document.getElementById('cards-a_fazer');
+      const position = colCards ? colCards.children.length : 0;
+
+      const payload = {
+        project_id:  projectId,
+        title:       form.title.value.trim(),
+        description: form.description.value.trim() || null,
+        drive_url:   form.drive_url.value.trim() || null,
+        status:      'a_fazer',
+        position,
+      };
+
+      try {
+        const { data, error } = await db
+          .from('scenes')
+          .insert(payload)
+          .select()
+          .single();
+        if (error) throw error;
+
+        renderSceneCard(data);
+        closeModal();
+      } catch (err) {
+        showError('Erro ao criar cena: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar Cena';
+      }
+    }
+  </script>
+
+</body>
+</html>

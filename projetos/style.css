@@ -1,0 +1,424 @@
+/*
+ * style.css — /projetos
+ * Estilos exclusivos da subpágina. Não altera o CSS global do site.
+ * Paleta neutra (cinzas + azul-índigo) que não conflite com o tema Pelimotion.
+ */
+
+/* ── Reset local ─────────────────────────────────────────────────────────── */
+#projetos-root *, .app-header *, .kanban-wrapper *,
+.login-screen *, .modal *, .scene-detail *, .daily-log-section * {
+  box-sizing: border-box;
+}
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+:root {
+  --p-bg:          #0f1117;
+  --p-surface:     #1a1d27;
+  --p-surface2:    #22263a;
+  --p-border:      #2e3250;
+  --p-accent:      #5b6af0;
+  --p-accent-h:    #6e7cf5;
+  --p-text:        #e8eaf6;
+  --p-muted:       #8589b0;
+  --p-error:       #e05c5c;
+
+  --p-briefing:    #6c8ebf;
+  --p-producao:    #f0a84a;
+  --p-revisao:     #c47ff0;
+  --p-entregue:    #4fbf8e;
+
+  --p-a_fazer:     #8589b0;
+  --p-em_progresso:#f0a84a;
+  --p-revisao-s:   #c47ff0;
+  --p-concluido:   #4fbf8e;
+
+  --p-radius:      10px;
+  --p-shadow:      0 2px 12px rgba(0,0,0,.45);
+  --p-transition:  0.18s ease;
+}
+
+/* ── Base da página ──────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--p-bg);
+  color: var(--p-text);
+  min-height: 100vh;
+}
+
+/* ── Error banner ────────────────────────────────────────────────────────── */
+.error-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: var(--p-error);
+  color: #fff;
+  padding: .75rem 1.25rem;
+  font-size: .9rem;
+  text-align: center;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .875rem 1.5rem;
+  background: var(--p-surface);
+  border-bottom: 1px solid var(--p-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-brand { display: flex; align-items: center; gap: .75rem; }
+.header-logo  { height: 28px; width: auto; }
+.header-title { font-weight: 600; font-size: 1rem; color: var(--p-text); }
+.header-actions { display: flex; align-items: center; gap: .75rem; }
+.header-user  { font-size: .8rem; color: var(--p-muted); }
+
+/* ── Botões ──────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  border-radius: var(--p-radius);
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background var(--p-transition), opacity var(--p-transition);
+  text-decoration: none;
+}
+.btn-primary { background: var(--p-accent); color: #fff; }
+.btn-primary:hover { background: var(--p-accent-h); }
+.btn-ghost   { background: transparent; color: var(--p-muted); border: 1px solid var(--p-border); }
+.btn-ghost:hover { color: var(--p-text); border-color: var(--p-accent); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-google {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  padding: .75rem 1.5rem;
+  border-radius: 8px;
+  gap: .75rem;
+}
+.btn-google:hover { background: #f5f5f5; }
+
+.back-btn { font-size: .85rem; }
+
+/* ── Tela de login ───────────────────────────────────────────────────────── */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--p-shadow);
+}
+.login-logo   { height: 48px; margin-bottom: 1.25rem; }
+.login-title  { font-size: 1.5rem; font-weight: 700; margin: 0 0 .5rem; }
+.login-subtitle { color: var(--p-muted); font-size: .9rem; margin: 0 0 1.75rem; }
+
+/* ── Kanban board ────────────────────────────────────────────────────────── */
+.kanban-wrapper {
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  min-width: max-content;
+}
+
+/* ── Colunas ─────────────────────────────────────────────────────────────── */
+.kanban-column {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  width: 280px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .875rem 1rem;
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+  border-bottom: 1px solid var(--p-border);
+}
+.column-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.column-cards {
+  padding: .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  min-height: 80px;
+}
+
+/* Dots por status — projetos */
+.dot-briefing  { background: var(--p-briefing); }
+.dot-producao  { background: var(--p-producao); }
+.dot-revisao   { background: var(--p-revisao); }
+.dot-entregue  { background: var(--p-entregue); }
+
+/* Dots por status — cenas */
+.dot-a_fazer      { background: var(--p-a_fazer); }
+.dot-em_progresso { background: var(--p-em_progresso); }
+.dot-concluido    { background: var(--p-concluido); }
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.kanban-card {
+  background: var(--p-surface2);
+  border: 1px solid var(--p-border);
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  cursor: pointer;
+  transition: border-color var(--p-transition), box-shadow var(--p-transition), transform var(--p-transition);
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+.kanban-card:hover {
+  border-color: var(--p-accent);
+  box-shadow: 0 0 0 2px rgba(91,106,240,.2);
+  transform: translateY(-1px);
+}
+.card-title {
+  margin: 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--p-text);
+}
+.card-desc {
+  margin: 0;
+  font-size: .8rem;
+  color: var(--p-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-drive-link {
+  font-size: .75rem;
+  color: var(--p-accent);
+  text-decoration: none;
+  width: fit-content;
+}
+.card-drive-link:hover { text-decoration: underline; }
+
+/* Drag states (Sortable.js classes) */
+.card-ghost    { opacity: .35; background: var(--p-surface2); }
+.card-chosen   { box-shadow: 0 4px 20px rgba(91,106,240,.4); }
+.card-dragging { transform: rotate(1.5deg); opacity: .9; }
+
+/* ── Detalhe projeto / cena ──────────────────────────────────────────────── */
+.project-detail,
+.scene-detail {
+  padding: 1.5rem 1.5rem .5rem;
+  border-bottom: 1px solid var(--p-border);
+}
+.project-meta,
+.scene-meta {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.project-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.drive-link {
+  font-size: .875rem;
+  color: var(--p-accent);
+  text-decoration: none;
+}
+.drive-link:hover { text-decoration: underline; }
+
+/* ── Status select ───────────────────────────────────────────────────────── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.status-select {
+  background: var(--p-surface2);
+  color: var(--p-text);
+  border: 1px solid var(--p-border);
+  border-radius: 6px;
+  padding: .35rem .75rem;
+  font-size: .875rem;
+  cursor: pointer;
+  transition: border-color var(--p-transition);
+}
+.status-select:hover,
+.status-select:focus { border-color: var(--p-accent); outline: none; }
+
+/* ── Daily log ───────────────────────────────────────────────────────────── */
+.daily-log-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.section-heading {
+  margin: 0 0 .75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--p-text);
+}
+.log-form { display: flex; flex-direction: column; gap: .75rem; }
+.log-textarea { resize: vertical; min-height: 100px; }
+.log-form-footer { display: flex; justify-content: flex-end; }
+
+.log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.log-entry {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  padding: .875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+.log-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .25rem;
+}
+.log-email { font-size: .8rem; font-weight: 600; color: var(--p-accent); }
+.log-ts    { font-size: .75rem; color: var(--p-muted); }
+.log-note  { margin: 0; font-size: .9rem; color: var(--p-text); white-space: pre-wrap; }
+.log-empty { color: var(--p-muted); font-size: .9rem; text-align: center; padding: 1rem 0; }
+
+/* ── Formulário (modal e demais) ─────────────────────────────────────────── */
+.form-label {
+  display: block;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--p-muted);
+  margin-bottom: .3rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.required { color: var(--p-error); }
+.form-input,
+.form-textarea {
+  width: 100%;
+  background: var(--p-surface2);
+  color: var(--p-text);
+  border: 1px solid var(--p-border);
+  border-radius: 8px;
+  padding: .6rem .875rem;
+  font-size: .9rem;
+  transition: border-color var(--p-transition);
+}
+.form-input::placeholder,
+.form-textarea::placeholder { color: var(--p-muted); }
+.form-input:focus,
+.form-textarea:focus { border-color: var(--p-accent); outline: none; }
+.form-textarea { resize: vertical; min-height: 80px; }
+
+/* ── Modal ───────────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+.modal {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--p-shadow);
+  animation: modal-in .18s ease;
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--p-border);
+}
+.modal-title { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--p-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: .25rem .5rem;
+  border-radius: 6px;
+}
+.modal-close:hover { background: var(--p-surface2); color: var(--p-text); }
+.modal-form {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .875rem;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+  padding-top: .5rem;
+}
+
+/* ── Responsivo ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .kanban-board {
+    flex-direction: column;
+    min-width: unset;
+    align-items: stretch;
+  }
+  .kanban-column { width: 100%; }
+  .app-header { flex-wrap: wrap; gap: .5rem; }
+  .header-actions { flex-wrap: wrap; gap: .5rem; }
+  .project-title { font-size: 1.2rem; }
+  .daily-log-section { padding: 1rem; }
+  .login-card { padding: 2rem 1.5rem; }
+}

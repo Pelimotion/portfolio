@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Painel de gestão de projetos Pelimotion — Kanban por status de produção." />
+  <title>Projetos — Pelimotion</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Banner de erro (gerenciado por showError em app.js) ─────────────── -->
+  <div id="error-banner" class="error-banner" hidden></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  ESTADO: SEM SESSÃO                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <section id="login-screen" class="login-screen" hidden>
+    <div class="login-card">
+      <img src="../logo.svg" alt="Pelimotion" class="login-logo" />
+      <h1 class="login-title">Área de Projetos</h1>
+      <p class="login-subtitle">Acesso restrito à equipe Pelimotion.</p>
+      <button id="btn-google-login" class="btn btn-google" onclick="signInWithGoogle()">
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        Entrar com Google
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  ESTADO: COM SESSÃO                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div id="app" hidden>
+
+    <!-- Header ─────────────────────────────────────────────────────────── -->
+    <header class="app-header">
+      <div class="header-brand">
+        <img src="../logo.svg" alt="Pelimotion" class="header-logo" />
+        <span class="header-title">Projetos</span>
+      </div>
+      <div class="header-actions">
+        <span id="header-user" class="header-user"></span>
+        <button id="btn-new-project" class="btn btn-primary" onclick="openModal()">+ Novo Projeto</button>
+        <button class="btn btn-ghost" onclick="signOut()">Sair</button>
+      </div>
+    </header>
+
+    <!-- Kanban ─────────────────────────────────────────────────────────── -->
+    <main class="kanban-wrapper">
+      <div class="kanban-board" id="kanban-board">
+
+        <div class="kanban-column" id="col-briefing">
+          <div class="column-header">
+            <span class="column-dot dot-briefing"></span>
+            Briefing
+          </div>
+          <div class="column-cards" id="cards-briefing" data-status="briefing"></div>
+        </div>
+
+        <div class="kanban-column" id="col-producao">
+          <div class="column-header">
+            <span class="column-dot dot-producao"></span>
+            Produção
+          </div>
+          <div class="column-cards" id="cards-producao" data-status="producao"></div>
+        </div>
+
+        <div class="kanban-column" id="col-revisao">
+          <div class="column-header">
+            <span class="column-dot dot-revisao"></span>
+            Revisão
+          </div>
+          <div class="column-cards" id="cards-revisao" data-status="revisao"></div>
+        </div>
+
+        <div class="kanban-column" id="col-entregue">
+          <div class="column-header">
+            <span class="column-dot dot-entregue"></span>
+            Entregue
+          </div>
+          <div class="column-cards" id="cards-entregue" data-status="entregue"></div>
+        </div>
+
+      </div>
+    </main>
+
+  </div><!-- /#app -->
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!--  MODAL: Novo Projeto                                                  -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay" hidden onclick="closeModalOnOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+      <div class="modal-header">
+        <h2 id="modal-heading" class="modal-title">Novo Projeto</h2>
+        <button class="modal-close" onclick="closeModal()" aria-label="Fechar">✕</button>
+      </div>
+      <form id="form-new-project" class="modal-form" onsubmit="submitNewProject(event)">
+        <label for="input-title" class="form-label">Título <span class="required">*</span></label>
+        <input id="input-title" name="title" type="text" class="form-input" placeholder="Nome do projeto" required />
+
+        <label for="input-desc" class="form-label">Descrição</label>
+        <textarea id="input-desc" name="description" class="form-textarea" rows="3" placeholder="Breve descrição do projeto"></textarea>
+
+        <label for="input-drive" class="form-label">URL da pasta no Drive</label>
+        <input id="input-drive" name="drive_folder_url" type="url" class="form-input" placeholder="https://drive.google.com/drive/folders/..." />
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+          <button id="btn-submit-project" type="submit" class="btn btn-primary">Criar Projeto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── CDN ──────────────────────────────────────────────────────────── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="app.js"></script>
+  <script src="kanban.js"></script>
+
+  <script>
+    // ── Bootstrap ───────────────────────────────────────────────────────
+    (async function init() {
+      const { data } = await db.auth.getSession();
+
+      if (!data.session) {
+        document.getElementById('login-screen').removeAttribute('hidden');
+        return;
+      }
+
+      // Exibe área autenticada
+      document.getElementById('app').removeAttribute('hidden');
+      document.getElementById('header-user').textContent = data.session.user.email;
+
+      await loadProjects();
+      initKanban(
+        document.querySelectorAll('.column-cards'),
+        'projects'
+      );
+    })();
+
+    // ── Carregar projetos ────────────────────────────────────────────────
+    async function loadProjects() {
+      try {
+        const { data, error } = await db
+          .from('projects')
+          .select('*')
+          .order('created_at');
+        if (error) throw error;
+
+        // Limpar colunas antes de popular
+        document.querySelectorAll('.column-cards').forEach(c => {
+          while (c.firstChild) c.removeChild(c.firstChild);
+        });
+
+        data.forEach(renderProjectCard);
+      } catch (err) {
+        showError('Erro ao carregar projetos: ' + err.message);
+      }
+    }
+
+    // ── Renderizar card ──────────────────────────────────────────────────
+    function renderProjectCard(project) {
+      const col = document.getElementById('cards-' + project.status);
+      if (!col) return;
+
+      const card = document.createElement('div');
+      card.className = 'kanban-card';
+      card.dataset.id = project.id;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+
+      const title = document.createElement('p');
+      title.className = 'card-title';
+      title.textContent = project.title;
+
+      card.appendChild(title);
+
+      if (project.description) {
+        const desc = document.createElement('p');
+        desc.className = 'card-desc';
+        desc.textContent = project.description;
+        card.appendChild(desc);
+      }
+
+      if (project.drive_folder_url) {
+        const link = document.createElement('a');
+        link.className = 'card-drive-link';
+        link.href = project.drive_folder_url;
+        link.textContent = '📁 Drive';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.addEventListener('click', e => e.stopPropagation());
+        card.appendChild(link);
+      }
+
+      // Navega para projeto.html ao clicar no card
+      card.addEventListener('click', () => {
+        window.location.href = 'projeto.html?id=' + project.id;
+      });
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          window.location.href = 'projeto.html?id=' + project.id;
+        }
+      });
+
+      col.appendChild(card);
+    }
+
+    // ── Modal ─────────────────────────────────────────────────────────────
+    function openModal() {
+      document.getElementById('modal-overlay').removeAttribute('hidden');
+      document.getElementById('input-title').focus();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').setAttribute('hidden', '');
+      document.getElementById('form-new-project').reset();
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    }
+
+    async function submitNewProject(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-project');
+      btn.disabled = true;
+      btn.textContent = 'Criando…';
+
+      const form = e.target;
+      const payload = {
+        title:           form.title.value.trim(),
+        description:     form.description.value.trim() || null,
+        drive_folder_url: form.drive_folder_url.value.trim() || null,
+        status:          'briefing',
+      };
+
+      try {
+        const { data, error } = await db
+          .from('projects')
+          .insert(payload)
+          .select()
+          .single();
+        if (error) throw error;
+
+        renderProjectCard(data);
+        closeModal();
+      } catch (err) {
+        showError('Erro ao criar projeto: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar Projeto';
+      }
+    }
+  </script>
+
+</body>
+</html>

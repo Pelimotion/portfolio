@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cena — Pelimotion</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="error-banner" class="error-banner" hidden></div>
+
+  <header class="app-header">
+    <div class="header-brand">
+      <a id="back-btn" href="projeto.html" class="btn btn-ghost back-btn">← Projeto</a>
+    </div>
+    <div class="header-actions">
+      <span id="header-user" class="header-user"></span>
+      <button class="btn btn-ghost" onclick="signOut()">Sair</button>
+    </div>
+  </header>
+
+  <section class="scene-detail">
+    <div class="scene-meta">
+      <h1 id="scene-title" class="project-title">…</h1>
+      <div class="status-row">
+        <label for="status-select" class="form-label">Status:</label>
+        <select id="status-select" class="status-select" onchange="updateStatus(this.value)">
+          <option value="a_fazer">A fazer</option>
+          <option value="em_progresso">Em progresso</option>
+          <option value="revisao">Em revisão</option>
+          <option value="concluido">Concluído</option>
+        </select>
+      </div>
+      <a id="scene-drive-link" class="drive-link" target="_blank" rel="noopener noreferrer" hidden>📁 Abrir no Drive</a>
+    </div>
+  </section>
+
+  <section class="daily-log-section">
+    <h2 class="section-heading">Daily Log</h2>
+    <form id="form-log" class="log-form" onsubmit="submitLog(event)">
+      <textarea id="log-textarea" class="form-textarea log-textarea" rows="4"
+        placeholder="O que foi feito hoje nesta cena?" required></textarea>
+      <div class="log-form-footer">
+        <button id="btn-save-log" type="submit" class="btn btn-primary">Salvar nota</button>
+      </div>
+    </form>
+    <ul id="log-list" class="log-list"></ul>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let sceneId = null;
+    let userEmail = null;
+
+    (async function init() {
+      const session = await checkAuth();
+      if (!session) return;
+      userEmail = session.user.email;
+      document.getElementById('header-user').textContent = userEmail;
+      sceneId = getParam('id');
+      if (!sceneId) { showError('ID da cena não encontrado na URL.'); return; }
+      await loadScene();
+      await loadLogs();
+    })();
+
+    async function loadScene() {
+      try {
+        const { data, error } = await db.from('scenes').select('*').eq('id', sceneId).single();
+        if (error) throw error;
+        document.getElementById('scene-title').textContent = data.title;
+        document.title = data.title + ' — Pelimotion';
+        document.getElementById('back-btn').href = 'projeto.html?id=' + data.project_id;
+        const sel = document.getElementById('status-select');
+        sel.value = data.status;
+        sel.dataset.prev = data.status;
+        sel.dataset.status = data.status;
+        if (data.drive_url) {
+          const lnk = document.getElementById('scene-drive-link');
+          lnk.href = data.drive_url;
+          lnk.removeAttribute('hidden');
+        }
+      } catch (err) { showError('Erro ao carregar cena: ' + err.message); }
+    }
+
+    async function updateStatus(newStatus) {
+      const sel = document.getElementById('status-select');
+      const prev = sel.dataset.prev || sel.value;
+      sel.dataset.status = newStatus;
+      try {
+        const { error } = await db.from('scenes').update({ status: newStatus }).eq('id', sceneId);
+        if (error) throw error;
+        sel.dataset.prev = newStatus;
+      } catch (err) {
+        sel.value = prev;
+        sel.dataset.status = prev;
+        showError('Erro ao atualizar status: ' + err.message);
+      }
+    }
+
+    async function loadLogs() {
+      try {
+        const { data, error } = await db.from('daily_log').select('*')
+          .eq('scene_id', sceneId).order('created_at', { ascending: false });
+        if (error) throw error;
+        const list = document.getElementById('log-list');
+        while (list.firstChild) list.removeChild(list.firstChild);
+        if (data.length === 0) {
+          const li = document.createElement('li');
+          li.className = 'log-empty';
+          li.textContent = 'Nenhuma nota ainda. Registre a primeira!';
+          list.appendChild(li);
+          return;
+        }
+        data.forEach(e => list.appendChild(buildLogEl(e)));
+      } catch (err) { showError('Erro ao carregar logs: ' + err.message); }
+    }
+
+    async function submitLog(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-log');
+      const ta  = document.getElementById('log-textarea');
+      btn.disabled = true; btn.textContent = 'Salvando…';
+      try {
+        const { data, error } = await db.from('daily_log')
+          .insert({ scene_id: sceneId, user_email: userEmail, note: ta.value.trim() })
+          .select().single();
+        if (error) throw error;
+        const empty = document.querySelector('.log-empty');
+        if (empty) empty.remove();
+        const list = document.getElementById('log-list');
+        list.insertBefore(buildLogEl(data), list.firstChild);
+        ta.value = '';
+      } catch (err) { showError('Erro ao salvar nota: ' + err.message); }
+      finally { btn.disabled = false; btn.textContent = 'Salvar nota'; }
+    }
+
+    function buildLogEl(entry) {
+      const li   = document.createElement('li');
+      li.className = 'log-entry';
+      const meta = document.createElement('div');
+      meta.className = 'log-meta';
+      const em   = document.createElement('span');
+      em.className = 'log-email'; em.textContent = entry.user_email || '—';
+      const ts   = document.createElement('time');
+      ts.className = 'log-ts'; ts.dateTime = entry.created_at;
+      ts.textContent = new Date(entry.created_at).toLocaleString('pt-BR', {
+        day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
+      });
+      meta.appendChild(em); meta.appendChild(ts);
+      const p    = document.createElement('p');
+      p.className = 'log-note'; p.textContent = entry.note;
+      li.appendChild(meta); li.appendChild(p);
+      return li;
+    }
+  </script>
+</body>
+</html>
