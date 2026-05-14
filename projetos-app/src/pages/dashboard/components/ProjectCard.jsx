@@ -2,8 +2,10 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Folder } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 export function ProjectCard({ project }) {
+  const [, setSearchParams] = useSearchParams();
   const {
     attributes,
     listeners,
@@ -25,12 +27,20 @@ export function ProjectCard({ project }) {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const handleOpenDetail = () => {
+    // Apenas abre se não estiver arrastando
+    if (!isDragging) {
+      setSearchParams({ projectId: project.id });
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
+      onClick={handleOpenDetail}
       className="bg-card border border-border rounded-lg p-4 shadow-sm cursor-grab active:cursor-grabbing hover:border-muted-foreground/50 transition-colors"
     >
       <h4 className="font-semibold text-card-foreground text-sm mb-1">{project.title}</h4>
@@ -47,8 +57,9 @@ export function ProjectCard({ project }) {
             href={project.drive_folder_url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-xs text-blue-500 hover:underline"
-            onPointerDown={(e) => e.stopPropagation()} // Prevent drag when clicking link
+            className="text-xs text-blue-500 hover:underline relative z-10"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             Google Drive
           </a>

@@ -2,21 +2,20 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  Film, 
   FolderOpen, 
   Calendar, 
-  Settings, 
   Search,
-  Bell,
   Plus,
   ChevronDown,
   LogOut,
   MoreHorizontal
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useProjects } from '../../hooks/useProjects';
 
 export function Sidebar() {
   const { user, signOut } = useAuth();
+  const { projects } = useProjects();
   
   return (
     <aside className="w-64 border-r border-border bg-sidebar h-screen flex flex-col shrink-0">
@@ -40,10 +39,6 @@ export function Sidebar() {
             <span>Search</span>
             <span className="ml-auto text-[10px] bg-secondary border border-border px-1.5 rounded text-muted-foreground font-mono">⌘K</span>
           </button>
-          <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground hover:bg-secondary/50 hover:text-foreground rounded-md transition-colors text-left">
-            <Bell className="w-4 h-4" />
-            <span>Inbox</span>
-          </button>
         </div>
 
         <div>
@@ -54,16 +49,22 @@ export function Sidebar() {
           <nav className="space-y-0.5">
             <NavLink to="/" className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors ${isActive ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}>
               <LayoutDashboard className="w-4 h-4" />
-              <span>Board Principal</span>
+              <span>Projects Hub</span>
             </NavLink>
-            <NavLink to="/timeline" className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors ${isActive ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}>
-              <Calendar className="w-4 h-4" />
-              <span>Timeline</span>
-            </NavLink>
-            <NavLink to="/assets" className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors ${isActive ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}>
-              <FolderOpen className="w-4 h-4" />
-              <span>Asset Library</span>
-            </NavLink>
+            <div className="w-full flex items-center justify-between px-2 py-1.5 text-sm rounded-md transition-colors text-muted-foreground opacity-50 cursor-not-allowed">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>Timeline</span>
+              </div>
+              <span className="text-[9px] uppercase tracking-wider font-bold">WIP</span>
+            </div>
+            <div className="w-full flex items-center justify-between px-2 py-1.5 text-sm rounded-md transition-colors text-muted-foreground opacity-50 cursor-not-allowed">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="w-4 h-4" />
+                <span>Asset Library</span>
+              </div>
+              <span className="text-[9px] uppercase tracking-wider font-bold">WIP</span>
+            </div>
           </nav>
         </div>
 
@@ -72,17 +73,16 @@ export function Sidebar() {
             <span>Projetos Ativos</span>
           </div>
           <nav className="space-y-0.5">
-            {/* Mock Projects for visual representation - will be dynamic later */}
-            <div className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md text-muted-foreground hover:bg-secondary/50 hover:text-foreground cursor-pointer group">
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              <span className="truncate flex-1">Campanha Natura</span>
-              <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100" />
-            </div>
-            <div className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md text-muted-foreground hover:bg-secondary/50 hover:text-foreground cursor-pointer group">
-              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-              <span className="truncate flex-1">Rebranding Itaú</span>
-              <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100" />
-            </div>
+            {projects.slice(0, 5).map(project => (
+              <div key={project.id} className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md text-muted-foreground hover:bg-secondary/50 hover:text-foreground cursor-pointer group">
+                <span className={`w-2 h-2 rounded-full ${project.status === 'entregue' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
+                <span className="truncate flex-1">{project.title}</span>
+                <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100" />
+              </div>
+            ))}
+            {projects.length === 0 && (
+              <span className="px-2 text-xs text-muted-foreground italic">Nenhum projeto</span>
+            )}
           </nav>
         </div>
       </div>

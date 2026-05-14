@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Board } from './components/Board';
 import { CreateProjectModal } from './components/CreateProjectModal';
+import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { Settings2, Filter, Plus } from 'lucide-react';
 
 export default function Dashboard() {
@@ -57,11 +58,10 @@ export default function Dashboard() {
         open={isCreateModalOpen} 
         onOpenChange={setCreateModalOpen}
         onSuccess={() => {
-          // Temporariamente usaremos um window dispatch ou reload se não tivermos estado global pro Board,
-          // idealmente o Board deveria receber os dados do Dashboard.
           window.location.reload(); 
         }}
       />
+      <ProjectDetailModal />
     </div>
   );
 }
