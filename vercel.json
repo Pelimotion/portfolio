@@ -14,7 +14,8 @@
     { "source": "/curriculum/:path*", "destination": "/Curriculum/:path*" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/admin/:path*", "destination": "/admin/:path*" },
-    { "source": "/projetos", "destination": "/projetos/dist/index.html" },
-    { "source": "/projetos/:match*", "destination": "/projetos/dist/index.html" }
+    { "source": "/projetos/assets/:path*", "destination": "/projetos-app/dist/assets/:path*" },
+    { "source": "/projetos", "destination": "/projetos-app/dist/index.html" },
+    { "source": "/projetos/:match*", "destination": "/projetos-app/dist/index.html" }
   ]
 }

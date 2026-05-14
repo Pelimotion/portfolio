@@ -40,3 +40,5 @@ add_print.py
 pdf_cropper.py
 temp.js
 specs
+.vercel
+.env*.local
