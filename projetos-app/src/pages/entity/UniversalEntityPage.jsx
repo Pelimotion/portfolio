@@ -378,6 +378,28 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
     })).filter(o => o.count > 0);
   }, [items, allValues, statusProp, statusOptions]);
 
+  // ── Workload Distribution ──
+  const assigneeProp = properties.find(p => p.name === 'Responsável');
+  const workloadDist = useMemo(() => {
+    if (!assigneeProp) return [];
+    const counts = {};
+    items.forEach(i => {
+      // Ignora itens entregues no workload
+      const sel = allValues[i.id]?.[statusProp?.id]?.selected;
+      const opt = statusOptions.find(o => o.id === sel);
+      const isDelivered = opt?.label?.toLowerCase().includes('entregue') || opt?.label?.toLowerCase().includes('approved');
+      if (isDelivered) return;
+
+      const assignee = allValues[i.id]?.[assigneeProp.id]?.people;
+      if (assignee) {
+        counts[assignee] = (counts[assignee] || 0) + 1;
+      }
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [items, allValues, assigneeProp, statusProp, statusOptions]);
+
   return (
     <div className="space-y-6">
 
@@ -458,38 +480,70 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
         </div>
       </div>
 
-      {/* ── Next Deadlines ── */}
-      <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Clock className="w-3.5 h-3.5" /> Próximas Entregas
-        </h3>
-        {nextDeadlines.length === 0 && (
-          <p className="text-xs text-muted-foreground/60 italic">Nenhuma entrega próxima registrada.</p>
-        )}
-        <div className="space-y-1.5">
-          {nextDeadlines.map(item => {
-            const isLate   = item.deadline < today;
-            const diffDays = Math.ceil((item.deadline - today) / (1000 * 60 * 60 * 24));
-            const sel      = allValues[item.id]?.[statusProp?.id]?.selected;
-            const opt      = statusOptions.find(o => o.id === sel);
-            const colors   = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
-            return (
-              <div key={item.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer group">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot || 'bg-muted-foreground/50'}`} />
-                  <span className="text-sm font-medium text-foreground truncate">{item.title}</span>
+      {/* ── Bottom Grid (Workload & Deadlines) ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        {/* Workload */}
+        <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+            <Users className="w-3.5 h-3.5" /> Team Workload
+          </h3>
+          {workloadDist.length === 0 && (
+            <p className="text-xs text-muted-foreground/60 italic">Nenhum responsável atribuído a cenas ativas.</p>
+          )}
+          <div className="space-y-2">
+            {workloadDist.map(w => (
+              <div key={w.name} className="flex items-center justify-between px-3 py-2 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-[9px] text-white font-bold uppercase">
+                    {w.name.charAt(0)}
+                  </div>
+                  <span className="text-sm text-foreground">{w.name}</span>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {opt && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${colors.bg} ${colors.text}`}>{opt.label}</span>
-                  )}
-                  <span className={`text-xs font-mono ${isLate ? 'text-red-400' : diffDays <= 3 ? 'text-yellow-400' : 'text-muted-foreground'}`}>
-                    {isLate ? `${Math.abs(diffDays)}d atraso` : diffDays === 0 ? 'Hoje' : `+${diffDays}d`}
-                  </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-muted-foreground">{w.count} cenas</span>
+                  <div className="w-16 h-1.5 rounded-full bg-secondary overflow-hidden">
+                    <div className="h-full bg-primary/70" style={{ width: `${Math.min((w.count / 10) * 100, 100)}%` }} />
+                  </div>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
+        </div>
+
+        {/* Next Deadlines */}
+        <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5" /> Próximas Entregas
+          </h3>
+          {nextDeadlines.length === 0 && (
+            <p className="text-xs text-muted-foreground/60 italic">Nenhuma entrega próxima registrada.</p>
+          )}
+          <div className="space-y-1.5">
+            {nextDeadlines.map(item => {
+              const isLate   = item.deadline < today;
+              const diffDays = Math.ceil((item.deadline - today) / (1000 * 60 * 60 * 24));
+              const sel      = allValues[item.id]?.[statusProp?.id]?.selected;
+              const opt      = statusOptions.find(o => o.id === sel);
+              const colors   = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
+              return (
+                <div key={item.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer group">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot || 'bg-muted-foreground/50'}`} />
+                    <span className="text-sm font-medium text-foreground truncate">{item.title}</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {opt && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${colors.bg} ${colors.text}`}>{opt.label}</span>
+                    )}
+                    <span className={`text-xs font-mono ${isLate ? 'text-red-400' : diffDays <= 3 ? 'text-yellow-400' : 'text-muted-foreground'}`}>
+                      {isLate ? `${Math.abs(diffDays)}d atraso` : diffDays === 0 ? 'Hoje' : `+${diffDays}d`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
