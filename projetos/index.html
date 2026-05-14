@@ -15,7 +15,7 @@
   <!-- ══════════════════════════════════════════════════════════════════════ -->
   <!--  ESTADO: SEM SESSÃO                                                   -->
   <!-- ══════════════════════════════════════════════════════════════════════ -->
-  <section id="login-screen" class="login-screen" style="display: block;">
+  <div id="login-view" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
     <div class="login-card">
       <img src="../logo.svg" alt="Pelimotion" class="login-logo" />
       <h1 class="login-title">Área de Projetos</h1>
@@ -31,12 +31,12 @@
         <div id="login-error" class="error-banner" hidden style="margin-top: 1rem; border-radius: 4px;"></div>
       </form>
     </div>
-  </section>
+  </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════ -->
   <!--  ESTADO: COM SESSÃO                                                   -->
   <!-- ══════════════════════════════════════════════════════════════════════ -->
-  <div id="app-content" style="display: none;">
+  <div id="app-view" style="display: none;">
 
     <!-- Header ─────────────────────────────────────────────────────────── -->
     <header class="app-header">
@@ -90,7 +90,6 @@
       </div>
     </main>
 
-  </div><!-- /#app -->
 
   <!-- ══════════════════════════════════════════════════════════════════════ -->
   <!--  MODAL: Novo Projeto                                                  -->
@@ -118,7 +117,7 @@
       </form>
     </div>
   </div>
-
+  </div><!-- /#app-view -->
   <!-- ── CDN ──────────────────────────────────────────────────────────── -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
@@ -126,57 +125,40 @@
   <script src="kanban.js"></script>
 
   <script>
-    // ── Bootstrap & State Machine ─────────────────────────────────────────
-    const UI = {
-      setLoading: () => {
-        document.getElementById('app-content').style.display = 'none';
-        document.getElementById('login-screen').style.display = 'none';
-      },
-      setUnauthenticated: () => {
-        document.getElementById('app-content').style.display = 'none';
-        document.getElementById('login-screen').style.display = 'block';
-        document.getElementById('btn-new-project').disabled = true;
-      },
-      setAuthenticated: (userEmail) => {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-content').style.display = 'block';
+    // ── Gatekeeper State Machine ──────────────────────────────────────────
+    function setUIState(isAuthenticated, userEmail = '') {
+      document.getElementById('login-view').style.display = isAuthenticated ? 'none' : 'flex';
+      document.getElementById('app-view').style.display = isAuthenticated ? 'block' : 'none';
+      
+      if (isAuthenticated) {
         document.getElementById('header-user').textContent = userEmail;
         document.getElementById('btn-new-project').disabled = false;
+      } else {
+        document.getElementById('btn-new-project').disabled = true;
       }
-    };
+    }
 
     let isAppReady = false;
 
     // A ÚNICA fonte de verdade para o estado da sessão
     db.auth.onAuthStateChange(async (event, session) => {
       console.log('[Auth] Event:', event);
+      const isAuthenticated = !!session;
       
-      if (!session) {
-        UI.setUnauthenticated();
-        return;
-      }
+      setUIState(isAuthenticated, session ? session.user.email : '');
 
-      UI.setAuthenticated(session.user.email);
-
-      // Só carrega os dados do banco na primeira vez
-      if (!isAppReady) {
+      // Só carrega os dados do banco na primeira vez que logar
+      if (isAuthenticated && !isAppReady) {
         isAppReady = true;
         await loadProjects();
         initKanban(document.querySelectorAll('.column-cards'), 'projects');
       }
     });
 
-    // Inicia como LOADING até que a promessa inicial do getSession resolva
+    // Boot Seguro
     (async function init() {
-      UI.setLoading();
-      // Força a recuperação inicial e garante que a promessa termine
       const { data: { session } } = await db.auth.getSession();
-      
-      // Se nulo, o onAuthStateChange pode não disparar INITIAL_SESSION, 
-      // então chamamos a UI manualmente para destrancar a tela.
-      if (!session) {
-        UI.setUnauthenticated();
-      }
+      setUIState(!!session, session ? session.user.email : '');
     })();
 
     // ── Carregar projetos ────────────────────────────────────────────────
