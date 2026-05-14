@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FolderOpen, 
@@ -8,7 +8,8 @@ import {
   Plus,
   ChevronDown,
   LogOut,
-  MoreHorizontal
+  MoreHorizontal,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProjects } from '../../hooks/useProjects';
@@ -16,6 +17,7 @@ import { useProjects } from '../../hooks/useProjects';
 export function Sidebar() {
   const { user, signOut } = useAuth();
   const { projects } = useProjects();
+  const navigate = useNavigate();
   
   return (
     <aside className="w-64 border-r border-border bg-sidebar h-screen flex flex-col shrink-0">
@@ -47,7 +49,7 @@ export function Sidebar() {
             <Plus className="w-3.5 h-3.5 hover:text-foreground cursor-pointer" />
           </div>
           <nav className="space-y-0.5">
-            <NavLink to="/" className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors ${isActive ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}>
+            <NavLink to="/" end className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors ${isActive ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}>
               <LayoutDashboard className="w-4 h-4" />
               <span>Projects Hub</span>
             </NavLink>
@@ -70,22 +72,22 @@ export function Sidebar() {
 
         <div>
           <div className="px-2 mb-2 text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider flex items-center justify-between">
-            <span>Projetos Ativos</span>
+            <span>Pages</span>
           </div>
           <nav className="space-y-0.5">
-            {projects.slice(0, 5).map(project => (
+            {projects.slice(0, 8).map(project => (
               <NavLink 
                 key={project.id} 
-                to={`/project/${project.id}`}
+                to={`/page/${project.id}`}
                 className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors group ${isActive ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}
               >
-                <span className={`w-2 h-2 rounded-full ${project.status === 'entregue' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
+                <FileText className="w-3.5 h-3.5 opacity-60" />
                 <span className="truncate flex-1">{project.title}</span>
                 <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100" />
               </NavLink>
             ))}
             {projects.length === 0 && (
-              <span className="px-2 text-xs text-muted-foreground italic">Nenhum projeto</span>
+              <span className="px-2 text-xs text-muted-foreground italic">Nenhuma página</span>
             )}
           </nav>
         </div>

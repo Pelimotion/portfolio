@@ -6,7 +6,7 @@ import { AppLayout } from './components/layout/AppLayout';
 
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
-import ProjectPage from './pages/project/ProjectPage';
+import PageView from './pages/page/PageView';
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/project/:projectId" element={<ProjectPage />} />
+            <Route path="/page/:pageId" element={<PageView />} />
           </Route>
         </Route>
         
