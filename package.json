@@ -1,0 +1,8 @@
+{
+  "name": "pelimotion-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd projetos && npm install && npm run build"
+  }
+}
