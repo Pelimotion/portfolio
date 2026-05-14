@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useSearchParams } from 'react-router-dom';
 import { X, AlignLeft, LayoutTemplate, Clock, MoreHorizontal, Maximize2, Share } from 'lucide-react';
 import { useProjects } from '../../../hooks/useProjects';
+import { ScenesPipeline } from './ScenesPipeline';
 
 export function ProjectDetailModal() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -73,15 +74,13 @@ export function ProjectDetailModal() {
 
                   {/* Tabs: Scenes, Assets, Comments */}
                   <div className="pt-8 border-t border-border mt-8">
-                    <div className="flex items-center gap-4 border-b border-border pb-px">
+                    <div className="flex items-center gap-4 border-b border-border pb-px mb-6">
                       <button className="px-1 pb-2 border-b-2 border-primary text-sm font-medium text-foreground">Scenes Pipeline</button>
                       <button className="px-1 pb-2 border-b-2 border-transparent text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Assets</button>
                       <button className="px-1 pb-2 border-b-2 border-transparent text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Approvals</button>
                     </div>
-                    <div className="py-6 text-center text-sm text-muted-foreground">
-                      <LayoutTemplate className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                      A arquitetura de Cenas será injetada aqui (Fase 5)
-                    </div>
+                    
+                    <ScenesPipeline projectId={project.id} />
                   </div>
                 </div>
               ) : (
