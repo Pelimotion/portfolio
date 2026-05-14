@@ -140,25 +140,33 @@
 
     let isAppReady = false;
 
-    // A ÚNICA fonte de verdade para o estado da sessão
-    db.auth.onAuthStateChange(async (event, session) => {
-      console.log('[Auth] Event:', event);
+    // Função unificada para processar a sessão, seja do init ou do listener
+    async function handleAuthentication(session) {
       const isAuthenticated = !!session;
       
       setUIState(isAuthenticated, session ? session.user.email : '');
 
-      // Só carrega os dados do banco na primeira vez que logar
+      // Só carrega os dados do banco na primeira vez que logar/abrir a página
       if (isAuthenticated && !isAppReady) {
         isAppReady = true;
         await loadProjects();
         initKanban(document.querySelectorAll('.column-cards'), 'projects');
       }
+    }
+
+    // A ÚNICA fonte de verdade reativa para o estado da sessão (login/logout/refresh)
+    db.auth.onAuthStateChange(async (event, session) => {
+      console.log('[Auth] Event:', event);
+      await handleAuthentication(session);
     });
 
-    // Boot Seguro
+    // Boot Seguro: Recupera a sessão atual da memória local (Refresh/F5)
     (async function init() {
       const { data: { session } } = await db.auth.getSession();
-      setUIState(!!session, session ? session.user.email : '');
+      if (session) {
+        console.log('[Auth] Sessão restaurada no boot');
+      }
+      await handleAuthentication(session);
     })();
 
     // ── Carregar projetos ────────────────────────────────────────────────
