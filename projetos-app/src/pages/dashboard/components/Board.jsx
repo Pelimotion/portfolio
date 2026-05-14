@@ -11,7 +11,7 @@ import {
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Column } from './Column';
 import { ProjectCard } from './ProjectCard';
-import { useProjects } from '../../hooks/useProjects';
+import { useProjects } from '../../../hooks/useProjects';
 
 const COLUMNS = [
   { id: 'briefing', title: 'Briefing', color: 'bg-blue-500' },
