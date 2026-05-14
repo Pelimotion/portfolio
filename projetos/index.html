@@ -229,19 +229,38 @@
       col.appendChild(card);
     }
 
-    // ── Modal ─────────────────────────────────────────────────────────────
+    // ── Modal & UX ─────────────────────────────────────────────────────────
+    let modalTriggerElement = null; // para retornar o foco
+
     function openModal() {
+      modalTriggerElement = document.activeElement; // guarda quem abriu o modal
       document.getElementById('modal-overlay').removeAttribute('hidden');
       document.getElementById('input-title').focus();
+      document.addEventListener('keydown', handleEsc);
     }
 
     function closeModal() {
       document.getElementById('modal-overlay').setAttribute('hidden', '');
       document.getElementById('form-new-project').reset();
+      document.removeEventListener('keydown', handleEsc);
+      
+      // Devolve o foco para o botão que abriu (acessibilidade)
+      if (modalTriggerElement) {
+        modalTriggerElement.focus();
+      }
     }
 
     function closeModalOnOverlay(e) {
-      if (e.target === document.getElementById('modal-overlay')) closeModal();
+      // Se clicou exatamente no overlay escuro (fundo) e não no modal em si
+      if (e.target.id === 'modal-overlay') {
+        closeModal();
+      }
+    }
+
+    function handleEsc(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
     }
 
     async function submitNewProject(e) {
@@ -278,8 +297,15 @@
 
         renderProjectCard(data);
         closeModal();
+        if (typeof showToast === 'function') {
+          showToast('Projeto criado com sucesso!', 'success');
+        }
       } catch (err) {
-        showError('Erro ao criar projeto: ' + err.message);
+        if (typeof showToast === 'function') {
+          showToast('Erro ao criar projeto: ' + err.message, 'error');
+        } else {
+          showError('Erro ao criar projeto: ' + err.message);
+        }
       } finally {
         btn.disabled = false;
         btn.textContent = 'Criar Projeto';

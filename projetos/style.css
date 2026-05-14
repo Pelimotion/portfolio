@@ -357,12 +357,21 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.65);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
   padding: 1rem;
+  opacity: 1;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.modal-overlay[hidden] {
+  display: flex !important; /* Mantedor do flex para a transição funcionar */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 .modal {
   background: var(--p-surface);
@@ -421,4 +430,36 @@ body {
   .project-title { font-size: 1.2rem; }
   .daily-log-section { padding: 1rem; }
   .login-card { padding: 2rem 1.5rem; }
+}
+
+/* ── Toast (Feedback Não-Bloqueante) ─────────────────────────────────────── */
+.ui-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--p-radius);
+  font-size: .9rem;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ui-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast-success {
+  background-color: var(--p-entregue); /* Verde */
+}
+
+.toast-error {
+  background-color: var(--p-error); /* Vermelho */
 }

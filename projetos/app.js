@@ -93,24 +93,33 @@ function getParam(name) {
 }
 
 /**
- * Exibe uma mensagem de erro na UI.
- * Procura um elemento #error-banner; cria e injeta se não existir.
- * @param {string} msg
+ * Exibe uma notificação Toast na UI (sucesso ou erro) sem bloquear o uso.
+ * @param {string} msg Mensagem
+ * @param {string} type 'success' ou 'error'
  */
-function showError(msg) {
-  let banner = document.getElementById('error-banner');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'error-banner';
-    banner.className = 'error-banner';
-    document.body.prepend(banner);
+function showToast(msg, type = 'error') {
+  let toast = document.getElementById('ui-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'ui-toast';
+    document.body.appendChild(toast);
   }
-  banner.textContent = '⚠ ' + msg;
-  banner.removeAttribute('hidden');
+  
+  toast.className = 'ui-toast ' + (type === 'success' ? 'toast-success' : 'toast-error');
+  toast.textContent = (type === 'success' ? '✓ ' : '⚠ ') + msg;
+  
+  // Força refluxo para resetar animação CSS se já estiver visível
+  toast.classList.remove('show');
+  void toast.offsetWidth; 
+  toast.classList.add('show');
 
-  // Auto-ocultar após 6 segundos
-  clearTimeout(banner._timeout);
-  banner._timeout = setTimeout(() => {
-    banner.setAttribute('hidden', '');
-  }, 6000);
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// Para manter compatibilidade com outras partes
+function showError(msg) {
+  showToast(msg, 'error');
 }
