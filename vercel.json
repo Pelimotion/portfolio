@@ -1,4 +1,5 @@
 {
+  "outputDirectory": ".",
   "redirects": [
     { "source": "/v1", "destination": "/v1/", "permanent": true },
     { "source": "/curriculum", "destination": "/curriculum/", "permanent": true },
