@@ -8,23 +8,27 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import { UniversalEntityPage } from './pages/entity/UniversalEntityPage';
 
+import { ToastProvider } from './components/ui/Toast';
+
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            {/* Rota universal unificada para qualquer página (projeto, cena, task) */}
-            <Route path="/project/:pageId" element={<UniversalEntityPage />} />
-            <Route path="/page/:pageId" element={<UniversalEntityPage />} />
+      <ToastProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              {/* Rota universal unificada para qualquer página (projeto, cena, task) */}
+              <Route path="/project/:pageId" element={<UniversalEntityPage />} />
+              <Route path="/page/:pageId" element={<UniversalEntityPage />} />
+            </Route>
           </Route>
-        </Route>
-        
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ToastProvider>
     </AuthProvider>
   );
 }

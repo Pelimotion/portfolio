@@ -7,6 +7,7 @@ import { userService } from '../services/userService';
 
 export const useTeamStore = create((set, get) => ({
   members: [],
+  projectMembers: [],
   loading: false,
 
   fetchMembers: async () => {
@@ -31,6 +32,40 @@ export const useTeamStore = create((set, get) => ({
         { id: '1', name: 'Felipe (Local)', role: 'Diretor', avatar: 'F' },
       ];
       set({ members: mockMembers, loading: false });
+    }
+  },
+
+  fetchProjectMembers: async (projectId) => {
+    set({ loading: true });
+    try {
+      const data = await userService.fetchProjectMembers(projectId);
+      set({ projectMembers: data, loading: false });
+    } catch (e) {
+      console.error('Error fetching project members:', e);
+      set({ loading: false });
+    }
+  },
+
+  addProjectMember: async (projectId, userId, role) => {
+    try {
+      await userService.addMemberToProject(projectId, userId, role);
+      const data = await userService.fetchProjectMembers(projectId);
+      set({ projectMembers: data });
+    } catch (e) {
+      console.error('Error adding project member:', e);
+      throw e;
+    }
+  },
+
+  removeProjectMember: async (projectId, userId) => {
+    try {
+      await userService.removeMemberFromProject(projectId, userId);
+      set((state) => ({
+        projectMembers: state.projectMembers.filter((m) => m.id !== userId),
+      }));
+    } catch (e) {
+      console.error('Error removing project member:', e);
+      throw e;
     }
   },
 }));
