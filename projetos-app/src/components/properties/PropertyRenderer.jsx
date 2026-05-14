@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ProCalendarPicker } from '../ui/calendar/ProCalendarPicker';
 
 // ============================================
 // PROPERTY RENDERER — Registry pattern
@@ -147,15 +148,59 @@ const RENDERERS = {
   multi_select: SelectProperty, // simplificado por agora
   status: StatusProperty,
   people: PeopleProperty,
-  date: DateProperty,
   checkbox: CheckboxProperty,
   url: UrlProperty,
 };
 
 export function PropertyRenderer({ property, value, onChange, inline = false }) {
-  const Component = RENDERERS[property.property_type];
+  const type = property.property_type;
+  
+  // Date renderer com ProCalendarPicker
+  if (type === 'date') {
+    const [open, setOpen] = useState(false);
+    const containerRef = useRef(null);
+    
+    useEffect(() => {
+      function handleClickOutside(e) {
+        if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false);
+      }
+      if (open) document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
+
+    const dateVal = value?.date ? new Date(value.date).toLocaleDateString('pt-BR') : 'Sem data';
+
+    if (!inline) {
+      return (
+        <div className="relative" ref={containerRef}>
+          <button onClick={() => setOpen(!open)} className="w-full text-left px-3 py-1.5 border border-border rounded-md text-sm bg-background hover:bg-secondary/20 transition-colors flex items-center justify-between">
+            <span className={value?.date ? 'text-foreground' : 'text-muted-foreground'}>{dateVal}</span>
+          </button>
+          {open && (
+            <div className="absolute top-full mt-1 left-0 z-50">
+              <ProCalendarPicker value={value?.date} onChange={d => { onChange({ date: d }); setOpen(false); }} onClose={() => setOpen(false)} />
+            </div>
+          )}
+        </div>
+      );
+    }
+    return (
+      <div className="relative" ref={containerRef}>
+        <span onClick={(e) => { e.stopPropagation(); setOpen(!open); }} className="text-xs text-muted-foreground cursor-pointer hover:text-foreground hover:bg-secondary px-1.5 py-0.5 rounded transition-colors inline-block w-full truncate">
+          {dateVal}
+        </span>
+        {open && (
+          <div className="absolute top-full mt-1 left-0 z-50" onClick={e => e.stopPropagation()}>
+            <ProCalendarPicker value={value?.date} onChange={d => { onChange({ date: d }); setOpen(false); }} onClose={() => setOpen(false)} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const Component = RENDERERS[type];
   if (!Component) {
-    return <span className="text-xs text-muted-foreground italic">Unsupported: {property.property_type}</span>;
+    return <span className="text-xs text-muted-foreground italic">Unsupported: {type}</span>;
   }
   return <Component property={property} value={value} onChange={onChange} inline={inline} />;
 }

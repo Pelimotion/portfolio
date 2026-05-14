@@ -6,8 +6,7 @@ import { AppLayout } from './components/layout/AppLayout';
 
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
-import PageView from './pages/page/PageView';
-import ProjectPage from './pages/project/ProjectPage';
+import { UniversalEntityPage } from './pages/entity/UniversalEntityPage';
 
 function App() {
   return (
@@ -18,10 +17,9 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
-            {/* Rota dedicada para projeto (com tabs) */}
-            <Route path="/project/:pageId" element={<ProjectPage />} />
-            {/* Rota universal para qualquer página */}
-            <Route path="/page/:pageId" element={<PageView />} />
+            {/* Rota universal unificada para qualquer página (projeto, cena, task) */}
+            <Route path="/project/:pageId" element={<UniversalEntityPage />} />
+            <Route path="/page/:pageId" element={<UniversalEntityPage />} />
           </Route>
         </Route>
         

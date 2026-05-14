@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { useUIStore } from '../../stores/useUIStore';
-import { LayoutDashboard, Plus, Search } from 'lucide-react';
+import { LayoutDashboard, Plus, Search, Sparkles } from 'lucide-react';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { ensureRootHub } from '../../core/databaseFactory';
+import { generateMockData } from '../../scripts/mockData';
 
 // ============================================
 // DASHBOARD — Projects Hub Universal
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [initializing, setInitializing] = useState(true);
+  const [isMocking, setIsMocking] = useState(false);
 
   React.useEffect(() => {
     async function init() {
@@ -28,6 +30,12 @@ export default function Dashboard() {
     }
     init();
   }, []);
+
+  const handleMock = async () => {
+    setIsMocking(true);
+    await generateMockData();
+    setIsMocking(false);
+  };
 
   if (initializing) {
     return (
@@ -48,6 +56,15 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Mock Button */}
+          <button
+            onClick={handleMock}
+            disabled={isMocking}
+            className="flex items-center gap-2 text-sm bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 px-3 py-1.5 rounded-lg font-medium transition-colors border border-purple-500/20 disabled:opacity-50">
+            <Sparkles className="w-4 h-4" />
+            {isMocking ? 'Gerando...' : 'Gerar Mock'}
+          </button>
+
           {/* Search */}
           <div className="flex items-center gap-2 bg-secondary/40 border border-border/50 rounded-lg px-3 py-1.5 w-52 text-sm text-muted-foreground">
             <Search className="w-3.5 h-3.5 shrink-0" />
