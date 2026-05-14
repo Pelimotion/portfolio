@@ -1,152 +1,284 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProCalendarPicker } from '../ui/calendar/ProCalendarPicker';
+import { useTeamStore } from '../../stores/useTeamStore';
+import { Check, ChevronDown, User, Hash, Tag, Link2, Type } from 'lucide-react';
 
 // ============================================
-// PROPERTY RENDERER — Registry pattern
-// Renderiza qualquer tipo de propriedade
+// INLINE EDITING PROPERTY RENDERER
 // ============================================
 
-function TextProperty({ property, value, onChange, inline }) {
-  const textVal = value?.text || '';
+// ── Text ──
+const TextProperty = memo(({ property, value, onChange, inline }) => {
+  const [val, setVal] = useState(value?.text || '');
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => { setVal(value?.text || ''); }, [value?.text]);
+
+  const handleBlur = () => {
+    setEditing(false);
+    if (val !== value?.text) onChange({ text: val });
+  };
+
+  if (!editing && inline) {
+    return (
+      <div onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+        className="text-xs text-muted-foreground hover:text-foreground cursor-text px-1.5 py-0.5 -ml-1.5 rounded hover:bg-secondary/50 min-w-[60px] truncate transition-colors">
+        {val || <span className="opacity-40">Vazio</span>}
+      </div>
+    );
+  }
+
   return (
     <input
       type="text"
-      value={textVal}
-      onChange={(e) => onChange({ text: e.target.value })}
+      autoFocus={inline}
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleBlur(); } }}
       placeholder={property.name}
-      className={`bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring rounded px-2 py-1 w-full ${inline ? 'text-foreground' : 'border border-border'}`}
+      onClick={e => e.stopPropagation()}
+      className={`bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-primary rounded px-1.5 py-0.5 -ml-1.5 w-full ${inline ? 'text-foreground' : 'border border-border'}`}
     />
   );
-}
+});
 
-function NumberProperty({ property, value, onChange }) {
+// ── Number ──
+const NumberProperty = memo(({ property, value, onChange, inline }) => {
+  const [val, setVal] = useState(value?.number ?? '');
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => { setVal(value?.number ?? ''); }, [value?.number]);
+
+  const handleBlur = () => {
+    setEditing(false);
+    const parsed = parseFloat(val);
+    if (!isNaN(parsed) && parsed !== value?.number) onChange({ number: parsed });
+  };
+
+  if (!editing && inline) {
+    return (
+      <div onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+        className="text-xs font-mono text-muted-foreground hover:text-foreground cursor-text px-1.5 py-0.5 -ml-1.5 rounded hover:bg-secondary/50 min-w-[40px] truncate transition-colors">
+        {val !== '' ? val : <span className="opacity-40 font-sans">#</span>}
+      </div>
+    );
+  }
+
   return (
     <input
       type="number"
-      value={value?.number ?? ''}
-      onChange={(e) => onChange({ number: parseFloat(e.target.value) || 0 })}
-      className="bg-transparent text-sm border border-border rounded px-2 py-1 w-20 focus:outline-none focus:ring-1 focus:ring-ring font-mono"
+      autoFocus={inline}
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={e => { if (e.key === 'Enter') handleBlur(); }}
+      onClick={e => e.stopPropagation()}
+      className="bg-transparent text-sm rounded px-1.5 py-0.5 -ml-1.5 w-20 focus:outline-none focus:ring-1 focus:ring-primary font-mono border border-transparent"
     />
   );
-}
+});
 
-function SelectProperty({ property, value, onChange }) {
+// ── Select / Status (DropdownMenu) ──
+const SelectProperty = memo(({ property, value, onChange, inline, isStatus = false }) => {
   const options = property.config?.options || [];
-  const selected = value?.selected || '';
-
-  return (
-    <div className="relative">
-      <select
-        value={selected}
-        onChange={(e) => onChange({ selected: e.target.value })}
-        className="bg-secondary/50 text-sm border border-border rounded-md px-2 py-1 pr-6 focus:outline-none focus:ring-1 focus:ring-ring appearance-none cursor-pointer text-foreground"
-      >
-        <option value="">—</option>
-        {options.map((opt) => (
-          <option key={opt.id} value={opt.id}>{opt.label}</option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-function StatusProperty({ property, value, onChange }) {
-  const options = property.config?.options || [];
-  const selected = value?.selected || '';
-  const currentOpt = options.find((o) => o.id === selected);
+  const selectedOpt = options.find((o) => o.id === value?.selected);
 
   const colorMap = {
-    gray: 'bg-secondary text-muted-foreground',
-    blue: 'bg-blue-500/10 text-blue-500',
-    green: 'bg-green-500/10 text-green-500',
+    gray:   'bg-secondary/60 text-muted-foreground',
+    blue:   'bg-blue-500/10 text-blue-500',
+    green:  'bg-emerald-500/10 text-emerald-500',
     yellow: 'bg-yellow-500/10 text-yellow-500',
-    red: 'bg-red-500/10 text-red-500',
+    red:    'bg-red-500/10 text-red-500',
     purple: 'bg-purple-500/10 text-purple-500',
     orange: 'bg-orange-500/10 text-orange-500',
   };
 
-  return (
-    <select
-      value={selected}
-      onChange={(e) => onChange({ selected: e.target.value })}
-      className={`text-xs font-medium rounded-md px-2 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-ring appearance-none cursor-pointer ${colorMap[currentOpt?.color] || colorMap.gray}`}
-    >
-      <option value="">—</option>
-      {options.map((opt) => (
-        <option key={opt.id} value={opt.id}>{opt.label}</option>
-      ))}
-    </select>
-  );
-}
+  const getColors = (colorStr) => colorMap[colorStr] || colorMap.gray;
 
-function PeopleProperty({ property, value, onChange }) {
-  const people = value?.people || '';
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 shrink-0" />
-      <input
-        type="text"
-        value={people}
-        onChange={(e) => onChange({ people: e.target.value })}
-        placeholder="Assign..."
-        className="bg-transparent text-sm focus:outline-none w-full"
-      />
-    </div>
-  );
-}
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button onClick={e => e.stopPropagation()}
+          className={`flex items-center justify-between gap-2 text-xs font-medium rounded-md px-2 py-1 transition-colors hover:brightness-110 focus:outline-none focus:ring-1 focus:ring-primary ${isStatus || selectedOpt ? getColors(selectedOpt?.color) : 'bg-transparent text-muted-foreground hover:bg-secondary/50 -ml-2'}`}>
+          {isStatus && selectedOpt && (
+            <span className={`w-1.5 h-1.5 rounded-full bg-current opacity-70`} />
+          )}
+          <span className="truncate max-w-[100px]">{selectedOpt ? selectedOpt.label : '—'}</span>
+          <ChevronDown className="w-3 h-3 opacity-50" />
+        </button>
+      </DropdownMenu.Trigger>
 
-function DateProperty({ property, value, onChange }) {
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content align="start"
+          onClick={e => e.stopPropagation()}
+          className="z-50 min-w-[160px] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
+          <DropdownMenu.Item
+            onSelect={() => onChange({ selected: '' })}
+            className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground rounded-lg cursor-pointer outline-none">
+            <span className="flex-1">— Limpar</span>
+          </DropdownMenu.Item>
+          {options.map((opt) => (
+            <DropdownMenu.Item
+              key={opt.id}
+              onSelect={() => onChange({ selected: opt.id })}
+              className={`flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer outline-none ${value?.selected === opt.id ? 'bg-secondary/50' : ''}`}>
+              {isStatus && <span className={`w-2 h-2 rounded-full ${colorMap[opt.color]?.split(' ')[0] || 'bg-muted-foreground'}`} />}
+              <span className="flex-1 text-foreground font-medium">{opt.label}</span>
+              {value?.selected === opt.id && <Check className="w-3.5 h-3.5 text-primary" />}
+            </DropdownMenu.Item>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+});
+
+// ── People (DropdownMenu + Search) ──
+const PeopleProperty = memo(({ property, value, onChange, inline }) => {
+  const { members, fetchMembers } = useTeamStore();
+  
+  useEffect(() => {
+    // Busca os membros. No app real deve passar o projectId
+    fetchMembers('current_project');
+  }, [fetchMembers]);
+
+  const selectedName = value?.people || '';
+  const selectedMember = members.find(m => m.name === selectedName);
+
   return (
-    <input
-      type="date"
-      value={value?.date || ''}
-      onChange={(e) => onChange({ date: e.target.value })}
-      className="bg-transparent text-sm border border-border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-ring text-foreground"
-    />
-  );
-}
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button onClick={e => e.stopPropagation()}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-1.5 py-1 -ml-1.5 rounded-md hover:bg-secondary/50 transition-colors focus:outline-none focus:ring-1 focus:ring-primary max-w-[140px]">
+          {selectedMember ? (
+            <>
+              <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 text-[8px] text-white flex items-center justify-center font-bold">
+                {selectedMember.avatar}
+              </div>
+              <span className="truncate">{selectedMember.name.split(' ')[0]}</span>
+            </>
+          ) : selectedName ? (
+            <span className="truncate">{selectedName}</span>
+          ) : (
+            <>
+              <User className="w-3.5 h-3.5 opacity-50" />
+              <span>Unassigned</span>
+            </>
+          )}
+        </button>
+      </DropdownMenu.Trigger>
 
-function CheckboxProperty({ property, value, onChange }) {
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content align="start"
+          onClick={e => e.stopPropagation()}
+          className="z-50 min-w-[200px] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
+          
+          <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Assignee
+          </div>
+          
+          <DropdownMenu.Item
+            onSelect={() => onChange({ people: '' })}
+            className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground rounded-lg cursor-pointer outline-none">
+            <User className="w-4 h-4" />
+            <span className="flex-1">Unassigned</span>
+          </DropdownMenu.Item>
+          
+          {members.map((m) => (
+            <DropdownMenu.Item
+              key={m.id}
+              onSelect={() => onChange({ people: m.name })}
+              className={`flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer outline-none ${selectedName === m.name ? 'bg-secondary/50' : ''}`}>
+              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 text-[9px] text-white flex items-center justify-center font-bold">
+                {m.avatar}
+              </div>
+              <div className="flex flex-col flex-1">
+                <span className="text-foreground font-medium">{m.name}</span>
+                <span className="text-[10px] text-muted-foreground">{m.role}</span>
+              </div>
+              {selectedName === m.name && <Check className="w-3.5 h-3.5 text-primary" />}
+            </DropdownMenu.Item>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+});
+
+// ── Checkbox ──
+const CheckboxProperty = memo(({ property, value, onChange }) => {
   return (
     <button
-      onClick={() => onChange({ checked: !value?.checked })}
-      className={`w-4 h-4 rounded border transition-colors flex items-center justify-center ${
+      onClick={(e) => { e.stopPropagation(); onChange({ checked: !value?.checked }); }}
+      className={`w-4 h-4 rounded border transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/50 ${
         value?.checked
           ? 'bg-primary border-primary text-primary-foreground'
-          : 'border-border hover:border-muted-foreground'
+          : 'border-border hover:border-muted-foreground bg-secondary/20'
       }`}
     >
-      {value?.checked && (
-        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-      )}
+      {value?.checked && <Check className="w-3 h-3" />}
     </button>
   );
-}
+});
 
-function UrlProperty({ property, value, onChange }) {
-  const url = value?.url || '';
+// ── Url ──
+const UrlProperty = memo(({ property, value, onChange, inline }) => {
+  const [val, setVal] = useState(value?.url || '');
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => { setVal(value?.url || ''); }, [value?.url]);
+
+  const handleBlur = () => {
+    setEditing(false);
+    if (val !== value?.url) onChange({ url: val });
+  };
+
+  if (!editing && inline) {
+    if (!val) {
+      return (
+        <div onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+          className="text-xs text-muted-foreground hover:text-foreground cursor-text px-1.5 py-0.5 -ml-1.5 rounded hover:bg-secondary/50 min-w-[60px] truncate transition-colors flex items-center gap-1">
+          <Link2 className="w-3 h-3 opacity-50" /> Vazio
+        </div>
+      );
+    }
+    return (
+      <div className="flex items-center gap-1">
+        <a href={val} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+          className="text-xs text-blue-400 hover:text-blue-300 underline truncate max-w-[150px]">
+          {val}
+        </a>
+        <button onClick={(e) => { e.stopPropagation(); setEditing(true); }} className="text-xs text-muted-foreground hover:text-foreground px-1 py-0.5 rounded hover:bg-secondary">
+          Editar
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-1">
-      <input
-        type="url"
-        value={url}
-        onChange={(e) => onChange({ url: e.target.value })}
-        placeholder="https://..."
-        className="bg-transparent text-sm focus:outline-none w-full text-blue-500 underline truncate"
-      />
-    </div>
+    <input
+      type="url"
+      autoFocus={inline}
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={e => { if (e.key === 'Enter') handleBlur(); }}
+      onClick={e => e.stopPropagation()}
+      placeholder="https://..."
+      className={`bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-primary rounded px-1.5 py-0.5 -ml-1.5 w-full text-blue-400 ${inline ? '' : 'border border-border'}`}
+    />
   );
-}
+});
 
-// ---- REGISTRY ----
+// ── REGISTRY ──
 const RENDERERS = {
   text: TextProperty,
   number: NumberProperty,
-  select: SelectProperty,
-  multi_select: SelectProperty, // simplificado por agora
-  status: StatusProperty,
+  select: (p) => <SelectProperty {...p} />,
+  multi_select: (p) => <SelectProperty {...p} />, // temp fallback
+  status: (p) => <SelectProperty {...p} isStatus />,
   people: PeopleProperty,
   checkbox: CheckboxProperty,
   url: UrlProperty,
@@ -155,7 +287,7 @@ const RENDERERS = {
 export function PropertyRenderer({ property, value, onChange, inline = false }) {
   const type = property.property_type;
   
-  // Date renderer com ProCalendarPicker
+  // Date renderer com ProCalendarPicker + Popover (via absolute relative)
   if (type === 'date') {
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
@@ -170,27 +302,16 @@ export function PropertyRenderer({ property, value, onChange, inline = false }) 
 
     const dateVal = value?.date ? new Date(value.date).toLocaleDateString('pt-BR') : 'Sem data';
 
-    if (!inline) {
-      return (
-        <div className="relative" ref={containerRef}>
-          <button onClick={() => setOpen(!open)} className="w-full text-left px-3 py-1.5 border border-border rounded-md text-sm bg-background hover:bg-secondary/20 transition-colors flex items-center justify-between">
-            <span className={value?.date ? 'text-foreground' : 'text-muted-foreground'}>{dateVal}</span>
-          </button>
-          {open && (
-            <div className="absolute top-full mt-1 left-0 z-50">
-              <ProCalendarPicker value={value?.date} onChange={d => { onChange({ date: d }); setOpen(false); }} onClose={() => setOpen(false)} />
-            </div>
-          )}
-        </div>
-      );
-    }
     return (
       <div className="relative" ref={containerRef}>
-        <span onClick={(e) => { e.stopPropagation(); setOpen(!open); }} className="text-xs text-muted-foreground cursor-pointer hover:text-foreground hover:bg-secondary px-1.5 py-0.5 rounded transition-colors inline-block w-full truncate">
+        <button 
+          onClick={(e) => { e.stopPropagation(); setOpen(!open); }} 
+          className="text-xs text-muted-foreground hover:text-foreground px-1.5 py-1 -ml-1.5 rounded-md hover:bg-secondary/50 transition-colors focus:outline-none focus:ring-1 focus:ring-primary w-full text-left truncate flex items-center gap-1.5"
+        >
           {dateVal}
-        </span>
+        </button>
         {open && (
-          <div className="absolute top-full mt-1 left-0 z-50" onClick={e => e.stopPropagation()}>
+          <div className="absolute top-full mt-1 left-0 z-50 animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
             <ProCalendarPicker value={value?.date} onChange={d => { onChange({ date: d }); setOpen(false); }} onClose={() => setOpen(false)} />
           </div>
         )}
