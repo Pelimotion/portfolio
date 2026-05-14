@@ -1,0 +1,103 @@
+import { supabase } from '../lib/supabase';
+
+// ============================================
+// STORAGE SERVICE — Supabase CRUD
+// Gerencia conexões, pastas e arquivos indexados
+// ============================================
+
+export const storageService = {
+
+  // ── Connections (uma por projeto) ──
+
+  async getConnection(projectPageId) {
+    const { data, error } = await supabase
+      .from('storage_connections')
+      .select('*')
+      .eq('project_page_id', projectPageId)
+      .maybeSingle();
+    if (error) throw error;
+    return data; // null se não conectado ainda
+  },
+
+  async upsertConnection({ projectPageId, provider, rootFolderId, rootFolderName, metadata = {} }) {
+    const { data, error } = await supabase
+      .from('storage_connections')
+      .upsert({
+        project_page_id: projectPageId,
+        provider,
+        root_folder_id: rootFolderId,
+        root_folder_name: rootFolderName,
+        metadata,
+        connected_at: new Date().toISOString(),
+      }, { onConflict: 'project_page_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async removeConnection(projectPageId) {
+    const { error } = await supabase
+      .from('storage_connections')
+      .delete()
+      .eq('project_page_id', projectPageId);
+    if (error) throw error;
+  },
+
+  // ── Indexed Folders ──
+
+  async saveFolders(connectionId, folders) {
+    // folders: [{ provider_id, name, path, parent_id, metadata }]
+    const rows = folders.map(f => ({
+      connection_id: connectionId,
+      provider_folder_id: f.id,
+      name: f.name,
+      path: f.path || f.name,
+      parent_provider_id: f.parentId || null,
+      metadata: f.metadata || {},
+      indexed_at: new Date().toISOString(),
+    }));
+    const { error } = await supabase
+      .from('storage_folders')
+      .upsert(rows, { onConflict: 'connection_id,provider_folder_id' });
+    if (error) throw error;
+  },
+
+  async listFolders(connectionId) {
+    const { data, error } = await supabase
+      .from('storage_folders')
+      .select('*')
+      .eq('connection_id', connectionId)
+      .order('name');
+    if (error) throw error;
+    return data;
+  },
+
+  // ── Entity ↔ Folder Relations ──
+
+  async linkEntityFolder({ entityPageId, connectionId, folderProvId, folderName, role }) {
+    // role: 'root' | 'renders' | 'references' | 'assets' | 'exports'
+    const { data, error } = await supabase
+      .from('entity_folder_relations')
+      .upsert({
+        entity_page_id: entityPageId,
+        connection_id: connectionId,
+        provider_folder_id: folderProvId,
+        folder_name: folderName,
+        role,
+      }, { onConflict: 'entity_page_id,role' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async getEntityFolders(entityPageId) {
+    const { data, error } = await supabase
+      .from('entity_folder_relations')
+      .select('*')
+      .eq('entity_page_id', entityPageId);
+    if (error) throw error;
+    return data || [];
+  },
+};

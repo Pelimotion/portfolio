@@ -8,6 +8,7 @@ import { RichTextEditor } from '../../components/ui/RichTextEditor';
 import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { PropertyRenderer } from '../../components/properties/PropertyRenderer';
 import { GenerativeCover } from '../../components/ui/cover/GenerativeCover';
+import { AssetsPanel } from '../../components/storage/AssetsPanel';
 import { COLOR_MAP } from '../../core/schemas';
 import {
   ArrowLeft, MoreHorizontal, Share, Star,
@@ -284,7 +285,7 @@ export function UniversalEntityPage() {
 
           {/* ASSETS TAB */}
           {activeTab === 'assets' && (
-            <EmptyState Icon={FolderOpen} title="Nenhum Asset Linkado" sub="Conecte Pastas do Google Drive ou Frame.io aqui." />
+            <AssetsPanel pageId={pageId} isProject={isProject} />
           )}
 
           {/* ACTIVITY TAB */}
