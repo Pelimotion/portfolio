@@ -41,4 +41,13 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Tiptap Placeholder CSS */
+  .is-editor-empty:first-child::before {
+    color: hsl(var(--muted-foreground) / 0.5);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
 }

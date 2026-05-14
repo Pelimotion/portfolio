@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, AlignLeft, Clock, MoreHorizontal, Link, Wand2, MonitorPlay, Video, Music, CheckCircle2, AlertCircle, FileAudio, FileVideo, Tags, PlayCircle } from 'lucide-react';
+import { RichTextEditor } from '../../../components/ui/RichTextEditor';
 
 export function SceneDetailModal({ scene, open, onOpenChange }) {
   if (!scene) return null;
@@ -66,9 +67,11 @@ export function SceneDetailModal({ scene, open, onOpenChange }) {
                   <AlignLeft className="w-4 h-4" />
                   <h3 className="font-semibold text-sm">Direção & Script</h3>
                 </div>
-                <div className="text-muted-foreground text-sm leading-relaxed p-4 bg-secondary/10 rounded-lg border border-transparent hover:border-border/50 transition-colors cursor-text min-h-[100px]">
-                  Descreva a ação da cena, movimentos de câmera e intenção...
-                </div>
+                <RichTextEditor 
+                  content="Descreva a ação da cena, movimentos de câmera e intenção..."
+                  onChange={(html) => console.log('Script cena:', html)}
+                  placeholder="Comece a escrever o script da cena..."
+                />
               </div>
 
               {/* Generative AI Parameters */}

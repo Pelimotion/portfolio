@@ -2,7 +2,8 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProjects } from '../../hooks/useProjects';
 import { AlignLeft, LayoutTemplate, Clock, Share, MoreHorizontal, Settings2, Filter, ArrowLeft } from 'lucide-react';
-import { ScenesPipeline } from '../dashboard/components/ScenesPipeline'; // Reutilizaremos ou moveremos depois
+import { ScenesPipeline } from '../dashboard/components/ScenesPipeline'; 
+import { RichTextEditor } from '../../components/ui/RichTextEditor';
 
 export default function ProjectPage() {
   const { projectId } = useParams();
@@ -86,10 +87,12 @@ export default function ProjectPage() {
           </div>
 
           {/* Briefing / Rich Text */}
-          <div className="space-y-2">
-            <div className="text-muted-foreground text-sm leading-relaxed p-4 hover:bg-secondary/20 rounded-lg transition-colors cursor-text min-h-[100px] border border-transparent hover:border-border/50">
-              {project.description || "Adicione o briefing criativo da produção aqui. Pressione '/' para comandos..."}
-            </div>
+          <div className="space-y-2 max-w-[850px]">
+            <RichTextEditor 
+              content={project.description} 
+              onChange={(html) => console.log('Salvar no supabase:', html)}
+              placeholder="Adicione o briefing criativo da produção aqui. Pressione '/' para comandos..."
+            />
           </div>
 
           {/* Table Database (Cenas) */}
