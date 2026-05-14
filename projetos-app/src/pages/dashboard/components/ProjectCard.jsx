@@ -2,10 +2,10 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Folder } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export function ProjectCard({ project }) {
-  const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const {
     attributes,
     listeners,
@@ -28,9 +28,8 @@ export function ProjectCard({ project }) {
   };
 
   const handleOpenDetail = () => {
-    // Apenas abre se não estiver arrastando
     if (!isDragging) {
-      setSearchParams({ projectId: project.id });
+      navigate(`/project/${project.id}`);
     }
   };
 

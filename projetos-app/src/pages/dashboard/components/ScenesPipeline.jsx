@@ -13,6 +13,7 @@ import {
   Music,
   MonitorPlay
 } from 'lucide-react';
+import { SceneDetailModal } from '../../project/components/SceneDetailModal';
 
 // Constantes do Pipeline
 const MACRO_STATUS = {
@@ -69,6 +70,7 @@ const MOCK_SCENES = [
 
 export function ScenesPipeline({ projectId }) {
   const [scenes, setScenes] = useState(MOCK_SCENES);
+  const [activeScene, setActiveScene] = useState(null);
 
   return (
     <div className="space-y-4">
@@ -96,7 +98,11 @@ export function ScenesPipeline({ projectId }) {
 
         <div className="divide-y divide-border/50">
           {scenes.map(scene => (
-            <div key={scene.id} className="grid grid-cols-[2fr_1.5fr_2fr_1fr_1fr_auto] gap-4 p-4 items-center hover:bg-secondary/20 transition-colors group">
+            <div 
+              key={scene.id} 
+              onClick={() => setActiveScene(scene)}
+              className="grid grid-cols-[2fr_1.5fr_2fr_1fr_1fr_auto] gap-4 p-4 items-center hover:bg-secondary/20 transition-colors group cursor-pointer"
+            >
               
               {/* Título e Blocker */}
               <div className="flex flex-col gap-1 min-w-0">
@@ -163,6 +169,12 @@ export function ScenesPipeline({ projectId }) {
           ))}
         </div>
       </div>
+
+      <SceneDetailModal 
+        scene={activeScene} 
+        open={!!activeScene} 
+        onOpenChange={(open) => !open && setActiveScene(null)} 
+      />
     </div>
   );
 }

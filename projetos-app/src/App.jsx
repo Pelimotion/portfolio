@@ -6,6 +6,7 @@ import { AppLayout } from './components/layout/AppLayout';
 
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
+import ProjectPage from './pages/project/ProjectPage';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
-            {/* Rotas futuras como /project/:id, /timeline, /assets vão aqui */}
+            <Route path="/project/:projectId" element={<ProjectPage />} />
           </Route>
         </Route>
         

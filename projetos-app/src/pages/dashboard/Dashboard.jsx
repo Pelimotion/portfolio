@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Board } from './components/Board';
 import { CreateProjectModal } from './components/CreateProjectModal';
-import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { Settings2, Filter, Plus } from 'lucide-react';
 
 export default function Dashboard() {
@@ -61,7 +60,6 @@ export default function Dashboard() {
           window.location.reload(); 
         }}
       />
-      <ProjectDetailModal />
     </div>
   );
 }

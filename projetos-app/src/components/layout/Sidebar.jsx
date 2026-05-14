@@ -74,11 +74,15 @@ export function Sidebar() {
           </div>
           <nav className="space-y-0.5">
             {projects.slice(0, 5).map(project => (
-              <div key={project.id} className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md text-muted-foreground hover:bg-secondary/50 hover:text-foreground cursor-pointer group">
+              <NavLink 
+                key={project.id} 
+                to={`/project/${project.id}`}
+                className={({isActive}) => `w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors group ${isActive ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`}
+              >
                 <span className={`w-2 h-2 rounded-full ${project.status === 'entregue' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
                 <span className="truncate flex-1">{project.title}</span>
                 <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100" />
-              </div>
+              </NavLink>
             ))}
             {projects.length === 0 && (
               <span className="px-2 text-xs text-muted-foreground italic">Nenhum projeto</span>
