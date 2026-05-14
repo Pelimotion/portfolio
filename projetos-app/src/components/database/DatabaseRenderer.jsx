@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
+import { PropertyManagerModal } from './PropertyManagerModal';
+
 const VIEW_ICONS = { kanban: LayoutDashboard, table: Table, list: List, calendar: CalendarDays };
 const COLOR_DOT  = { gray:'bg-muted-foreground/50',blue:'bg-blue-500',green:'bg-green-500',yellow:'bg-yellow-500',red:'bg-red-500',purple:'bg-purple-500',orange:'bg-orange-500',pink:'bg-pink-500',cyan:'bg-cyan-500' };
 
@@ -63,7 +65,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
       }
       setViews(activeViews);
 
-      const preferred = activeViews.find(v => v.view_type === defaultView) || activeViews[0];
+      const preferred = activeViews.find(v => v.id === activeViewId) || activeViews.find(v => v.view_type === defaultView) || activeViews[0];
       setActiveViewId(preferred.id);
 
       // Batch fetch valores em paralelo
@@ -79,9 +81,16 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
     } finally {
       setLoading(false);
     }
-  }, [databaseId, fetchDatabaseItems, defaultView]);
+  }, [databaseId, fetchDatabaseItems, defaultView, activeViewId]);
 
-  useEffect(() => { load(); }, [load]);
+  const refreshProperties = useCallback(async () => {
+    try {
+      const props = await propertyService.fetchByDatabase(databaseId);
+      setProperties(props);
+    } catch (e) { console.error(e); }
+  }, [databaseId]);
+
+  useEffect(() => { load(); }, [databaseId]); // Reload only when DB ID changes
 
   // ── Optimistic value update ──
   const handleValueChange = useCallback(async (pageId, propertyId, value) => {
@@ -105,8 +114,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
   }, []);
 
   // ── Position update (reorder within column) ──
-  const handleReorder = useCallback(async (orderedIds) => {
-    // Update position_index for each page
+  const handleReorderPersist = useCallback(async (orderedIds) => {
     const updates = orderedIds.map((id, index) =>
       pageService.update(id, { position: index }).catch(console.error)
     );
@@ -148,7 +156,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
     onStatusChange: handleStatusChange,
     onValueChange: handleValueChange,
     onReorder: (newItems) => setLocalItems(newItems),
-    onReorderPersist: handleReorder,
+    onReorderPersist: handleReorderPersist,
     onDelete: handleDelete,
     density,
   };
@@ -197,6 +205,14 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
             <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors">
               <Filter className="w-3.5 h-3.5" />
             </button>
+
+            {/* Gerenciador de Propriedades */}
+            <PropertyManagerModal 
+              databaseId={databaseId} 
+              properties={properties} 
+              onUpdate={refreshProperties} 
+            />
+
             <button onClick={handleCreate} disabled={creating}
               className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md font-medium transition-colors disabled:opacity-50">
               <Plus className="w-3.5 h-3.5" />

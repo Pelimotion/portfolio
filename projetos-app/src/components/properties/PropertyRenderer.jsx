@@ -140,12 +140,14 @@ const PeopleProperty = memo(({ property, value, onChange, inline }) => {
   const { members, fetchMembers } = useTeamStore();
   
   useEffect(() => {
-    // Busca os membros. No app real deve passar o projectId
-    fetchMembers('current_project');
+    // Busca os membros globais (profiles)
+    fetchMembers();
   }, [fetchMembers]);
 
-  const selectedName = value?.people || '';
-  const selectedMember = members.find(m => m.name === selectedName);
+  // 'value.people' agora armazena o ID do usuário para integridade, 
+  // mas mantemos compatibilidade com nomes antigos se necessário.
+  const selectedIdOrName = value?.people || '';
+  const selectedMember = members.find(m => m.id === selectedIdOrName || m.name === selectedIdOrName);
 
   return (
     <DropdownMenu.Root>
@@ -154,17 +156,17 @@ const PeopleProperty = memo(({ property, value, onChange, inline }) => {
           className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-1.5 py-1 -ml-1.5 rounded-md hover:bg-secondary/50 transition-colors focus:outline-none focus:ring-1 focus:ring-primary max-w-[140px]">
           {selectedMember ? (
             <>
-              <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 text-[8px] text-white flex items-center justify-center font-bold">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-primary to-purple-600 text-[8px] text-white flex items-center justify-center font-bold shadow-sm">
                 {selectedMember.avatar}
               </div>
-              <span className="truncate">{selectedMember.name.split(' ')[0]}</span>
+              <span className="truncate font-medium text-foreground">{selectedMember.name.split(' ')[0]}</span>
             </>
-          ) : selectedName ? (
-            <span className="truncate">{selectedName}</span>
           ) : (
             <>
-              <User className="w-3.5 h-3.5 opacity-50" />
-              <span>Unassigned</span>
+              <div className="w-4 h-4 rounded-full border border-dashed border-muted-foreground/40 flex items-center justify-center">
+                <User className="w-2.5 h-2.5 opacity-40" />
+              </div>
+              <span className="opacity-40 italic">Unassigned</span>
             </>
           )}
         </button>
@@ -173,34 +175,43 @@ const PeopleProperty = memo(({ property, value, onChange, inline }) => {
       <DropdownMenu.Portal>
         <DropdownMenu.Content align="start"
           onClick={e => e.stopPropagation()}
-          className="z-50 min-w-[200px] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
+          className="z-50 min-w-[220px] bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
           
-          <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-            Assignee
+          <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/40 mb-1">
+            Atribuir Responsável
           </div>
           
           <DropdownMenu.Item
             onSelect={() => onChange({ people: '' })}
-            className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground rounded-lg cursor-pointer outline-none">
-            <User className="w-4 h-4" />
-            <span className="flex-1">Unassigned</span>
+            className="flex items-center gap-2 px-2 py-2 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground rounded-lg cursor-pointer outline-none">
+            <div className="w-5 h-5 rounded-full border border-dashed border-muted-foreground/40 flex items-center justify-center">
+              <User className="w-3 h-3 opacity-40" />
+            </div>
+            <span className="flex-1 italic">Ninguém (Limpar)</span>
           </DropdownMenu.Item>
           
           {members.map((m) => (
             <DropdownMenu.Item
               key={m.id}
-              onSelect={() => onChange({ people: m.name })}
-              className={`flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer outline-none ${selectedName === m.name ? 'bg-secondary/50' : ''}`}>
-              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 text-[9px] text-white flex items-center justify-center font-bold">
+              onSelect={() => onChange({ people: m.id })}
+              className={`flex items-center gap-2 px-2 py-2 text-xs hover:bg-secondary rounded-lg cursor-pointer outline-none transition-colors ${selectedMember?.id === m.id ? 'bg-primary/5' : ''}`}>
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-primary to-purple-600 text-[9px] text-white flex items-center justify-center font-bold shadow-sm">
                 {m.avatar}
               </div>
-              <div className="flex flex-col flex-1">
-                <span className="text-foreground font-medium">{m.name}</span>
-                <span className="text-[10px] text-muted-foreground">{m.role}</span>
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className={`font-semibold truncate ${selectedMember?.id === m.id ? 'text-primary' : 'text-foreground'}`}>{m.name}</span>
+                <span className="text-[10px] text-muted-foreground truncate">{m.email}</span>
               </div>
-              {selectedName === m.name && <Check className="w-3.5 h-3.5 text-primary" />}
+              {selectedMember?.id === m.id && <Check className="w-3.5 h-3.5 text-primary" />}
             </DropdownMenu.Item>
           ))}
+          
+          {members.length === 0 && (
+            <div className="p-4 text-center space-y-1">
+              <p className="text-xs text-muted-foreground">Nenhum membro encontrado.</p>
+              <p className="text-[10px] text-muted-foreground/60">Convide seu time para começar.</p>
+            </div>
+          )}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

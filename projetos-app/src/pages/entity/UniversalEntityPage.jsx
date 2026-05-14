@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePageStore } from '../../stores/usePageStore';
+import { useTeamStore } from '../../stores/useTeamStore';
 import { propertyService } from '../../services/propertyService';
 import { pageService } from '../../services/pageService';
 import { bootstrapProjectPipeline } from '../../core/databaseFactory';
@@ -334,23 +335,36 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
 
   // ── Compute KPIs ──
   const kpis = useMemo(() => {
-    const total    = items.length;
+    const total = items.length;
+    if (total === 0) return { total: 0, delivered: 0, inProgress: 0, overdue: 0, progress: 0 };
+
+    const deliveredKeywords = ['entregue', 'concluído', 'concluido', 'done', 'approved', 'finalizado', 'ready'];
+    const progressKeywords  = ['em progresso', 'produção', 'producao', 'doing', 'motion', 'compositing', 'edit', 'rendering'];
+
     const delivered = items.filter(i => {
       const sel = allValues[i.id]?.[statusProp?.id]?.selected;
-      const opt  = statusOptions.find(o => o.id === sel);
-      return opt?.label?.toLowerCase().includes('entregue') || opt?.label?.toLowerCase().includes('approved');
+      const opt = statusOptions.find(o => o.id === sel);
+      if (!opt) return false;
+      const label = opt.label.toLowerCase();
+      return deliveredKeywords.some(k => label.includes(k));
     }).length;
+
     const inProgress = items.filter(i => {
       const sel = allValues[i.id]?.[statusProp?.id]?.selected;
-      const opt  = statusOptions.find(o => o.id === sel);
-      return ['em_progresso','motion','compositing','ai generation','upscale'].some(k =>
-        opt?.label?.toLowerCase().includes(k.toLowerCase())
-      );
+      const opt = statusOptions.find(o => o.id === sel);
+      if (!opt) return false;
+      const label = opt.label.toLowerCase();
+      return progressKeywords.some(k => label.includes(k));
     }).length;
+
     const overdue = deadlineProp ? items.filter(i => {
       const dateStr = allValues[i.id]?.[deadlineProp.id]?.date;
       if (!dateStr) return false;
-      return new Date(dateStr) < today;
+      // Considera atrasado apenas se NÃO estiver entregue
+      const sel = allValues[i.id]?.[statusProp?.id]?.selected;
+      const opt = statusOptions.find(o => o.id === sel);
+      const isDelivered = opt && deliveredKeywords.some(k => opt.label.toLowerCase().includes(k));
+      return !isDelivered && new Date(dateStr) < today;
     }).length : 0;
 
     const progress = total > 0 ? Math.round((delivered / total) * 100) : 0;
@@ -379,7 +393,9 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
   }, [items, allValues, statusProp, statusOptions]);
 
   // ── Workload Distribution ──
-  const assigneeProp = properties.find(p => p.name === 'Responsável');
+  const assigneeProp = properties.find(p => p.name === 'Responsável' || p.property_type === 'people');
+  const { members } = useTeamStore();
+
   const workloadDist = useMemo(() => {
     if (!assigneeProp) return [];
     const counts = {};
@@ -387,18 +403,20 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
       // Ignora itens entregues no workload
       const sel = allValues[i.id]?.[statusProp?.id]?.selected;
       const opt = statusOptions.find(o => o.id === sel);
-      const isDelivered = opt?.label?.toLowerCase().includes('entregue') || opt?.label?.toLowerCase().includes('approved');
+      const isDelivered = opt && ['entregue', 'concluído', 'concluido', 'done', 'approved', 'finalizado', 'ready'].some(k => opt.label.toLowerCase().includes(k));
       if (isDelivered) return;
 
-      const assignee = allValues[i.id]?.[assigneeProp.id]?.people;
-      if (assignee) {
-        counts[assignee] = (counts[assignee] || 0) + 1;
+      const assigneeIdOrName = allValues[i.id]?.[assigneeProp.id]?.people;
+      if (assigneeIdOrName) {
+        const member = members.find(m => m.id === assigneeIdOrName || m.name === assigneeIdOrName);
+        const displayName = member ? member.name : assigneeIdOrName;
+        counts[displayName] = (counts[displayName] || 0) + 1;
       }
     });
     return Object.entries(counts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
-  }, [items, allValues, assigneeProp, statusProp, statusOptions]);
+  }, [items, allValues, assigneeProp, statusProp, statusOptions, members]);
 
   return (
     <div className="space-y-6">
