@@ -35,10 +35,10 @@ export const pageService = {
     const { data, error } = await supabase
       .from('pages')
       .select('*')
-      .eq('id', pageId)
-      .single();
+      .eq('id', pageId);
+    
     if (error) throw error;
-    return data;
+    return data && data.length > 0 ? data[0] : null;
   },
 
   // Buscar items de um database (pages cujo parent é o database)
@@ -56,19 +56,23 @@ export const pageService = {
 
   // Criar página
   async create({ id, title, parentId, pageType = 'page', content = '', icon = null, cover = null, createdBy = null }) {
+    const payload = {
+      title,
+      parent_id: parentId || null,
+      page_type: pageType,
+      content,
+      icon,
+      cover,
+      created_by: createdBy,
+      assigned_to: createdBy,
+    };
+    
+    // Só adiciona ID se ele foi passado explicitamente (ex: ROOT_HUB_ID)
+    if (id) payload.id = id;
+
     const { data, error } = await supabase
       .from('pages')
-      .insert([{
-        id,
-        title,
-        parent_id: parentId || null,
-        page_type: pageType,
-        content,
-        icon,
-        cover,
-        created_by: createdBy,
-        assigned_to: createdBy,
-      }])
+      .insert([payload])
       .select()
       .single();
     if (error) throw error;

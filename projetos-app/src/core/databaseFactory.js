@@ -44,11 +44,10 @@ async function ensureViews(databaseId, viewConfigs) {
 
 // Garantir que o Projects Hub raiz existe e tem schema
 export async function ensureRootHub() {
-  // Tentar buscar
-  let hub;
-  try {
-    hub = await pageService.fetchById(ROOT_HUB_ID);
-  } catch {
+  // Tentar buscar o hub
+  let hub = await pageService.fetchById(ROOT_HUB_ID);
+  
+  if (!hub) {
     // Criar se não existir
     hub = await pageService.create({
       id: ROOT_HUB_ID,
