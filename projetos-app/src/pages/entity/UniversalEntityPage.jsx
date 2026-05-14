@@ -37,44 +37,49 @@ export function UniversalEntityPage() {
   const page = pages[pageId];
 
   useEffect(() => {
+    let isMounted = true;
     async function load() {
       setLoading(true);
       try {
-        if (!pages[pageId]) await fetchPage(pageId);
         const currentPage = usePageStore.getState().pages[pageId];
-        if (!currentPage) return;
+        if (!currentPage) await fetchPage(pageId);
+        const fetchedPage = usePageStore.getState().pages[pageId];
+        if (!fetchedPage || !isMounted) return;
 
         // Se for filho direto do Root Hub, é um Projeto. Pegamos o schema do Root Hub.
         // Se for filho do Pipeline (Cena), pegamos o schema do Pipeline.
-        const parentId = currentPage.parent_id;
+        const parentId = fetchedPage.parent_id;
         if (parentId) {
           const props = await propertyService.fetchByDatabase(parentId);
-          setProperties(props);
+          if (isMounted) setProperties(props);
         }
 
         const vals = await propertyService.fetchValues(pageId);
         const valMap = {};
         for (const v of vals) valMap[v.property_id] = v.value;
-        setPropValues(valMap);
+        if (isMounted) setPropValues(valMap);
 
         // Se a entidade é um Projeto (pai = RootHub), carregamos o pipeline
         // Se a entidade é uma Cena (pai != RootHub), ela ainda pode ter sub-tasks futuramente.
         if (parentId === '00000000-0000-0000-0000-000000000000') {
           const pipelineDb = await bootstrapProjectPipeline(pageId);
-          setChildDatabase(pipelineDb);
-          setActiveTab('pipeline'); // Default for projects
+          if (isMounted) {
+            setChildDatabase(pipelineDb);
+            setActiveTab('pipeline'); // Default for projects
+          }
         } else {
-          setActiveTab('notes'); // Default for scenes
+          if (isMounted) setActiveTab('notes'); // Default for scenes
         }
 
       } catch (e) {
         console.error('UniversalEntityPage load error:', e);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
     load();
-  }, [pageId, fetchPage, pages]);
+    return () => { isMounted = false; };
+  }, [pageId, fetchPage]);
 
   const handlePropChange = useCallback(async (propertyId, value) => {
     setPropValues(prev => ({ ...prev, [propertyId]: value }));
@@ -97,7 +102,10 @@ export function UniversalEntityPage() {
     await updatePage(pageId, { content: html });
   }, [pageId, updatePage]);
 
-  if (loading || !page) {
+  // Só mostra loading global se não tivermos NADA da página ainda
+  const isInitialLoading = loading && !page;
+
+  if (isInitialLoading) {
     return (
       <div className="flex flex-col h-full animate-pulse bg-background">
         <div className="h-14 bg-card/50 border-b border-border" />
@@ -109,6 +117,8 @@ export function UniversalEntityPage() {
       </div>
     );
   }
+
+  if (!page) return null;
 
   const statusProp = properties.find(p => p.name === 'Status');
   const priorityProp = properties.find(p => p.name === 'Prioridade');
@@ -264,6 +274,7 @@ export function UniversalEntityPage() {
           {activeTab === 'notes' && (
             <div className="space-y-4">
               <RichTextEditor
+                key={pageId}
                 content={page.content || ''}
                 onChange={handleContentChange}
                 placeholder="Pressione '/' para comandos. Escreva briefing, roteiro, observações..."

@@ -78,7 +78,7 @@ export function CreateProjectModal({ open, onOpenChange }) {
     <Dialog.Root open={open} onOpenChange={(o) => { if (!o) reset(); onOpenChange(o); }}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-background/70 backdrop-blur-md z-50 animate-in fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden" aria-describedby="dialog-description">
           
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-border/50">
@@ -88,7 +88,7 @@ export function CreateProjectModal({ open, onOpenChange }) {
               </div>
               Novo Projeto
             </Dialog.Title>
-            <Dialog.Description className="text-sm text-muted-foreground mt-1">
+            <Dialog.Description id="dialog-description" className="text-sm text-muted-foreground mt-1">
               Configure e comece sua produção em segundos.
             </Dialog.Description>
           </div>
