@@ -13,7 +13,17 @@ const SUPABASE_URL      = 'https://gfaqnkmmbozmhroicqyc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYXFua21tYm96bWhyb2ljcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2OTcxNDQsImV4cCI6MjA5NDI3MzE0NH0.vYhdQjfr1d92t_uhU504XyP2UxkANUO96X1hKOu3e-g';
 
 const { createClient } = supabase;       // vem do CDN @supabase/supabase-js@2
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// IMPORTANTE: flowType 'implicit' é obrigatório para apps HTML estáticos sem backend.
+// O fluxo PKCE (padrão do v2) exige troca de código server-side, o que causa
+// perda de sessão e 401 em apps sem servidor.
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    flowType:          'implicit',   // implicit = token direto no hash da URL
+    persistSession:    true,         // guarda sessão no localStorage
+    detectSessionInUrl: true,        // lê o token do hash após redirect OAuth
+  },
+});
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
@@ -45,7 +55,9 @@ async function signInWithGoogle() {
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/projetos/index.html',
+        redirectTo:    window.location.origin + '/projetos/index.html',
+        scopes:        'email profile',
+        queryParams:   { access_type: 'online', prompt: 'select_account' },
       },
     });
     if (error) throw error;
