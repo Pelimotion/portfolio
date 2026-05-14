@@ -265,6 +265,7 @@
 
     async function submitNewProject(e) {
       e.preventDefault();
+      
       const btn = document.getElementById('btn-submit-project');
       btn.disabled = true;
       btn.textContent = 'Criando…';
@@ -274,8 +275,8 @@
         const { data: authData, error: authErr } = await db.auth.getSession();
         
         if (authErr || !authData.session) {
-          showError('Sessão expirada. Redirecionando para login...');
-          setTimeout(() => window.location.reload(), 1500); // recarrega a página para resetar a state machine
+          if (typeof showToast === 'function') showToast('Sessão expirada.', 'error');
+          setTimeout(() => window.location.reload(), 1500);
           return;
         }
 
@@ -293,18 +294,21 @@
           .insert(payload)
           .select()
           .single();
+          
         if (error) throw error;
 
-        renderProjectCard(data);
         closeModal();
+        
         if (typeof showToast === 'function') {
           showToast('Projeto criado com sucesso!', 'success');
         }
+        
+        renderProjectCard(data);
+
       } catch (err) {
+        console.error("Erro ao criar projeto:", err);
         if (typeof showToast === 'function') {
-          showToast('Erro ao criar projeto: ' + err.message, 'error');
-        } else {
-          showError('Erro ao criar projeto: ' + err.message);
+          showToast('Erro: ' + err.message, 'error');
         }
       } finally {
         btn.disabled = false;
