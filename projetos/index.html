@@ -15,7 +15,7 @@
   <!-- ══════════════════════════════════════════════════════════════════════ -->
   <!--  ESTADO: SEM SESSÃO                                                   -->
   <!-- ══════════════════════════════════════════════════════════════════════ -->
-  <section id="login-screen" class="login-screen" hidden>
+  <section id="login-screen" class="login-screen" style="display: block;">
     <div class="login-card">
       <img src="../logo.svg" alt="Pelimotion" class="login-logo" />
       <h1 class="login-title">Área de Projetos</h1>
@@ -36,7 +36,7 @@
   <!-- ══════════════════════════════════════════════════════════════════════ -->
   <!--  ESTADO: COM SESSÃO                                                   -->
   <!-- ══════════════════════════════════════════════════════════════════════ -->
-  <div id="app" hidden>
+  <div id="app-content" style="display: none;">
 
     <!-- Header ─────────────────────────────────────────────────────────── -->
     <header class="app-header">
@@ -129,18 +129,17 @@
     // ── Bootstrap & State Machine ─────────────────────────────────────────
     const UI = {
       setLoading: () => {
-        document.getElementById('app').setAttribute('hidden', '');
-        document.getElementById('login-screen').setAttribute('hidden', '');
-        // Pode-se adicionar um spinner global aqui se desejar
+        document.getElementById('app-content').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'none';
       },
       setUnauthenticated: () => {
-        document.getElementById('app').setAttribute('hidden', '');
-        document.getElementById('login-screen').removeAttribute('hidden');
+        document.getElementById('app-content').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'block';
         document.getElementById('btn-new-project').disabled = true;
       },
       setAuthenticated: (userEmail) => {
-        document.getElementById('login-screen').setAttribute('hidden', '');
-        document.getElementById('app').removeAttribute('hidden');
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
         document.getElementById('header-user').textContent = userEmail;
         document.getElementById('btn-new-project').disabled = false;
       }

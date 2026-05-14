@@ -8,6 +8,8 @@
  * - showError(msg)     → exibe mensagem de erro visível na UI
  */
 
+console.log("Iniciando App V2 - Autenticação por Email");
+
 // ─── Configuração do Supabase ────────────────────────────────────────────────
 const SUPABASE_URL      = 'https://gfaqnkmmbozmhroicqyc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYXFua21tYm96bWhyb2ljcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2OTcxNDQsImV4cCI6MjA5NDI3MzE0NH0.vYhdQjfr1d92t_uhU504XyP2UxkANUO96X1hKOu3e-g';
