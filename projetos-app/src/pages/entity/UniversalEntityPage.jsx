@@ -15,8 +15,9 @@ import {
   BarChart2, FileText, CalendarDays, FolderOpen,
   Activity, Clock, ChevronDown, AlertTriangle,
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
-  Circle, ArrowRight,
+  Circle, ArrowRight, Trash2,
 } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
@@ -166,7 +167,29 @@ export function UniversalEntityPage() {
         <div className="flex items-center gap-1 shrink-0">
           <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><Star className="w-3.5 h-3.5" /></button>
           <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><Share className="w-3.5 h-3.5" /></button>
-          <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>
+          
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors focus:outline-none">
+                <MoreHorizontal className="w-3.5 h-3.5" />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content align="end" className="z-50 min-w-[160px] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
+                <DropdownMenu.Item
+                  onSelect={async () => {
+                    if (window.confirm('Tem certeza que deseja excluir esta página?')) {
+                      await usePageStore.getState().archivePage(pageId);
+                      navigate('/');
+                    }
+                  }}
+                  className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none font-medium"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Excluir
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </div>
       </header>
 

@@ -18,8 +18,9 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Table, List, CalendarDays,
   Plus, Filter, Settings2, MoreHorizontal, ChevronLeft, ChevronRight,
-  LayoutGrid, AlignJustify, LayoutList,
+  LayoutGrid, AlignJustify, LayoutList, Trash2,
 } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 const VIEW_ICONS = { kanban: LayoutDashboard, table: Table, list: List, calendar: CalendarDays };
 const COLOR_DOT  = { gray:'bg-muted-foreground/50',blue:'bg-blue-500',green:'bg-green-500',yellow:'bg-yellow-500',red:'bg-red-500',purple:'bg-purple-500',orange:'bg-orange-500',pink:'bg-pink-500',cyan:'bg-cyan-500' };
@@ -112,6 +113,14 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
     await Promise.all(updates);
   }, []);
 
+  const handleDelete = useCallback(async (itemId) => {
+    if (!window.confirm('Tem certeza que deseja excluir este item?')) return;
+    try {
+      await usePageStore.getState().archivePage(itemId);
+      setLocalItems(prev => prev.filter(i => i.id !== itemId));
+    } catch (e) { console.error(e); }
+  }, []);
+
   const handleCreate = useCallback(async () => {
     setCreating(true);
     try {
@@ -140,6 +149,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
     onValueChange: handleValueChange,
     onReorder: (newItems) => setLocalItems(newItems),
     onReorderPersist: handleReorder,
+    onDelete: handleDelete,
     density,
   };
 
@@ -364,7 +374,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
 // ============================================
 // TABLE VIEW
 // ============================================
-function TableView({ items, properties, allValues, onValueChange }) {
+function TableView({ items, properties, allValues, onValueChange, onDelete }) {
   const navigate = useNavigate();
   const visible = properties.filter(p => p.is_visible !== false);
 
@@ -396,10 +406,24 @@ function TableView({ items, properties, allValues, onValueChange }) {
                   onChange={v => onValueChange(item.id, prop.id, v)} inline />
               </div>
             ))}
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <button className="p-1 rounded hover:bg-secondary text-muted-foreground">
-                <MoreHorizontal className="w-3.5 h-3.5" />
-              </button>
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <button className="p-1 rounded hover:bg-secondary text-muted-foreground focus:outline-none">
+                    <MoreHorizontal className="w-3.5 h-3.5" />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content align="end" className="z-50 min-w-[120px] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
+                    <DropdownMenu.Item
+                      onSelect={() => onDelete(item.id)}
+                      className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none font-medium"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Excluir
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
             </div>
           </div>
         ))}
