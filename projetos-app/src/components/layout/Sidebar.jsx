@@ -12,12 +12,17 @@ import {
   FileText
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useProjects } from '../../hooks/useProjects';
+import { usePageStore } from '../../stores/usePageStore';
 
 export function Sidebar() {
   const { user, signOut } = useAuth();
-  const { projects } = useProjects();
   const navigate = useNavigate();
+  const { fetchDatabaseItems, getChildren } = usePageStore();
+  const projects = getChildren('00000000-0000-0000-0000-000000000000'); // Root Hub
+
+  React.useEffect(() => {
+    fetchDatabaseItems('00000000-0000-0000-0000-000000000000');
+  }, [fetchDatabaseItems]);
   
   return (
     <aside className="w-64 border-r border-border bg-sidebar h-screen flex flex-col shrink-0">

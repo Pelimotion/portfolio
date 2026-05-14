@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, LayoutTemplate, Briefcase } from 'lucide-react';
-import { supabase } from '../../../lib/supabase';
+import { usePageStore } from '../../../stores/usePageStore';
 
 export function CreateProjectModal({ open, onOpenChange, onSuccess }) {
   const [title, setTitle] = useState('');
@@ -10,25 +10,22 @@ export function CreateProjectModal({ open, onOpenChange, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  const { createPage } = usePageStore();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const { data, error: insertError } = await supabase
-        .from('projects')
-        .insert([{
-          title,
-          description,
-          drive_folder_url: driveUrl,
-          status: 'briefing'
-        }])
-        .select();
-
-      if (insertError) throw insertError;
+      const page = await createPage({
+        title,
+        content: description,
+        parentId: '00000000-0000-0000-0000-000000000000',
+        pageType: 'database_item'
+      });
       
-      onSuccess(data[0]);
+      onSuccess(page);
       onOpenChange(false);
       
       // Reset form
