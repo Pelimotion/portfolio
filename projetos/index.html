@@ -262,7 +262,11 @@
         // não a chave anon. A SDK anexa o token automaticamente.
         const { data: authData, error: authErr } = await db.auth.getSession();
         if (authErr) throw authErr;
-        if (!authData.session) throw new Error('Sessão expirada. Faça login novamente.');
+        if (!authData.session) {
+          showError('Sessão expirada. Redirecionando para login...');
+          setTimeout(signInWithGoogle, 1500);
+          return;
+        }
 
         const form = e.target;
         const payload = {

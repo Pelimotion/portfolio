@@ -25,6 +25,12 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
+// Debug visual global: monitorar o estado da sessão em qualquer página
+db.auth.onAuthStateChange((event, session) => {
+  console.log('[Auth Debug] Evento:', event);
+  console.log('[Auth Debug] Sessão atual:', session);
+});
+
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 /**
@@ -55,7 +61,7 @@ async function signInWithGoogle() {
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo:    window.location.origin + '/projetos/index.html',
+        redirectTo:    'https://portfolio-pelimotionart-6049s-projects.vercel.app/projetos/index.html',
         scopes:        'email profile',
         queryParams:   { access_type: 'online', prompt: 'select_account' },
       },
