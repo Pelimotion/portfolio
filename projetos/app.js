@@ -14,16 +14,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const { createClient } = supabase;       // vem do CDN @supabase/supabase-js@2
 
-// IMPORTANTE: flowType 'implicit' é obrigatório para apps HTML estáticos sem backend.
-// O fluxo PKCE (padrão do v2) exige troca de código server-side, o que causa
-// perda de sessão e 401 em apps sem servidor.
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    flowType:          'implicit',   // implicit = token direto no hash da URL
-    persistSession:    true,         // guarda sessão no localStorage
-    detectSessionInUrl: true,        // lê o token do hash após redirect OAuth
-  },
-});
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
@@ -48,22 +39,30 @@ async function checkAuth() {
 }
 
 /**
- * Inicia login com Google OAuth.
- * Após autenticação, Supabase redireciona de volta para index.html.
+ * Inicia login com e-mail e senha via Supabase Auth.
  */
-async function signInWithGoogle() {
+async function signInWithPassword(e) {
+  e.preventDefault();
+  
+  const form = e.target;
+  const email = form.querySelector('#input-email').value.trim();
+  const password = form.querySelector('#input-password').value;
+  const btn = form.querySelector('#btn-login');
+  const errorDiv = document.getElementById('login-error');
+  
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  errorDiv.setAttribute('hidden', '');
+
   try {
-    const { error } = await db.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo:    'https://portfolio-pelimotionart-6049s-projects.vercel.app/projetos/index.html',
-        scopes:        'email profile',
-        queryParams:   { access_type: 'online', prompt: 'select_account' },
-      },
-    });
+    const { error } = await db.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    // Em caso de sucesso, o onAuthStateChange (em index.html) transita a interface automaticamente
   } catch (err) {
-    showError('Erro ao entrar com Google: ' + err.message);
+    errorDiv.textContent = 'Erro ao entrar: ' + err.message;
+    errorDiv.removeAttribute('hidden');
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
   }
 }
 
