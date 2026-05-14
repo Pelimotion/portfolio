@@ -51,6 +51,7 @@ export async function ensureRootHub() {
   } catch {
     // Criar se não existir
     hub = await pageService.create({
+      id: ROOT_HUB_ID,
       title: 'Projects Hub',
       parentId: null,
       pageType: 'database',

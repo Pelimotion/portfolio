@@ -4,6 +4,7 @@ import { CreateProjectModal } from './components/CreateProjectModal';
 import { useUIStore } from '../../stores/useUIStore';
 import { LayoutDashboard, Plus, Search } from 'lucide-react';
 import { ROOT_HUB_ID } from '../../core/schemas';
+import { ensureRootHub } from '../../core/databaseFactory';
 
 // ============================================
 // DASHBOARD — Projects Hub Universal
@@ -13,6 +14,28 @@ import { ROOT_HUB_ID } from '../../core/schemas';
 export default function Dashboard() {
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [initializing, setInitializing] = useState(true);
+
+  React.useEffect(() => {
+    async function init() {
+      try {
+        await ensureRootHub();
+      } catch (e) {
+        console.error('Falha ao inicializar Hub:', e);
+      } finally {
+        setInitializing(false);
+      }
+    }
+    init();
+  }, []);
+
+  if (initializing) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Inicializando Workspace...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">

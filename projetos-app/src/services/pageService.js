@@ -55,10 +55,11 @@ export const pageService = {
   },
 
   // Criar página
-  async create({ title, parentId, pageType = 'page', content = '', icon = null, cover = null, createdBy = null }) {
+  async create({ id, title, parentId, pageType = 'page', content = '', icon = null, cover = null, createdBy = null }) {
     const { data, error } = await supabase
       .from('pages')
       .insert([{
+        id,
         title,
         parent_id: parentId || null,
         page_type: pageType,
