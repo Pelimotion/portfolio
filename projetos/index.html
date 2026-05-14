@@ -126,45 +126,63 @@
   <script src="kanban.js"></script>
 
   <script>
-    // ── Singleton guard: garante que db vem de app.js e não foi recriado ──
-    // db está definido em app.js (carregado antes deste bloco)
-
-    // ── Bootstrap ─────────────────────────────────────────────────────────
-    // O botão "Novo Projeto" começa desabilitado (ver HTML) e só é liberado
-    // após a sessão ser confirmada pelo onAuthStateChange.
-    let isInitialized = false;
-
-    db.auth.onAuthStateChange(async (event, session) => {
-      if (!session) {
-        // Sem sessão: mostra tela de login, bloqueia UI
+    // ── Bootstrap & State Machine ─────────────────────────────────────────
+    const UI = {
+      setLoading: () => {
+        document.getElementById('app').setAttribute('hidden', '');
+        document.getElementById('login-screen').setAttribute('hidden', '');
+        // Pode-se adicionar um spinner global aqui se desejar
+      },
+      setUnauthenticated: () => {
         document.getElementById('app').setAttribute('hidden', '');
         document.getElementById('login-screen').removeAttribute('hidden');
         document.getElementById('btn-new-project').disabled = true;
+      },
+      setAuthenticated: (userEmail) => {
+        document.getElementById('login-screen').setAttribute('hidden', '');
+        document.getElementById('app').removeAttribute('hidden');
+        document.getElementById('header-user').textContent = userEmail;
+        document.getElementById('btn-new-project').disabled = false;
+      }
+    };
+
+    let isAppReady = false;
+
+    // A ÚNICA fonte de verdade para o estado da sessão
+    db.auth.onAuthStateChange(async (event, session) => {
+      console.log('[Auth] Event:', event);
+      
+      if (!session) {
+        UI.setUnauthenticated();
         return;
       }
 
-      // SIGNED_IN ou TOKEN_REFRESHED: libera UI apenas uma vez
-      if (isInitialized) return;
-      isInitialized = true;
+      // Se acabamos de fazer login via hash na URL, limpa o hash para evitar loops
+      if (window.location.hash.includes('access_token')) {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      }
 
-      document.getElementById('login-screen').setAttribute('hidden', '');
-      document.getElementById('app').removeAttribute('hidden');
-      document.getElementById('header-user').textContent = session.user.email;
-      // Libera o botão somente depois de confirmar sessão
-      document.getElementById('btn-new-project').disabled = false;
+      UI.setAuthenticated(session.user.email);
 
-      await loadProjects();
-      initKanban(document.querySelectorAll('.column-cards'), 'projects');
+      // Só carrega os dados do banco na primeira vez
+      if (!isAppReady) {
+        isAppReady = true;
+        await loadProjects();
+        initKanban(document.querySelectorAll('.column-cards'), 'projects');
+      }
     });
 
-    // Verificação inicial: restaura sessão do storage local (pós-redirect OAuth)
+    // Inicia como LOADING até que a promessa inicial do getSession resolva
     (async function init() {
+      UI.setLoading();
+      // Força a recuperação inicial e garante que a promessa termine
       const { data: { session } } = await db.auth.getSession();
+      
+      // Se nulo, o onAuthStateChange pode não disparar INITIAL_SESSION, 
+      // então chamamos a UI manualmente para destrancar a tela.
       if (!session) {
-        document.getElementById('app').setAttribute('hidden', '');
-        document.getElementById('login-screen').removeAttribute('hidden');
+        UI.setUnauthenticated();
       }
-      // Se sessão existe, o onAuthStateChange já dispara SIGNED_IN e cuida do resto
     })();
 
     // ── Carregar projetos ────────────────────────────────────────────────
@@ -257,14 +275,12 @@
       btn.textContent = 'Criando…';
 
       try {
-        // ── Guard: verifica sessão ativa antes de qualquer request ────────
-        // Isso garante que o JWT do usuário (Bearer) está no header,
-        // não a chave anon. A SDK anexa o token automaticamente.
+        // ── Guard: busca sessão limpa diretamente na fonte de verdade ────
         const { data: authData, error: authErr } = await db.auth.getSession();
-        if (authErr) throw authErr;
-        if (!authData.session) {
+        
+        if (authErr || !authData.session) {
           showError('Sessão expirada. Redirecionando para login...');
-          setTimeout(signInWithGoogle, 1500);
+          setTimeout(() => window.location.reload(), 1500); // recarrega a página para resetar a state machine
           return;
         }
 

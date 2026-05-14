@@ -25,11 +25,6 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-// Debug visual global: monitorar o estado da sessão em qualquer página
-db.auth.onAuthStateChange((event, session) => {
-  console.log('[Auth Debug] Evento:', event);
-  console.log('[Auth Debug] Sessão atual:', session);
-});
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
