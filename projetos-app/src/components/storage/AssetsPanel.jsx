@@ -40,7 +40,6 @@ const FOLDER_ROLES = [
 // ASSETS TAB — Storage Connection Panel
 // ============================================
 export function AssetsPanel({ pageId, isProject }) {
-  console.log('🚀 AssetsPanel V2.1 Loading...', { pageId, isProject });
   const [connection, setConnection]   = useState(null);
   const [entityFolders, setEntityFolders] = useState([]);
   const [loading, setLoading]         = useState(true);
