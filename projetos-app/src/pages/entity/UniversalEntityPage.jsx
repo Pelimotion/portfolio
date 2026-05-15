@@ -11,7 +11,7 @@ import { PropertyRenderer } from '../../components/properties/PropertyRenderer';
 import { GenerativeCover } from '../../components/ui/cover/GenerativeCover';
 import { AssetsPanel } from '../../components/storage/AssetsPanel';
 import { ProjectTeamSettings } from '../../components/database/ProjectTeamSettings';
-import { COLOR_MAP } from '../../core/schemas';
+import { COLOR_MAP } from '../../core/colors';
 import {
   ArrowLeft, MoreHorizontal, Share, Star,
   BarChart2, FileText, CalendarDays, FolderOpen,

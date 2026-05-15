@@ -13,7 +13,7 @@ import { pageService } from '../../services/pageService';
 import { viewService } from '../../services/viewService';
 import { SortableEntityCard, EntityCardOverlay } from './EntityCard';
 import { PropertyRenderer } from '../properties/PropertyRenderer';
-import { COLOR_MAP } from '../../core/schemas';
+import { COLOR_MAP } from '../../core/colors';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Table, List, CalendarDays,

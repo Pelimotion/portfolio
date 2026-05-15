@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, Plus, Trash2, Settings2, GripVertical, Check, Palette } from 'lucide-react';
 import { propertyService } from '../../services/propertyService';
-import { COLOR_MAP } from '../../core/schemas';
+import { COLOR_MAP } from '../../core/colors';
 
 // ============================================
 // PROPERTY MANAGER MODAL — Customizing Database
