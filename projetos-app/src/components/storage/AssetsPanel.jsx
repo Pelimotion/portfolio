@@ -43,11 +43,11 @@ function DriveConnectionSection({ projectId }) {
     setConnecting(true);
     try {
       const folderUrl = window.prompt(
-        '📁 Cole a URL da pasta raiz do Google Drive:\\n(Ex: https://drive.google.com/drive/folders/FOLDER_ID)'
+        '📁 Cole a URL da pasta raiz do Google Drive:\n(Ex: https://drive.google.com/drive/folders/FOLDER_ID)'
       );
       if (!folderUrl) { setConnecting(false); return; }
 
-      const match = folderUrl.match(/folders\\/([a-zA-Z0-9_-]+)/);
+      const match = folderUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
       const folderId   = match?.[1] || 'manual_' + Date.now();
       const folderName = folderUrl.split('/').pop() || 'Pasta do Projeto';
 
