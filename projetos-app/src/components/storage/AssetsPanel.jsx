@@ -3,7 +3,7 @@ import { storageService } from '../../services/storageService';
 import { useDriveSlots } from '../../hooks/useDriveSlots';
 import { DriveSlotCard } from './DriveSlotCard';
 import { DriveSlotEditModal } from './DriveSlotEditModal';
-import { DriveLinkPickerModal } from './DriveLinkPickerModal';
+import { FolderPickerModal } from './FolderPickerModal';
 import { AddDriveSlotButton } from './AddDriveSlotButton';
 import { googleDriveProvider } from '../../core/storage/storageProvider';
 import { googleAuth } from '../../lib/googleAuth';
@@ -30,14 +30,9 @@ const PROVIDERS = [
   { id: 'lucidlink',    label: 'LucidLink',     Icon: () => <span className="text-xl">🔗</span>, available: false },
 ];
 
-function DriveConnectionSection({ projectId }) {
-  const [connection, setConnection] = useState(null);
+function DriveConnectionSection({ projectId, connection, setConnection, onSyncStructure, syncing }) {
   const [connecting, setConnecting] = useState(false);
   const [showProviders, setShowProviders] = useState(false);
-
-  useEffect(() => {
-    storageService.getConnection(projectId).then(setConnection).catch(console.error);
-  }, [projectId]);
 
   const handleConnectDrive = async () => {
     setConnecting(true);
@@ -85,9 +80,19 @@ function DriveConnectionSection({ projectId }) {
           </div>
         </div>
         {connection && (
-          <button onClick={handleDisconnect} className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors">
-            <Unlink className="w-3.5 h-3.5" /> Desconectar
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onSyncStructure}
+              disabled={syncing}
+              className="text-[10px] font-bold text-primary hover:text-primary/80 flex items-center gap-1 uppercase tracking-widest transition-colors"
+            >
+              <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Sincronizando...' : 'Sincronizar Estrutura'}
+            </button>
+            <button onClick={handleDisconnect} className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors pl-3 border-l border-border/50">
+              <Unlink className="w-3.5 h-3.5" /> Desconectar
+            </button>
+          </div>
         )}
       </div>
 
@@ -154,21 +159,74 @@ function DriveConnectionSection({ projectId }) {
 }
 
 export function AssetsPanel({ pageId, isProject, parentProjectId }) {
-  // O projectId é a pageId se isProject for true, senão é parentProjectId
   const projectId = isProject ? pageId : parentProjectId;
-  // A isScene é o oposto de isProject
   const isScene = !isProject;
 
+  const [connection, setConnection] = useState(null);
+  const [syncing, setSyncing] = useState(false);
+  
+  // Custom hooks and state
   const { slots, loading, updateSlot, addSlot, removeSlot, upsertLink, removeLink } = 
     useDriveSlots({ projectId, pageId, isScene });
 
   const [editingSlot, setEditingSlot] = useState(null);
   const [linkingSlot, setLinkingSlot] = useState(null);
 
+  useEffect(() => {
+    storageService.getConnection(projectId).then(setConnection).catch(console.error);
+  }, [projectId]);
+
+  const handleSyncStructure = async () => {
+    if (!connection) return;
+    setSyncing(true);
+    try {
+      const token = await googleAuth.ensureToken();
+      const folders = await googleDriveProvider.crawlProject(connection.root_folder_id, token);
+      if (!folders || folders.length === 0) {
+        throw new Error('Nenhuma subpasta encontrada dentro da pasta raiz selecionada.');
+      }
+      await storageService.saveFolders(connection.id, folders);
+      alert(`Sucesso! ${folders.length} pastas sincronizadas do Google Drive.`);
+    } catch (e) {
+      console.error('Erro na Sincronização:', e);
+      alert(`⚠️ Falha na Sincronização:\n${e.message || 'Erro desconhecido'}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleFolderSelect = async (node) => {
+    if (!linkingSlot || !connection) return;
+    try {
+      const isFolder = node.mimeType === 'application/vnd.google-apps.folder';
+      const driveUrl = isFolder
+        ? `https://drive.google.com/drive/folders/${node.id}`
+        : `https://drive.google.com/file/d/${node.id}/view`;
+        
+      await upsertLink(linkingSlot.id, { 
+        drive_url: driveUrl, 
+        drive_file_id: node.id, 
+        drive_name: node.name 
+      });
+    } catch (e) {
+      console.error('onFolderSelect error:', e);
+    } finally {
+      setLinkingSlot(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Seção de conexão do Google Drive (só na view do projeto) */}
-      {!isScene && <DriveConnectionSection projectId={projectId} />}
+      {!isScene && (
+        <DriveConnectionSection 
+          projectId={projectId} 
+          connection={connection}
+          setConnection={setConnection}
+          onSyncStructure={handleSyncStructure}
+          syncing={syncing}
+        />
+      )}
 
       {/* Grid de slots */}
       <section className="space-y-3">
@@ -190,16 +248,19 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
                 slot={slot}
                 isProjectView={!isScene}
                 onEditSlot={() => setEditingSlot(slot)}
-                onLinkSlot={() => setLinkingSlot(slot)}
+                onLinkSlot={() => {
+                  if (!connection) {
+                    alert("Por favor, conecte a pasta raiz do projeto ao Google Drive primeiro (na aba do Projeto).");
+                    return;
+                  }
+                  setLinkingSlot(slot);
+                }}
                 onRemoveSlot={removeSlot}
                 onRemoveLink={isScene ? () => removeLink(slot.id) : undefined}
               />
             ))}
             
-            {/* Botão adicionar — só no projeto */}
-            {!isScene && (
-              <AddDriveSlotButton onAdd={addSlot} />
-            )}
+            {!isScene && <AddDriveSlotButton onAdd={addSlot} />}
           </div>
         )}
       </section>
@@ -215,15 +276,12 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
         }}
       />
 
-      <DriveLinkPickerModal
-        slot={linkingSlot || {}}
-        isScene={isScene}
+      <FolderPickerModal 
         open={!!linkingSlot}
-        onClose={() => setLinkingSlot(null)}
-        onLink={async (url, fileId, driveName) => {
-          await upsertLink(linkingSlot.id, { drive_url: url, drive_file_id: fileId, drive_name: driveName });
-          setLinkingSlot(null);
-        }}
+        onOpenChange={(isOpen) => !isOpen && setLinkingSlot(null)}
+        connection={connection}
+        onSelect={handleFolderSelect}
+        title={linkingSlot ? `Vincular: ${linkingSlot.display_name}` : 'Vincular Pasta/Arquivo'}
       />
     </div>
   );
