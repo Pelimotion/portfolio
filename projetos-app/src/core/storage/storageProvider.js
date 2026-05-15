@@ -6,13 +6,14 @@
 export const googleDriveProvider = {
   
   /**
-   * Busca subpastas de um diretório pai
+   * Busca conteúdos (pastas e arquivos) de um diretório pai
    */
-  async listFolders(parentId, accessToken) {
+  async listContents(parentId, accessToken) {
     if (!accessToken) throw new Error('Google Drive: Access Token ausente');
 
-    const q = `'${parentId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
-    const fields = 'files(id, name, mimeType, webViewLink, parents)';
+    // Busca pastas E arquivos. Filtra lixeira.
+    const q = `'${parentId}' in parents and trashed = false`;
+    const fields = 'files(id, name, mimeType, webViewLink, thumbnailLink, iconLink, parents, size)';
     
     try {
       const response = await fetch(
@@ -33,7 +34,7 @@ export const googleDriveProvider = {
       const data = await response.json();
       return data.files || [];
     } catch (e) {
-      console.error('googleDriveProvider.listFolders error:', e);
+      console.error('googleDriveProvider.listContents error:', e);
       throw e;
     }
   },

@@ -34,7 +34,9 @@ export function FolderPickerModal({
         id: f.provider_folder_id,
         name: f.name,
         parentId: f.parent_provider_id,
-        path: f.path
+        path: f.path,
+        mimeType: f.metadata?.mimeType,
+        thumbnail: f.metadata?.thumbnail
       }));
       setFolders(formatted);
     } catch (e) {

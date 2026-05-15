@@ -17,9 +17,12 @@ import {
   BarChart2, FileText, CalendarDays, FolderOpen,
   Activity, Clock, ChevronDown, AlertTriangle,
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
-  Circle, ArrowRight, Trash2,
+  Circle, ArrowRight, Trash2, Home, ChevronRight,
+  LayoutDashboard, Database, Share2
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
+import { getAccentColorFromId } from '../../lib/artPatternEngine';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
@@ -142,92 +145,110 @@ export function UniversalEntityPage() {
   const statusColors = statusOption ? COLOR_MAP[statusOption.color] || COLOR_MAP.gray : COLOR_MAP.gray;
 
   return (
-    <div className="flex flex-col h-full bg-background overflow-hidden">
-      <header className="h-12 shrink-0 flex items-center justify-between px-5 border-b border-border/30 bg-card/60 backdrop-blur-sm">
-        <div className="flex items-center gap-3 text-sm min-w-0">
-          <button onClick={() => navigate(-1)} className="p-1 hover:bg-secondary rounded-md text-muted-foreground hover:text-foreground transition-colors shrink-0">
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-1.5 text-muted-foreground min-w-0 text-xs">
-            <span className="hover:text-foreground cursor-pointer" onClick={() => navigate('/')}>Projects Hub</span>
-            <ArrowRight className="w-3 h-3 opacity-40 shrink-0" />
-            <span className="text-foreground font-medium truncate">{page.title}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><Star className="w-3.5 h-3.5" /></button>
-          <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><Share className="w-3.5 h-3.5" /></button>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors focus:outline-none">
-                <MoreHorizontal className="w-3.5 h-3.5" />
-              </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content align="end" className="z-50 min-w-[160px] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 p-1">
-                <DropdownMenu.Item
-                  onSelect={async () => {
-                    if (window.confirm('Tem certeza que deseja excluir esta página?')) {
-                      await usePageStore.getState().archivePage(pageId);
-                      navigate('/');
-                    }
-                  }}
-                  className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none font-medium"
-                >
-                  <Trash2 className="w-3.5 h-3.5" /> Excluir
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-        </div>
-      </header>
+    <div className="flex flex-col h-full bg-[var(--surface-0)] relative overflow-hidden">
+      
+      {/* ── BREADCRUMBS ── */}
+      <div className="h-10 flex items-center px-6 gap-2 text-[11px] font-medium text-muted-foreground/60 border-b border-[var(--border-subtle)] bg-[var(--surface-1)]">
+        <button onClick={() => navigate('/')} className="hover:text-foreground transition-colors flex items-center gap-1">
+          <Home className="w-3 h-3" /> Hub
+        </button>
+        <ChevronRight className="w-3 h-3 opacity-30" />
+        {page?.parent_id && page.parent_id !== ROOT_HUB_ID && (
+          <>
+            <button onClick={() => navigate(`/project/${page.parent_id}`)} className="hover:text-foreground transition-colors">
+              Projeto Pai
+            </button>
+            <ChevronRight className="w-3 h-3 opacity-30" />
+          </>
+        )}
+        <span className="text-foreground/80 truncate font-bold">{page?.title}</span>
+      </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="relative">
-          <GenerativeCover seed={page.title || page.id} className="h-40" />
-          <div className="absolute bottom-0 left-6 translate-y-1/2 w-14 h-14 rounded-xl bg-card border border-border shadow-lg flex items-center justify-center text-3xl z-10">
-            {page.icon || '🎬'}
-          </div>
-        </div>
+      {/* ── PROJECT HEADER ── */}
+      <div className="relative pt-8 pb-0 px-8 border-b border-[var(--border-subtle)] bg-[var(--surface-1)] overflow-hidden shrink-0">
+        {/* Background Art Pattern */}
+        <ProjectArtPattern 
+          projectId={pageId} 
+          size="header" 
+          opacity={0.08} 
+          className="mask-header"
+        />
+        <style>{`
+          .mask-header {
+            mask-image: linear-gradient(to bottom, black, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+          }
+        `}</style>
 
-        <div className="px-6 pt-10 pb-0">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
+        <div className="relative z-10 flex items-end justify-between">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-strong)] flex items-center justify-center text-3xl shadow-2xl">
+              {page?.icon || (isProject ? '🎬' : '🎞️')}
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-3xl font-black text-foreground tracking-tight mb-1">{page?.title}</h1>
               <div className="flex items-center gap-3">
-                <h1
-                  className="text-2xl font-bold text-foreground focus:outline-none leading-snug"
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={handleTitleBlur}
-                >
-                  {page.title || 'Untitled'}
-                </h1>
-                {isProject && (
-                  <button 
-                    onClick={() => setTeamSettingsOpen(true)}
-                    className="mt-1 p-1.5 rounded-lg border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
-                    title="Configurações da Equipe"
-                  >
-                    <Users className="w-4 h-4" />
-                  </button>
-                )}
+                 <span className="text-xs text-muted-foreground/60 flex items-center gap-1.5 font-bold uppercase tracking-wider">
+                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: getAccentColorFromId(pageId) }} />
+                   {isProject ? 'Projeto Motion' : 'Cena / Take'}
+                 </span>
+                 {page?.description && (
+                   <span className="text-xs text-muted-foreground/40 font-medium">• {page.description}</span>
+                 )}
               </div>
-              {clienteProp && propValues[clienteProp.id]?.text && (
-                <p className="text-sm text-muted-foreground mt-0.5">{propValues[clienteProp.id].text}</p>
-              )}
-            </div>
-            <div className="flex items-center gap-2 shrink-0 pt-1">
-              {statusProp && (
-                <button className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-opacity hover:opacity-80 ${statusColors.bg} ${statusColors.text}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${statusColors.dot}`} />
-                  {statusOption?.label || 'Sem Status'}
-                  <ChevronDown className="w-3 h-3 opacity-60" />
-                </button>
-              )}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 pb-4 border-b border-border/30">
+          <div className="flex items-center gap-2 mb-1">
+            {isProject && (
+              <button 
+                onClick={() => setTeamSettingsOpen(true)}
+                className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]"
+                title="Configurações da Equipe"
+              >
+                <Users className="w-4 h-4" />
+              </button>
+            )}
+            <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
+              <Share2 className="w-4 h-4" />
+            </button>
+            <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* ── TAB BAR ── */}
+        <div className="relative z-10 flex items-center gap-6 mt-8 overflow-x-auto no-scrollbar">
+          {tabs.map(tab => {
+            const isActive = activeTab === tab.id;
+            const Icon = tab.Icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 pb-3 text-xs font-bold transition-all relative group whitespace-nowrap ${
+                  isActive ? 'text-foreground' : 'text-muted-foreground/40 hover:text-muted-foreground'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? '' : 'opacity-50'}`} />
+                {tab.label}
+                {isActive && (
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full animate-in slide-in-from-bottom-1"
+                    style={{ backgroundColor: getAccentColorFromId(pageId) }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── MAIN CONTENT AREA ── */}
+      <div className="flex-1 overflow-y-auto bg-[var(--surface-0)]">
+        <div className="px-8 py-6">
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-8 py-4 px-6 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl">
             {priorityProp && (
               <PropertyField label="Prioridade">
                 <PropertyRenderer property={priorityProp} value={propValues[priorityProp.id]} onChange={v => handlePropChange(priorityProp.id, v)} inline />
@@ -242,21 +263,6 @@ export function UniversalEntityPage() {
               <PropertyField key={prop.id} label={prop.name}>
                 <PropertyRenderer property={prop} value={propValues[prop.id]} onChange={v => handlePropChange(prop.id, v)} inline />
               </PropertyField>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-0.5 mt-0 -mx-1 overflow-x-auto no-scrollbar">
-            {tabs.map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-medium whitespace-nowrap transition-all border-b-2 -mb-px ${
-                  activeTab === id ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border/40'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {label}
-              </button>
             ))}
           </div>
         </div>
@@ -285,7 +291,11 @@ export function UniversalEntityPage() {
             />
           )}
           {activeTab === 'assets' && (
-            <AssetsPanel pageId={pageId} isProject={isProject} />
+            <AssetsPanel 
+              pageId={pageId} 
+              isProject={isProject} 
+              parentProjectId={!isProject ? page?.parent_id : null}
+            />
           )}
           {activeTab === 'activity' && (
             <EmptyState Icon={Activity} title="Log de Atividade" sub="Histórico completo de modificações em breve." />
@@ -373,39 +383,53 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
   }, [items, allValues, assigneeProp, statusProp, statusOptions, members]);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiCard icon={<Circle className="w-4 h-4" />}  label="Total Cenas"    value={kpis.total}      color="default" />
-        <KpiCard icon={<Loader2 className="w-4 h-4" />} label="Em Produção"    value={kpis.inProgress} color="blue" />
-        <KpiCard icon={<AlertTriangle className="w-4 h-4" />} label="Atrasadas" value={kpis.overdue}   color={kpis.overdue > 0 ? 'red' : 'default'} />
-        <KpiCard icon={<CheckCircle2 className="w-4 h-4" />} label="Entregues" value={kpis.delivered}  color="green" />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <KpiCard icon={<Circle className="w-3.5 h-3.5" />}  label="Total de Cenas"    value={kpis.total}      color="default" />
+        <KpiCard icon={<Loader2 className="w-3.5 h-3.5" />} label="Em Produção"    value={kpis.inProgress} color="blue" />
+        <KpiCard icon={<AlertTriangle className="w-3.5 h-3.5" />} label="Cenas Atrasadas" value={kpis.overdue}   color={kpis.overdue > 0 ? 'red' : 'default'} />
+        <KpiCard icon={<CheckCircle2 className="w-3.5 h-3.5" />} label="Concluídas" value={kpis.delivered}  color="green" />
       </div>
-      <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-2">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold text-foreground">Progresso Geral</span>
-          <span className="text-muted-foreground font-mono">{kpis.delivered}/{kpis.total} cenas entregues · {kpis.progress}%</span>
+
+      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso de Produção</span>
+            <span className="text-xl font-black text-foreground">{kpis.progress}% <span className="text-xs text-muted-foreground/60 font-medium tracking-normal ml-1">COMPLETADO</span></span>
+          </div>
+          <span className="text-[10px] font-mono text-muted-foreground/50 bg-[var(--surface-2)] px-2 py-1 rounded-md border border-[var(--border-subtle)]">
+            {kpis.delivered} / {kpis.total} CENAS
+          </span>
         </div>
-        <div className="h-2 bg-secondary/50 rounded-full overflow-hidden">
-          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-700" style={{ width: `${kpis.progress}%` }} />
+        <div className="h-3 bg-[var(--surface-3)] rounded-full overflow-hidden p-0.5 border border-[var(--border-subtle)]">
+          <div 
+            className="h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all duration-1000 ease-out" 
+            style={{ width: `${kpis.progress}%` }} 
+          />
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
-          <div className="flex items-center justify-between"><h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2"><Zap className="w-3.5 h-3.5" /> Pipeline Snapshot</h3></div>
-          <div className="flex flex-wrap gap-2">
-            {statusDist.length === 0 && <p className="text-xs text-muted-foreground/60 italic">Nenhum item com status ainda.</p>}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-yellow-500" /> Pipeline Snapshot
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            {statusDist.length === 0 && <p className="text-[11px] text-muted-foreground/40 italic">Nenhum item com status ainda.</p>}
             {statusDist.map(opt => {
               const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
               return (
-                <div key={opt.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${colors.bg} border border-current/10`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} /><span className={`text-xs font-semibold ${colors.text}`}>{opt.label}</span>
-                  <span className={`text-[10px] font-mono ${colors.text} opacity-70`}>{opt.count}</span>
+                <div key={opt.id} className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all`}>
+                  <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
+                  <span className={`text-[11px] font-bold text-foreground/80`}>{opt.label}</span>
+                  <span className={`text-[11px] font-black opacity-30`}>{opt.count}</span>
                 </div>
               );
             })}
           </div>
           {statusDist.length > 0 && (
-            <div className="flex h-2 rounded-full overflow-hidden gap-px">
+            <div className="flex h-1.5 rounded-full overflow-hidden gap-0.5">
               {statusDist.map(opt => {
                 const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
                 return <div key={opt.id} title={`${opt.label}: ${opt.count}`} className={`h-full transition-all ${colors.bg}`} style={{ width: `${(opt.count / kpis.total) * 100}%` }} />;
@@ -413,12 +437,15 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
             </div>
           )}
         </div>
-        <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2"><TrendingUp className="w-3.5 h-3.5" /> Saúde do Projeto</h3>
-          <HealthRow label="Atrasos" value={kpis.overdue} type={kpis.overdue > 0 ? 'danger' : 'ok'} />
-          <HealthRow label="Em produção" value={kpis.inProgress} type="info" />
-          <HealthRow label="% concluído" value={`${kpis.progress}%`} type={kpis.progress >= 80 ? 'ok' : kpis.progress >= 40 ? 'warn' : 'info'} />
-          <HealthRow label="Total" value={kpis.total} type="neutral" />
+        <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4">
+          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+            <TrendingUp className="w-3.5 h-3.5 text-blue-500" /> Saúde do Projeto
+          </h3>
+          <div className="space-y-3">
+            <HealthRow label="Entregas Atrasadas" value={kpis.overdue} type={kpis.overdue > 0 ? 'danger' : 'ok'} />
+            <HealthRow label="Fila de Produção" value={kpis.inProgress} type="info" />
+            <HealthRow label="Taxa de Conclusão" value={`${kpis.progress}%`} type={kpis.progress >= 80 ? 'ok' : kpis.progress >= 40 ? 'warn' : 'info'} />
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -471,16 +498,19 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
 
 function KpiCard({ icon, label, value, color }) {
   const p = {
-    default: { bg: 'bg-card/60 border-border/40', text: 'text-foreground', sub: 'text-muted-foreground' },
-    blue:    { bg: 'bg-blue-500/8 border-blue-500/20', text: 'text-blue-400', sub: 'text-blue-400/70' },
-    red:     { bg: 'bg-red-500/8 border-red-500/20', text: 'text-red-400', sub: 'text-red-400/70' },
-    green:   { bg: 'bg-emerald-500/8 border-emerald-500/20', text: 'text-emerald-400', sub: 'text-emerald-400/70' },
-    yellow:  { bg: 'bg-yellow-500/8 border-yellow-500/20', text: 'text-yellow-400', sub: 'text-yellow-400/70' },
-  }[color] || { bg: 'bg-card/60 border-border/40', text: 'text-foreground', sub: 'text-muted-foreground' };
+    default: { bg: 'bg-[var(--surface-1)] border-[var(--border-subtle)]', text: 'text-foreground', iconCls: 'text-muted-foreground/40' },
+    blue:    { bg: 'bg-blue-500/5 border-blue-500/10', text: 'text-blue-400', iconCls: 'text-blue-400/50' },
+    red:     { bg: 'bg-red-500/5 border-red-500/10', text: 'text-red-400', iconCls: 'text-red-400/50' },
+    green:   { bg: 'bg-emerald-500/5 border-emerald-500/10', text: 'text-emerald-400', iconCls: 'text-emerald-400/50' },
+  }[color] || { bg: 'bg-[var(--surface-1)] border-[var(--border-subtle)]', text: 'text-foreground', iconCls: 'text-muted-foreground/40' };
+
   return (
-    <div className={`rounded-xl border p-4 space-y-2 ${p.bg}`}>
-      <div className={`flex items-center gap-2 ${p.sub}`}>{icon}<span className="text-[11px] font-semibold uppercase tracking-wider">{label}</span></div>
-      <div className={`text-3xl font-bold font-mono ${p.text}`}>{value}</div>
+    <div className={`rounded-2xl border p-5 space-y-4 transition-all hover:border-[var(--border-strong)] hover:shadow-lg group ${p.bg}`}>
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em]">{label}</span>
+        <div className={`${p.iconCls} group-hover:scale-110 transition-transform`}>{icon}</div>
+      </div>
+      <div className={`text-4xl font-black tracking-tight ${p.text}`}>{value}</div>
     </div>
   );
 }

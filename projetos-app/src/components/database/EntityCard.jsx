@@ -1,9 +1,5 @@
-import React, { useMemo, memo } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { useNavigate } from 'react-router-dom';
-import { COLOR_MAP } from '../../core/schemas';
-import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink } from 'lucide-react';
+import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 // ============================================
 // ENTITY CARD v2 — Density-aware, rich data
@@ -164,59 +160,78 @@ export const EntityCard = memo(function EntityCard({
   return (
     <div
       onClick={handleClick}
-      className={`bg-card border rounded-xl p-3.5 cursor-pointer transition-all select-none group
+      className={`bg-[var(--surface-2)] border rounded-[var(--radius-lg)] p-3.5 cursor-pointer transition-all select-none group relative
         ${isDragOverlay
           ? 'border-primary/50 shadow-xl rotate-1 scale-105'
-          : 'border-border hover:border-muted-foreground/40 hover:shadow-md'
+          : 'border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)] hover:shadow-lg'
         }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-2.5 min-h-[20px]">
-        {statusColors ? (
-          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium ${statusColors.bg} ${statusColors.text}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${statusColors.dot}`} />
-            {statusOption.label}
-          </span>
-        ) : <span />}
+      <div className="flex items-center justify-between mb-3 min-h-[24px]">
+        <div className="flex items-center gap-1.5">
+          {statusColors ? (
+            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${statusColors.bg} ${statusColors.text}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${statusColors.dot}`} />
+              {statusOption.label}
+            </span>
+          ) : <span />}
+        </div>
+        
         <div className="flex items-center gap-1">
-          {isOverdue && <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" title="Atrasada" />}
-          {isDueSoon && !isOverdue && <AlertTriangle className="w-3.5 h-3.5 text-yellow-400 shrink-0" title="Vence em breve" />}
           {priorityConfig?.icon}
+          
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button 
+                className="p-1 rounded hover:bg-[var(--surface-overlay)] text-muted-foreground opacity-0 group-hover:opacity-100 transition-all focus:outline-none"
+                onClick={e => e.stopPropagation()}
+              >
+                <MoreHorizontal className="w-3.5 h-3.5" />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content align="end" className="z-50 min-w-[140px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-[var(--radius-md)] shadow-xl p-1 animate-in fade-in-0 zoom-in-95">
+                <DropdownMenu.Item className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-md cursor-pointer outline-none">
+                  <Layout className="w-3.5 h-3.5" /> Abrir Detalhe
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-md cursor-pointer outline-none">
+                  <Copy className="w-3.5 h-3.5" /> Duplicar
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className="h-px bg-[var(--border-subtle)] my-1" />
+                <DropdownMenu.Item className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-md cursor-pointer outline-none">
+                  <Trash2 className="w-3.5 h-3.5" /> Excluir
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </div>
       </div>
 
       {/* Title */}
-      <h4 className="font-semibold text-sm text-foreground leading-snug mb-1 line-clamp-2 group-hover:text-primary transition-colors">
-        {item.icon && <span className="mr-1.5">{item.icon}</span>}
+      <h4 className="font-semibold text-[13px] text-foreground leading-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+        {item.icon && <span className="mr-2">{item.icon}</span>}
         {item.title || 'Untitled'}
       </h4>
 
-      {/* Sub-info */}
-      {(cliente || tipoOption) && (
-        <p className="text-xs text-muted-foreground mb-2.5 truncate">{cliente || tipoOption?.label}</p>
-      )}
-
       {/* Footer */}
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
-        {/* Assignee avatar */}
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-subtle)]">
+        <div className="flex items-center gap-2">
           {assignee ? (
-            <>
-              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 shrink-0 text-[9px] text-white flex items-center justify-center font-bold uppercase">
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-primary/20 to-primary/10 border border-primary/20 shrink-0 text-[8px] text-primary flex items-center justify-center font-bold uppercase">
                 {assignee.charAt(0)}
               </div>
-              <span className="text-[11px] text-muted-foreground truncate max-w-[80px]">{assignee}</span>
-            </>
+              <span className="text-[10px] text-muted-foreground/80 font-medium truncate max-w-[70px]">{assignee}</span>
+            </div>
           ) : (
-            <div className="w-5 h-5 rounded-full border border-border/50 border-dashed flex items-center justify-center">
-              <User className="w-3 h-3 text-muted-foreground/40" />
+            <div className="w-5 h-5 rounded-full border border-dashed border-border/50 flex items-center justify-center">
+              <User className="w-2.5 h-2.5 text-muted-foreground/30" />
             </div>
           )}
         </div>
 
-        {/* Deadline */}
         {deadline && (
-          <div className={`flex items-center gap-1 text-[11px] font-mono ${isOverdue ? 'text-red-400' : isDueSoon ? 'text-yellow-400' : 'text-muted-foreground/60'}`}>
+          <div className={`flex items-center gap-1 text-[10px] font-bold ${isOverdue ? 'text-red-400' : isDueSoon ? 'text-yellow-400' : 'text-muted-foreground/40'}`}>
             <Clock className="w-3 h-3" />
             {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
           </div>

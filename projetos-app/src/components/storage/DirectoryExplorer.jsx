@@ -1,5 +1,16 @@
-import React, { useState } from 'react';
-import { Folder, ChevronRight, ChevronDown, Check, Loader2 } from 'lucide-react';
+import { 
+  Folder, ChevronRight, ChevronDown, Check, Loader2,
+  FileText, File, Image as ImageIcon, Video, Music
+} from 'lucide-react';
+
+const getFileIcon = (mimeType) => {
+  if (!mimeType || mimeType === 'application/vnd.google-apps.folder') return Folder;
+  if (mimeType.includes('image/')) return ImageIcon;
+  if (mimeType.includes('video/')) return Video;
+  if (mimeType.includes('audio/')) return Music;
+  if (mimeType.includes('application/pdf')) return FileText;
+  return File;
+};
 
 /**
  * DIRECTORY EXPLORER
@@ -45,6 +56,7 @@ export function DirectoryExplorer({
     const isExpanded = expanded[node.id];
     const hasChildren = node.children && node.children.length > 0;
     const isSelected = selectedId === node.id;
+    const Icon = getFileIcon(node.mimeType);
 
     return (
       <div key={node.id} className="select-none">
@@ -62,7 +74,13 @@ export function DirectoryExplorer({
             {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
           </div>
           
-          <Folder className={`w-4 h-4 shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground/60'}`} />
+          <div className="w-4 h-4 shrink-0 flex items-center justify-center relative">
+            {node.thumbnail ? (
+              <img src={node.thumbnail} alt="" className="w-full h-full object-cover rounded-[2px]" />
+            ) : (
+              <Icon className={`w-4 h-4 ${isSelected ? 'text-primary' : 'text-muted-foreground/60'}`} />
+            )}
+          </div>
           
           <span className="text-xs font-medium truncate flex-1">{node.name}</span>
           

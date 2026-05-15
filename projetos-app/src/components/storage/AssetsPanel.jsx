@@ -39,7 +39,7 @@ const FOLDER_ROLES = [
 // ============================================
 // ASSETS TAB — Storage Connection Panel
 // ============================================
-export function AssetsPanel({ pageId, isProject }) {
+export function AssetsPanel({ pageId, isProject, parentProjectId }) {
   const [connection, setConnection]   = useState(null);
   const [entityFolders, setEntityFolders] = useState([]);
   const [loading, setLoading]         = useState(true);
@@ -52,18 +52,19 @@ export function AssetsPanel({ pageId, isProject }) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      if (isProject) {
-        const conn = await storageService.getConnection(pageId);
+      const targetId = isProject ? pageId : parentProjectId;
+      if (targetId) {
+        const conn = await storageService.getConnection(targetId);
         setConnection(conn);
       }
-      const folders = await storageService.getEntityFolders(pageId);
+      const folders = await storageService.getEntityFolders(pageId, parentProjectId);
       setEntityFolders(folders);
     } catch (e) {
       console.error('AssetsPanel load error:', e);
     } finally {
       setLoading(false);
     }
-  }, [pageId, isProject]);
+  }, [pageId, isProject, parentProjectId]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -120,6 +121,8 @@ export function AssetsPanel({ pageId, isProject }) {
         folderProvId: node.id,
         folderName: node.name,
         role: activeRole,
+        targetType: node.mimeType === 'application/vnd.google-apps.folder' ? 'folder' : 'file',
+        mimeType: node.mimeType
       });
       await load();
     } catch (e) {
@@ -274,32 +277,50 @@ export function AssetsPanel({ pageId, isProject }) {
             return (
               <div
                 key={role.id}
-                onClick={() => !linked && (connection || !isProject) && handleLinkFolder(role.id)}
-                className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all
+                className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all relative group
                   ${linked
                     ? 'border-border/50 bg-card/40'
                     : 'border-dashed border-border/40 hover:border-primary/30 hover:bg-primary/5 cursor-pointer'
                   }`}
+                onClick={() => !linked && (connection) && handleLinkFolder(role.id)}
               >
-                <span className="text-xl shrink-0">{role.icon}</span>
+                <div className="w-10 h-10 rounded-lg bg-secondary/30 flex items-center justify-center shrink-0 overflow-hidden">
+                  {linked?.metadata?.thumbnail ? (
+                    <img src={linked.metadata.thumbnail} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xl">{role.icon}</span>
+                  )}
+                </div>
+                
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{role.label}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">{role.label}</p>
+                    {linked?.inherited && (
+                       <span className="text-[8px] font-bold bg-secondary px-1.5 py-0.5 rounded text-muted-foreground uppercase">Herança</span>
+                    )}
+                  </div>
                   {linked ? (
                     <p className="text-xs text-emerald-400 truncate">{linked.folder_name}</p>
                   ) : (
                     <p className="text-xs text-muted-foreground/60">{role.desc}</p>
                   )}
                 </div>
-                {linked ? (
-                  <div className="flex items-center gap-1">
+
+                <div className="flex items-center gap-1">
+                  {linked && (
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleLinkFolder(role.id); }}
-                      className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground transition-colors"
+                      className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                     </button>
+                  )}
+                  {linked ? (
                     <a
-                      href={`https://drive.google.com/drive/folders/${linked.provider_folder_id}`}
+                      href={linked.target_type === 'file' 
+                        ? `https://drive.google.com/file/d/${linked.provider_folder_id}/view`
+                        : `https://drive.google.com/drive/folders/${linked.provider_folder_id}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
@@ -307,10 +328,10 @@ export function AssetsPanel({ pageId, isProject }) {
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
-                  </div>
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/30 shrink-0" />
-                )}
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/30 shrink-0" />
+                  )}
+                </div>
               </div>
             );
           })}

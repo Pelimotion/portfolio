@@ -33,52 +33,52 @@ export function RichTextEditor({ content, onChange, placeholder = "Pressione '/'
   }
 
   return (
-    <div className="flex flex-col border border-border/50 rounded-lg overflow-hidden bg-secondary/5 transition-colors focus-within:border-border hover:border-border/80">
-      {/* Menu Bar (Tiptap Bubble Menu style but static for simplicity now) */}
-      <div className="flex items-center gap-1 p-1 border-b border-border/50 bg-secondary/30 text-muted-foreground">
+    <div className="flex flex-col border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--surface-1)] transition-all shadow-sm group">
+      {/* Toolbar */}
+      <div className="flex items-center gap-1 px-3 py-2 border-b border-[var(--border-subtle)] bg-[var(--surface-2)] text-muted-foreground/60">
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-1.5 rounded hover:bg-secondary transition-colors ${editor.isActive('heading', { level: 2 }) ? 'bg-secondary text-foreground' : ''}`}
+          className={`p-1.5 rounded-lg hover:bg-[var(--surface-3)] hover:text-foreground transition-all ${editor.isActive('heading', { level: 2 }) ? 'bg-[var(--surface-overlay)] text-foreground shadow-sm' : ''}`}
         >
           <Heading2 className="w-4 h-4" />
         </button>
-        <div className="w-[1px] h-4 bg-border mx-1" />
+        <div className="w-[1px] h-4 bg-[var(--border-subtle)] mx-1" />
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-1.5 rounded hover:bg-secondary transition-colors ${editor.isActive('bold') ? 'bg-secondary text-foreground' : ''}`}
+          className={`p-1.5 rounded-lg hover:bg-[var(--surface-3)] hover:text-foreground transition-all ${editor.isActive('bold') ? 'bg-[var(--surface-overlay)] text-foreground shadow-sm' : ''}`}
         >
           <Bold className="w-4 h-4" />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-1.5 rounded hover:bg-secondary transition-colors ${editor.isActive('italic') ? 'bg-secondary text-foreground' : ''}`}
+          className={`p-1.5 rounded-lg hover:bg-[var(--surface-3)] hover:text-foreground transition-all ${editor.isActive('italic') ? 'bg-[var(--surface-overlay)] text-foreground shadow-sm' : ''}`}
         >
           <Italic className="w-4 h-4" />
         </button>
-        <div className="w-[1px] h-4 bg-border mx-1" />
+        <div className="w-[1px] h-4 bg-[var(--border-subtle)] mx-1" />
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-1.5 rounded hover:bg-secondary transition-colors ${editor.isActive('bulletList') ? 'bg-secondary text-foreground' : ''}`}
+          className={`p-1.5 rounded-lg hover:bg-[var(--surface-3)] hover:text-foreground transition-all ${editor.isActive('bulletList') ? 'bg-[var(--surface-overlay)] text-foreground shadow-sm' : ''}`}
         >
           <List className="w-4 h-4" />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-1.5 rounded hover:bg-secondary transition-colors ${editor.isActive('orderedList') ? 'bg-secondary text-foreground' : ''}`}
+          className={`p-1.5 rounded-lg hover:bg-[var(--surface-3)] hover:text-foreground transition-all ${editor.isActive('orderedList') ? 'bg-[var(--surface-overlay)] text-foreground shadow-sm' : ''}`}
         >
           <ListOrdered className="w-4 h-4" />
         </button>
-        <div className="w-[1px] h-4 bg-border mx-1" />
+        <div className="w-[1px] h-4 bg-[var(--border-subtle)] mx-1" />
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`p-1.5 rounded hover:bg-secondary transition-colors ${editor.isActive('blockquote') ? 'bg-secondary text-foreground' : ''}`}
+          className={`p-1.5 rounded-lg hover:bg-[var(--surface-3)] hover:text-foreground transition-all ${editor.isActive('blockquote') ? 'bg-[var(--surface-overlay)] text-foreground shadow-sm' : ''}`}
         >
           <Quote className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="p-4 cursor-text" onClick={() => editor.chain().focus().run()}>
-        <EditorContent editor={editor} />
+      <div className="p-8 cursor-text min-h-[400px] bg-[var(--surface-1)]" onClick={() => editor.chain().focus().run()}>
+        <EditorContent editor={editor} className="tiptap-content" />
       </div>
     </div>
   );

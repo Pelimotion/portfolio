@@ -362,10 +362,19 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
       className={`${colWidth} shrink-0 rounded-xl transition-all ${isOver ? 'ring-1 ring-primary/30 bg-primary/5' : ''}`}
     >
       {/* Column Header */}
-      <div className="flex items-center gap-2 px-2 py-2 mb-2">
-        <div className={`w-2 h-2 rounded-full ${colorDot}`} />
-        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex-1">{col.label}</span>
-        <span className="text-[10px] text-muted-foreground/60 bg-secondary/60 px-1.5 py-0.5 rounded-full font-mono">{col.items.length}</span>
+      <div className="flex items-center gap-2 px-2 py-2 mb-2 group/header">
+        <div className={`w-2 h-2 rounded-full ${colorDot} shadow-[0_0_8px_rgba(0,0,0,0.2)]`} />
+        <span className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-[0.08em] flex-1">{col.label}</span>
+        <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
+        
+        <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
+          <button className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+          <button className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
+            <MoreHorizontal className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* Cards */}

@@ -54,7 +54,11 @@ export const storageService = {
       name: f.name,
       path: f.path || f.name,
       parent_provider_id: f.parentId || null,
-      metadata: f.metadata || {},
+      metadata: {
+        mimeType: f.mimeType,
+        thumbnail: f.thumbnail,
+        webViewLink: f.webViewLink
+      },
       indexed_at: new Date().toISOString(),
     }));
     const { error } = await supabase
@@ -75,8 +79,8 @@ export const storageService = {
 
   // ── Entity ↔ Folder Relations ──
 
-  async linkEntityFolder({ entityPageId, connectionId, folderProvId, folderName, role }) {
-    // role: 'root' | 'renders' | 'references' | 'assets' | 'exports'
+  async linkEntityFolder({ entityPageId, connectionId, folderProvId, folderName, role, label, targetType, mimeType }) {
+    // role: 'root' | 'renders' | 'references' | 'assets' | 'exports' | custom
     const { data, error } = await supabase
       .from('entity_folder_relations')
       .upsert({
@@ -85,6 +89,9 @@ export const storageService = {
         provider_folder_id: folderProvId,
         folder_name: folderName,
         role,
+        label,
+        target_type: targetType || 'folder',
+        mime_type: mimeType
       }, { onConflict: 'entity_page_id,role' })
       .select()
       .single();
@@ -92,12 +99,26 @@ export const storageService = {
     return data;
   },
 
-  async getEntityFolders(entityPageId) {
-    const { data, error } = await supabase
+  async getEntityFolders(entityPageId, parentProjectId = null) {
+    // Busca links próprios
+    let { data, error } = await supabase
       .from('entity_folder_relations')
       .select('*')
       .eq('entity_page_id', entityPageId);
+    
     if (error) throw error;
+
+    // Se estivermos em uma cena e não tiver links, busca do projeto pai (Herança)
+    if ((!data || data.length === 0) && parentProjectId) {
+      const { data: parentData, error: parentError } = await supabase
+        .from('entity_folder_relations')
+        .select('*')
+        .eq('entity_page_id', parentProjectId);
+      
+      if (parentError) throw parentError;
+      return (parentData || []).map(link => ({ ...link, inherited: true }));
+    }
+
     return data || [];
   },
 };
