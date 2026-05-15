@@ -57,8 +57,8 @@ export function FolderPickerModal({
           className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col h-[600px]"
           aria-describedby="folder-picker-description"
         >
-          <Dialog.Title className="sr-only">{title}</Dialog.Title>
-          <Dialog.Description id="folder-picker-description" className="sr-only">
+          <Dialog.Title className="text-base font-semibold text-foreground px-6 pt-6 sr-only">{title}</Dialog.Title>
+          <Dialog.Description id="folder-picker-description" className="text-xs text-muted-foreground px-6 pt-1 sr-only">
             Escolha uma pasta da estrutura do Google Drive para vincular.
           </Dialog.Description>
 

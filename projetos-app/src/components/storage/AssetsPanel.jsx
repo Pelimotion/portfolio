@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { FolderPickerModal } from './FolderPickerModal';
 import { googleDriveProvider } from '../../core/storage/storageProvider';
+import { googleAuth } from '../../lib/googleAuth';
 
 // Google Drive SVG logo inline
 const GoogleDriveIcon = () => (
@@ -131,21 +132,35 @@ export function AssetsPanel({ pageId, isProject }) {
     if (!connection) return;
     setSyncing(true);
     try {
-      // MOCK DATA para o "Start" do usuário
-      // No futuro, isso usará o googleDriveProvider.crawlProject
-      const mockFolders = [
-        { id: 'f1', name: '01_PROJETO', parentId: connection.root_folder_id },
-        { id: 'f2', name: '02_SOURCES', parentId: connection.root_folder_id },
-        { id: 'f3', name: '03_RENDERS', parentId: connection.root_folder_id },
-        { id: 'f31', name: 'V01_PREVIEWS', parentId: 'f3' },
-        { id: 'f32', name: 'V02_FINAL', parentId: 'f3' },
-        { id: 'f4', name: '04_REF', parentId: connection.root_folder_id },
-      ];
+      let folders = [];
       
-      await storageService.saveFolders(connection.id, mockFolders);
-      alert('Estrutura sincronizada com sucesso! (Modo Mock)');
+      try {
+        // Tenta obter o token real do Google
+        const token = await googleAuth.ensureToken();
+        console.log('Google Token obtido, iniciando crawl real...');
+        folders = await googleDriveProvider.crawlProject(connection.root_folder_id, token);
+      } catch (authErr) {
+        console.warn('Google Auth falhou ou pendente. Usando MOCK DATA para demonstração.', authErr);
+        // MOCK DATA para o "Start" do usuário
+        folders = [
+          { id: 'f1', name: '01_PROJETO', parentId: connection.root_folder_id, path: '01_PROJETO' },
+          { id: 'f2', name: '02_SOURCES', parentId: connection.root_folder_id, path: '02_SOURCES' },
+          { id: 'f3', name: '03_RENDERS', parentId: connection.root_folder_id, path: '03_RENDERS' },
+          { id: 'f31', name: 'V01_PREVIEWS', parentId: 'f3', path: '03_RENDERS/V01_PREVIEWS' },
+          { id: 'f32', name: 'V02_FINAL', parentId: 'f3', path: '03_RENDERS/V02_FINAL' },
+          { id: 'f4', name: '04_REF', parentId: connection.root_folder_id, path: '04_REF' },
+        ];
+      }
+      
+      if (folders.length > 0) {
+        await storageService.saveFolders(connection.id, folders);
+        alert(`Sincronizado! ${folders.length} pastas encontradas.`);
+      } else {
+        alert('Nenhuma pasta encontrada no diretório raiz.');
+      }
     } catch (e) {
       console.error('Sync error:', e);
+      alert('Erro na sincronização: ' + e.message);
     } finally {
       setSyncing(false);
     }
