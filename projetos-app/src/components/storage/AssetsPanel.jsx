@@ -3,7 +3,10 @@ import { storageService } from '../../services/storageService';
 import {
   FolderOpen, Link2, CheckCircle2, Plus, ExternalLink,
   HardDrive, RefreshCw, Unlink, ChevronRight, Folder,
+  Database, Zap
 } from 'lucide-react';
+import { FolderPickerModal } from './FolderPickerModal';
+import { googleDriveProvider } from '../../core/storage/storageProvider';
 
 // Google Drive SVG logo inline
 const GoogleDriveIcon = () => (
@@ -41,6 +44,9 @@ export function AssetsPanel({ pageId, isProject }) {
   const [loading, setLoading]         = useState(true);
   const [connecting, setConnecting]   = useState(false);
   const [showProviders, setShowProviders] = useState(false);
+  const [pickerOpen, setPickerOpen]   = useState(false);
+  const [activeRole, setActiveRole]   = useState(null);
+  const [syncing, setSyncing]         = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -99,24 +105,49 @@ export function AssetsPanel({ pageId, isProject }) {
     } catch (e) { console.error(e); }
   };
 
-  const handleLinkFolder = async (roleId) => {
-    const url = window.prompt(
-      `📁 Cole o link da pasta "${FOLDER_ROLES.find(r => r.id === roleId)?.label}" no Google Drive:`
-    );
-    if (!url || !connection) return;
-    const match     = url.match(/folders\/([a-zA-Z0-9_-]+)/);
-    const folderId  = match?.[1] || 'manual_' + Date.now();
-    const folderName = url.split('/').pop() || roleId;
+  const handleLinkFolder = (roleId) => {
+    setActiveRole(roleId);
+    setPickerOpen(true);
+  };
+
+  const onFolderSelect = async (node) => {
+    if (!connection) return;
     try {
       await storageService.linkEntityFolder({
         entityPageId: pageId,
         connectionId: connection.id,
-        folderProvId: folderId,
-        folderName,
-        role: roleId,
+        folderProvId: node.id,
+        folderName: node.name,
+        role: activeRole,
       });
       await load();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('onFolderSelect error:', e);
+    }
+  };
+
+  const handleSyncStructure = async () => {
+    if (!connection) return;
+    setSyncing(true);
+    try {
+      // MOCK DATA para o "Start" do usuário
+      // No futuro, isso usará o googleDriveProvider.crawlProject
+      const mockFolders = [
+        { id: 'f1', name: '01_PROJETO', parentId: connection.root_folder_id },
+        { id: 'f2', name: '02_SOURCES', parentId: connection.root_folder_id },
+        { id: 'f3', name: '03_RENDERS', parentId: connection.root_folder_id },
+        { id: 'f31', name: 'V01_PREVIEWS', parentId: 'f3' },
+        { id: 'f32', name: 'V02_FINAL', parentId: 'f3' },
+        { id: 'f4', name: '04_REF', parentId: connection.root_folder_id },
+      ];
+      
+      await storageService.saveFolders(connection.id, mockFolders);
+      alert('Estrutura sincronizada com sucesso! (Modo Mock)');
+    } catch (e) {
+      console.error('Sync error:', e);
+    } finally {
+      setSyncing(false);
+    }
   };
 
   if (loading) return (
@@ -212,9 +243,22 @@ export function AssetsPanel({ pageId, isProject }) {
 
       {/* ── Folder Roles Grid ── */}
       <div className="space-y-3">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <FolderOpen className="w-3.5 h-3.5" /> Pastas Vinculadas
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+            <FolderOpen className="w-3.5 h-3.5" /> Pastas Vinculadas
+          </h3>
+          {connection && (
+            <button 
+              onClick={handleSyncStructure}
+              disabled={syncing}
+              className="text-[10px] font-bold text-primary hover:text-primary/80 flex items-center gap-1 uppercase tracking-widest transition-colors"
+            >
+              <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Sincronizando...' : 'Sincronizar Estrutura'}
+            </button>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {FOLDER_ROLES.map(role => {
             const linked = entityFolders.find(f => f.role === role.id);
@@ -238,15 +282,23 @@ export function AssetsPanel({ pageId, isProject }) {
                   )}
                 </div>
                 {linked ? (
-                  <a
-                    href={`https://drive.google.com/drive/folders/${linked.provider_folder_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={e => e.stopPropagation()}
-                    className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground transition-colors shrink-0"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleLinkFolder(role.id); }}
+                      className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground transition-colors"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
+                    <a
+                      href={`https://drive.google.com/drive/folders/${linked.provider_folder_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground transition-colors shrink-0"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
                 ) : (
                   <ChevronRight className="w-4 h-4 text-muted-foreground/30 shrink-0" />
                 )}
@@ -255,12 +307,25 @@ export function AssetsPanel({ pageId, isProject }) {
           })}
         </div>
         {!connection && isProject && (
-          <p className="text-xs text-muted-foreground/50 text-center">
-            Conecte um storage acima para habilitar pasta inteligente.
-          </p>
+          <div className="p-8 border-2 border-dashed border-border/30 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
+             <div className="w-10 h-10 rounded-full bg-secondary/50 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-muted-foreground/40" />
+             </div>
+             <div className="space-y-1">
+               <p className="text-xs font-semibold text-foreground">Automação de Assets</p>
+               <p className="text-[10px] text-muted-foreground max-w-[200px]">Conecte seu Google Drive para que o sistema possa mapear a árvore de pastas automaticamente.</p>
+             </div>
+          </div>
         )}
       </div>
 
+      <FolderPickerModal 
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        connection={connection}
+        onSelect={onFolderSelect}
+        title={`Vincular Pasta: ${FOLDER_ROLES.find(r => r.id === activeRole)?.label}`}
+      />
     </div>
   );
 }

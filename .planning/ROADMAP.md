@@ -29,4 +29,27 @@
 - [ ] **Plan 4.3:** Create project documentation (README.md).
 
 ---
-*Roadmap established: 2026-05-09*
+## Milestone: v2.0 — Google Drive Integration & Automation
+
+**Goal:** Implement automated asset management and cloud storage integration.
+
+### Phase 5: GDrive Infrastructure
+**Goal:** Setup secure API communication and directory caching.
+- [ ] **Plan 5.1:** Configure Google OAuth 2.0 flow for project-level access.
+- [ ] **Plan 5.2:** Implement `storageProvider.js` with directory crawling logic.
+- [ ] **Plan 5.3:** Create `storage_folders` sync mechanism in Supabase.
+
+### Phase 6: Automated Explorer UI
+**Goal:** Replace manual link pasting with a visual file explorer.
+- [ ] **Plan 6.1:** Build `DirectoryExplorer` component with tree navigation.
+- [ ] **Plan 6.2:** Integrate explorer into `AssetsPanel` for role-based linking.
+- [ ] **Plan 6.3:** Implement "Breadcrumb" and "Search" for fast folder locating.
+
+### Phase 7: Intelligent Linking
+**Goal:** Automate the association between scenes and folders.
+- [ ] **Plan 7.1:** Implement fuzzy-match logic for scene name -> folder name.
+- [ ] **Plan 7.2:** Create "Bulk Link" tool for importing entire project structures.
+- [ ] **Plan 7.3:** Validate link integrity and broken path detection.
+
+---
+*Roadmap updated: 2026-05-14*

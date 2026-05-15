@@ -1,24 +1,33 @@
-# Requirements: Pelimotion Portfolio Refactor
+# Requirements: Google Drive Integration & Automation
 
-## 1. Structural Organization
-- [ ] **[REQ-01] Script Centralization:** All Python scripts (`*.py`) and Shell scripts (`*.sh`) currently in the root must be moved to a `/scripts` directory.
-- [ ] **[REQ-02] Path Updating:** All references to moved scripts (in `package.json`, `vercel.json`, or other scripts) must be updated to use the new paths.
-- [ ] **[REQ-03] Version Cleanup:** Analyze and merge `V1/` and `v2/` into a single, clean production structure. Remove redundant legacy files.
-- [ ] **[REQ-04] Dependency Management:** Create a `requirements.txt` for the Python automation layer.
+## 1. Overview
+The goal is to automate the asset management workflow by integrating Google Drive directly into the Pelimotion OS. Users should be able to browse their project's cloud directory structure and link specific folders to scenes without manual URL pasting.
 
-## 2. Security & Privacy
-- [ ] **[REQ-05] Secret Management:** Move the Bunny.net `API_KEY` from `sync_bunny.py` and other scripts to environment variables.
-- [ ] **[REQ-06] Local Security:** Ensure the `.env` file and other sensitive configurations are added to `.gitignore`.
-- [ ] **[REQ-07] Privacy Gates:** Verify that the `private/` folder in `Curriculum` is correctly protected via `vercel.json` or other access control methods.
-- [ ] **[REQ-08] Admin Hardening:** Review and propose improvements for the admin panel's authentication to ensure it cannot be bypassed client-side.
+## 2. User Stories
+- **As a Producer**, I want to connect my Google Drive project folder once so the system knows where to look for assets.
+- **As a Creative**, I want to see a list of subfolders (renders, project files) and select them from a tree view.
+- **As a Motion Designer**, I want the system to automatically suggest linking a folder to a scene if the names match.
 
-## 3. Optimization
-- [ ] **[REQ-09] Media Delivery:** Audit the media playback system to ensure it utilizes Bunny.net's optimized CDN paths and doesn't cause browser bottlenecks.
-- [ ] **[REQ-10] Payload Reduction:** Optimize the size of `site-content.json` or implement a strategy to avoid loading the entire dataset on initial mount.
-- [ ] **[REQ-11] Code Cleanup:** Remove unused "patch" files once their logic is consolidated or no longer needed.
+## 3. Technical Requirements
 
-## 4. Documentation
-- [ ] **[REQ-12] Developer Guide:** Create a `README.md` that explains the new organized structure and how to run the synchronization/deploy workflows.
+### 3.1 Infrastructure
+- **Provider API:** Integration with Google Drive API v3.
+- **Auth Flow:** OAuth 2.0 (User-level or Service Account depending on privacy needs).
+- **Indexing:** A mechanism to crawl and cache the folder structure starting from the `root_folder_id`.
+- **Database:** Support for `storage_folders` table to store the indexed tree.
 
----
-*Requirements frozen: 2026-05-09*
+### 3.2 UI/UX
+- **Directory Explorer:** A React component that renders a hierarchical view of folders.
+- **Breadcrumbs:** Navigation aid for deep folder structures.
+- **Loading States:** Clear feedback while fetching data from the Drive API.
+- **Error Handling:** Robust handling of revoked permissions or missing folders.
+
+### 3.3 Automation
+- **Fuzzy Matching:** Logic to correlate scene titles (e.g., "Scene 01") with folder names (e.g., "01_renders").
+- **Real-time Sync:** Option to refresh the directory cache on demand.
+
+## 4. Success Criteria
+- [ ] Successful OAuth connection to Google Drive.
+- [ ] Folder tree renders correctly in the `AssetsPanel`.
+- [ ] Linking a folder to a scene can be done via selection, not typing.
+- [ ] No hardcoded URLs required for scene-to-folder mapping.

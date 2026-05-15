@@ -23,8 +23,8 @@ Professionalism through organization and security. The goal is to transform the 
 - [ ] **Structural Consolidation** — Move all utility/patch scripts to a `/scripts` or `/tools` directory.
 - [ ] **Version Unification** — Standardize the project structure (resolving `V1/` and `v2/` fragmentation).
 - [ ] **Security Hardening** — Remove hardcoded secrets and implement Environment Variables for Bunny.net keys.
-- [ ] **Privacy Guarding** — Ensure sensitive paths and data are protected (specifically `/curriculum/private` and internal JSON structures).
-- [ ] **Optimization** — Improve asset loading and script execution efficiency.
+- [ ] **Google Drive Automation** — Implementation of automated project directory listing and scene linking.
+- [ ] **Asset Management** — Centralized panel for managing project files and render versions.
 
 ### Out of Scope
 - [ ] Full Rewrite in Framework (React/Next.js) — The user explicitly wants to maintain the current stack/philosophy.
