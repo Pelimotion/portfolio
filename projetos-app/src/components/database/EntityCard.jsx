@@ -2,9 +2,10 @@ import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout } from 'lucide-react';
+import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout, Star } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { COLOR_MAP } from '../../core/colors';
+import { useAuth } from '../../contexts/AuthContext';
 
 // ============================================
 // ENTITY CARD v2 — Density-aware, rich data
@@ -28,6 +29,7 @@ export const EntityCard = memo(function EntityCard({
   density = 'comfortable',
 }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -70,6 +72,16 @@ export const EntityCard = memo(function EntityCard({
   const isOverdue = deadline && new Date(deadline) < today;
   const daysLeft  = deadline ? Math.ceil((new Date(deadline) - today) / (1000 * 60 * 60 * 24)) : null;
   const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
+
+  // — Is this card assigned to the logged-in user?
+  const userEmail = user?.email || '';
+  const userName  = userEmail.split('@')[0];
+  const isOwn = assignee && (
+    assignee.toLowerCase() === userName.toLowerCase() ||
+    assignee.toLowerCase() === userEmail.toLowerCase() ||
+    userName.toLowerCase().includes(assignee.toLowerCase()) ||
+    assignee.toLowerCase().includes(userName.toLowerCase())
+  );
 
   // ── COMPACT MODE — minimal, dense ──
   if (density === 'compact') {
@@ -243,10 +255,16 @@ export const EntityCard = memo(function EntityCard({
         <div className="flex items-center gap-2">
           {assignee ? (
             <div className="flex items-center gap-1.5">
-              <div className="w-4 h-4 rounded bg-primary/10 border border-primary/20 shrink-0 text-[8px] text-primary flex items-center justify-center font-bold uppercase">
+              <div className={`w-4 h-4 rounded shrink-0 text-[8px] flex items-center justify-center font-bold uppercase transition-all ${
+                isOwn
+                  ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-1 ring-offset-[var(--surface-2)]'
+                  : 'bg-primary/10 border border-primary/20 text-primary'
+              }`}>
                 {assignee.charAt(0)}
               </div>
-              <span className="text-[10px] text-muted-foreground/70 font-medium truncate max-w-[80px]">{assignee}</span>
+              <span className={`text-[10px] font-medium truncate max-w-[80px] ${isOwn ? 'text-primary font-bold' : 'text-muted-foreground/70'}`}>
+                {isOwn ? 'Você' : assignee}
+              </span>
             </div>
           ) : (
             <div className="flex items-center gap-1 text-muted-foreground/30">
@@ -254,6 +272,7 @@ export const EntityCard = memo(function EntityCard({
               <span className="text-[10px]">—</span>
             </div>
           )}
+
         </div>
 
         {deadline && (

@@ -98,9 +98,10 @@ export async function seedDefaultDriveSlots(projectId) {
   if (data && data.length > 0) return;
 
   const defaultSlots = [
-    { slot_key: 'projeto', display_name: 'Projeto', slot_type: 'file', sort_order: 0 },
-    { slot_key: 'render',  display_name: 'Render',  slot_type: 'folder', sort_order: 1 },
-    { slot_key: 'still',   display_name: 'Still',   slot_type: 'folder', sort_order: 2 },
+    { slot_key: 'projeto', display_name: 'Projeto',    slot_type: 'file',   sort_order: 0 },
+    { slot_key: 'render',  display_name: 'Render',     slot_type: 'folder', sort_order: 1 },
+    { slot_key: 'still',   display_name: 'Still',      slot_type: 'folder', sort_order: 2 },
+    { slot_key: 'docs',    display_name: 'Docs',       slot_type: 'folder', sort_order: 3 },
   ];
   
   await supabase

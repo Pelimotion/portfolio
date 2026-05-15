@@ -5,6 +5,7 @@ import { useTeamStore } from '../../stores/useTeamStore';
 import { propertyService } from '../../services/propertyService';
 import { pageService } from '../../services/pageService';
 import { bootstrapProjectPipeline } from '../../core/databaseFactory';
+import { useDriveSlots } from '../../hooks/useDriveSlots';
 import { RichTextEditor } from '../../components/ui/RichTextEditor';
 import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { PropertyRenderer } from '../../components/properties/PropertyRenderer';
@@ -287,13 +288,14 @@ export function UniversalEntityPage() {
               pageId={pageId}
               pageContent={page.content || ''}
               onContentChange={handleContentChange}
+              onGoToAssets={() => setActiveTab('assets')}
             />
           )}
           {activeTab === 'pipeline' && childDatabase && (
-            <DatabaseRenderer databaseId={childDatabase.id} defaultView="kanban" />
+            <DatabaseRenderer key="pipeline" databaseId={childDatabase.id} defaultView="kanban" />
           )}
           {activeTab === 'calendar' && childDatabase && (
-            <DatabaseRenderer databaseId={childDatabase.id} defaultView="calendar" />
+            <DatabaseRenderer key="calendar" databaseId={childDatabase.id} defaultView="calendar" />
           )}
           {activeTab === 'assets' && (
             <AssetsPanel 
@@ -319,7 +321,7 @@ export function UniversalEntityPage() {
 
 
 
-function ProductionDashboard({ items, properties, allValues, projectTitle, pageId, pageContent, onContentChange }) {
+function ProductionDashboard({ items, properties, allValues, projectTitle, pageId, pageContent, onContentChange, onGoToAssets }) {
   const statusProp    = properties.find(p => p.property_type === 'status' || p.name === 'Status');
   const deadlineProp  = properties.find(p => p.property_type === 'date' || p.name === 'Data de Entrega' || p.name === 'Deadline');
   const assigneeProp  = properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
@@ -525,6 +527,9 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
         </div>
       </div>
 
+      {/* Documentos do Projeto */}
+      <DocsSectionDashboard projectId={pageId} onGoToAssets={onGoToAssets} />
+
       {/* Notes integradas */}
       <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
         <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
@@ -542,6 +547,85 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
   );
 }
 
+
+// ── Seção de Documentos do Projeto no Dashboard ──
+function DocsSectionDashboard({ projectId, onGoToAssets }) {
+  const { slots, loading } = useDriveSlots({ projectId, pageId: projectId, isScene: false });
+  const [pinned, setPinned] = useState([]);
+
+  // Slots que têm link configurado
+  const linkedSlots = useMemo(() => slots.filter(s => s.link?.drive_url), [slots]);
+  const docSlots    = useMemo(() => slots.filter(s => s.slot_key?.includes('doc') || s.display_name?.toLowerCase().includes('doc')), [slots]);
+
+  useEffect(() => {
+    // Inicializa pinned com os slots de docs que têm link, mais qualquer outro
+    const initialPinned = linkedSlots.map(s => s.id);
+    setPinned(initialPinned);
+  }, [linkedSlots.length]);
+
+  const visibleSlots = useMemo(() =>
+    linkedSlots.filter(s => pinned.length === 0 || pinned.includes(s.id)),
+    [linkedSlots, pinned]
+  );
+
+  if (loading) return null;
+
+  return (
+    <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+          <FileText className="w-3.5 h-3.5"/> Documentos do Projeto
+        </h3>
+        {linkedSlots.length > 0 && (
+          <span className="text-[10px] text-muted-foreground/40">{linkedSlots.length} arquivo{linkedSlots.length !== 1 ? 's' : ''} vinculado{linkedSlots.length !== 1 ? 's' : ''}</span>
+        )}
+      </div>
+
+      {linkedSlots.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-6 text-center">
+          <div className="w-10 h-10 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] flex items-center justify-center">
+            <FolderOpen className="w-5 h-5 text-muted-foreground/30"/>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground font-medium">Nenhum documento vinculado ainda</p>
+            <p className="text-[11px] text-muted-foreground/50 mt-0.5">Vincule pastas e arquivos na aba Assets para vê-los aqui</p>
+          </div>
+          <button
+            onClick={onGoToAssets}
+            className="text-xs font-medium text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+          >
+            Ir para Assets →
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {linkedSlots.map(slot => {
+            const url  = slot.link.drive_url;
+            const name = slot.link.drive_name || slot.display_name;
+            const isFolder = url.includes('/folders/');
+            return (
+              <a
+                key={slot.id}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] hover:border-primary/30 hover:bg-primary/5 transition-all group"
+              >
+                <div className="shrink-0 text-muted-foreground/50 group-hover:text-primary transition-colors">
+                  {isFolder ? <FolderOpen className="w-4 h-4"/> : <FileText className="w-4 h-4"/>}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold text-foreground truncate group-hover:text-primary transition-colors">{slot.display_name}</p>
+                  <p className="text-[10px] text-muted-foreground/50 truncate">{name}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function KpiCard({ icon, label, value, color }) {
   const p = {

@@ -80,14 +80,14 @@ export function useDriveSlots({ projectId, pageId, isScene = false }) {
     await fetchSlots();
   }
 
-  // Adiciona novo slot ao projeto
+  // Adiciona novo slot ao projeto (funciona tanto da view do projeto quanto da cena)
   async function addSlot(displayName, slotType) {
     const maxOrder = slots.length > 0 ? Math.max(...slots.map(s => s.sort_order)) : -1;
     await supabase
       .from('project_drive_slots')
       .insert({
         project_id: projectId,
-        slot_key: displayName.toLowerCase().replace(/\\s+/g, '_') + '_' + Date.now(),
+        slot_key: displayName.toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + Date.now(),
         display_name: displayName,
         slot_type: slotType,
         sort_order: maxOrder + 1,

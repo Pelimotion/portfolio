@@ -256,12 +256,13 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
                   }
                   setLinkingSlot(slot);
                 }}
-                onRemoveSlot={removeSlot}
+                onRemoveSlot={!isScene ? removeSlot : undefined}
                 onRemoveLink={isScene ? () => removeLink(slot.id) : undefined}
               />
             ))}
             
-            {!isScene && <AddDriveSlotButton onAdd={addSlot} />}
+            {/* AddDriveSlotButton disponível tanto para projetos quanto cenas */}
+            <AddDriveSlotButton onAdd={addSlot} />
           </div>
         )}
       </section>
