@@ -11,8 +11,13 @@ import { supabase } from '../../lib/supabase';
 // ============================================
 
 export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
-  const { projectMembers, loading, fetchProjectMembers, addProjectMember, removeProjectMember } = useTeamStore();
+  const { projectMembers, members: allMembers, loading, fetchMembers, fetchProjectMembers, addProjectMember, removeProjectMember } = useTeamStore();
   const { addToast } = useToast();
+
+  useEffect(() => {
+    // Carregar membros globais para sugestões
+    fetchMembers();
+  }, [fetchMembers]);
 
   useEffect(() => {
     async function load() {
@@ -109,29 +114,64 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
                 <p className="text-xs font-medium">Nenhum membro além de você.</p>
               </div>
             ) : (
-              (projectMembers || []).map(member => (
-                <div key={member.id} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/20 border border-border/40 group hover:border-border transition-all">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-purple-600 text-[11px] text-white flex items-center justify-center font-bold shadow-sm">
-                    {member.full_name ? member.full_name.charAt(0).toUpperCase() : member.email?.charAt(0).toUpperCase() || '?'}
-                  </div>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-foreground truncate">{member.full_name || member.email?.split('@')[0] || 'Usuário'}</span>
-                      {member.role === 'admin' && <Shield className="w-3 h-3 text-primary" />}
+              <div className="space-y-6 pb-4">
+                <div className="space-y-2">
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Membros do Projeto</div>
+                  {(projectMembers || []).map(member => (
+                    <div key={member.id} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/20 border border-border/40 group hover:border-border transition-all">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-purple-600 text-[11px] text-white flex items-center justify-center font-bold shadow-sm">
+                        {member.full_name ? member.full_name.charAt(0).toUpperCase() : member.email?.charAt(0).toUpperCase() || '?'}
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-foreground truncate">{member.full_name || member.email?.split('@')[0] || 'Usuário'}</span>
+                          {member.role === 'admin' && <Shield className="w-3 h-3 text-primary" />}
+                        </div>
+                        <span className="text-[10px] text-muted-foreground truncate">{member.email}</span>
+                      </div>
+                      
+                      {member.role !== 'admin' && (
+                        <button 
+                          onClick={() => handleRemoveMember(member.id)}
+                          className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
-                    <span className="text-[10px] text-muted-foreground truncate">{member.email}</span>
-                  </div>
-                  
-                  {member.role !== 'admin' && (
-                    <button 
-                      onClick={() => handleRemoveMember(member.id)}
-                      className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+                  ))}
                 </div>
-              ))
+
+                {/* Sugestões de Membros (que não estão no projeto) */}
+                {(allMembers || []).filter(m => !(projectMembers || []).some(pm => pm.id === m.id)).length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Pessoas na Plataforma</div>
+                    <div className="grid grid-cols-1 gap-1">
+                      {(allMembers || [])
+                        .filter(m => !(projectMembers || []).some(pm => pm.id === m.id))
+                        .slice(0, 5)
+                        .map(m => (
+                        <button
+                          key={m.id}
+                          onClick={() => handleAddMember(m)}
+                          className="flex items-center gap-3 p-2 rounded-xl hover:bg-secondary/40 transition-colors text-left group"
+                        >
+                          <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-[10px] text-muted-foreground font-bold">
+                            {m.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-foreground truncate">{m.name}</div>
+                            <div className="text-[9px] text-muted-foreground truncate">{m.email}</div>
+                          </div>
+                          <div className="px-2 py-1 rounded-md bg-primary/10 text-primary text-[9px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                            ADICIONAR
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
