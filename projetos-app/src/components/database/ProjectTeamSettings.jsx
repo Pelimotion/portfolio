@@ -17,10 +17,12 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
   useEffect(() => {
     async function load() {
       if (open && projectId) {
-        const members = await fetchProjectMembers(projectId);
+        await fetchProjectMembers(projectId);
         
-        // AUTO-REPAIR: Se não houver membros, adiciona o usuário atual como admin
-        if (members.length === 0) {
+        // AUTO-REPAIR: Usamos o estado direto do store que já foi atualizado
+        const currentMembers = useTeamStore.getState().projectMembers || [];
+        
+        if (currentMembers.length === 0) {
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
             await addProjectMember(projectId, user.id, 'admin');
@@ -78,31 +80,31 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
           <div className="p-4 bg-secondary/10 border-b border-border/40">
             <TeamSearchInput 
               onSelect={handleAddMember} 
-              excludeIds={projectMembers.map(m => m.id)}
+              excludeIds={(projectMembers || []).map(m => m.id)}
               placeholder="Convidar por e-mail..."
             />
           </div>
 
           {/* Members List */}
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {loading && projectMembers.length === 0 ? (
+            {(loading && (projectMembers || []).length === 0) ? (
               <div className="h-full flex items-center justify-center">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/40" />
               </div>
-            ) : projectMembers.length === 0 ? (
+            ) : (projectMembers || []).length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                 <Users className="w-10 h-10 mb-3" />
                 <p className="text-xs font-medium">Nenhum membro além de você.</p>
               </div>
             ) : (
-              projectMembers.map(member => (
+              (projectMembers || []).map(member => (
                 <div key={member.id} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/20 border border-border/40 group hover:border-border transition-all">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-purple-600 text-[11px] text-white flex items-center justify-center font-bold shadow-sm">
-                    {member.full_name ? member.full_name.charAt(0).toUpperCase() : member.email.charAt(0).toUpperCase()}
+                    {member.full_name ? member.full_name.charAt(0).toUpperCase() : member.email?.charAt(0).toUpperCase() || '?'}
                   </div>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-foreground truncate">{member.full_name || member.email.split('@')[0]}</span>
+                      <span className="text-sm font-semibold text-foreground truncate">{member.full_name || member.email?.split('@')[0] || 'Usuário'}</span>
                       {member.role === 'admin' && <Shield className="w-3 h-3 text-primary" />}
                     </div>
                     <span className="text-[10px] text-muted-foreground truncate">{member.email}</span>

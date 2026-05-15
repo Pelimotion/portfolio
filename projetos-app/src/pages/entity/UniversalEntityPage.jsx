@@ -91,11 +91,11 @@ export function UniversalEntityPage() {
               combined[item.id] = {};
               itemValMaps[i].forEach(v => { combined[item.id][v.property_id] = v.value; });
             });
-            if (isMounted) {
-              setAllItems(items);
-              setAllItemValues(combined);
-              setProperties(prev => prev.length ? prev : itemProps);
-            }
+              if (isMounted) {
+                setAllItems(items || []);
+                setAllItemValues(combined || {});
+                setProperties(prev => (prev || []).length ? prev : (itemProps || []));
+              }
           }
         } else {
           if (isMounted) setActiveTab('notes');

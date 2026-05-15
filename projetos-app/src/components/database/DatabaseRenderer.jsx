@@ -58,7 +58,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
       setProperties(props);
       setLocalItems(items);
 
-      let activeViews = dbViews;
+      let activeViews = dbViews || [];
       if (activeViews.length === 0) {
         const def = await viewService.create({ databaseId, name: 'Board', viewType: 'kanban' });
         activeViews = [def];
@@ -66,14 +66,14 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
       setViews(activeViews);
 
       const preferred = activeViews.find(v => v.id === activeViewId) || activeViews.find(v => v.view_type === defaultView) || activeViews[0];
-      setActiveViewId(preferred.id);
+      setActiveViewId(preferred?.id);
 
       // Batch fetch valores em paralelo
-      const valMaps = await Promise.all(items.map(item => propertyService.fetchValues(item.id)));
+      const valMaps = await Promise.all((items || []).map(item => propertyService.fetchValues(item.id)));
       const combined = {};
-      items.forEach((item, i) => {
+      (items || []).forEach((item, i) => {
         combined[item.id] = {};
-        valMaps[i].forEach(v => { combined[item.id][v.property_id] = v.value; });
+        (valMaps[i] || []).forEach(v => { combined[item.id][v.property_id] = v.value; });
       });
       setAllValues(combined);
     } catch (e) {
@@ -247,9 +247,9 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     const opts = groupProp.config?.options || [];
     const cols = opts.map(opt => ({
       ...opt,
-      items: items.filter(item => localAllValues[item.id]?.[groupProp.id]?.selected === opt.id),
+      items: (items || []).filter(item => (localAllValues || {})[item.id]?.[groupProp.id]?.selected === opt.id),
     }));
-    const unassigned = items.filter(item => !localAllValues[item.id]?.[groupProp.id]?.selected);
+    const unassigned = (items || []).filter(item => !(localAllValues || {})[item.id]?.[groupProp.id]?.selected);
     if (unassigned.length) cols.unshift({ id: '__none', label: 'Sem Status', color: 'gray', items: unassigned });
     return cols;
   }, [items, groupProp, localAllValues]);
@@ -403,12 +403,12 @@ function TableView({ items, properties, allValues, onValueChange, onDelete }) {
         <div />
       </div>
       <div className="divide-y divide-border/40">
-        {items.length === 0 && (
+        {(items || []).length === 0 && (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground/60">
             Nenhuma cena ainda. Clique em "Nova Cena" para criar.
           </div>
         )}
-        {items.map(item => (
+        {(items || []).map(item => (
           <div key={item.id}
             className="grid gap-3 px-4 py-2.5 items-center hover:bg-secondary/10 transition-colors cursor-pointer group"
             style={{ gridTemplateColumns: `minmax(200px,2fr) ${visible.map(() => 'minmax(100px,1fr)').join(' ')} 32px` }}>
@@ -418,7 +418,7 @@ function TableView({ items, properties, allValues, onValueChange, onDelete }) {
             </div>
             {visible.map(prop => (
               <div key={prop.id} onClick={e => e.stopPropagation()}>
-                <PropertyRenderer property={prop} value={allValues[item.id]?.[prop.id]}
+                <PropertyRenderer property={prop} value={(allValues || {})[item.id]?.[prop.id]}
                   onChange={v => onValueChange(item.id, prop.id, v)} inline />
               </div>
             ))}
@@ -459,14 +459,14 @@ function ListView({ items, properties, allValues }) {
 
   return (
     <div className="space-y-0.5">
-      {items.length === 0 && (
+      {(items || []).length === 0 && (
         <div className="py-8 text-center text-sm text-muted-foreground/60">Nenhuma cena ainda.</div>
       )}
-      {items.map(item => {
-        const statusVal = statusProp ? allValues[item.id]?.[statusProp.id] : null;
+      {(items || []).map(item => {
+        const statusVal = statusProp ? (allValues || {})[item.id]?.[statusProp.id] : null;
         const opt = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
         const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : null;
-        const deadline = deadlineProp ? allValues[item.id]?.[deadlineProp.id]?.date : null;
+        const deadline = deadlineProp ? (allValues || {})[item.id]?.[deadlineProp.id]?.date : null;
         const isOverdue = deadline && new Date(deadline) < today;
         return (
           <div key={item.id} onClick={() => navigate(`/page/${item.id}`)}
@@ -504,8 +504,8 @@ function CalendarView({ items, properties, allValues }) {
   const itemsByDay = useMemo(() => {
     if (!deadlineProp) return {};
     const map = {};
-    for (const item of items) {
-      const dateVal = allValues[item.id]?.[deadlineProp.id]?.date;
+    for (const item of (items || [])) {
+      const dateVal = (allValues || {})[item.id]?.[deadlineProp.id]?.date;
       if (!dateVal) continue;
       const d = new Date(dateVal);
       if (d.getFullYear() === year && d.getMonth() === month) {

@@ -9,15 +9,15 @@ import { COLOR_MAP } from '../../core/schemas';
 // ============================================
 
 export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
-  const [editingProps, setEditingProps] = useState(properties);
+  const [editingProps, setEditingProps] = useState(properties || []);
   const [selectedPropId, setSelectedPropId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setEditingProps(properties);
+    setEditingProps(properties || []);
   }, [properties]);
 
-  const selectedProp = editingProps.find(p => p.id === selectedPropId);
+  const selectedProp = (editingProps || []).find(p => p.id === selectedPropId);
 
   const handleAddProperty = async () => {
     try {
@@ -27,7 +27,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
         propertyType: 'text',
         config: {}
       });
-      setEditingProps(prev => [...prev, newProp]);
+      setEditingProps(prev => [...(prev || []), newProp]);
       setSelectedPropId(newProp.id);
       onUpdate();
     } catch (e) { console.error(e); }
@@ -37,7 +37,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
     if (!window.confirm('Excluir esta propriedade removerá todos os dados salvos nela. Deseja continuar?')) return;
     try {
       await propertyService.destroy(id);
-      setEditingProps(prev => prev.filter(p => p.id !== id));
+      setEditingProps(prev => (prev || []).filter(p => p.id !== id));
       if (selectedPropId === id) setSelectedPropId(null);
       onUpdate();
     } catch (e) { console.error(e); }
@@ -46,13 +46,14 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
   const handleUpdateProp = async (id, updates) => {
     try {
       const updated = await propertyService.update(id, updates);
-      setEditingProps(prev => prev.map(p => p.id === id ? updated : p));
+      setEditingProps(prev => (prev || []).map(p => p.id === id ? updated : p));
       onUpdate();
     } catch (e) { console.error(e); }
   };
 
   const handleAddOption = (propId) => {
-    const prop = editingProps.find(p => p.id === propId);
+    const prop = (editingProps || []).find(p => p.id === propId);
+    if (!prop) return;
     const options = prop.config?.options || [];
     const newId = `opt_${Date.now()}`;
     const newOptions = [...options, { id: newId, label: 'Nova Opção', color: 'gray' }];
@@ -60,21 +61,24 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
   };
 
   const handleUpdateOption = (propId, optId, updates) => {
-    const prop = editingProps.find(p => p.id === propId);
+    const prop = (editingProps || []).find(p => p.id === propId);
+    if (!prop) return;
     const options = prop.config?.options || [];
     const newOptions = options.map(o => o.id === optId ? { ...o, ...updates } : o);
     handleUpdateProp(propId, { config: { ...prop.config, options: newOptions } });
   };
 
   const handleDeleteOption = (propId, optId) => {
-    const prop = editingProps.find(p => p.id === propId);
+    const prop = (editingProps || []).find(p => p.id === propId);
+    if (!prop) return;
     const options = prop.config?.options || [];
     const newOptions = options.filter(o => o.id !== optId);
     handleUpdateProp(propId, { config: { ...prop.config, options: newOptions } });
   };
 
   const handleMoveOption = (propId, optId, direction) => {
-    const prop = editingProps.find(p => p.id === propId);
+    const prop = (editingProps || []).find(p => p.id === propId);
+    if (!prop) return;
     const options = [...(prop.config?.options || [])];
     const idx = options.findIndex(o => o.id === optId);
     if (idx === -1) return;
@@ -100,18 +104,22 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-[600px] animate-in zoom-in-95 duration-200"
           aria-describedby="prop-manager-description"
         >
+          <Dialog.Title className="sr-only">Propriedades do Database</Dialog.Title>
+          <Dialog.Description id="prop-manager-description" className="sr-only">
+            Gerencie as propriedades e campos deste banco de dados.
+          </Dialog.Description>
           
           {/* Sidebar: Prop List */}
           <div className="w-64 border-r border-border bg-secondary/10 flex flex-col">
             <div className="p-4 border-b border-border">
-              <Dialog.Title className="text-sm font-semibold text-foreground">Propriedades</Dialog.Title>
-              <Dialog.Description id="prop-manager-description" className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">
+              <div className="text-sm font-semibold text-foreground">Propriedades</div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">
                 Configurações do Database
-              </Dialog.Description>
+              </div>
             </div>
             
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
-              {editingProps.map(prop => (
+              {(editingProps || []).map(prop => (
                 <button
                   key={prop.id}
                   onClick={() => setSelectedPropId(prop.id)}

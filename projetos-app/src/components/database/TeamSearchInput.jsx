@@ -71,24 +71,24 @@ export function TeamSearchInput({ onSelect, excludeIds = [], placeholder = "Busc
         />
       </div>
 
-      {isOpen && results.length > 0 && (
+      {isOpen && (results || []).length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in-0 slide-in-from-top-2">
           <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/40">
             Usuários Encontrados
           </div>
           <div className="max-h-60 overflow-y-auto">
-            {results.map((user) => (
+            {(results || []).map((user) => (
               <button
                 key={user.id}
                 onClick={() => handleSelect(user)}
                 className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/50 transition-colors text-left"
               >
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-purple-600 text-[10px] text-white flex items-center justify-center font-bold shadow-sm">
-                  {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                  {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || '?'}
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm font-semibold text-foreground truncate">
-                    {user.full_name || user.email.split('@')[0]}
+                    {user.full_name || user.email?.split('@')[0] || 'Usuário'}
                   </span>
                   <span className="text-[10px] text-muted-foreground truncate">{user.email}</span>
                 </div>
@@ -98,7 +98,7 @@ export function TeamSearchInput({ onSelect, excludeIds = [], placeholder = "Busc
         </div>
       )}
 
-      {isOpen && query.length >= 3 && results.length === 0 && !loading && (
+      {isOpen && query.length >= 3 && (results || []).length === 0 && !loading && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 p-4 text-center">
           <p className="text-xs text-muted-foreground">Nenhum usuário encontrado com este e-mail.</p>
         </div>
