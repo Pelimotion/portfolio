@@ -59,28 +59,29 @@ export const googleDriveProvider = {
     }
   },
 
-  /**
-   * Realiza um crawl recursivo para mapear a árvore do projeto
-   * (Limitado para evitar excesso de requisições)
-   */
   async crawlProject(rootId, accessToken, maxDepth = 3) {
     const tree = [];
     
     const walk = async (parentId, currentPath = '', depth = 0) => {
       if (depth > maxDepth) return;
       
-      const folders = await this.listFolders(parentId, accessToken);
-      for (const f of folders) {
-        const fullPath = currentPath ? `${currentPath}/${f.name}` : f.name;
+      const contents = await this.listContents(parentId, accessToken);
+      for (const item of contents) {
+        const fullPath = currentPath ? `${currentPath}/${item.name}` : item.name;
         tree.push({
-          id: f.id,
-          name: f.name,
+          id: item.id,
+          name: item.name,
           parentId: parentId,
           path: fullPath,
-          webViewLink: f.webViewLink
+          mimeType: item.mimeType,
+          webViewLink: item.webViewLink,
+          thumbnail: item.thumbnailLink || item.iconLink
         });
-        // Recursão
-        await walk(f.id, fullPath, depth + 1);
+        
+        // Recursão apenas se for pasta
+        if (item.mimeType === 'application/vnd.google-apps.folder') {
+          await walk(item.id, fullPath, depth + 1);
+        }
       }
     };
 
