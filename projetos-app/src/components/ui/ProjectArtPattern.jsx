@@ -1,16 +1,6 @@
 import React, { useMemo } from 'react';
 import { getArtStyleFromId, getAccentColorFromId, ART_PATTERNS } from '../../lib/artPatternEngine';
 
-interface ProjectArtPatternProps {
-  projectId: string;
-  style?: string;
-  accentColor?: string;
-  size?: 'card' | 'header' | 'thumbnail';
-  animated?: boolean;
-  opacity?: number;
-  className?: string;
-}
-
 export function ProjectArtPattern({
   projectId,
   style,
@@ -19,7 +9,7 @@ export function ProjectArtPattern({
   animated = true,
   opacity = 0.18,
   className = ""
-}: ProjectArtPatternProps) {
+}) {
   const artStyle = useMemo(() => style || getArtStyleFromId(projectId), [style, projectId]);
   const color = useMemo(() => accentColor || getAccentColorFromId(projectId), [accentColor, projectId]);
   

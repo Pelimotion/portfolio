@@ -4,20 +4,8 @@
  * Determinístico por ID de projeto.
  */
 
-export type ArtStyle = 
-  | 'mondrian'      // Piet Mondrian — grades ortogonais
-  | 'kandinsky'     // Wassily Kandinsky — círculos e arcos
-  | 'escher'        // M.C. Escher — tessellations
-  | 'rothko'        // Mark Rothko — campos de cor pulsantes
-  | 'klee'          // Paul Klee — grids irregulares
-  | 'pollock'       // Jackson Pollock — linhas orgânicas
-  | 'vasarely'      // Victor Vasarely — Op Art
-  | 'bridget_riley' // Bridget Riley — linhas ondulantes
-  | 'malevich'      // Kazimir Malevich — suprematismo
-  | 'albers'        // Josef Albers — quadrados relacionais
-
-export function getArtStyleFromId(projectId: string): ArtStyle {
-  const styles: ArtStyle[] = [
+export function getArtStyleFromId(projectId) {
+  const styles = [
     'mondrian', 'kandinsky', 'escher', 'rothko', 'klee',
     'pollock', 'vasarely', 'bridget_riley', 'malevich', 'albers'
   ];
@@ -26,7 +14,7 @@ export function getArtStyleFromId(projectId: string): ArtStyle {
   return styles[hash % styles.length];
 }
 
-export function getAccentColorFromId(projectId: string): string {
+export function getAccentColorFromId(projectId) {
   const palette = [
     '#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', 
     '#10B981', '#3B82F6', '#EF4444', '#14B8A6',
