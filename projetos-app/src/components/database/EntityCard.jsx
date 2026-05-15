@@ -74,8 +74,8 @@ export const EntityCard = memo(function EntityCard({
             : 'bg-card border border-border hover:border-muted-foreground/40 hover:bg-card/80'
           }`}
       >
-        <span className="text-sm shrink-0">{item.icon || '🎞️'}</span>
-        {statusColors && <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusColors.dot}`} />}
+        {item.icon && <span className="text-sm shrink-0">{item.icon}</span>}
+        {/* status dot removed */}
         <span className="text-xs font-medium text-foreground flex-1 truncate">{item.title || 'Untitled'}</span>
         {priorityConfig?.icon && <span className="shrink-0">{priorityConfig.icon}</span>}
         {isOverdue && <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />}
@@ -100,7 +100,7 @@ export const EntityCard = memo(function EntityCard({
         {/* Header row */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-lg">{item.icon || '🎞️'}</span>
+            {item.icon && <span className="text-lg">{item.icon}</span>}
             <h4 className="font-semibold text-sm text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
               {item.title || 'Untitled'}
             </h4>
@@ -112,7 +112,7 @@ export const EntityCard = memo(function EntityCard({
         <div className="flex items-center gap-2 flex-wrap">
           {statusColors && (
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium ${statusColors.bg} ${statusColors.text}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${statusColors.dot}`} />
+              {/* dot removed */}
               {statusOption.label}
             </span>
           )}
@@ -176,7 +176,7 @@ export const EntityCard = memo(function EntityCard({
         <div className="flex items-center gap-1.5">
           {statusColors ? (
             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${statusColors.bg} ${statusColors.text}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${statusColors.dot}`} />
+              {/* dot removed */}
               {statusOption.label}
             </span>
           ) : <span />}

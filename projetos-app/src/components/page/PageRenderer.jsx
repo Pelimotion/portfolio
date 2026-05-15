@@ -167,14 +167,14 @@ export function PageRenderer({ pageId }) {
               <div className="flex items-center gap-4 py-1 px-2 -mx-2 hover:bg-secondary/20 rounded transition-colors">
                 <span className="text-xs font-medium text-muted-foreground w-28 shrink-0">Status</span>
                 <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-500 capitalize">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  {/* dot removed */}
                   {page._status?.replace('_', ' ')}
                 </span>
               </div>
               <div className="flex items-center gap-4 py-1 px-2 -mx-2 hover:bg-secondary/20 rounded transition-colors">
                 <span className="text-xs font-medium text-muted-foreground w-28 shrink-0">Owner</span>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500" />
+                  {/* avatar removed */}
                   <span className="text-sm">Felipe Conceição</span>
                 </div>
               </div>

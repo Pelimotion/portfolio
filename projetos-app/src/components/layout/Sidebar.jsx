@@ -83,7 +83,7 @@ export function Sidebar() {
                     ? 'bg-[var(--surface-3)] text-foreground font-bold border-[var(--border-strong)]' 
                     : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}
               >
-                <span className="text-sm leading-none shrink-0 filter grayscale group-hover:grayscale-0 transition-all">{project.icon || '🎬'}</span>
+                {project.icon && <span className="text-sm leading-none shrink-0 filter grayscale group-hover:grayscale-0 transition-all">{project.icon}</span>}
                 <span className="truncate flex-1 text-[13px] font-medium">{project.title}</span>
                 <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 hover:!opacity-100 shrink-0 transition-opacity" />
               </NavLink>

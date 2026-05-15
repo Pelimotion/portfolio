@@ -227,7 +227,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                               <button onClick={() => handleMoveOption(selectedProp.id, opt.id, 1)} disabled={idx === arr.length - 1} className="p-0.5 hover:bg-secondary rounded disabled:opacity-20"><ChevronDown className="w-3 h-3" /></button>
                             </div>
                             
-                            <div className={`w-3.5 h-3.5 rounded-full shrink-0 ${COLOR_MAP[opt.color]?.dot || 'bg-gray-500'}`} />
+                            <div className={`w-3.5 h-3.5 rounded-sm shrink-0 ${COLOR_MAP[opt.color]?.dot || 'bg-gray-500'}`} />
                             
                             <input 
                               type="text" 
@@ -242,7 +242,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                                 <button
                                   key={color}
                                   onClick={() => handleUpdateOption(selectedProp.id, opt.id, { color })}
-                                  className={`w-3 h-3 rounded-full transition-transform hover:scale-150 ${COLOR_MAP[color].dot} ${opt.color === color ? 'ring-2 ring-primary ring-offset-2 ring-offset-card' : ''}`}
+                                  className={`w-3 h-3 rounded-sm transition-transform hover:scale-150 ${COLOR_MAP[color].dot} ${opt.color === color ? 'ring-2 ring-primary ring-offset-2 ring-offset-card' : ''}`}
                                 />
                               ))}
                             </div>

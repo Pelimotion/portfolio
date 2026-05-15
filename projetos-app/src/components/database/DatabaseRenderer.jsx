@@ -132,7 +132,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
   const handleCreate = useCallback(async () => {
     setCreating(true);
     try {
-      const newItem = await createPage({ title: 'Nova Cena', parentId: databaseId, pageType: 'database_item', icon: '🎞️' });
+      const newItem = await createPage({ title: 'Nova Cena', parentId: databaseId, pageType: 'database_item', icon: null });
       setLocalItems(prev => [...prev, newItem]);
       setAllValues(prev => ({ ...prev, [newItem.id]: {} }));
     } catch (e) { console.error(e); }
@@ -363,7 +363,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
     >
       {/* Column Header */}
       <div className="flex items-center gap-2 px-2 py-2 mb-2 group/header">
-        <div className={`w-2 h-2 rounded-full ${colorDot} shadow-[0_0_8px_rgba(0,0,0,0.2)]`} />
+        {/* colored dot removed for a more professional look */}
         <span className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-[0.08em] flex-1">{col.label}</span>
         <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
         
@@ -422,7 +422,7 @@ function TableView({ items, properties, allValues, onValueChange, onDelete }) {
             className="grid gap-3 px-4 py-2.5 items-center hover:bg-secondary/10 transition-colors cursor-pointer group"
             style={{ gridTemplateColumns: `minmax(200px,2fr) ${visible.map(() => 'minmax(100px,1fr)').join(' ')} 32px` }}>
             <div className="font-medium text-sm text-foreground truncate" onClick={() => navigate(`/page/${item.id}`)}>
-              <span className="mr-2">{item.icon || '🎞️'}</span>
+              {item.icon && <span className="mr-2">{item.icon}</span>}
               {item.title || 'Untitled'}
             </div>
             {visible.map(prop => (
@@ -480,8 +480,8 @@ function ListView({ items, properties, allValues }) {
         return (
           <div key={item.id} onClick={() => navigate(`/page/${item.id}`)}
             className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors group">
-            <span className="text-base">{item.icon || '🎞️'}</span>
-            {colors ? <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} /> : <span className="w-1.5 h-1.5 rounded-full bg-border shrink-0" />}
+            {item.icon && <span className="text-base">{item.icon}</span>}
+            {/* list view dot removed */}
             <span className="text-sm text-foreground flex-1 truncate">{item.title}</span>
             {isOverdue && <span className="text-[10px] text-red-400 font-medium shrink-0">ATRASADA</span>}
             {opt && <span className={`text-[11px] px-2 py-0.5 rounded ${colors.bg} ${colors.text}`}>{opt.label}</span>}

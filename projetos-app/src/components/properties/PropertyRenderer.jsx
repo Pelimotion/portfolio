@@ -102,9 +102,7 @@ const SelectProperty = memo(({ property, value, onChange, inline, isStatus = fal
       <DropdownMenu.Trigger asChild>
         <button onClick={e => e.stopPropagation()}
           className={`flex items-center justify-between gap-2 text-xs font-medium rounded-md px-2 py-1 transition-colors hover:brightness-110 focus:outline-none focus:ring-1 focus:ring-primary ${isStatus || selectedOpt ? getColors(selectedOpt?.color) : 'bg-transparent text-muted-foreground hover:bg-secondary/50 -ml-2'}`}>
-          {isStatus && selectedOpt && (
-            <span className={`w-1.5 h-1.5 rounded-full bg-current opacity-70`} />
-          )}
+          {/* isStatus condition removed colored dot */}
           <span className="truncate max-w-[100px]">{selectedOpt ? selectedOpt.label : '—'}</span>
           <ChevronDown className="w-3 h-3 opacity-50" />
         </button>
@@ -124,7 +122,7 @@ const SelectProperty = memo(({ property, value, onChange, inline, isStatus = fal
               key={opt.id}
               onSelect={() => onChange({ selected: opt.id })}
               className={`flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer outline-none ${value?.selected === opt.id ? 'bg-secondary/50' : ''}`}>
-              {isStatus && <span className={`w-2 h-2 rounded-full ${colorMap[opt.color]?.split(' ')[0] || 'bg-muted-foreground'}`} />}
+              {/* isStatus condition removed colored dot */}
               <span className="flex-1 text-foreground font-medium">{opt.label}</span>
               {value?.selected === opt.id && <Check className="w-3.5 h-3.5 text-primary" />}
             </DropdownMenu.Item>

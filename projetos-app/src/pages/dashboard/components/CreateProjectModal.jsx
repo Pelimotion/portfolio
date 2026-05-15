@@ -17,11 +17,11 @@ import { TeamSearchInput } from '../../../components/database/TeamSearchInput';
 // ============================================
 
 const QUICK_TEMPLATES = [
-  { id: 'motion',    label: 'Motion Design',      icon: '🎬' },
-  { id: 'cgi',       label: 'CGI / 3D',            icon: '🧊' },
-  { id: 'branding',  label: 'Branding',            icon: '✨' },
-  { id: 'social',    label: 'Social Media',        icon: '📱' },
-  { id: 'blank',     label: 'Em branco',           icon: '📄' },
+  { id: 'motion',    label: 'Motion Design',      icon: null },
+  { id: 'cgi',       label: 'CGI / 3D',            icon: null },
+  { id: 'branding',  label: 'Branding',            icon: null },
+  { id: 'social',    label: 'Social Media',        icon: null },
+  { id: 'blank',     label: 'Em branco',           icon: null },
 ];
 
 export function CreateProjectModal({ open, onOpenChange }) {
@@ -61,7 +61,7 @@ export function CreateProjectModal({ open, onOpenChange }) {
         title: title.trim(),
         parentId: ROOT_HUB_ID,
         pageType: 'database_item',
-        icon: QUICK_TEMPLATES.find(t => t.id === template)?.icon || '🎬',
+        icon: QUICK_TEMPLATES.find(t => t.id === template)?.icon || null,
       });
 
       // 2. Bootstrap do pipeline de cenas (em background)

@@ -194,13 +194,13 @@ export function UniversalEntityPage() {
         <div className="relative z-10 flex items-end justify-between">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-strong)] flex items-center justify-center text-3xl shadow-2xl">
-              {page?.icon || (isProject ? '🎬' : '🎞️')}
+              {page?.icon || (isProject ? <FolderOpen className="w-8 h-8 text-muted-foreground/30" /> : <Database className="w-8 h-8 text-muted-foreground/30" />)}
             </div>
             <div className="flex flex-col">
               <h1 className="text-3xl font-black text-foreground tracking-tight mb-1">{page?.title}</h1>
               <div className="flex items-center gap-3">
                  <span className="text-xs text-muted-foreground/60 flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: getAccentColorFromId(pageId) }} />
+                   {/* dot removed */}
                    {isProject ? 'Projeto Motion' : 'Cena / Take'}
                  </span>
                  {page?.description && (
@@ -432,7 +432,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
               const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
               return (
                 <div key={opt.id} className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all`}>
-                  <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
+                  {/* dot removed */}
                   <span className={`text-[11px] font-bold text-foreground/80`}>{opt.label}</span>
                   <span className={`text-[11px] font-black opacity-30`}>{opt.count}</span>
                 </div>
@@ -492,7 +492,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
               const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
               return (
                 <div key={item.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer group">
-                  <div className="flex items-center gap-2 min-w-0"><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot || 'bg-muted-foreground/50'}`} /><span className="text-sm font-medium text-foreground truncate">{item.title}</span></div>
+                  <div className="flex items-center gap-2 min-w-0">{/* dot removed */}<span className="text-sm font-medium text-foreground truncate">{item.title}</span></div>
                   <div className="flex items-center gap-2 shrink-0">
                     {opt && <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${colors.bg} ${colors.text}`}>{opt.label}</span>}
                     <span className={`text-xs font-mono ${isLate ? 'text-red-400' : diffDays <= 3 ? 'text-yellow-400' : 'text-muted-foreground'}`}>{isLate ? `${Math.abs(diffDays)}d atraso` : diffDays === 0 ? 'Hoje' : `+${diffDays}d`}</span>
