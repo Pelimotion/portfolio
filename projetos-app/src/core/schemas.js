@@ -110,6 +110,12 @@ export const SCENE_PROPERTY_SCHEMA = [
     },
   },
   {
+    name: 'Feito',
+    property_type: 'checkbox',
+    position: 4,
+    config: {},
+  },
+  {
     name: 'Entrega',
     property_type: 'date',
     position: 4,

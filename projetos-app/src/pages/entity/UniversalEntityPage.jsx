@@ -327,6 +327,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
   const deadlineProp  = properties.find(p => p.property_type === 'date' || p.name === 'Data de Entrega' || p.name === 'Deadline');
   const assigneeProp  = properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
   const atoProp       = properties.find(p => p.name === 'Ato');
+  const doneProp      = properties.find(p => p.property_type === 'checkbox' && (p.name.toLowerCase().includes('feito') || p.name.toLowerCase().includes('concluí')));
   const statusOptions = statusProp?.config?.options || [];
   const today = new Date();
 
@@ -342,17 +343,59 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
 
   const kpis = useMemo(() => {
     const total      = items.length;
-    const done       = items.filter(i => DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k) || getStatus(i.id)?.label?.toLowerCase().includes(k))).length;
-    const active     = items.filter(i => ACTIVE_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length;
-    const standby    = items.filter(i => STANDBY_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length;
+    const done       = items.filter(i => {
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      if (isChecked) return true;
+      const st = getStatus(i.id);
+      return st && DONE_IDS.some(k => st.id.includes(k) || st.label.toLowerCase().includes(k));
+    }).length;
+
+    const active     = items.filter(i => {
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      if (isChecked) return false;
+      const st = getStatus(i.id);
+      return st && ACTIVE_IDS.some(k => st.id.includes(k));
+    }).length;
+
+    const standby    = items.filter(i => {
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      if (isChecked) return false;
+      const st = getStatus(i.id);
+      return st && STANDBY_IDS.some(k => st.id.includes(k));
+    }).length;
+
     const overdue    = deadlineProp ? items.filter(i => {
       const d = allValues[i.id]?.[deadlineProp.id]?.date;
-      const isDone = DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k));
+      const st = getStatus(i.id);
+      const isDone = (doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true) || (st && DONE_IDS.some(k => st.id.includes(k)));
       return d && !isDone && new Date(d) < today;
     }).length : 0;
-    const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    let totalProgressSum = 0;
+    items.forEach(i => {
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      if (isChecked) {
+        totalProgressSum += 100;
+        return;
+      }
+      const st = getStatus(i.id);
+      if (st) {
+        if (DONE_IDS.some(k => st.id.includes(k) || st.label.toLowerCase().includes(k))) {
+          totalProgressSum += 100;
+          return;
+        }
+        if (statusOptions.length > 1) {
+          const idx = statusOptions.findIndex(o => o.id === st.id);
+          if (idx > 0) {
+            totalProgressSum += (idx / (statusOptions.length - 1)) * 100;
+          }
+        }
+      }
+    });
+
+    const progress = total > 0 ? Math.round(totalProgressSum / total) : 0;
     return { total, done, active, standby, overdue, progress };
-  }, [items, allValues, statusProp, deadlineProp]);
+  }, [items, allValues, statusProp, deadlineProp, doneProp, statusOptions]);
 
   // Stage deadlines: group scenes by status, find latest deadline per stage
   const stageSummary = useMemo(() => {
@@ -554,20 +597,9 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
   const { slots, loading } = useDriveSlots({ projectId, pageId: projectId, isScene: false });
   const [pinned, setPinned] = useState([]);
 
-  // Slots que têm link configurado
-  const linkedSlots = useMemo(() => slots.filter(s => s.link?.drive_url), [slots]);
+  // Apenas slots de documento que têm link
   const docSlots    = useMemo(() => slots.filter(s => s.slot_key?.includes('doc') || s.display_name?.toLowerCase().includes('doc')), [slots]);
-
-  useEffect(() => {
-    // Inicializa pinned com os slots de docs que têm link, mais qualquer outro
-    const initialPinned = linkedSlots.map(s => s.id);
-    setPinned(initialPinned);
-  }, [linkedSlots.length]);
-
-  const visibleSlots = useMemo(() =>
-    linkedSlots.filter(s => pinned.length === 0 || pinned.includes(s.id)),
-    [linkedSlots, pinned]
-  );
+  const linkedDocSlots = useMemo(() => docSlots.filter(s => s.link?.drive_url), [docSlots]);
 
   if (loading) return null;
 
@@ -577,30 +609,30 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
         <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
           <FileText className="w-3.5 h-3.5"/> Documentos do Projeto
         </h3>
-        {linkedSlots.length > 0 && (
-          <span className="text-[10px] text-muted-foreground/40">{linkedSlots.length} arquivo{linkedSlots.length !== 1 ? 's' : ''} vinculado{linkedSlots.length !== 1 ? 's' : ''}</span>
+        {linkedDocSlots.length > 0 && (
+          <span className="text-[10px] text-muted-foreground/40">{linkedDocSlots.length} arquivo{linkedDocSlots.length !== 1 ? 's' : ''} vinculado{linkedDocSlots.length !== 1 ? 's' : ''}</span>
         )}
       </div>
 
-      {linkedSlots.length === 0 ? (
+      {linkedDocSlots.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-6 text-center">
           <div className="w-10 h-10 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] flex items-center justify-center">
             <FolderOpen className="w-5 h-5 text-muted-foreground/30"/>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground font-medium">Nenhum documento vinculado ainda</p>
-            <p className="text-[11px] text-muted-foreground/50 mt-0.5">Vincule pastas e arquivos na aba Assets para vê-los aqui</p>
+            <p className="text-xs text-muted-foreground font-medium">Pasta de Documentos não vinculada</p>
+            <p className="text-[11px] text-muted-foreground/50 mt-0.5">Aguardando a sincronização da pasta padrão "Docs" ou outros documentos na aba Assets.</p>
           </div>
           <button
             onClick={onGoToAssets}
             className="text-xs font-medium text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
           >
-            Ir para Assets →
+            Sincronizar em Assets →
           </button>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-          {linkedSlots.map(slot => {
+          {linkedDocSlots.map(slot => {
             const url  = slot.link.drive_url;
             const name = slot.link.drive_name || slot.display_name;
             const isFolder = url.includes('/folders/');

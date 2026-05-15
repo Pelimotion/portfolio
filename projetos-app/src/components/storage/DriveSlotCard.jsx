@@ -59,20 +59,26 @@ export function DriveSlotCard({ slot, isProjectView, onEditSlot, onLinkSlot, onR
             <DropdownMenu.Content className="z-50 min-w-[160px] bg-card border border-border rounded-lg shadow-xl p-1 animate-in fade-in-0 zoom-in-95">
               {isProjectView ? (
                 <>
-                  <DropdownMenu.Item onClick={onEditSlot} className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground hover:bg-secondary rounded cursor-pointer outline-none">
-                    <Edit2 className="w-3.5 h-3.5" /> Editar Slot
-                  </DropdownMenu.Item>
+                  {slot.slot_key !== 'docs' && (
+                    <DropdownMenu.Item onClick={onEditSlot} className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground hover:bg-secondary rounded cursor-pointer outline-none">
+                      <Edit2 className="w-3.5 h-3.5" /> Editar Slot
+                    </DropdownMenu.Item>
+                  )}
                   <DropdownMenu.Item onClick={onLinkSlot} className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground hover:bg-secondary rounded cursor-pointer outline-none">
                     <Link2 className="w-3.5 h-3.5" /> Vincular Arquivo/Pasta
                   </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="h-px bg-border my-1" />
-                  <DropdownMenu.Item onClick={() => {
-                    if(confirm(`Tem certeza que deseja remover o slot "${slot.display_name}"? Isso apagará os links em todas as cenas.`)) {
-                      onRemoveSlot(slot.id);
-                    }
-                  }} className="flex items-center gap-2 px-2 py-1.5 text-sm text-red-500 hover:bg-red-500/10 rounded cursor-pointer outline-none">
-                    <Trash2 className="w-3.5 h-3.5" /> Remover Slot
-                  </DropdownMenu.Item>
+                  {slot.slot_key !== 'docs' && (
+                    <>
+                      <DropdownMenu.Separator className="h-px bg-border my-1" />
+                      <DropdownMenu.Item onClick={() => {
+                        if(confirm(`Tem certeza que deseja remover o slot "${slot.display_name}"? Isso apagará os links em todas as cenas.`)) {
+                          onRemoveSlot(slot.id);
+                        }
+                      }} className="flex items-center gap-2 px-2 py-1.5 text-sm text-red-500 hover:bg-red-500/10 rounded cursor-pointer outline-none">
+                        <Trash2 className="w-3.5 h-3.5" /> Remover Slot
+                      </DropdownMenu.Item>
+                    </>
+                  )}
                 </>
               ) : (
                 <>
