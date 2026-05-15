@@ -129,37 +129,31 @@ export function AssetsPanel({ pageId, isProject }) {
 
   const handleSyncStructure = async () => {
     if (!connection) return;
+    
     setSyncing(true);
     try {
-      let folders = [];
+      // Passo A: Forçar login do Google e obter Access Token
+      const token = await googleAuth.ensureToken();
       
-      try {
-        // Tenta obter o token real do Google
-        const token = await googleAuth.ensureToken();
-        console.log('Google Token obtido, iniciando crawl real...');
-        folders = await googleDriveProvider.crawlProject(connection.root_folder_id, token);
-      } catch (authErr) {
-        console.warn('Google Auth falhou ou pendente. Usando MOCK DATA para demonstração.', authErr);
-        // MOCK DATA para o "Start" do usuário
-        folders = [
-          { id: 'f1', name: '01_PROJETO', parentId: connection.root_folder_id, path: '01_PROJETO' },
-          { id: 'f2', name: '02_SOURCES', parentId: connection.root_folder_id, path: '02_SOURCES' },
-          { id: 'f3', name: '03_RENDERS', parentId: connection.root_folder_id, path: '03_RENDERS' },
-          { id: 'f31', name: 'V01_PREVIEWS', parentId: 'f3', path: '03_RENDERS/V01_PREVIEWS' },
-          { id: 'f32', name: 'V02_FINAL', parentId: 'f3', path: '03_RENDERS/V02_FINAL' },
-          { id: 'f4', name: '04_REF', parentId: connection.root_folder_id, path: '04_REF' },
-        ];
-      }
+      // Passo B: Fazer fetch real na API do Google Drive (Crawl)
+      // O crawlProject faz requisições recursivas para buscar subpastas
+      const folders = await googleDriveProvider.crawlProject(connection.root_folder_id, token);
       
-      if (folders.length > 0) {
-        await storageService.saveFolders(connection.id, folders);
-        alert(`Sincronizado! ${folders.length} pastas encontradas.`);
-      } else {
-        alert('Nenhuma pasta encontrada no diretório raiz.');
+      if (!folders || folders.length === 0) {
+        throw new Error('Nenhuma subpasta encontrada dentro da pasta raiz selecionada.');
       }
+
+      // Passo C: Salvar/Inserir na tabela storage_folders do Supabase
+      await storageService.saveFolders(connection.id, folders);
+
+      // Passo D: Atualizar a UI
+      await load(); // Recarrega conexões e folders vinculados
+      alert(`Sucesso! ${folders.length} pastas sincronizadas do Google Drive.`);
+      
     } catch (e) {
-      console.error('Sync error:', e);
-      alert('Erro na sincronização: ' + e.message);
+      console.error('Erro na Sincronização Real:', e);
+      // Exibe erro claro para o usuário (Cancelamento, RLS ou API)
+      alert(`⚠️ Falha na Sincronização:\n${e.message || 'Erro desconhecido'}`);
     } finally {
       setSyncing(false);
     }
