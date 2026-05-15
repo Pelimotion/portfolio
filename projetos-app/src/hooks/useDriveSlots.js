@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { seedDefaultDriveSlots } from '../core/databaseFactory';
 
 export function useDriveSlots({ projectId, pageId, isScene = false }) {
   const [slots, setSlots] = useState([]);
@@ -8,14 +9,29 @@ export function useDriveSlots({ projectId, pageId, isScene = false }) {
   const fetchSlots = async () => {
     setLoading(true);
     
-    // 1. Busca os slots configurados no projeto
-    const { data: slotsData } = await supabase
+    let { data: slotsData } = await supabase
       .from('project_drive_slots')
       .select('*')
       .eq('project_id', projectId)
       .order('sort_order');
 
     if (!slotsData) { setLoading(false); return; }
+
+    // Auto-seed for legacy projects
+    if (slotsData.length === 0) {
+      await seedDefaultDriveSlots(projectId);
+      const { data: newSlotsData } = await supabase
+        .from('project_drive_slots')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('sort_order');
+      
+      if (!newSlotsData || newSlotsData.length === 0) {
+        setLoading(false);
+        return;
+      }
+      slotsData = newSlotsData;
+    }
 
     const slotIds = slotsData.map(s => s.id);
 
