@@ -26,7 +26,7 @@ export function getAccentColorFromId(projectId) {
 }
 
 export const ART_PATTERNS = {
-  mondrian: (accent: string) => `
+  mondrian: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .m-block { animation: mondrian-pulse 4s ease-in-out infinite alternate; }
@@ -42,7 +42,7 @@ export const ART_PATTERNS = {
       <rect class="m-block" x="0" y="85" width="45" height="115" fill="${accent}" opacity="0.15"/>
     </svg>`,
 
-  rothko: (accent: string) => `
+  rothko: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <defs><filter id="rothko-blur"><feGaussianBlur stdDeviation="8"/></filter></defs>
       <style>
@@ -55,7 +55,7 @@ export const ART_PATTERNS = {
       <rect class="r-field-2" x="10" y="110" width="180" height="70" fill="${accent}" filter="url(#rothko-blur)" opacity="0.25" rx="4"/>
     </svg>`,
 
-  kandinsky: (accent: string) => `
+  kandinsky: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .k-circle { animation: kandinsky-rotate 12s linear infinite; transform-origin: 100px 100px; }
@@ -69,7 +69,7 @@ export const ART_PATTERNS = {
       <circle cx="100" cy="100" r="8" fill="${accent}" opacity="0.7"/>
     </svg>`,
 
-  vasarely: (accent: string) => `
+  vasarely: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .v-sq { animation: vasarely-pulse 3s ease-in-out infinite alternate; }
@@ -84,7 +84,7 @@ export const ART_PATTERNS = {
       }).join('')}
     </svg>`,
 
-  bridget_riley: (accent: string) => `
+  bridget_riley: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .br-wave { animation: riley-wave 4s ease-in-out infinite; }
@@ -97,7 +97,7 @@ export const ART_PATTERNS = {
       }).join('')}
     </svg>`,
 
-  malevich: (accent: string) => `
+  malevich: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .mal-shape { animation: malevich-float 8s ease-in-out infinite; }
@@ -108,7 +108,7 @@ export const ART_PATTERNS = {
       <circle class="mal-shape" cx="80" cy="150" r="25" fill="${accent}" opacity="0.15" style="transform-origin: 80px 150px"/>
     </svg>`,
 
-  escher: (accent: string) => `
+  escher: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="escher-tile" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -120,7 +120,7 @@ export const ART_PATTERNS = {
       <rect width="200" height="200" fill="url(#escher-tile)"/>
     </svg>`,
 
-  pollock: (accent: string) => `
+  pollock: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .pol-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: pollock-draw 6s ease-in-out infinite; }
@@ -130,7 +130,7 @@ export const ART_PATTERNS = {
       <path class="pol-line" d="M 0 150 C 50 100 90 180 150 120" fill="none" stroke="${accent}" stroke-width="1" opacity="0.3"/>
     </svg>`,
 
-  klee: (accent: string) => `
+  klee: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .klee-cell { animation: klee-shift 5s ease-in-out infinite alternate; }
@@ -142,7 +142,7 @@ export const ART_PATTERNS = {
       }).join('')}
     </svg>`,
 
-  albers: (accent: string) => `
+  albers: (accent) => `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <style>
         .alb-sq { animation: albers-pulse 5s ease-in-out infinite alternate; }

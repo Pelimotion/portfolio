@@ -14,7 +14,7 @@ export function ProjectArtPattern({
   const color = useMemo(() => accentColor || getAccentColorFromId(projectId), [accentColor, projectId]);
   
   const patternHtml = useMemo(() => {
-    const patternFn = ART_PATTERNS[artStyle as keyof typeof ART_PATTERNS] || ART_PATTERNS.mondrian;
+    const patternFn = ART_PATTERNS[artStyle] || ART_PATTERNS.mondrian;
     return patternFn(color);
   }, [artStyle, color]);
 
