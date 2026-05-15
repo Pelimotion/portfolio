@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { CreateProjectModal } from './components/CreateProjectModal';
-import { useUIStore } from '../../stores/useUIStore';
-import { LayoutDashboard, Plus, Search, Sparkles } from 'lucide-react';
+import { AddMemberModal } from '../../components/database/AddMemberModal';
+import { LayoutDashboard, Plus, Search, Sparkles, UserPlus } from 'lucide-react';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { ensureRootHub } from '../../core/databaseFactory';
 import { generateMockData } from '../../scripts/mockData';
 
 // ============================================
 // DASHBOARD — Projects Hub Universal
-// Renderiza o database raiz de projetos
 // ============================================
 
 export default function Dashboard() {
   const [isCreateOpen, setCreateOpen] = useState(false);
+  const [isAddMemberOpen, setAddMemberOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [isMocking, setIsMocking] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function init() {
       try {
         await ensureRootHub();
@@ -40,7 +40,7 @@ export default function Dashboard() {
   if (initializing) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Inicializando Workspace...</div>
+        <div className="animate-pulse text-muted-foreground font-mono text-xs uppercase tracking-widest">Inicializando Workspace...</div>
       </div>
     );
   }
@@ -56,29 +56,40 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Add Member */}
+          <button
+            onClick={() => setAddMemberOpen(true)}
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-secondary/50 px-3 py-2 rounded-xl transition-all"
+          >
+            <UserPlus className="w-4 h-4" />
+            Membros
+          </button>
+
+          <div className="w-px h-4 bg-border mx-1" />
+
           {/* Mock Button */}
           <button
             onClick={handleMock}
             disabled={isMocking}
-            className="flex items-center gap-2 text-sm bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 px-3 py-1.5 rounded-lg font-medium transition-colors border border-purple-500/20 disabled:opacity-50">
-            <Sparkles className="w-4 h-4" />
-            {isMocking ? 'Gerando...' : 'Gerar Mock'}
+            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 px-3 py-2 rounded-xl transition-colors border border-purple-500/20 disabled:opacity-50">
+            <Sparkles className="w-3.5 h-3.5" />
+            {isMocking ? 'Gerando...' : 'Mock'}
           </button>
 
           {/* Search */}
-          <div className="flex items-center gap-2 bg-secondary/40 border border-border/50 rounded-lg px-3 py-1.5 w-52 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 bg-secondary/40 border border-border/50 rounded-xl px-3 py-2 w-52 text-sm text-muted-foreground">
             <Search className="w-3.5 h-3.5 shrink-0" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar projetos..."
-              className="bg-transparent focus:outline-none w-full text-sm placeholder:text-muted-foreground/60"
+              className="bg-transparent focus:outline-none w-full text-xs placeholder:text-muted-foreground/60"
             />
           </div>
 
           <button
             onClick={() => setCreateOpen(true)}
-            className="flex items-center gap-2 text-sm bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:brightness-110 px-5 py-2 rounded-xl transition-all shadow-lg shadow-primary/20">
             <Plus className="w-4 h-4" />
             Novo Projeto
           </button>
@@ -91,6 +102,7 @@ export default function Dashboard() {
       </main>
 
       <CreateProjectModal open={isCreateOpen} onOpenChange={setCreateOpen} />
+      <AddMemberModal open={isAddMemberOpen} onOpenChange={setAddMemberOpen} />
     </div>
   );
 }

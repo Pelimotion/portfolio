@@ -10,7 +10,14 @@ export function SceneDetailModal({ scene, open, onOpenChange }) {
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 animate-in fade-in-0" />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-5xl h-[90vh] translate-x-[-50%] translate-y-[-50%] border border-border bg-card shadow-2xl sm:rounded-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 flex flex-col">
+        <Dialog.Content 
+          className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-5xl h-[90vh] translate-x-[-50%] translate-y-[-50%] border border-border bg-card shadow-2xl sm:rounded-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 flex flex-col"
+          aria-describedby="scene-detail-description"
+        >
+          <Dialog.Title className="sr-only">Detalhes da Cena</Dialog.Title>
+          <Dialog.Description id="scene-detail-description" className="sr-only">
+            Visualize e edite os detalhes, roteiro e parâmetros de IA desta cena.
+          </Dialog.Description>
           
           {/* Topbar da Cena */}
           <div className="h-12 border-b border-border flex items-center justify-between px-4 shrink-0 bg-card/50">

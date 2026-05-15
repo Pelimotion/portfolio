@@ -96,13 +96,18 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] animate-in fade-in-0" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-[600px] animate-in zoom-in-95 duration-200">
+        <Dialog.Content 
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-[600px] animate-in zoom-in-95 duration-200"
+          aria-describedby="prop-manager-description"
+        >
           
           {/* Sidebar: Prop List */}
           <div className="w-64 border-r border-border bg-secondary/10 flex flex-col">
             <div className="p-4 border-b border-border">
-              <h3 className="text-sm font-semibold text-foreground">Propriedades</h3>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Configurações do Database</p>
+              <Dialog.Title className="text-sm font-semibold text-foreground">Propriedades</Dialog.Title>
+              <Dialog.Description id="prop-manager-description" className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">
+                Configurações do Database
+              </Dialog.Description>
             </div>
             
             <div className="flex-1 overflow-y-auto p-2 space-y-1">

@@ -4,6 +4,7 @@ import { X, Users, Trash2, Shield, Loader2 } from 'lucide-react';
 import { useTeamStore } from '../../stores/useTeamStore';
 import { TeamSearchInput } from './TeamSearchInput';
 import { useToast } from '../ui/Toast';
+import { supabase } from '../../lib/supabase';
 
 // ============================================
 // PROJECT TEAM SETTINGS — Manage project members
@@ -14,10 +15,21 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
   const { addToast } = useToast();
 
   useEffect(() => {
-    if (open && projectId) {
-      fetchProjectMembers(projectId);
+    async function load() {
+      if (open && projectId) {
+        const members = await fetchProjectMembers(projectId);
+        
+        // AUTO-REPAIR: Se não houver membros, adiciona o usuário atual como admin
+        if (members.length === 0) {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await addProjectMember(projectId, user.id, 'admin');
+          }
+        }
+      }
     }
-  }, [open, projectId, fetchProjectMembers]);
+    load();
+  }, [open, projectId, fetchProjectMembers, addProjectMember]);
 
   const handleAddMember = async (user) => {
     try {
@@ -44,17 +56,22 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-background/70 backdrop-blur-md z-[100] animate-in fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col h-[500px]">
+        <Dialog.Content 
+          className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col h-[500px]"
+          aria-describedby="team-settings-description"
+        >
           
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-border/50">
-            <Dialog.Title className="text-base font-semibold flex items-center gap-2.5">
+            <Dialog.Title className="text-base font-semibold flex items-center gap-2.5 text-foreground">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Users className="w-4 h-4 text-primary" />
               </div>
               Equipe do Projeto
             </Dialog.Title>
-            <p className="text-xs text-muted-foreground mt-1">Gerencie quem tem acesso a este projeto e suas permissões.</p>
+            <Dialog.Description id="team-settings-description" className="text-xs text-muted-foreground mt-1">
+              Gerencie quem tem acesso a este projeto e suas permissões.
+            </Dialog.Description>
           </div>
 
           {/* Search Area */}

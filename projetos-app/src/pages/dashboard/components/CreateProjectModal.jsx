@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, Briefcase, Wand2, UserMinus } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
 import { usePageStore } from '../../../stores/usePageStore';
 import { bootstrapProjectPipeline } from '../../../core/databaseFactory';
 import { propertyService } from '../../../services/propertyService';
@@ -75,12 +76,18 @@ export function CreateProjectModal({ open, onOpenChange }) {
         }
       }
 
-      // 4. Adicionar membros da equipe
+      // 4. Adicionar o próprio criador como admin
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await userService.addMemberToProject(page.id, user.id, 'admin');
+      }
+
+      // 5. Adicionar demais membros da equipe
       for (const member of team) {
         await userService.addMemberToProject(page.id, member.id);
       }
 
-      // 5. Redirecionar para a página do projeto
+      // 6. Redirecionar para a página do projeto
       onOpenChange(false);
       reset();
       navigate(`/project/${page.id}`);
