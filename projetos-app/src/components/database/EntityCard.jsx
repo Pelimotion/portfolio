@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
