@@ -12,6 +12,8 @@ import { PropertyRenderer } from '../../components/properties/PropertyRenderer';
 import { GenerativeCover } from '../../components/ui/cover/GenerativeCover';
 import { AssetsPanel } from '../../components/storage/AssetsPanel';
 import { ProjectTeamSettings } from '../../components/database/ProjectTeamSettings';
+import { googleDriveProvider } from '../../core/storage/storageProvider';
+import { googleAuth } from '../../lib/googleAuth';
 import { COLOR_MAP } from '../../core/colors';
 import {
   ArrowLeft, MoreHorizontal, Share, Star,
@@ -595,11 +597,56 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
 // ── Seção de Documentos do Projeto no Dashboard ──
 function DocsSectionDashboard({ projectId, onGoToAssets }) {
   const { slots, loading } = useDriveSlots({ projectId, pageId: projectId, isScene: false });
-  const [pinned, setPinned] = useState([]);
+  const [files, setFiles] = useState([]);
+  const [fetchingFiles, setFetchingFiles] = useState(false);
+  const [driveError, setDriveError] = useState(null);
 
   // Apenas slots de documento que têm link
   const docSlots    = useMemo(() => slots.filter(s => s.slot_key?.includes('doc') || s.display_name?.toLowerCase().includes('doc')), [slots]);
   const linkedDocSlots = useMemo(() => docSlots.filter(s => s.link?.drive_url), [docSlots]);
+
+  const loadFiles = useCallback(async (forceAuth = false) => {
+    if (linkedDocSlots.length === 0) return;
+
+    let token = sessionStorage.getItem('gdrive_token');
+    const expires = sessionStorage.getItem('gdrive_token_expires');
+    
+    if (forceAuth || !token || Date.now() > Number(expires)) {
+      if (!forceAuth) return; // Silent fail auto-fetch
+      try {
+        token = await googleAuth.getAccessToken();
+      } catch (e) {
+        setDriveError(e.message);
+        return;
+      }
+    }
+    
+    if (!token) return;
+    
+    setFetchingFiles(true);
+    setDriveError(null);
+    try {
+      const allFiles = [];
+      for (const slot of linkedDocSlots) {
+        const folderId = slot.link.drive_file_id;
+        if (folderId) {
+          const contents = await googleDriveProvider.listContents(folderId, token);
+          allFiles.push(...contents.map(c => ({ ...c, slotName: slot.display_name })));
+        }
+      }
+      setFiles(allFiles);
+    } catch (e) {
+      console.error(e);
+      setDriveError('Sessão expirada ou acesso negado. Reconecte o Drive.');
+      sessionStorage.removeItem('gdrive_token');
+    } finally {
+      setFetchingFiles(false);
+    }
+  }, [linkedDocSlots]);
+
+  useEffect(() => {
+    loadFiles(false);
+  }, [loadFiles]);
 
   if (loading) return null;
 
@@ -610,7 +657,18 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
           <FileText className="w-3.5 h-3.5"/> Documentos do Projeto
         </h3>
         {linkedDocSlots.length > 0 && (
-          <span className="text-[10px] text-muted-foreground/40">{linkedDocSlots.length} arquivo{linkedDocSlots.length !== 1 ? 's' : ''} vinculado{linkedDocSlots.length !== 1 ? 's' : ''}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] text-muted-foreground/40">
+              {files.length} arquivo{files.length !== 1 ? 's' : ''}
+            </span>
+            <button 
+              onClick={() => loadFiles(true)} 
+              disabled={fetchingFiles}
+              className="text-[10px] font-medium text-primary hover:bg-primary/10 px-2 py-1 rounded transition-colors disabled:opacity-50"
+            >
+              Sincronizar Drive
+            </button>
+          </div>
         )}
       </div>
 
@@ -621,7 +679,7 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
           </div>
           <div>
             <p className="text-xs text-muted-foreground font-medium">Pasta de Documentos não vinculada</p>
-            <p className="text-[11px] text-muted-foreground/50 mt-0.5">Aguardando a sincronização da pasta padrão "Docs" ou outros documentos na aba Assets.</p>
+            <p className="text-[11px] text-muted-foreground/50 mt-0.5">Aguardando a sincronização da pasta padrão "Docs" na aba Assets.</p>
           </div>
           <button
             onClick={onGoToAssets}
@@ -630,26 +688,47 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
             Sincronizar em Assets →
           </button>
         </div>
+      ) : driveError ? (
+        <div className="flex flex-col items-center gap-3 py-6 text-center border border-dashed border-red-500/20 rounded-xl bg-red-500/5">
+          <AlertTriangle className="w-6 h-6 text-red-400" />
+          <div className="text-xs text-red-400">{driveError}</div>
+          <button onClick={() => loadFiles(true)} className="px-3 py-1.5 bg-red-500/10 text-red-500 rounded text-xs font-bold hover:bg-red-500/20 transition-colors">
+            Conectar Google Drive
+          </button>
+        </div>
+      ) : fetchingFiles && files.length === 0 ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-5 h-5 text-primary animate-spin" />
+        </div>
+      ) : files.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-6 text-center border border-dashed border-[var(--border-subtle)] rounded-xl bg-[var(--surface-2)]">
+          <div className="text-[11px] text-muted-foreground/50">Nenhum arquivo encontrado nesta pasta.</div>
+          <button onClick={() => loadFiles(true)} className="text-[10px] text-primary hover:underline">Autenticar para ler arquivos</button>
+        </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-          {linkedDocSlots.map(slot => {
-            const url  = slot.link.drive_url;
-            const name = slot.link.drive_name || slot.display_name;
-            const isFolder = url.includes('/folders/');
+          {files.map(file => {
+            const isFolder = file.mimeType === 'application/vnd.google-apps.folder';
             return (
               <a
-                key={slot.id}
-                href={url}
+                key={file.id}
+                href={file.webViewLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] hover:border-primary/30 hover:bg-primary/5 transition-all group"
               >
-                <div className="shrink-0 text-muted-foreground/50 group-hover:text-primary transition-colors">
-                  {isFolder ? <FolderOpen className="w-4 h-4"/> : <FileText className="w-4 h-4"/>}
+                <div className="shrink-0 w-6 h-6 rounded flex items-center justify-center bg-white/5">
+                  {file.iconLink ? (
+                    <img src={file.iconLink} alt="" className="w-4 h-4" />
+                  ) : isFolder ? (
+                    <FolderOpen className="w-4 h-4 text-blue-400"/>
+                  ) : (
+                    <FileText className="w-4 h-4 text-gray-400"/>
+                  )}
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold text-foreground truncate group-hover:text-primary transition-colors">{slot.display_name}</p>
-                  <p className="text-[10px] text-muted-foreground/50 truncate">{name}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-semibold text-foreground truncate group-hover:text-primary transition-colors">{file.name}</p>
+                  <p className="text-[9px] text-muted-foreground/40 truncate">{file.slotName}</p>
                 </div>
               </a>
             );
