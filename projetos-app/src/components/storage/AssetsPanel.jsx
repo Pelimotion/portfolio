@@ -181,12 +181,12 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
     setSyncing(true);
     try {
       const token = await googleAuth.ensureToken();
-      const folders = await googleDriveProvider.crawlProject(connection.root_folder_id, token);
-      if (!folders || folders.length === 0) {
-        throw new Error('Nenhuma subpasta encontrada dentro da pasta raiz selecionada.');
+      const items = await googleDriveProvider.crawlProject(connection.root_folder_id, token);
+      if (!items || items.length === 0) {
+        throw new Error('Nenhum item (pasta ou arquivo) encontrado dentro da pasta raiz selecionada.');
       }
-      await storageService.saveFolders(connection.id, folders);
-      alert(`Sucesso! ${folders.length} pastas sincronizadas do Google Drive.`);
+      await storageService.saveFolders(connection.id, items);
+      alert(`Sucesso! ${items.length} itens sincronizados do Google Drive.`);
     } catch (e) {
       console.error('Erro na Sincronização:', e);
       alert(`⚠️ Falha na Sincronização:\n${e.message || 'Erro desconhecido'}`);

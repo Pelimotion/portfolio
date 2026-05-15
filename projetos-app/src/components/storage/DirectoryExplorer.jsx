@@ -40,6 +40,16 @@ export function DirectoryExplorer({
       map[f.id] = { ...f, children: [] };
     });
 
+    const sortNodes = (nodes) => {
+      return nodes.sort((a, b) => {
+        const aIsFolder = a.mimeType === 'application/vnd.google-apps.folder' || !a.mimeType;
+        const bIsFolder = b.mimeType === 'application/vnd.google-apps.folder' || !b.mimeType;
+        if (aIsFolder && !bIsFolder) return -1;
+        if (!aIsFolder && bIsFolder) return 1;
+        return a.name.localeCompare(b.name);
+      });
+    };
+
     list.forEach(f => {
       if (f.parentId && map[f.parentId]) {
         map[f.parentId].children.push(map[f.id]);
@@ -48,6 +58,15 @@ export function DirectoryExplorer({
       }
     });
 
+    // Ordenar recursivamente
+    const sortTree = (nodes) => {
+      sortNodes(nodes);
+      nodes.forEach(n => {
+        if (n.children.length > 0) sortTree(n.children);
+      });
+    };
+    
+    sortTree(roots);
     return roots;
   };
 
