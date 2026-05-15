@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { 
   Folder, ChevronRight, ChevronDown, Check, Loader2,
   FileText, File, Image as ImageIcon, Video, Music
