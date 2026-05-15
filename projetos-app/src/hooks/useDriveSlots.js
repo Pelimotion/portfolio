@@ -19,7 +19,7 @@ export function useDriveSlots({ projectId, pageId, isScene = false }) {
     if (!slotsData) { setLoading(false); return; }
 
     // Auto-seed for legacy projects
-    if (slotsData.length === 0) {
+    if (slotsData.length < 4) {
       await seedDefaultDriveSlots(projectId);
       const { data: newSlotsData } = await supabase
         .from('project_drive_slots')

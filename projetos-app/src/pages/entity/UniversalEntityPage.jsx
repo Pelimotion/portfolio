@@ -53,6 +53,7 @@ export function UniversalEntityPage() {
   const [childDatabase, setChildDatabase] = useState(null);
   const [allItems,      setAllItems]      = useState([]);
   const [allItemValues, setAllItemValues] = useState({});
+  const [pipelineProps, setPipelineProps] = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [teamSettingsOpen, setTeamSettingsOpen] = useState(false);
   const [grandparentPageId, setGrandparentPageId] = useState(null);
@@ -108,7 +109,7 @@ export function UniversalEntityPage() {
               if (isMounted) {
                 setAllItems(items || []);
                 setAllItemValues(combined || {});
-                setProperties(prev => (prev || []).length ? prev : (itemProps || []));
+                setPipelineProps(itemProps || []);
               }
           }
         } else {
@@ -282,7 +283,7 @@ export function UniversalEntityPage() {
           {activeTab === 'dashboard' && childDatabase && (
             <ProductionDashboard
               items={allItems}
-              properties={properties}
+              properties={pipelineProps}
               allValues={allItemValues}
               projectTitle={page.title}
               pageId={pageId}
@@ -425,6 +426,9 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
         </div>
       </div>
 
+      {/* Documentos do Projeto */}
+      <DocsSectionDashboard projectId={pageId} onGoToAssets={onGoToAssets} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* Stage deadline table */}
@@ -526,9 +530,6 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
           </div>
         </div>
       </div>
-
-      {/* Documentos do Projeto */}
-      <DocsSectionDashboard projectId={pageId} onGoToAssets={onGoToAssets} />
 
       {/* Notes integradas */}
       <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">

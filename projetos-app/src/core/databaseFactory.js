@@ -91,11 +91,15 @@ export async function bootstrapProjectPipeline(projectPageId) {
   return pipeline;
 }
 
-// Quando cria um projeto novo: inicializar os 3 slots padrão de Drive
+// Quando cria um projeto novo (ou atualiza legado): inicializar os slots padrão de Drive
 export async function seedDefaultDriveSlots(projectId) {
-  // Verificar se já tem slots
-  const { data } = await supabase.from('project_drive_slots').select('id').eq('project_id', projectId).limit(1);
-  if (data && data.length > 0) return;
+  // Buscar slots existentes
+  const { data: existing } = await supabase
+    .from('project_drive_slots')
+    .select('slot_key')
+    .eq('project_id', projectId);
+
+  const existingKeys = (existing || []).map(s => s.slot_key);
 
   const defaultSlots = [
     { slot_key: 'projeto', display_name: 'Projeto',    slot_type: 'file',   sort_order: 0 },
@@ -104,7 +108,13 @@ export async function seedDefaultDriveSlots(projectId) {
     { slot_key: 'docs',    display_name: 'Docs',       slot_type: 'folder', sort_order: 3 },
   ];
   
-  await supabase
-    .from('project_drive_slots')
-    .insert(defaultSlots.map(s => ({ ...s, project_id: projectId })));
+  const slotsToInsert = defaultSlots
+    .filter(s => !existingKeys.includes(s.slot_key))
+    .map(s => ({ ...s, project_id: projectId }));
+
+  if (slotsToInsert.length > 0) {
+    await supabase
+      .from('project_drive_slots')
+      .insert(slotsToInsert);
+  }
 }
