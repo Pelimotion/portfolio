@@ -44,16 +44,21 @@ export function AddMemberModal({ open, onOpenChange }) {
           className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden"
           aria-describedby="add-member-description"
         >
+          <Dialog.Title className="sr-only">Cadastrar Novo Membro</Dialog.Title>
+          <Dialog.Description id="add-member-description" className="sr-only">
+            Convide um novo colaborador para a plataforma inserindo seu nome e e-mail.
+          </Dialog.Description>
+
           <div className="px-6 pt-6 pb-4 border-b border-border/50">
-            <Dialog.Title className="text-base font-semibold flex items-center gap-2.5 text-foreground">
+            <div className="text-base font-semibold flex items-center gap-2.5 text-foreground">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <UserPlus className="w-4 h-4 text-primary" />
               </div>
               Cadastrar Novo Membro
-            </Dialog.Title>
-            <Dialog.Description id="add-member-description" className="text-xs text-muted-foreground mt-1">
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
               O usuário receberá um convite por e-mail para configurar sua senha.
-            </Dialog.Description>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4">

@@ -111,18 +111,22 @@ export function CreateProjectModal({ open, onOpenChange }) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-background/70 backdrop-blur-md z-50 animate-in fade-in-0" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden" aria-describedby="dialog-description">
+          <Dialog.Title className="sr-only">Novo Projeto</Dialog.Title>
+          <Dialog.Description id="dialog-description" className="sr-only">
+            Configure e comece sua produção em segundos criando um novo projeto.
+          </Dialog.Description>
           
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-border/50">
-            <Dialog.Title className="text-base font-semibold flex items-center gap-2.5">
+            <div className="text-base font-semibold flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Briefcase className="w-4 h-4 text-primary" />
               </div>
               Novo Projeto
-            </Dialog.Title>
-            <Dialog.Description id="dialog-description" className="text-sm text-muted-foreground mt-1">
+            </div>
+            <div className="text-sm text-muted-foreground mt-1">
               Configure e comece sua produção em segundos.
-            </Dialog.Description>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">

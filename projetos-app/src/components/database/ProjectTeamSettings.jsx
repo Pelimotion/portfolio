@@ -17,16 +17,24 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
   useEffect(() => {
     async function load() {
       if (open && projectId) {
-        await fetchProjectMembers(projectId);
-        
-        // AUTO-REPAIR: Usamos o estado direto do store que já foi atualizado
-        const currentMembers = useTeamStore.getState().projectMembers || [];
-        
-        if (currentMembers.length === 0) {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            await addProjectMember(projectId, user.id, 'admin');
+        try {
+          await fetchProjectMembers(projectId);
+          
+          // AUTO-REPAIR: Usamos o estado direto do store que já foi atualizado
+          const currentMembers = useTeamStore.getState().projectMembers || [];
+          
+          if (currentMembers.length === 0) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              try {
+                await addProjectMember(projectId, user.id, 'admin');
+              } catch (innerErr) {
+                console.warn('Auto-admin: usuário sem permissão ou já adicionado', innerErr);
+              }
+            }
           }
+        } catch (err) {
+          console.error('Falha ao carregar equipe:', err);
         }
       }
     }
@@ -62,18 +70,22 @@ export function ProjectTeamSettings({ projectId, open, onOpenChange }) {
           className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col h-[500px]"
           aria-describedby="team-settings-description"
         >
+          <Dialog.Title className="sr-only">Equipe do Projeto</Dialog.Title>
+          <Dialog.Description id="team-settings-description" className="sr-only">
+            Gerencie os colaboradores e níveis de acesso para este projeto específico.
+          </Dialog.Description>
           
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-border/50">
-            <Dialog.Title className="text-base font-semibold flex items-center gap-2.5 text-foreground">
+            <div className="text-base font-semibold flex items-center gap-2.5 text-foreground">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Users className="w-4 h-4 text-primary" />
               </div>
               Equipe do Projeto
-            </Dialog.Title>
-            <Dialog.Description id="team-settings-description" className="text-xs text-muted-foreground mt-1">
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
               Gerencie quem tem acesso a este projeto e suas permissões.
-            </Dialog.Description>
+            </div>
           </div>
 
           {/* Search Area */}
