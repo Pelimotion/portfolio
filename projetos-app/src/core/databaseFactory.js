@@ -2,6 +2,7 @@ import { propertyService } from '../services/propertyService';
 import { viewService } from '../services/viewService';
 import { pageService } from '../services/pageService';
 import { PROJECT_PROPERTY_SCHEMA, SCENE_PROPERTY_SCHEMA, DEFAULT_VIEWS, ROOT_HUB_ID } from './schemas';
+import { supabase } from '../lib/supabase';
 
 // ============================================
 // DATABASE FACTORY — Criar databases com
@@ -84,7 +85,25 @@ export async function bootstrapProjectPipeline(projectPageId) {
   await Promise.all([
     ensureProperties(pipeline.id, SCENE_PROPERTY_SCHEMA),
     ensureViews(pipeline.id, DEFAULT_VIEWS.scenes),
+    seedDefaultDriveSlots(projectPageId)
   ]);
 
   return pipeline;
+}
+
+// Quando cria um projeto novo: inicializar os 3 slots padrão de Drive
+export async function seedDefaultDriveSlots(projectId) {
+  // Verificar se já tem slots
+  const { data } = await supabase.from('project_drive_slots').select('id').eq('project_id', projectId).limit(1);
+  if (data && data.length > 0) return;
+
+  const defaultSlots = [
+    { slot_key: 'projeto', display_name: 'Projeto', slot_type: 'file', sort_order: 0 },
+    { slot_key: 'render',  display_name: 'Render',  slot_type: 'folder', sort_order: 1 },
+    { slot_key: 'still',   display_name: 'Still',   slot_type: 'folder', sort_order: 2 },
+  ];
+  
+  await supabase
+    .from('project_drive_slots')
+    .insert(defaultSlots.map(s => ({ ...s, project_id: projectId })));
 }
