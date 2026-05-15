@@ -55,9 +55,20 @@ export function UniversalEntityPage() {
   const [allItemValues, setAllItemValues] = useState({});
   const [loading,       setLoading]       = useState(true);
   const [teamSettingsOpen, setTeamSettingsOpen] = useState(false);
+  const [grandparentPageId, setGrandparentPageId] = useState(null);
 
   const page     = pages[pageId];
   const isProject = page?.parent_id === ROOT_HUB_ID;
+
+  useEffect(() => {
+    if (!isProject && page?.parent_id) {
+      pageService.fetchById(page.parent_id)
+        .then(dbPage => {
+          if (dbPage?.parent_id) setGrandparentPageId(dbPage.parent_id);
+        })
+        .catch(console.error);
+    }
+  }, [isProject, page?.parent_id]);
 
   useEffect(() => {
     let isMounted = true;
@@ -294,7 +305,7 @@ export function UniversalEntityPage() {
             <AssetsPanel 
               pageId={pageId} 
               isProject={isProject} 
-              parentProjectId={!isProject ? page?.parent_id : null}
+              parentProjectId={!isProject ? grandparentPageId : null}
             />
           )}
           {activeTab === 'activity' && (

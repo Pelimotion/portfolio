@@ -7,6 +7,7 @@ export function useDriveSlots({ projectId, pageId, isScene = false }) {
   const [loading, setLoading] = useState(true);
 
   const fetchSlots = async () => {
+    if (!projectId) return;
     setLoading(true);
     
     let { data: slotsData } = await supabase

@@ -173,6 +173,7 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
   const [linkingSlot, setLinkingSlot] = useState(null);
 
   useEffect(() => {
+    if (!projectId) return;
     storageService.getConnection(projectId).then(setConnection).catch(console.error);
   }, [projectId]);
 

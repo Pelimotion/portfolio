@@ -17,7 +17,7 @@ export const googleDriveProvider = {
     
     try {
       const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=${encodeURIComponent(fields)}&pageSize=1000`,
+        `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=${encodeURIComponent(fields)}&pageSize=1000&supportsAllDrives=true&includeItemsFromAllDrives=true`,
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
