@@ -29,7 +29,6 @@ const PROJECT_TABS = [
   { id: 'dashboard', label: 'Dashboard',  Icon: BarChart2 },
   { id: 'pipeline',  label: 'Pipeline',   Icon: Zap },
   { id: 'calendar',  label: 'Calendar',   Icon: CalendarDays },
-  { id: 'notes',     label: 'Notes',      Icon: FileText },
   { id: 'assets',    label: 'Assets',     Icon: FolderOpen },
   { id: 'activity',  label: 'Activity',   Icon: Activity },
 ];
@@ -147,9 +146,9 @@ export function UniversalEntityPage() {
 
   const statusProp   = properties.find(p => p.name === 'Status');
   const priorityProp = properties.find(p => p.name === 'Prioridade');
-  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega');
+  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega' || p.property_type === 'date');
   const clienteProp  = properties.find(p => p.name === 'Cliente');
-  const otherProps   = properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Cliente'].includes(p.name));
+  const otherProps   = properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Data de Entrega', 'Cliente'].includes(p.name));
 
   const statusVal    = statusProp ? propValues[statusProp.id] : null;
   const statusOption = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
@@ -285,6 +284,9 @@ export function UniversalEntityPage() {
               properties={properties}
               allValues={allItemValues}
               projectTitle={page.title}
+              pageId={pageId}
+              pageContent={page.content || ''}
+              onContentChange={handleContentChange}
             />
           )}
           {activeTab === 'pipeline' && childDatabase && (
@@ -292,14 +294,6 @@ export function UniversalEntityPage() {
           )}
           {activeTab === 'calendar' && childDatabase && (
             <DatabaseRenderer databaseId={childDatabase.id} defaultView="calendar" />
-          )}
-          {activeTab === 'notes' && (
-            <RichTextEditor
-              key={pageId}
-              content={page.content || ''}
-              onChange={handleContentChange}
-              placeholder="Pressione '/' para comandos. Escreva briefing, roteiro, notas técnicas..."
-            />
           )}
           {activeTab === 'assets' && (
             <AssetsPanel 
@@ -323,179 +317,206 @@ export function UniversalEntityPage() {
   );
 }
 
-function ProductionDashboard({ items, properties, allValues, projectTitle }) {
-  const statusProp   = properties.find(p => p.name === 'Status');
-  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega');
+
+
+function ProductionDashboard({ items, properties, allValues, projectTitle, pageId, pageContent, onContentChange }) {
+  const statusProp    = properties.find(p => p.property_type === 'status' || p.name === 'Status');
+  const deadlineProp  = properties.find(p => p.property_type === 'date' || p.name === 'Data de Entrega' || p.name === 'Deadline');
+  const assigneeProp  = properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
+  const atoProp       = properties.find(p => p.name === 'Ato');
   const statusOptions = statusProp?.config?.options || [];
   const today = new Date();
-  const { members } = useTeamStore();
+
+  // Status aliases: styleframes = "Em Styleframes", backlog = "Stand By", animacao = "Em Animação", finalizacao = "Finalização"
+  const DONE_IDS     = ['finalizacao', 'entregue', 'concluido', 'done', 'approved', 'finalizado'];
+  const ACTIVE_IDS   = ['styleframes', 'animacao', 'em_progresso', 'producao', 'revisao'];
+  const STANDBY_IDS  = ['backlog', 'a_fazer', 'pendente', 'stand_by'];
+
+  const getStatus = (itemId) => {
+    const sel = allValues[itemId]?.[statusProp?.id]?.selected;
+    return statusOptions.find(o => o.id === sel);
+  };
 
   const kpis = useMemo(() => {
-    const total = items.length;
-    if (total === 0) return { total: 0, delivered: 0, inProgress: 0, overdue: 0, progress: 0 };
-    const deliveredKeywords = ['entregue', 'concluído', 'concluido', 'done', 'approved', 'finalizado', 'ready'];
-    const progressKeywords  = ['em progresso', 'produção', 'producao', 'doing', 'motion', 'compositing', 'edit', 'rendering'];
-    const delivered = items.filter(i => {
-      const sel = allValues[i.id]?.[statusProp?.id]?.selected;
-      const opt = statusOptions.find(o => o.id === sel);
-      return opt && deliveredKeywords.some(k => opt.label.toLowerCase().includes(k));
-    }).length;
-    const inProgress = items.filter(i => {
-      const sel = allValues[i.id]?.[statusProp?.id]?.selected;
-      const opt = statusOptions.find(o => o.id === sel);
-      return opt && progressKeywords.some(k => opt.label.toLowerCase().includes(k));
-    }).length;
-    const overdue = deadlineProp ? items.filter(i => {
-      const dateStr = allValues[i.id]?.[deadlineProp.id]?.date;
-      if (!dateStr) return false;
-      const sel = allValues[i.id]?.[statusProp?.id]?.selected;
-      const opt = statusOptions.find(o => o.id === sel);
-      const isDelivered = opt && deliveredKeywords.some(k => opt.label.toLowerCase().includes(k));
-      return !isDelivered && new Date(dateStr) < today;
+    const total      = items.length;
+    const done       = items.filter(i => DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k) || getStatus(i.id)?.label?.toLowerCase().includes(k))).length;
+    const active     = items.filter(i => ACTIVE_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length;
+    const standby    = items.filter(i => STANDBY_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length;
+    const overdue    = deadlineProp ? items.filter(i => {
+      const d = allValues[i.id]?.[deadlineProp.id]?.date;
+      const isDone = DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k));
+      return d && !isDone && new Date(d) < today;
     }).length : 0;
-    return { total, delivered, inProgress, overdue, progress: total > 0 ? Math.round((delivered / total) * 100) : 0 };
-  }, [items, allValues, statusProp, deadlineProp, statusOptions, today]);
+    const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+    return { total, done, active, standby, overdue, progress };
+  }, [items, allValues, statusProp, deadlineProp]);
 
-  const nextDeadlines = useMemo(() => {
-    if (!deadlineProp) return [];
-    return items
-      .filter(i => allValues[i.id]?.[deadlineProp.id]?.date)
-      .map(i => ({ ...i, deadline: new Date(allValues[i.id][deadlineProp.id].date) }))
-      .filter(i => i.deadline >= today)
-      .sort((a, b) => a.deadline - b.deadline)
-      .slice(0, 6);
-  }, [items, allValues, deadlineProp, today]);
+  // Stage deadlines: group scenes by status, find latest deadline per stage
+  const stageSummary = useMemo(() => {
+    return statusOptions.map(opt => {
+      const stageItems = items.filter(i => allValues[i.id]?.[statusProp?.id]?.selected === opt.id);
+      const dates = stageItems.map(i => allValues[i.id]?.[deadlineProp?.id]?.date).filter(Boolean);
+      const latestDate = dates.length > 0 ? dates.reduce((a, b) => a > b ? a : b) : null;
+      const isDone = DONE_IDS.some(k => opt.id.includes(k));
+      return { ...opt, count: stageItems.length, deadline: latestDate, isDone };
+    }).filter(s => s.count > 0);
+  }, [items, allValues, statusProp, deadlineProp, statusOptions]);
 
-  const statusDist = useMemo(() => {
-    if (!statusProp) return [];
-    return statusOptions.map(opt => ({
-      ...opt,
-      count: items.filter(i => allValues[i.id]?.[statusProp.id]?.selected === opt.id).length,
-    })).filter(o => o.count > 0);
-  }, [items, allValues, statusProp, statusOptions]);
-
-  const assigneeProp = properties.find(p => p.name === 'Responsável' || p.property_type === 'people');
+  // Workload by assignee (select type)
   const workloadDist = useMemo(() => {
     if (!assigneeProp) return [];
     const counts = {};
     items.forEach(i => {
-      const sel = allValues[i.id]?.[statusProp?.id]?.selected;
-      const opt = statusOptions.find(o => o.id === sel);
-      const isDelivered = opt && ['entregue', 'concluído', 'concluido', 'done', 'approved', 'finalizado', 'ready'].some(k => opt.label.toLowerCase().includes(k));
-      if (isDelivered) return;
-      const assigneeIdOrName = allValues[i.id]?.[assigneeProp.id]?.people;
-      if (assigneeIdOrName) {
-        const member = members.find(m => m.id === assigneeIdOrName || m.name === assigneeIdOrName);
-        const displayName = member ? member.name : assigneeIdOrName;
-        counts[displayName] = (counts[displayName] || 0) + 1;
-      }
+      const isDone = DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k));
+      if (isDone) return;
+      const sel = allValues[i.id]?.[assigneeProp.id]?.selected;
+      if (!sel) return;
+      const label = assigneeProp.config?.options?.find(o => o.id === sel)?.label || sel;
+      counts[label] = (counts[label] || 0) + 1;
     });
-    return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
-  }, [items, allValues, assigneeProp, statusProp, statusOptions, members]);
+    const total = items.filter(i => !DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length || 1;
+    return Object.entries(counts).map(([name, count]) => ({ name, count, pct: Math.round((count / total) * 100) }))
+      .sort((a, b) => b.count - a.count);
+  }, [items, allValues, assigneeProp, statusProp]);
+
+  // Workload by Ato
+  const atoDist = useMemo(() => {
+    if (!atoProp) return [];
+    const opts = atoProp.config?.options || [];
+    return opts.map(opt => ({
+      ...opt,
+      total: items.filter(i => allValues[i.id]?.[atoProp.id]?.selected === opt.id).length,
+      done:  items.filter(i => allValues[i.id]?.[atoProp.id]?.selected === opt.id && DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length,
+    })).filter(a => a.total > 0);
+  }, [items, allValues, atoProp, statusProp]);
+
+  const health = [
+    { label: 'Cenas em Stand By',   value: kpis.standby,           type: kpis.standby > items.length * 0.5 ? 'warn' : 'info' },
+    { label: 'Cenas em Produção',   value: kpis.active,            type: 'blue' },
+    { label: 'Entregas Atrasadas',  value: kpis.overdue,           type: kpis.overdue > 0 ? 'danger' : 'ok' },
+    { label: 'Taxa de Conclusão',   value: `${kpis.progress}%`,    type: kpis.progress >= 80 ? 'ok' : kpis.progress >= 40 ? 'warn' : 'info' },
+    { label: 'Total de Cenas',      value: `${kpis.done}/${kpis.total}`, type: 'neutral' },
+  ];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+      {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon={<Circle className="w-3.5 h-3.5" />}  label="Total de Cenas"    value={kpis.total}      color="default" />
-        <KpiCard icon={<Loader2 className="w-3.5 h-3.5" />} label="Em Produção"    value={kpis.inProgress} color="blue" />
-        <KpiCard icon={<AlertTriangle className="w-3.5 h-3.5" />} label="Cenas Atrasadas" value={kpis.overdue}   color={kpis.overdue > 0 ? 'red' : 'default'} />
-        <KpiCard icon={<CheckCircle2 className="w-3.5 h-3.5" />} label="Concluídas" value={kpis.delivered}  color="green" />
+        <KpiCard icon={<Circle className="w-3.5 h-3.5"/>}        label="Total de Cenas"  value={kpis.total}    color="default"/>
+        <KpiCard icon={<Loader2 className="w-3.5 h-3.5"/>}       label="Em Produção"     value={kpis.active}   color="blue"/>
+        <KpiCard icon={<AlertTriangle className="w-3.5 h-3.5"/>} label="Stand By"        value={kpis.standby}  color={kpis.standby > 0 ? 'yellow' : 'default'}/>
+        <KpiCard icon={<CheckCircle2 className="w-3.5 h-3.5"/>}  label="Finalizadas"     value={kpis.done}     color="green"/>
       </div>
 
-      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3 shadow-sm">
+      {/* Progress bar */}
+      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso de Produção</span>
-            <span className="text-xl font-black text-foreground">{kpis.progress}% <span className="text-xs text-muted-foreground/60 font-medium tracking-normal ml-1">COMPLETADO</span></span>
+          <div>
+            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso Geral</span>
+            <div className="text-2xl font-black text-foreground">{kpis.progress}% <span className="text-xs text-muted-foreground/50 font-normal">completo</span></div>
           </div>
-          <span className="text-[10px] font-mono text-muted-foreground/50 bg-[var(--surface-2)] px-2 py-1 rounded-md border border-[var(--border-subtle)]">
-            {kpis.delivered} / {kpis.total} CENAS
-          </span>
+          <span className="text-[10px] font-mono text-muted-foreground/50 bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border-subtle)]">{kpis.done} / {kpis.total} CENAS</span>
         </div>
-        <div className="h-3 bg-[var(--surface-3)] rounded-full overflow-hidden p-0.5 border border-[var(--border-subtle)]">
-          <div 
-            className="h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all duration-1000 ease-out" 
-            style={{ width: `${kpis.progress}%` }} 
-          />
+        <div className="h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 transition-all duration-1000" style={{ width: `${kpis.progress}%` }}/>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
-              <Zap className="w-3.5 h-3.5 text-yellow-500" /> Pipeline Snapshot
-            </h3>
-          </div>
-          <div className="flex flex-wrap gap-2.5">
-            {statusDist.length === 0 && <p className="text-[11px] text-muted-foreground/40 italic">Nenhum item com status ainda.</p>}
-            {statusDist.map(opt => {
-              const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        {/* Stage deadline table */}
+        <div className="lg:col-span-2 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
+          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+            <Zap className="w-3.5 h-3.5 text-yellow-500"/> Etapas do Pipeline
+          </h3>
+          <div className="space-y-1.5">
+            {stageSummary.length === 0 && <p className="text-[11px] text-muted-foreground/40 italic">Nenhum item com status ainda.</p>}
+            {stageSummary.map(stage => {
+              const colors  = COLOR_MAP[stage.color] || COLOR_MAP.gray;
+              const dDate   = stage.deadline ? new Date(stage.deadline) : null;
+              const isLate  = dDate && dDate < today && !stage.isDone;
+              const diffDays = dDate ? Math.ceil((dDate - today) / (1000 * 60 * 60 * 24)) : null;
               return (
-                <div key={opt.id} className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all`}>
-                  {/* dot removed */}
-                  <span className={`text-[11px] font-bold text-foreground/80`}>{opt.label}</span>
-                  <span className={`text-[11px] font-black opacity-30`}>{opt.count}</span>
+                <div key={stage.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--surface-2)] transition-colors">
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${colors.bg} ${colors.text} shrink-0`}>{stage.label}</span>
+                  <span className="text-xs text-muted-foreground flex-1">{stage.count} {stage.count === 1 ? 'cena' : 'cenas'}</span>
+                  <div className="w-24 h-1 bg-[var(--surface-3)] rounded-full overflow-hidden shrink-0">
+                    <div className={`h-full ${colors.bg}`} style={{ width: `${(stage.count / kpis.total) * 100}%` }}/>
+                  </div>
+                  {dDate ? (
+                    <span className={`text-[10px] font-mono shrink-0 ${isLate ? 'text-red-400' : diffDays <= 7 ? 'text-yellow-400' : 'text-muted-foreground/50'}`}>
+                      {isLate ? `${Math.abs(diffDays)}d atraso` : dDate.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' })}
+                    </span>
+                  ) : <span className="text-[10px] text-muted-foreground/30 shrink-0">—</span>}
                 </div>
               );
             })}
           </div>
-          {statusDist.length > 0 && (
-            <div className="flex h-1.5 rounded-full overflow-hidden gap-0.5">
-              {statusDist.map(opt => {
-                const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
-                return <div key={opt.id} title={`${opt.label}: ${opt.count}`} className={`h-full transition-all ${colors.bg}`} style={{ width: `${(opt.count / kpis.total) * 100}%` }} />;
+          {/* Stacked bar */}
+          {stageSummary.length > 0 && (
+            <div className="flex h-1.5 rounded-full overflow-hidden gap-px mt-2">
+              {stageSummary.map(s => {
+                const colors = COLOR_MAP[s.color] || COLOR_MAP.gray;
+                return <div key={s.id} title={`${s.label}: ${s.count}`} className={`h-full ${colors.bg}`} style={{ width: `${(s.count / kpis.total) * 100}%` }}/>;
               })}
             </div>
           )}
         </div>
-        <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4">
+
+        {/* Health */}
+        <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
           <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
-            <TrendingUp className="w-3.5 h-3.5 text-blue-500" /> Saúde do Projeto
+            <TrendingUp className="w-3.5 h-3.5 text-blue-500"/> Saúde do Projeto
           </h3>
-          <div className="space-y-3">
-            <HealthRow label="Entregas Atrasadas" value={kpis.overdue} type={kpis.overdue > 0 ? 'danger' : 'ok'} />
-            <HealthRow label="Fila de Produção" value={kpis.inProgress} type="info" />
-            <HealthRow label="Taxa de Conclusão" value={`${kpis.progress}%`} type={kpis.progress >= 80 ? 'ok' : kpis.progress >= 40 ? 'warn' : 'info'} />
+          <div className="space-y-1">
+            {health.map(h => <HealthRow key={h.label} label={h.label} value={h.value} type={h.type}/>)}
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2"><Users className="w-3.5 h-3.5" /> Team Workload</h3>
-          {workloadDist.length === 0 && <p className="text-xs text-muted-foreground/60 italic">Nenhum responsável atribuído a cenas ativas.</p>}
+
+      {/* Workload + Ato breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
+          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+            <Users className="w-3.5 h-3.5"/> Workload por Responsável
+          </h3>
+          {workloadDist.length === 0 && <p className="text-xs text-muted-foreground/50 italic">Nenhum responsável atribuído.</p>}
           <div className="space-y-2">
             {workloadDist.map(w => (
-              <div key={w.name} className="flex items-center justify-between px-3 py-2 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-[9px] text-white font-bold uppercase">{w.name.charAt(0)}</div>
-                  <span className="text-sm text-foreground">{w.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-muted-foreground">{w.count} cenas</span>
-                  <div className="w-16 h-1.5 rounded-full bg-secondary overflow-hidden">
-                    <div className="h-full bg-primary/70" style={{ width: `${Math.min((w.count / 10) * 100, 100)}%` }} />
+              <div key={w.name} className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded bg-primary/10 border border-primary/20 flex items-center justify-center text-[8px] text-primary font-bold uppercase">{w.name.charAt(0)}</div>
+                    <span className="text-xs font-medium text-foreground">{w.name}</span>
                   </div>
+                  <span className="text-[10px] font-mono text-muted-foreground">{w.count} cenas · {w.pct}%</span>
+                </div>
+                <div className="h-1 bg-[var(--surface-3)] rounded-full overflow-hidden">
+                  <div className="h-full bg-primary/60 transition-all" style={{ width: `${w.pct}%` }}/>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div className="bg-card/40 border border-border/40 rounded-xl p-4 space-y-3">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2"><Clock className="w-3.5 h-3.5" /> Próximas Entregas</h3>
-          {nextDeadlines.length === 0 && <p className="text-xs text-muted-foreground/60 italic">Nenhuma entrega próxima registrada.</p>}
-          <div className="space-y-1.5">
-            {nextDeadlines.map(item => {
-              const isLate = item.deadline < today;
-              const diffDays = Math.ceil((item.deadline - today) / (1000 * 60 * 60 * 24));
-              const sel = allValues[item.id]?.[statusProp?.id]?.selected;
-              const opt = statusOptions.find(o => o.id === sel);
-              const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
+
+        <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
+          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+            <ArrowRight className="w-3.5 h-3.5"/> Progresso por Ato
+          </h3>
+          {atoDist.length === 0 && <p className="text-xs text-muted-foreground/50 italic">Nenhum Ato definido.</p>}
+          <div className="space-y-2">
+            {atoDist.map(a => {
+              const colors = COLOR_MAP[a.color] || COLOR_MAP.gray;
+              const pct = a.total > 0 ? Math.round((a.done / a.total) * 100) : 0;
               return (
-                <div key={item.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer group">
-                  <div className="flex items-center gap-2 min-w-0">{/* dot removed */}<span className="text-sm font-medium text-foreground truncate">{item.title}</span></div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {opt && <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${colors.bg} ${colors.text}`}>{opt.label}</span>}
-                    <span className={`text-xs font-mono ${isLate ? 'text-red-400' : diffDays <= 3 ? 'text-yellow-400' : 'text-muted-foreground'}`}>{isLate ? `${Math.abs(diffDays)}d atraso` : diffDays === 0 ? 'Hoje' : `+${diffDays}d`}</span>
+                <div key={a.id} className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${colors.bg} ${colors.text}`}>{a.label}</span>
+                    <span className="text-[10px] font-mono text-muted-foreground">{a.done}/{a.total} · {pct}%</span>
+                  </div>
+                  <div className="h-1 bg-[var(--surface-3)] rounded-full overflow-hidden">
+                    <div className={`h-full ${colors.bg} transition-all`} style={{ width: `${pct}%` }}/>
                   </div>
                 </div>
               );
@@ -503,9 +524,24 @@ function ProductionDashboard({ items, properties, allValues, projectTitle }) {
           </div>
         </div>
       </div>
+
+      {/* Notes integradas */}
+      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
+        <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+          <FileText className="w-3.5 h-3.5"/> Notas do Projeto
+        </h3>
+        <RichTextEditor
+          key={pageId}
+          content={pageContent}
+          onChange={onContentChange}
+          placeholder="Briefing, roteiro, decisões técnicas, links importantes..."
+        />
+      </div>
+
     </div>
   );
 }
+
 
 function KpiCard({ icon, label, value, color }) {
   const p = {
@@ -513,7 +549,9 @@ function KpiCard({ icon, label, value, color }) {
     blue:    { bg: 'bg-blue-500/5 border-blue-500/10', text: 'text-blue-400', iconCls: 'text-blue-400/50' },
     red:     { bg: 'bg-red-500/5 border-red-500/10', text: 'text-red-400', iconCls: 'text-red-400/50' },
     green:   { bg: 'bg-emerald-500/5 border-emerald-500/10', text: 'text-emerald-400', iconCls: 'text-emerald-400/50' },
+    yellow:  { bg: 'bg-yellow-500/5 border-yellow-500/10', text: 'text-yellow-400', iconCls: 'text-yellow-400/50' },
   }[color] || { bg: 'bg-[var(--surface-1)] border-[var(--border-subtle)]', text: 'text-foreground', iconCls: 'text-muted-foreground/40' };
+
 
   return (
     <div className={`rounded-2xl border p-5 space-y-4 transition-all hover:border-[var(--border-strong)] hover:shadow-lg group ${p.bg}`}>

@@ -38,8 +38,10 @@ export const EntityCard = memo(function EntityCard({
   // Extract relevant props
   const statusProp   = properties.find(p => p.name === 'Status');
   const priorityProp = properties.find(p => p.name === 'Prioridade');
-  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega');
-  const assigneeProp = properties.find(p => p.name === 'Responsável');
+  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega');
+  const assigneeProp = properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
+  const descProp     = properties.find(p => p.name === 'Descricao da Cena' || p.name === 'Descrição da Cena' || p.property_type === 'text');
+  const atoProp      = properties.find(p => p.name === 'Ato');
   const clienteProp  = properties.find(p => p.name === 'Cliente');
   const tipoProp     = properties.find(p => p.name === 'Tipo');
 
@@ -54,11 +56,17 @@ export const EntityCard = memo(function EntityCard({
   const tipoVal    = tipoProp ? values[tipoProp.id] : null;
   const tipoOption = tipoProp?.config?.options?.find(o => o.id === tipoVal?.selected);
 
-  const deadline  = deadlineProp ? values[deadlineProp.id]?.date : null;
-  const assignee  = assigneeProp ? values[assigneeProp.id]?.people : null;
-  const cliente   = clienteProp  ? values[clienteProp.id]?.text   : null;
+  const atoVal    = atoProp ? values[atoProp.id] : null;
+  const atoOption = atoProp?.config?.options?.find(o => o.id === atoVal?.selected);
 
-  const today    = new Date();
+  const deadline   = deadlineProp ? values[deadlineProp.id]?.date : null;
+  const assignee   = assigneeProp ? (values[assigneeProp.id]?.selected
+    ? (assigneeProp.config?.options?.find(o => o.id === values[assigneeProp.id]?.selected)?.label || values[assigneeProp.id]?.selected)
+    : values[assigneeProp.id]?.people) : null;
+  const descText   = descProp ? values[descProp.id]?.text : null;
+  const cliente    = clienteProp ? values[clienteProp.id]?.text : null;
+
+  const today     = new Date();
   const isOverdue = deadline && new Date(deadline) < today;
   const daysLeft  = deadline ? Math.ceil((new Date(deadline) - today) / (1000 * 60 * 60 * 24)) : null;
   const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
@@ -75,8 +83,9 @@ export const EntityCard = memo(function EntityCard({
           }`}
       >
         {item.icon && <span className="text-sm shrink-0">{item.icon}</span>}
-        {/* status dot removed */}
         <span className="text-xs font-medium text-foreground flex-1 truncate">{item.title || 'Untitled'}</span>
+        {atoOption && <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/50 text-muted-foreground font-medium shrink-0">{atoOption.label}</span>}
+        {assignee && <span className="text-[10px] text-muted-foreground/60 shrink-0 truncate max-w-[50px]">{assignee}</span>}
         {priorityConfig?.icon && <span className="shrink-0">{priorityConfig.icon}</span>}
         {isOverdue && <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />}
         {deadline && !isOverdue && (
@@ -84,7 +93,6 @@ export const EntityCard = memo(function EntityCard({
             {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
           </span>
         )}
-        <ExternalLink className="w-3 h-3 text-muted-foreground/30 opacity-0 group-hover:opacity-100 shrink-0" />
       </div>
     );
   }
@@ -213,24 +221,37 @@ export const EntityCard = memo(function EntityCard({
       </div>
 
       {/* Title */}
-      <h4 className="font-semibold text-[13px] text-foreground leading-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+      <h4 className="font-semibold text-[13px] text-foreground leading-tight mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
         {item.icon && <span className="mr-2">{item.icon}</span>}
         {item.title || 'Untitled'}
       </h4>
 
+      {/* Description snippet */}
+      {descText && (
+        <p className="text-[11px] text-muted-foreground/60 line-clamp-2 leading-relaxed mb-2">{descText}</p>
+      )}
+
+      {/* Ato badge */}
+      {atoOption && (
+        <div className="mb-2">
+          <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary/50 text-muted-foreground/70 font-medium border border-border/30">{atoOption.label}</span>
+        </div>
+      )}
+
       {/* Footer */}
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-subtle)]">
+      <div className="flex items-center justify-between mt-2 pt-2.5 border-t border-[var(--border-subtle)]">
         <div className="flex items-center gap-2">
           {assignee ? (
             <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-primary/20 to-primary/10 border border-primary/20 shrink-0 text-[8px] text-primary flex items-center justify-center font-bold uppercase">
+              <div className="w-4 h-4 rounded bg-primary/10 border border-primary/20 shrink-0 text-[8px] text-primary flex items-center justify-center font-bold uppercase">
                 {assignee.charAt(0)}
               </div>
-              <span className="text-[10px] text-muted-foreground/80 font-medium truncate max-w-[70px]">{assignee}</span>
+              <span className="text-[10px] text-muted-foreground/70 font-medium truncate max-w-[80px]">{assignee}</span>
             </div>
           ) : (
-            <div className="w-5 h-5 rounded-full border border-dashed border-border/50 flex items-center justify-center">
-              <User className="w-2.5 h-2.5 text-muted-foreground/30" />
+            <div className="flex items-center gap-1 text-muted-foreground/30">
+              <User className="w-2.5 h-2.5" />
+              <span className="text-[10px]">—</span>
             </div>
           )}
         </div>

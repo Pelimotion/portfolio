@@ -4,8 +4,9 @@ import {
   PointerSensor, KeyboardSensor, useSensor, useSensors,
 } from '@dnd-kit/core';
 import {
-  SortableContext, verticalListSortingStrategy, arrayMove,
+  SortableContext, verticalListSortingStrategy, horizontalListSortingStrategy, arrayMove, useSortable,
 } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useDroppable } from '@dnd-kit/core';
 import { usePageStore } from '../../stores/usePageStore';
 import { propertyService } from '../../services/propertyService';
@@ -242,7 +243,10 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
   const [localAllValues, setLocalAllValues] = useState(allValues);
   useEffect(() => { setLocalAllValues(allValues); }, [allValues]);
 
-  const columns = useMemo(() => {
+  // Column order state for reordering
+  const [colOrder, setColOrder] = useState(null);
+
+  const baseColumns = useMemo(() => {
     if (!groupProp) return [{ id: '__all', label: 'Todos', color: 'gray', items }];
     const opts = groupProp.config?.options || [];
     const cols = opts.map(opt => ({
@@ -254,21 +258,43 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     return cols;
   }, [items, groupProp, localAllValues]);
 
+  const columns = useMemo(() => {
+    if (!colOrder) return baseColumns;
+    const ordered = [];
+    for (const id of colOrder) {
+      const col = baseColumns.find(c => c.id === id);
+      if (col) ordered.push(col);
+    }
+    // add any new columns not in order yet
+    for (const col of baseColumns) {
+      if (!ordered.find(c => c.id === col.id)) ordered.push(col);
+    }
+    return ordered;
+  }, [baseColumns, colOrder]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor),
   );
   const [activeItem, setActiveItem] = useState(null);
+  const [activeColId, setActiveColId] = useState(null);
   const [overId, setOverId] = useState(null);
+  const [isDraggingCol, setIsDraggingCol] = useState(false);
 
-  // Find which column an item belongs to
   const findColumnOfItem = useCallback((itemId) => {
     return columns.find(col => col.items.some(i => i.id === itemId));
   }, [columns]);
 
   const handleDragStart = useCallback(({ active }) => {
-    setActiveItem(items.find(i => i.id === active.id));
-  }, [items]);
+    // Is it a column drag?
+    if (columns.some(c => c.id === active.id)) {
+      setActiveColId(active.id);
+      setIsDraggingCol(true);
+    } else {
+      setActiveItem(items.find(i => i.id === active.id));
+      setIsDraggingCol(false);
+    }
+  }, [items, columns]);
 
   const handleDragOver = useCallback(({ active, over }) => {
     if (!over) { setOverId(null); return; }
@@ -277,11 +303,26 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
 
   const handleDragEnd = useCallback(async ({ active, over }) => {
     setActiveItem(null);
+    setActiveColId(null);
+    setIsDraggingCol(false);
     setOverId(null);
-    if (!over || !groupProp) return;
+    if (!over) return;
 
     const activeId = active.id;
     const overId   = over.id;
+
+    // Column reorder
+    if (isDraggingCol || columns.some(c => c.id === activeId)) {
+      const oldIndex = columns.findIndex(c => c.id === activeId);
+      const newIndex = columns.findIndex(c => c.id === overId);
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        const reordered = arrayMove(columns.map(c => c.id), oldIndex, newIndex);
+        setColOrder(reordered);
+      }
+      return;
+    }
+
+    if (!groupProp) return;
 
     // Determine target column
     const isColumn = columns.some(c => c.id === overId);
@@ -294,9 +335,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     const sourceCol = findColumnOfItem(activeId);
     const newStatusId = targetCol.id === '__none' ? '' : (targetCol.id === '__all' ? '' : targetCol.id);
 
-    // --- Cross-column move: update status ---
     if (!sourceCol || sourceCol.id !== targetCol.id) {
-      // Optimistic local update
       setLocalAllValues(prev => ({
         ...prev,
         [activeId]: { ...(prev[activeId] || {}), [groupProp.id]: { selected: newStatusId } },
@@ -305,21 +344,19 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
       return;
     }
 
-    // --- Same-column reorder ---
     if (!isColumn) {
       const colItems  = targetCol.items.map(i => i.id);
       const oldIndex  = colItems.indexOf(activeId);
       const newIndex  = colItems.indexOf(overId);
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
         const reordered = arrayMove(colItems, oldIndex, newIndex);
-        // Persist position
         onReorderPersist(reordered);
       }
     }
-  }, [columns, groupProp, findColumnOfItem, onStatusChange, onReorderPersist]);
+  }, [columns, groupProp, findColumnOfItem, onStatusChange, onReorderPersist, isDraggingCol]);
 
-  // Column widths based on density
   const colWidth = density === 'compact' ? 'w-60' : density === 'detailed' ? 'w-96' : 'w-72';
+  const activeCol = activeColId ? columns.find(c => c.id === activeColId) : null;
 
   return (
     <DndContext
@@ -329,23 +366,30 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-3 overflow-x-auto pb-6 items-start -mx-1 px-1">
-        {columns.map(col => (
-          <KanbanColumn
-            key={col.id}
-            col={col}
-            colWidth={colWidth}
-            properties={properties}
-            allValues={localAllValues}
-            navigate={navigate}
-            density={density}
-            isOver={overId === col.id}
-          />
-        ))}
-      </div>
+      <SortableContext items={columns.map(c => c.id)} strategy={horizontalListSortingStrategy}>
+        <div className="flex gap-3 overflow-x-auto pb-6 items-start -mx-1 px-1">
+          {columns.map(col => (
+            <KanbanColumn
+              key={col.id}
+              col={col}
+              colWidth={colWidth}
+              properties={properties}
+              allValues={localAllValues}
+              navigate={navigate}
+              density={density}
+              isOver={overId === col.id}
+            />
+          ))}
+        </div>
+      </SortableContext>
       <DragOverlay dropAnimation={{ duration: 150 }}>
         {activeItem && (
           <EntityCardOverlay item={activeItem} properties={properties} values={localAllValues[activeItem.id] || {}} />
+        )}
+        {activeCol && (
+          <div className={`${colWidth} shrink-0 rounded-xl bg-[var(--surface-2)] border-2 border-primary/30 opacity-80 p-3`}>
+            <span className="text-xs font-bold text-muted-foreground">{activeCol.label}</span>
+          </div>
         )}
       </DragOverlay>
     </DndContext>
@@ -353,20 +397,24 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
 }
 
 function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver }) {
-  const { setNodeRef } = useDroppable({ id: col.id });
+  const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
 
   return (
     <div
       ref={setNodeRef}
+      style={style}
       className={`${colWidth} shrink-0 rounded-xl transition-all ${isOver ? 'ring-1 ring-primary/30 bg-primary/5' : ''}`}
     >
-      {/* Column Header */}
-      <div className="flex items-center gap-2 px-2 py-2 mb-2 group/header">
-        {/* colored dot removed for a more professional look */}
+      {/* Column Header — draggable */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="flex items-center gap-2 px-2 py-2 mb-2 group/header cursor-grab active:cursor-grabbing rounded-lg hover:bg-[var(--surface-2)] transition-colors"
+      >
         <span className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-[0.08em] flex-1">{col.label}</span>
         <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
-        
         <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
           <button className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
             <Plus className="w-3.5 h-3.5" />
@@ -498,13 +546,19 @@ function ListView({ items, properties, allValues }) {
 }
 
 // ============================================
-// CALENDAR VIEW
+// CALENDAR VIEW — corrigido para buscar qualquer prop tipo date
 // ============================================
 function CalendarView({ items, properties, allValues }) {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(() => new Date());
 
-  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega');
+  // Busca qualquer propriedade de data (Data de Entrega, Deadline, Entrega, etc)
+  const deadlineProp = properties.find(p =>
+    p.property_type === 'date' ||
+    p.name === 'Deadline' ||
+    p.name === 'Entrega' ||
+    p.name === 'Data de Entrega'
+  );
   const statusProp   = properties.find(p => p.name === 'Status');
 
   const year  = current.getFullYear();
