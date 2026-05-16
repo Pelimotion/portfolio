@@ -4,68 +4,51 @@ import { Calendar, CheckCircle2, Circle, Clock, ChevronRight } from 'lucide-reac
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardOverview() {
-  const { pages, allValues, properties } = usePageStore();
+  const { pages } = usePageStore();
   const navigate = useNavigate();
 
-  // Find "Feito" property across all properties (or assume a name)
   const stats = useMemo(() => {
     const today = new Date();
     const nextWeek = new Date();
     nextWeek.setDate(today.getDate() + 7);
 
     const upcoming = [];
-    let completedCount = 0;
-    let totalCount = 0;
-    
-    // Group by status
     const stageStats = {};
-    
-    if (!allValues || !properties) return { upcoming: [], totalCount: 0, completedCount: 0, stageStats: {} };
 
-    Object.entries(allValues).forEach(([pageId, values]) => {
-      const page = pages.find(p => p.id === pageId);
-      if (!page) return;
+    // pages is a dict: { [pageId]: page }
+    const pageList = pages ? Object.values(pages) : [];
 
-      // Extract "Feito" status
-      const feitoProp = Object.values(properties).find(p => p.name === 'Feito');
-      const isFeito = feitoProp ? values[feitoProp.id]?.checked : false;
+    if (!pageList.length) return { upcoming: [], totalCount: 0, stageStats: {} };
 
-      // Extract Date
-      const dateProp = Object.values(properties).find(p => p.name === 'Deadline' || p.name === 'Entrega');
-      const date = dateProp ? values[dateProp.id]?.date : null;
+    pageList.forEach(page => {
+      if (!page || page.archived) return;
 
-      if (isFeito) completedCount++;
-      totalCount++;
-
-      if (date) {
-        const d = new Date(date);
+      // Check for deadline-like date in page properties or content
+      const deadline = page.deadline || page.due_date || null;
+      if (deadline) {
+        const d = new Date(deadline);
         if (d >= today && d <= nextWeek) {
-          upcoming.push({ id: pageId, title: page.title, date: d, isFeito });
+          upcoming.push({ id: page.id, title: page.title, date: d });
         }
       }
 
-      // Extract Status
-      const statusProp = Object.values(properties).find(p => p.name === 'Status');
-      const statusVal = statusProp ? values[statusProp.id]?.selected : null;
+      // Group by status if present
+      const statusVal = page.status || null;
       if (statusVal) {
-        const opt = statusProp.config?.options?.find(o => o.id === statusVal);
-        if (opt) {
-          if (!stageStats[opt.label]) stageStats[opt.label] = { total: 0, done: 0 };
-          stageStats[opt.label].total++;
-          if (isFeito) stageStats[opt.label].done++;
-        }
+        if (!stageStats[statusVal]) stageStats[statusVal] = { total: 0, done: 0 };
+        stageStats[statusVal].total++;
       }
     });
 
     return {
       upcoming: upcoming.sort((a, b) => a.date - b.date),
-      totalCount,
-      completedCount,
-      stageStats
+      totalCount: pageList.length,
+      stageStats,
     };
-  }, [pages, allValues, properties]);
+  }, [pages]);
 
   if (stats.totalCount === 0) return null;
+
 
   return (
     <div className="px-8 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-[var(--surface-0)]">
