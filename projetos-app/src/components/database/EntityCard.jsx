@@ -45,6 +45,7 @@ export const EntityCard = memo(function EntityCard({
   isDragOverlay = false,
   density = 'comfortable',
   cardFields = {},
+  entityType = 'project',
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -158,7 +159,7 @@ export const EntityCard = memo(function EntityCard({
                <Check className="w-2.5 h-2.5 stroke-[4px]" />
             </div>
           ) : (
-            <GenerativeIcon slug={item.id} size={16} className="shrink-0 rounded-md" />
+            <GenerativeIcon slug={item.id} size={16} className="shrink-0 rounded-md" type={entityType} />
           )}
           {status && (
             <Badge color={status.color}>{status.label}</Badge>

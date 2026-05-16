@@ -1,12 +1,12 @@
 /**
  * SEED ENGINE™
- * Gera sementes determinísticas de 32 bits a partir de um slug.
+ * Gera sementes determinísticas de 32 bits a partir de um slug + salt.
  */
 
-export async function getSeed(slug) {
-  const msgUint8 = new TextEncoder().encode(slug || 'default-seed');
+export async function getSeed(slug, salt = '') {
+  const combined = `${slug || 'default-seed'}_${salt}`;
+  const msgUint8 = new TextEncoder().encode(combined);
   const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
   
   // Converter para Float32Array de 8 posições (0.0 a 1.0)
   const floats = new Float32Array(8);

@@ -29,11 +29,17 @@ export function DriveLinkPickerModal({ slot, isScene, open, onClose, onLink }) {
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] animate-in fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-xl shadow-2xl p-6 flex flex-col gap-4 animate-in fade-in-0 zoom-in-95">
+        <Dialog.Content 
+          className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 border border-border bg-card rounded-xl shadow-2xl p-6 flex flex-col gap-4 animate-in fade-in-0 zoom-in-95"
+          aria-describedby="drive-link-picker-description"
+        >
           <div className="flex items-center justify-between">
             <Dialog.Title className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Link2 className="w-5 h-5 text-primary" /> Vincular {slot.display_name}
             </Dialog.Title>
+            <Dialog.Description id="drive-link-picker-description" className="sr-only">
+              Insira um link direto do Google Drive para este slot.
+            </Dialog.Description>
             <Dialog.Close asChild>
               <button className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-secondary">
                 <X className="w-4 h-4" />

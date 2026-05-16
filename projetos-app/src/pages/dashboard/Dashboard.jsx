@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
+    document.title = 'Projects Hub | Pelimotion';
     async function init() {
       try {
         const { ensureRootHub } = await import('../../core/databaseFactory');

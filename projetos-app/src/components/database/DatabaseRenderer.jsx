@@ -36,7 +36,7 @@ export const useDensity = () => useContext(DensityCtx);
 // ============================================
 // DATABASE RENDERER v3 — Fixed DnD + Density
 // ============================================
-export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'Nova Cena' }) {
+export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'Nova Cena', entityType = 'project' }) {
   const { pages = {}, fetchDatabaseItems, createPage } = usePageStore();
   const [properties, setProperties] = useState([]);
   const [allValues, setAllValues]   = useState({});
@@ -539,6 +539,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
             onPropertyUpdate={onPropertyUpdate}
             density={density}
             cardFields={cardFields}
+            entityType={entityType}
           />
         )}
         {activeCol && (
@@ -677,6 +678,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
               onPropertyUpdate={onPropertyUpdate}
               density={density}
               cardFields={cardFields}
+              entityType={entityType}
             />
           ))}
         </div>

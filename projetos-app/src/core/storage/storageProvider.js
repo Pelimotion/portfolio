@@ -6,33 +6,44 @@
 export const googleDriveProvider = {
   
   /**
-   * Busca conteúdos (pastas e arquivos) de um diretório pai
+   * Busca conteúdos (pastas e arquivos) de um diretório pai com suporte a paginação
    */
   async listContents(parentId, accessToken) {
     if (!accessToken) throw new Error('Google Drive: Access Token ausente');
 
-    // Busca pastas E arquivos. Filtra lixeira.
-    const q = `'${parentId}' in parents and trashed = false`;
-    const fields = 'files(id, name, mimeType, webViewLink, thumbnailLink, iconLink, parents, size)';
+    let allFiles = [];
+    let pageToken = null;
+    const fields = 'nextPageToken, files(id, name, mimeType, webViewLink, thumbnailLink, iconLink, parents, size)';
     
     try {
-      const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=${encodeURIComponent(fields)}&pageSize=1000&supportsAllDrives=true&includeItemsFromAllDrives=true`,
-        {
+      do {
+        const q = `'${parentId}' in parents and trashed = false`;
+        const url = new URL('https://www.googleapis.com/drive/v3/files');
+        url.searchParams.append('q', q);
+        url.searchParams.append('fields', fields);
+        url.searchParams.append('pageSize', '1000');
+        url.searchParams.append('supportsAllDrives', 'true');
+        url.searchParams.append('includeItemsFromAllDrives', 'true');
+        if (pageToken) url.searchParams.append('pageToken', pageToken);
+
+        const response = await fetch(url.toString(), {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(`Google API Error: ${err.error?.message || response.statusText}`);
         }
-      );
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(`Google API Error: ${err.error?.message || response.statusText}`);
-      }
+        const data = await response.json();
+        allFiles = [...allFiles, ...(data.files || [])];
+        pageToken = data.nextPageToken;
+      } while (pageToken);
 
-      const data = await response.json();
-      return data.files || [];
+      return allFiles;
     } catch (e) {
       console.error('googleDriveProvider.listContents error:', e);
       throw e;
@@ -59,7 +70,7 @@ export const googleDriveProvider = {
     }
   },
 
-  async crawlProject(rootId, accessToken, maxDepth = 3) {
+  async crawlProject(rootId, accessToken, maxDepth = 10) {
     const tree = [];
     
     const walk = async (parentId, currentPath = '', depth = 0) => {

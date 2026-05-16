@@ -14,6 +14,7 @@ import { AssetsPanel } from '../../components/storage/AssetsPanel';
 import { ProjectTeamSettings } from '../../components/database/ProjectTeamSettings';
 import { googleDriveProvider } from '../../core/storage/storageProvider';
 import { googleAuth } from '../../lib/googleAuth';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 import { COLOR_MAP } from '../../core/colors';
 import {
   ArrowLeft, MoreHorizontal, Share, Star,
@@ -22,15 +23,16 @@ import {
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
   Circle, ArrowRight, Trash2, Home, ChevronRight,
   LayoutDashboard, Database, Share2, Plus, Settings,
-  Copy, ExternalLink, MessageCircle, Link2
+  Copy, ExternalLink, MessageCircle, Link2, Sliders
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
 import { getAccentColorFromId } from '../../lib/artPatternEngine';
 import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
+import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
+import { PropertyManagerModal } from '../../components/database/PropertyManagerModal';
 import { hashString } from '../../lib/avatarEngine';
 import { useAuth } from '../../contexts/AuthContext';
-import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
@@ -66,6 +68,9 @@ export function UniversalEntityPage() {
 
   const page     = pages[pageId];
   const isProject = page?.parent_id === ROOT_HUB_ID;
+
+  // Atualiza metadados (Título e Favicon)
+  useDocumentMetadata(page?.title, pageId, isProject ? 'project' : 'scene');
 
   useEffect(() => {
     if (!isProject && page?.parent_id) {
@@ -184,127 +189,130 @@ export function UniversalEntityPage() {
         <span className="text-foreground/80 truncate font-bold">{page?.title}</span>
       </div>
 
-      {/* ── PROJECT COVER ── */}
-      <div className="h-48 w-full bg-[var(--surface-2)] relative overflow-hidden group/cover shrink-0">
-        <GenerativeHeader 
-          slug={pageId} 
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-0)]/80 to-transparent" />
-        
-        {/* Change Cover Button (UI only for now) */}
-        <button className="absolute bottom-4 right-8 opacity-0 group-hover/cover:opacity-100 transition-all bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/10 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest">
-          Alterar Capa
-        </button>
-      </div>
+      {/* ── MINIMALIST BRUTALIST HEADER ── */}
+      <div className="relative group/header shrink-0">
+        {/* HERO AREA (Cover + Identity) */}
+        <div className="h-64 w-full bg-[#050505] relative overflow-hidden">
+          <GenerativeHeader 
+            slug={pageId} 
+            type={isProject ? 'project' : 'scene'}
+            showIcon={true}
+          />
+          
+          {/* Brutalist Vignette */}
+          <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.8)]" />
+        </div>
 
-      {/* ── PROJECT HEADER ── */}
-      <div className="relative -mt-12 pt-0 pb-0 px-8 border-b border-[var(--border-subtle)] bg-transparent overflow-hidden shrink-0">
-        <div className="relative z-10 flex items-end justify-between">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-strong)] flex items-center justify-center text-3xl shadow-2xl">
-              {page?.icon || (isProject ? <FolderOpen className="w-8 h-8 text-muted-foreground/30" /> : <Database className="w-8 h-8 text-muted-foreground/30" />)}
+        {/* INFO BAR (Integrated) */}
+        <div className="absolute bottom-0 left-0 right-0 px-8 py-6 flex items-end justify-between bg-gradient-to-t from-black via-black/40 to-transparent">
+          <div className="flex flex-col gap-1 max-w-2xl">
+            <div className="flex items-center gap-4">
+               <h1 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">{page?.title}</h1>
+               {statusProp && (
+                 <div className="mt-1">
+                   <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
+                 </div>
+               )}
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-3xl font-black text-foreground tracking-tight">{page?.title}</h1>
-                {statusProp && (
-                  <div className="mt-2">
-                    <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                 <span className="text-xs text-muted-foreground/60 flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                   {isProject ? 'Projeto Motion' : 'Cena / Take'}
-                 </span>
-                 {page?.description && (
-                   <span className="text-xs text-muted-foreground/40 font-medium">• {page.description}</span>
-                 )}
-              </div>
+            
+            <div className="flex items-center gap-4 text-white/50 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
+               <span className="flex items-center gap-1.5 px-2 py-0.5 bg-white/10 rounded border border-white/5">
+                 {isProject ? 'Project Node' : 'Sequence Node'}
+               </span>
+               {page?.description && (
+                 <span className="opacity-60">• {page.description}</span>
+               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-1 bg-[var(--surface-1)]/80 backdrop-blur-md p-1.5 rounded-2xl border border-[var(--border-subtle)]">
-            {isProject && (
-              <button 
-                onClick={() => setTeamSettingsOpen(true)}
-                className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]"
-                title="Configurações da Equipe"
-              >
-                <Users className="w-4 h-4" />
-              </button>
-            )}
+          <div className="flex items-center gap-3 pb-1">
+             {isProject && childDatabase && (
+               <PropertyManagerModal 
+                 databaseId={childDatabase.id} 
+                 properties={pipelineProps} 
+                 onUpdate={() => window.location.reload()} 
+               />
+             )}
 
-            {/* Share Dropdown */}
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
-                  <Share2 className="w-4 h-4" />
+             <div className="flex items-center gap-1.5 bg-white/5 backdrop-blur-xl p-1 rounded-xl border border-white/10">
+                {isProject && (
+                  <button 
+                    onClick={() => setTeamSettingsOpen(true)}
+                    className="p-2 hover:bg-white/10 rounded-lg text-white/70 transition-all"
+                    title="Configurações da Equipe"
+                  >
+                    <Users className="w-4 h-4" />
+                  </button>
+                )}
+
+                {/* Share Dropdown */}
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <button className="p-2 hover:bg-white/10 rounded-lg text-white/70 transition-all">
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
+                      <DropdownMenu.Item 
+                        onSelect={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Link copiado!');
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                      >
+                        <Link2 className="w-4 h-4" /> Copiar Link
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item 
+                        onSelect={() => {
+                          const url = encodeURIComponent(window.location.href);
+                          window.open(`https://api.whatsapp.com/send?text=Confira este projeto na Pelimotion: ${url}`, '_blank');
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-green-500/10 rounded-lg cursor-pointer outline-none"
+                      >
+                        <MessageCircle className="w-4 h-4 text-green-500" /> WhatsApp
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Root>
+
+                {/* More Actions Dropdown */}
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <button className="p-2 hover:bg-white/10 rounded-lg text-white/70 transition-all">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
+                      <DropdownMenu.Item 
+                        onSelect={() => setShowHeaderEditor(!showHeaderEditor)}
+                        className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                      >
+                        <Settings className="w-4 h-4" /> Configurações Básicas
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item 
+                        onSelect={() => {
+                          if (confirm('Excluir este item permanentemente?')) {
+                            archivePage(pageId).then(() => navigate('/'));
+                          }
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none"
+                      >
+                        <Trash2 className="w-4 h-4" /> Excluir {isProject ? 'Projeto' : 'Cena'}
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Root>
+
+                <div className="w-px h-8 bg-white/10 mx-1" />
+                <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
+                  <TamagochiAvatar size={32} userId={user?.id} />
                 </button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
-                  <DropdownMenu.Item 
-                    onSelect={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert('Link copiado!');
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
-                  >
-                    <Link2 className="w-4 h-4" /> Copiar Link
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item 
-                    onSelect={() => {
-                      const url = encodeURIComponent(window.location.href);
-                      window.open(`https://api.whatsapp.com/send?text=Confira este projeto na Pelimotion: ${url}`, '_blank');
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-green-500/10 rounded-lg cursor-pointer outline-none"
-                  >
-                    <MessageCircle className="w-4 h-4 text-green-500" /> WhatsApp
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-
-            {/* More Actions Dropdown */}
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
-                  <DropdownMenu.Item 
-                    onSelect={() => setShowHeaderEditor(!showHeaderEditor)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
-                  >
-                    <Settings className="w-4 h-4" /> Editar Propriedades
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none">
-                    <Copy className="w-4 h-4" /> Duplicar Projeto
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator className="h-px bg-[var(--border-subtle)] my-1" />
-                  <DropdownMenu.Item 
-                    onSelect={() => {
-                      if (confirm('Excluir este projeto permanentemente? Todos os cards internos serão removidos.')) {
-                        archivePage(pageId).then(() => navigate('/'));
-                      }
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none"
-                  >
-                    <Trash2 className="w-4 h-4" /> Excluir Projeto
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-
-            <div className="w-px h-8 bg-border/50 mx-2" />
-            <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
-              <TamagochiAvatar size={36} userId={user?.id} />
-            </button>
+             </div>
           </div>
         </div>
+      </div>
 
         {/* ── HEADER EDITOR PANEL ── */}
         {showHeaderEditor && (
@@ -439,7 +447,7 @@ export function UniversalEntityPage() {
             />
           )}
           {activeTab === 'pipeline' && childDatabase && (
-            <DatabaseRenderer key="pipeline" databaseId={childDatabase.id} defaultView="kanban" />
+            <DatabaseRenderer key="pipeline" databaseId={childDatabase.id} defaultView="kanban" entityType="scene" />
           )}
           {activeTab === 'assets' && (
             <AssetsPanel 

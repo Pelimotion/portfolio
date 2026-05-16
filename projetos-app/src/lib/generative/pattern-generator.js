@@ -61,8 +61,8 @@ function generateGosperPoints(iterations, size, seed) {
   return points;
 }
 
-export async function generatePattern(slug) {
-  const seed = await getSeed(slug);
+export async function generatePattern(slug, salt = '') {
+  const seed = await getSeed(slug, salt);
   const palette = pickFromList(seed[2], PATTERN_PALETTE);
   
   // Camada 1: Tapete Persa (Fundo)
