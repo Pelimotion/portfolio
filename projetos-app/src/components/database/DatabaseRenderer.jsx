@@ -208,6 +208,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
     },
     density,
     cardFields,
+    entityType,
   };
 
   return (
@@ -309,7 +310,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
 // ============================================
 // KANBAN VIEW — Fixed DnD persistence
 // ============================================
-function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density, activeView, cardFields }) {
+function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density, activeView, cardFields, entityType }) {
   const navigate = useNavigate();
   const [groupPropId, setGroupPropId] = useState(null);
 
@@ -507,6 +508,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
               onPropertyUpdate={onPropertyUpdate}
               onDelete={onDelete}
               cardFields={cardFields}
+              entityType={entityType}
             />
           ))}
           {groupProp && (
@@ -551,7 +553,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     </DndContext>
   );
 }
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields, entityType }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
