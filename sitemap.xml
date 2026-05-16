@@ -6,6 +6,21 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>http://pelimotion.art/blog/vagas</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>http://pelimotion.art/blog/eventos</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>http://pelimotion.art/blog/recursos</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>http://pelimotion.art/en/blog</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -16,7 +31,7 @@
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://pelimotion.art/blog/quanto-custa-animacao-motion-design</loc>
+        <loc>http://pelimotion.art/en/blog/undefined</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>

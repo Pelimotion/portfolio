@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelimotion Hub | Motion Branding</title>
+    <title>Técnica | Motion Branding</title>
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/blog/rss.xml" />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
@@ -88,18 +88,11 @@
     </header>
     
     
-    <div class="blog-wordmark fade-in-up">JOURNAL</div>
+    <h1 class="page-title playfair fade-in-up" style="margin-left: var(--gutter)">Técnica</h1>
     
     
-    <div class="blog-filter-bar fade-in-up">
-        <span class="filter-label" style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary)">CATEGORIAS</span>
-        <div class="filter-pills">
-            <button class="pill active" data-filter="all">Todos</button>
-            <button class="pill" data-filter="técnica">Técnica</button>
-        </div>
-    </div>
 
-    <main class="container" style="">
+    <main class="container" style="padding-top: 2rem;">
         <div class="posts-grid">
             
             <article class="post-card fade-in-up" data-category="técnica" style="animation-delay: 0ms">
@@ -125,18 +118,5 @@
     </footer>
     
     
-    <script>
-        document.querySelectorAll('.pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                const filter = pill.dataset.filter;
-                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                document.querySelectorAll('.post-card').forEach(card => {
-                    if (filter === 'all' || card.dataset.category.includes(filter)) card.style.display = 'flex';
-                    else card.style.display = 'none';
-                });
-            });
-        });
-    </script>
 </body>
 </html>

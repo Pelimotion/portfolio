@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vagas em Motion Design | Pelimotion Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        
+    :root {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #111111;
+        --bg-tertiary: #1a1a1a;
+        --text-primary: #f0ede8;
+        --text-secondary: #666666;
+        --accent: #f0ede8;
+        --accent-warm: #e8d5a3;
+        --border: #1e1e1e;
+        --font-display: 'Barlow Condensed', sans-serif;
+        --font-editorial: 'Playfair Display', serif;
+        --font-mono: 'DM Mono', monospace;
+        --wordmark-size: clamp(72px, 18vw, 180px);
+        --card-title: clamp(16px, 2vw, 22px);
+        --meta-size: 11px;
+        --body-size: 14px;
+        --max-width: 1400px;
+        --gutter: 40px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Mono', 'IBM Plex Sans', monospace, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.75; overflow-x: hidden; }
+    h1, h2, .playfair { font-family: var(--font-editorial); font-weight: 700; color: var(--text-primary); }
+    a { text-decoration: none; color: inherit; }
+    .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent-warm); width: 0%; z-index: 1000; transition: width 100ms linear; }
+    
+    .blog-header { display: flex; justify-content: space-between; align-items: center; padding: 20px var(--gutter); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); z-index: 100; }
+    .blog-logo { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-primary); }
+    .blog-logo-sub { font-size: 9px; letter-spacing: 0.2em; color: var(--text-secondary); vertical-align: middle; margin-left: 8px; }
+    .blog-nav { display: flex; gap: 32px; align-items: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; }
+    .blog-nav a { color: var(--text-secondary); transition: color 0.2s ease; }
+    .blog-nav a:hover, .blog-nav a.active { color: var(--accent); }
+    
+    .blog-wordmark { font-family: var(--font-display); font-size: var(--wordmark-size); font-weight: 900; line-height: 0.85; letter-spacing: -0.03em; color: var(--text-primary); text-transform: uppercase; padding: 40px var(--gutter) 0; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--gutter); }
+    .page-title { margin: 3rem 0 2rem; font-size: 48px; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    
+    .blog-footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-top: 5rem; }
+    .blog-footer a { color: var(--text-primary); }
+    .fade-in-up { opacity: 0; transform: translateY(16px); animation: fadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .progress-bar { display: none; } }
+    @media (max-width: 767px) { :root { --gutter: 20px; } .blog-nav { display: none; /* simple mobile nav override */ } }
+
+        .list-container { max-width: 800px; margin: 0 auto; padding-top: 2rem; }
+        .list-item { border-bottom: 1px solid var(--border); padding: 2rem 0; }
+        .list-item h3 { font-size: 24px; margin-bottom: 0.5rem; }
+        .list-item p { color: var(--text-secondary); font-size: 15px; margin-bottom: 1rem; }
+        .list-item a:hover { color: var(--accent-warm); }
+        .item-meta { display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 1rem; align-items: center; }
+        .pill { border: 1px solid var(--border); padding: 2px 8px; border-radius: 100px; }
+        #location-status { font-family: var(--font-mono); font-size: 12px; margin-bottom: 2rem; padding: 1rem; background: var(--bg-secondary); border-left: 2px solid var(--border); }
+    </style>
+</head>
+<body>
+    
+    <div class="progress-bar" id="progressBar"></div>
+    <header class="blog-header">
+        <div class="blog-logo">
+            <a href="/blog">PELIMOTION</a> <span class="blog-logo-sub">HUB</span>
+        </div>
+        <nav class="blog-nav">
+            <a href="/blog" class="">Artigos</a>
+            <a href="/blog/vagas" class="active">Vagas</a>
+            <a href="/blog/eventos" class="">Eventos</a>
+            <a href="/blog/recursos" class="">Recursos</a>
+            <a href="/en/blog" style="margin-left: 2rem;">EN</a>
+        </nav>
+    </header>
+    
+    <main class="container">
+        <h1 class="page-title playfair fade-in-up">Vagas em Motion Design</h1>
+        <div class="list-container">
+            <div id="location-status" class="fade-in-up">Detectando localização...</div>
+            
+        <div class="list-item fade-in-up" style="animation-delay: 0ms">
+            <div class="item-meta">
+                <span class="location" data-location="São Paulo, SP">São Paulo, SP</span>
+                
+                <span class="pill">Presencial</span>
+            </div>
+            <h3 class="playfair"><a href="https://nubank.com.br/carreiras" target="_blank" rel="noopener">Senior Motion Designer ↗</a></h3>
+            <p>Procuramos um Senior Motion Designer focado em UI e interações para compor o nosso time de Design System.</p>
+            <span>Nubank</span>
+        </div>
+    
+        </div>
+    </main>
+    
+    <footer class="blog-footer">
+        <p>© Pelimotion Studio Hub. Construído com automação e inspiração.</p>
+    </footer>
+    
+    
+        <script>
+            // Geolocation filtering (Fase 3 Automation)
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    const country = data.country_name;
+                    if(country) {
+                        document.getElementById('location-status').innerHTML = 'Filtrando para: <strong style="color:var(--accent-warm)">' + country + '</strong>';
+                        document.querySelectorAll('.list-item').forEach(el => {
+                            const loc = el.querySelector('.location');
+                            if(loc && !loc.dataset.location.includes(country) && loc.dataset.location !== 'Remote') {
+                                el.style.opacity = '0.3';
+                            }
+                        });
+                    }
+                }).catch(e => console.log('Geolocation skipped.'));
+        </script>
+</body>
+</html>

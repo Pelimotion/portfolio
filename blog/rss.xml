@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+    <title>Pelimotion Hub (PT)</title>
+    <link>http://pelimotion.art/blog</link>
+    <description>Motion Branding Insights & Curadoria</description>
+    <language>pt-br</language>
+    <item>
+        <title><![CDATA[Diferença prática entre motion design, motion branding e só um videozinho]]></title>
+        <link>http://pelimotion.art/blog/diferenca-motion-design-branding</link>
+        <description><![CDATA[Entenda por que motion branding vai muito além de uma simples animação e como ele constrói a identidade visual da sua marca em movimento.]]></description>
+        <pubDate>Sat, 16 May 2026 00:00:00 GMT</pubDate>
+        <guid>http://pelimotion.art/blog/diferenca-motion-design-branding</guid>
+    </item>
+</channel>
+</rss>
