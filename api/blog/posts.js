@@ -13,19 +13,23 @@ async function supabaseFetch(path, options = {}) {
     };
 
     return new Promise((resolve, reject) => {
+        const bodyData = options.body ? JSON.stringify(options.body) : null;
+        const headers = { ...defaultHeaders, ...options.headers };
+        if (bodyData) headers['Content-Length'] = Buffer.byteLength(bodyData);
+
         const req = https.request(url, {
             method: options.method || 'GET',
-            headers: { ...defaultHeaders, ...options.headers }
+            headers: headers
         }, (res) => {
             let body = '';
             res.on('data', chunk => body += chunk);
             res.on('end', () => {
-                if (res.statusCode >= 400) reject(new Error(`Supabase Error: ${body}`));
+                if (res.statusCode >= 400) reject(new Error(`Supabase Error (${res.statusCode}): ${body}`));
                 else resolve(JSON.parse(body || '[]'));
             });
         });
         req.on('error', reject);
-        if (options.body) req.write(JSON.stringify(options.body));
+        if (bodyData) req.write(bodyData);
         req.end();
     });
 }
@@ -33,7 +37,7 @@ async function supabaseFetch(path, options = {}) {
 export default async function handler(req, res) {
     try {
         if (req.method === 'GET') {
-            const posts = await supabaseFetch('blog_posts?select=*&order=created_at.desc');
+            const posts = await supabaseFetch('blog_posts?select=*&order=updated_at.desc');
             // Format to match the old local structure for frontend compatibility
             const formatted = posts.map(p => ({
                 fileName: `${p.slug}.md`,
