@@ -108,7 +108,7 @@ export default function Dashboard() {
 
       {/* ── Database Content ── */}
       <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-        <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" />
+        <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" addButtonLabel="Novo Projeto" />
       </main>
 
       <CreateProjectModal open={isCreateOpen} onOpenChange={setCreateOpen} />

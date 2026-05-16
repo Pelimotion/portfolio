@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Table, List, CalendarDays,
   Plus, Filter, Settings2, MoreHorizontal, ChevronLeft, ChevronRight,
-  LayoutGrid, AlignJustify, LayoutList, Trash2,
+  LayoutGrid, AlignJustify, LayoutList, Trash2, Check,
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProCalendarPicker } from '../ui/calendar/ProCalendarPicker';
@@ -36,7 +36,7 @@ export const useDensity = () => useContext(DensityCtx);
 // ============================================
 // DATABASE RENDERER v3 — Fixed DnD + Density
 // ============================================
-export function DatabaseRenderer({ databaseId, defaultView }) {
+export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'Nova Cena' }) {
   const { pages = {}, fetchDatabaseItems, createPage } = usePageStore();
   const [properties, setProperties] = useState([]);
   const [allValues, setAllValues]   = useState({});
@@ -291,7 +291,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
             <button onClick={handleCreate} disabled={creating}
               className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md font-medium transition-colors disabled:opacity-50">
               <Plus className="w-3.5 h-3.5" />
-              {creating ? '...' : 'Nova Cena'}
+              {creating ? '...' : addButtonLabel}
             </button>
           </div>
         </div>
