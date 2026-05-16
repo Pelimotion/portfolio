@@ -102,7 +102,8 @@ export function UniversalEntityPage() {
           const pipelineDb = await bootstrapProjectPipeline(pageId);
           if (isMounted) {
             setChildDatabase(pipelineDb);
-            setActiveTab('dashboard');
+            const savedTab = localStorage.getItem(`peli-tab-${pageId}`);
+            setActiveTab(savedTab || 'dashboard');
 
             const items = await pageService.fetchDatabaseItems(pipelineDb.id);
             const itemProps = await propertyService.fetchByDatabase(pipelineDb.id);
@@ -381,7 +382,10 @@ export function UniversalEntityPage() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  localStorage.setItem(`peli-tab-${pageId}`, tab.id);
+                }}
                 className={`flex items-center gap-2 pb-3 text-xs font-bold transition-all relative group whitespace-nowrap ${
                   isActive ? 'text-foreground' : 'text-muted-foreground/40 hover:text-muted-foreground'
                 }`}

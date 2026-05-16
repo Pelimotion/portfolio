@@ -257,7 +257,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
         </div>
 
         {/* ── View Content ── */}
-        {activeView?.view_type === 'kanban'   && <KanbanView   {...sharedProps} />}
+        {activeView?.view_type === 'kanban'   && <KanbanView   {...sharedProps} activeView={activeView} />}
         {activeView?.view_type === 'table'    && <TableView    {...sharedProps} />}
         {activeView?.view_type === 'list'     && <ListView     {...sharedProps} />}
         {activeView?.view_type === 'calendar' && <CalendarView {...sharedProps} />}
@@ -269,9 +269,16 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
 // ============================================
 // KANBAN VIEW — Fixed DnD persistence
 // ============================================
-function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density }) {
+function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density, activeView }) {
   const navigate = useNavigate();
-  const groupProp = properties.find(p => p.property_type === 'status' || p.property_type === 'select');
+  const [groupPropId, setGroupPropId] = useState(null);
+
+  const statusProps = useMemo(() => properties.filter(p => p.property_type === 'status' || p.property_type === 'select'), [properties]);
+  
+  const groupProp = useMemo(() => {
+    if (groupPropId) return properties.find(p => p.id === groupPropId);
+    return statusProps[0];
+  }, [properties, statusProps, groupPropId]);
 
   // Local columns with mutable items for optimistic DnD
   const [localAllValues, setLocalAllValues] = useState(allValues);
@@ -419,6 +426,21 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
+      <div className="flex items-center gap-4 mb-4 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/30 rounded-lg border border-border/40 shrink-0">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Agrupar por:</span>
+          <select 
+            value={groupProp?.id || ''} 
+            onChange={(e) => setGroupPropId(e.target.value)}
+            className="bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer"
+          >
+            {statusProps.map(p => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <SortableContext items={columns.map(c => c.id)} strategy={horizontalListSortingStrategy}>
         <div className="flex gap-3 overflow-x-auto pb-6 items-start -mx-1 px-1">
           {columns.map(col => (
@@ -516,14 +538,21 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
         <div className="flex items-center gap-2">
           <input 
             defaultValue={col.label}
+            onKeyDown={async (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+              }
+            }}
             onBlur={async (e) => {
               const newLabel = e.target.value;
               if (newLabel && newLabel !== col.label) {
                 try {
                   const opts = groupProp.config?.options || [];
                   const newOpts = opts.map(o => o.id === col.id ? { ...o, label: newLabel } : o);
-                  await propertyService.update(groupProp.id, { config: { ...groupProp.config, options: newOpts } });
-                  window.location.reload();
+                  const updatedProp = { ...groupProp, config: { ...groupProp.config, options: newOpts } };
+                  onPropertyUpdate?.(groupProp.id, updatedProp);
+                  await propertyService.update(groupProp.id, { config: updatedProp.config });
                 } catch(e) { console.error(e); }
               }
             }}

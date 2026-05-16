@@ -5,18 +5,17 @@ import { useTheme } from '../../contexts/ThemeContext';
 import AvatarWidget from '../../components/ui/AvatarWidget';
 import { GamificationWidget } from '../../components/ui/GamificationWidget';
 import {
-  ArrowLeft, RefreshCw, Save, Check, User, Briefcase, Hash,
-  Sparkles, Shuffle, Moon, Sun, MessageSquare
+  ArrowLeft, Save, Check, User, Briefcase, Hash,
+  Sparkles, Moon, Sun, MessageSquare, Settings, 
+  Shield, Bell, Palette, Globe, LogOut
 } from 'lucide-react';
 
-// ============================================
-// PROFILE PAGE — User Identity + 3D Avatar + Gamification
-// ============================================
-
 export default function ProfilePage() {
-  const { user, profile: authProfile, updateProfile } = useAuth();
+  const { user, profile: authProfile, updateProfile, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+
+  const [activeSection, setActiveSection] = useState('perfil'); // perfil | identidade | preferencias | conta
 
   const [form, setForm] = useState({
     display_name: '',
@@ -28,7 +27,6 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Sync form from authProfile
   useEffect(() => {
     if (!authProfile && !user) return;
     setForm({
@@ -44,18 +42,12 @@ export default function ProfilePage() {
     if (!user) return;
     setSaving(true);
     try {
-      await updateProfile({
-        display_name: form.display_name,
-        nickname: form.nickname,
-        role: form.role,
-        status_text: form.status_text,
-        accent_color: form.accent_color,
-      });
+      await updateProfile(form);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
       console.error('Save profile error:', e);
-      alert(`Erro ao salvar: ${e.message || 'Verifique o Supabase.'}`);
+      alert(`Erro ao salvar: ${e.message}`);
     } finally {
       setSaving(false);
     }
@@ -63,148 +55,269 @@ export default function ProfilePage() {
 
   const ac = form.accent_color;
 
+  const sections = [
+    { id: 'perfil', label: 'Perfil Público', icon: User },
+    { id: 'identidade', label: 'Identidade 3D', icon: Sparkles },
+    { id: 'preferencias', label: 'Preferências', icon: Palette },
+    { id: 'conta', label: 'Conta e Segurança', icon: Shield },
+  ];
+
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[var(--surface-0)]">
-      {/* Header */}
-      <header className="h-14 flex items-center justify-between px-6 border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-1)]">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" />
+    <div className="flex h-full overflow-hidden bg-[var(--surface-0)] font-sans antialiased">
+      
+      {/* ── INTERNAL SIDEBAR ── */}
+      <aside className="w-72 border-r border-[var(--border-subtle)] bg-[var(--surface-1)] flex flex-col shrink-0">
+        <div className="h-16 flex items-center px-8 border-b border-[var(--border-subtle)]">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-all group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-xs font-black uppercase tracking-widest">Portal Central</span>
           </button>
+        </div>
+
+        <div className="flex-1 p-6 space-y-8">
           <div>
-            <h1 className="font-bold text-sm text-foreground">Perfil & Preferências</h1>
-            <span className="text-[10px] text-muted-foreground/50">{user?.email}</span>
+            <label className="text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] px-3 mb-4 block">Configurações</label>
+            <nav className="space-y-1">
+              {sections.map(s => {
+                const Icon = s.icon;
+                const isActive = activeSection === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setActiveSection(s.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                      isActive 
+                        ? 'bg-primary/10 text-primary border border-primary/20' 
+                        : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground border border-transparent'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'animate-pulse' : 'opacity-50'}`} />
+                    {s.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="pt-8 border-t border-[var(--border-subtle)]">
+            <button 
+              onClick={signOut}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/5 transition-all"
+            >
+              <LogOut className="w-4 h-4" />
+              Encerrar Sessão
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground transition-colors" title="Alternar tema">
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50"
-            style={{ background: saved ? '#22c55e' : ac, boxShadow: `0 4px 16px ${ac}44` }}
-          >
-            {saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-            {saved ? 'Salvo!' : saving ? 'Salvando...' : 'Salvar'}
-          </button>
+
+        <div className="p-8 bg-[var(--surface-2)]/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black uppercase">
+              {user?.email?.[0]}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[11px] font-black text-foreground truncate">{form.display_name || 'Usuário'}</span>
+              <span className="text-[9px] font-bold text-muted-foreground/50 truncate uppercase tracking-wider">Membro Gold</span>
+            </div>
+          </div>
         </div>
-      </header>
+      </aside>
 
-      <main className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="max-w-3xl mx-auto p-6 space-y-6">
+      {/* ── MAIN CONTENT ── */}
+      <main className="flex-1 flex flex-col relative overflow-hidden">
+        {/* Topbar */}
+        <header className="h-16 flex items-center justify-between px-10 bg-[var(--surface-0)] border-b border-[var(--border-subtle)] z-10">
+          <h2 className="text-xl font-black tracking-tight text-foreground">
+            {sections.find(s => s.id === activeSection)?.label}
+          </h2>
+          <div className="flex items-center gap-4">
+            <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border-subtle)] text-muted-foreground hover:text-foreground transition-all">
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-xs font-black text-white transition-all shadow-xl hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+              style={{ background: saved ? '#22c55e' : ac, boxShadow: `0 8px 24px ${ac}44` }}
+            >
+              {saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+              {saved ? 'Alterações Salvas' : saving ? 'Sincronizando...' : 'Salvar Alterações'}
+            </button>
+          </div>
+        </header>
 
-          {/* ── Avatar + Identity ── */}
-          <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6">
-            <div className="flex items-center gap-2 text-sm font-bold mb-5" style={{ color: ac }}>
-              <Sparkles className="w-4 h-4" />
-              Identidade Visual
-            </div>
-            <div className="flex gap-8 items-start">
-              {/* Avatar 3D (New PS2 System) */}
-              <div className="shrink-0 flex flex-col items-center gap-3">
-                <div
-                  className="w-[280px] h-[380px] rounded-3xl overflow-hidden border-4 shadow-2xl transition-all"
-                  style={{ borderColor: `${ac}66`, boxShadow: `0 0 40px ${ac}33` }}
-                >
-                  <AvatarWidget userId={user?.id} className="w-full h-full" />
-                </div>
-                <p className="text-[10px] text-muted-foreground/40 font-mono uppercase tracking-widest">
-                  Sistema PS2 Engine v2.0
-                </p>
-              </div>
-
-              {/* Form fields */}
-              <div className="flex-1 grid grid-cols-1 gap-4">
-                {[
-                  { key: 'display_name', label: 'Nome de Exibição', icon: User,         ph: 'Como você é chamado no sistema' },
-                  { key: 'nickname',     label: 'Apelido (@)',      icon: Hash,         ph: 'seu_handle' },
-                  { key: 'role',         label: 'Cargo',            icon: Briefcase,    ph: 'Ex: Motion Designer' },
-                  { key: 'status_text',  label: 'Status',           icon: MessageSquare, ph: '☕ Disponível para calls...' },
-                ].map(({ key, label, icon: Icon, ph }) => (
-                  <div key={key}>
-                    <label className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest flex items-center gap-1 mb-1.5">
-                      <Icon className="w-3 h-3" /> {label}
-                    </label>
-                    <input
-                      value={form[key]}
-                      onChange={e => setForm(prev => ({ ...prev, [key]: e.target.value }))}
-                      placeholder={ph}
-                      className="w-full bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-xl px-3 py-2.5 text-sm text-foreground focus:outline-none transition-colors placeholder:text-muted-foreground/30"
-                      style={{ '--tw-ring-color': ac }}
-                      onFocus={e => { e.target.style.borderColor = `${ac}66`; }}
-                      onBlur={e => { e.target.style.borderColor = ''; }}
-                    />
-                  </div>
-                ))}
-
-                {/* Color picker */}
-                <div>
-                  <label className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest flex items-center gap-1 mb-1.5">
-                    <span className="w-3 h-3 rounded-full shrink-0 border border-border" style={{ background: ac }} />
-                    Cor de Destaque
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={form.accent_color}
-                      onChange={e => setForm(prev => ({ ...prev, accent_color: e.target.value }))}
-                      className="w-10 h-10 rounded-xl cursor-pointer border-2 border-[var(--border-strong)] bg-transparent p-0.5"
-                    />
-                    <div className="flex-1 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-xl px-3 py-2.5 text-sm font-mono" style={{ color: ac }}>
-                      {form.accent_color}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
+          <div className="max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+            
+            {activeSection === 'perfil' && (
+              <div className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Informações Gerais</h3>
+                    <div className="space-y-4">
+                      <FormField label="Nome de Exibição" icon={User} ph="Seu nome oficial" 
+                        value={form.display_name} onChange={v => setForm({...form, display_name: v})} ac={ac} />
+                      <FormField label="Apelido / Handle" icon={Hash} ph="como_voce_aparece" 
+                        value={form.nickname} onChange={v => setForm({...form, nickname: v})} ac={ac} />
+                      <FormField label="Cargo / Função" icon={Briefcase} ph="Ex: Creative Director" 
+                        value={form.role} onChange={v => setForm({...form, role: v})} ac={ac} />
                     </div>
-                    {/* Quick presets */}
-                    <div className="flex gap-1.5">
-                      {['#3b82f6','#a855f7','#22c55e','#f59e0b','#ef4444','#ec4899'].map(c => (
-                        <button key={c} onClick={() => setForm(prev => ({ ...prev, accent_color: c }))}
-                          className="w-5 h-5 rounded-full border-2 transition-all hover:scale-125"
-                          style={{ background: c, borderColor: form.accent_color === c ? '#fff' : 'transparent' }}
-                        />
-                      ))}
+                  </div>
+                  <div className="space-y-6">
+                    <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Status e Bio</h3>
+                    <div className="space-y-4">
+                      <FormField label="Status Atual" icon={MessageSquare} ph="O que você está fazendo agora?" 
+                        value={form.status_text} onChange={v => setForm({...form, status_text: v})} ac={ac} isArea />
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          {/* ── Preview section — how others see you ── */}
-          <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6">
-            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest mb-4">Como você aparece no sistema</p>
-            <div className="flex items-center gap-4 p-4 bg-[var(--surface-2)] rounded-xl">
-              <div className="rounded-2xl overflow-hidden border-2 shrink-0" style={{ borderColor: `${ac}66` }}>
-                <canvas ref={undefined} style={{ display: 'none' }} />
-                {/* Static preview using same seed */}
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black" style={{ background: `${ac}22`, color: ac }}>
-                  {(form.display_name || form.nickname || '?')[0]?.toUpperCase()}
+                <div className="pt-10 border-t border-[var(--border-subtle)]">
+                   <GamificationWidget profile={{ ...authProfile, ...form }} />
                 </div>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-black" style={{ color: ac }}>
-                  {form.display_name || 'Seu Nome'}
-                </span>
-                {form.nickname && (
-                  <span className="text-[11px] text-muted-foreground/60">@{form.nickname}</span>
-                )}
-                {form.role && (
-                  <span className="text-[11px] text-muted-foreground/50">{form.role}</span>
-                )}
-                {form.status_text && (
-                  <span className="text-[11px] text-muted-foreground/70 italic mt-0.5 border-l-2 pl-2" style={{ borderColor: ac }}>
-                    {form.status_text}
-                  </span>
-                )}
+            )}
+
+            {activeSection === 'identidade' && (
+              <div className="space-y-10">
+                <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-3xl p-10 flex flex-col md:flex-row gap-12 items-center md:items-start">
+                  <div className="shrink-0">
+                    <div className="w-[320px] h-[420px] rounded-3xl overflow-hidden border-4 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] transition-all"
+                      style={{ borderColor: `${ac}44`, boxShadow: `0 20px 50px ${ac}22` }}>
+                      <AvatarWidget userId={user?.id} className="w-full h-full" />
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-8 py-4">
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-3">
+                        Pelimotion PS2 Engine <span className="text-[10px] px-2 py-0.5 bg-primary/10 text-primary rounded-full uppercase">Alpha v2.1</span>
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+                        Sua identidade visual é gerada de forma procedural baseada em sementes criptográficas. 
+                        Cada modificação é única e persistida no núcleo do sistema.
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-5 bg-[var(--surface-2)] rounded-2xl border border-[var(--border-subtle)]">
+                        <span className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest block mb-1">Polígonos</span>
+                        <span className="text-lg font-black text-foreground font-mono">1.2k Low-Poly</span>
+                      </div>
+                      <div className="p-5 bg-[var(--surface-2)] rounded-2xl border border-[var(--border-subtle)]">
+                        <span className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest block mb-1">Shader</span>
+                        <span className="text-lg font-black text-foreground font-mono">Toon-Outline</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-6">
+                       <button onClick={handleSave} className="text-sm font-bold text-primary hover:underline flex items-center gap-2">
+                         Saiba mais sobre a tecnologia <Globe className="w-4 h-4" />
+                       </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {activeSection === 'preferencias' && (
+              <div className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                   <div className="space-y-6">
+                     <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Tema do Sistema</h3>
+                     <div className="grid grid-cols-2 gap-4">
+                        <ThemeButton active={theme === 'light'} onClick={() => theme !== 'light' && toggleTheme()} label="Claro" icon={Sun} />
+                        <ThemeButton active={theme === 'dark'} onClick={() => theme !== 'dark' && toggleTheme()} label="Escuro" icon={Moon} />
+                     </div>
+                   </div>
+
+                   <div className="space-y-6">
+                     <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Cores da Interface</h3>
+                     <div className="flex flex-wrap gap-3">
+                        {['#3b82f6','#a855f7','#22c55e','#f59e0b','#ef4444','#ec4899','#6366f1','#14b8a6'].map(c => (
+                          <button key={c} onClick={() => setForm({...form, accent_color: c})}
+                            className={`w-12 h-12 rounded-2xl border-4 transition-all hover:scale-110 shadow-lg ${form.accent_color === c ? 'border-white' : 'border-transparent'}`}
+                            style={{ background: c }}
+                          />
+                        ))}
+                     </div>
+                     <div className="mt-4 flex items-center gap-4 p-4 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-2xl">
+                        <div className="w-6 h-6 rounded-lg border border-white/20" style={{ background: ac }} />
+                        <span className="text-sm font-mono font-bold uppercase" style={{ color: ac }}>HEX: {ac}</span>
+                        <input type="color" value={ac} onChange={e => setForm({...form, accent_color: e.target.value})} className="ml-auto w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" />
+                     </div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'conta' && (
+              <div className="space-y-8">
+                <div className="p-8 bg-red-500/5 border border-red-500/10 rounded-3xl space-y-4">
+                   <div className="flex items-center gap-3 text-red-500">
+                     <Shield className="w-5 h-5" />
+                     <h3 className="text-sm font-black uppercase tracking-widest">Zona Crítica</h3>
+                   </div>
+                   <p className="text-sm text-muted-foreground leading-relaxed">
+                     As alterações de conta e exclusão de dados são permanentes. 
+                     Sua conta está vinculada ao e-mail <strong>{user?.email}</strong>.
+                   </p>
+                   <div className="pt-4">
+                     <button className="px-6 py-3 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-xl shadow-red-500/20">
+                       Excluir Conta Permanentemente
+                     </button>
+                   </div>
+                </div>
+              </div>
+            )}
+
           </div>
-
-          {/* ── Gamification ── */}
-          <GamificationWidget profile={{ ...authProfile, ...form }} />
-
         </div>
       </main>
     </div>
+  );
+}
+
+function FormField({ label, icon: Icon, ph, value, onChange, ac, isArea }) {
+  return (
+    <div>
+      <label className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2 mb-2 px-1">
+        <Icon className="w-3 h-3" /> {label}
+      </label>
+      {isArea ? (
+        <textarea
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={ph}
+          className="w-full bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl px-5 py-4 text-sm text-foreground focus:outline-none transition-all placeholder:text-muted-foreground/20 min-h-[120px]"
+          onFocus={e => { e.target.style.borderColor = `${ac}66`; e.target.style.boxShadow = `0 0 20px ${ac}11`; }}
+          onBlur={e => { e.target.style.borderColor = ''; e.target.style.boxShadow = ''; }}
+        />
+      ) : (
+        <input
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={ph}
+          className="w-full bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl px-5 py-4 text-sm text-foreground focus:outline-none transition-all placeholder:text-muted-foreground/20"
+          onFocus={e => { e.target.style.borderColor = `${ac}66`; e.target.style.boxShadow = `0 0 20px ${ac}11`; }}
+          onBlur={e => { e.target.style.borderColor = ''; e.target.style.boxShadow = ''; }}
+        />
+      )}
+    </div>
+  );
+}
+
+function ThemeButton({ active, onClick, label, icon: Icon }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col items-center gap-4 p-8 rounded-3xl border-2 transition-all ${
+        active 
+          ? 'bg-primary/5 border-primary shadow-xl shadow-primary/5 text-foreground' 
+          : 'bg-[var(--surface-1)] border-[var(--border-subtle)] text-muted-foreground hover:border-muted-foreground/30'
+      }`}
+    >
+      <Icon className={`w-8 h-8 ${active ? 'text-primary' : 'opacity-30'}`} />
+      <span className="text-xs font-black uppercase tracking-widest">{label}</span>
+    </button>
   );
 }

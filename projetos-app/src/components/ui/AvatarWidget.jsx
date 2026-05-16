@@ -110,7 +110,7 @@ export default function AvatarWidget({ userId, className = '' }) {
   const handleShare = useCallback(() => {
     const url = `${window.location.origin}?f=${faceSeed?.toString(36)}&o=${outfitSeed?.toString(36)}`
     navigator.clipboard.writeText(url)
-      .then(() => alert('Link copiado! 🛹'))
+      .then(() => alert('Link copiado!'))
       .catch(() => prompt('Copie o link:', url))
   }, [faceSeed, outfitSeed])
 
@@ -135,7 +135,7 @@ export default function AvatarWidget({ userId, className = '' }) {
           disabled={isTransitioning || loading}
           title="Randomizar rosto"
         >
-          🎲 Rosto
+          Rosto
         </button>
 
         <button
@@ -144,7 +144,7 @@ export default function AvatarWidget({ userId, className = '' }) {
           disabled={isTransitioning || loading}
           title="Randomizar outfit"
         >
-          👕 Outfit
+          Outfit
         </button>
 
         <button
@@ -153,7 +153,7 @@ export default function AvatarWidget({ userId, className = '' }) {
           disabled={loading}
           title="Compartilhar avatar"
         >
-          🔗
+          Compartilhar
         </button>
       </div>
 
