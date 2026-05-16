@@ -38,9 +38,16 @@ async function generateText(prompt, modelType = 'flash') {
     const modelId = modelType === 'pro' ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
 
     try {
-        const auth = new GoogleAuth({
+        const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+        let authOptions = {
             scopes: 'https://www.googleapis.com/auth/cloud-platform'
-        });
+        };
+
+        if (credentialsEnv && credentialsEnv.trim().startsWith('{')) {
+            authOptions.credentials = JSON.parse(credentialsEnv);
+        }
+
+        const auth = new GoogleAuth(authOptions);
         const client = await auth.getClient();
         const accessToken = await client.getAccessToken();
 

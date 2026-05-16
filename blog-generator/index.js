@@ -215,8 +215,9 @@ function createIndexHtml(posts, lang, customTitle = null, isTagPage = false) {
     ${!isTagPage ? `<div class="blog-wordmark fade-in-up">JOURNAL</div>` : `<div class="container"><h1 class="page-title playfair fade-in-up">${title}</h1></div>`}
     <main class="container">
         <div class="posts-grid">
-            ${sortedPosts.map((post, i) => {
-                const thumbUrl = post.data.thumbImage.startsWith('http') ? post.data.thumbImage : `${CDN_URL}${post.data.thumbImage}`;
+             ${sortedPosts.map((post, i) => {
+                const thumbImage = post.data.thumbImage || post.data.heroImage || '';
+                const thumbUrl = (thumbImage && thumbImage.startsWith('http')) ? thumbImage : (thumbImage ? `${CDN_URL}${thumbImage}` : '/assets/default-thumb.jpg');
                 return `
                 <article class="post-card fade-in-up" style="animation-delay: ${(i%3)*100}ms">
                     <div class="card-meta-top">
