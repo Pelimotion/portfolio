@@ -1,53 +1,62 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { renderAvatar, hashString } from '../../lib/avatarEngine';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { renderAvatar } from '../../lib/avatarEngine';
+import { renderAccessories } from '../../lib/accessoryEngine';
 
-// ============================================
-// TAMAGOCHI AVATAR — Tiny avatar that follows 
-// the mouse cursor like a virtual pet
-// ============================================
-
-export function TamagochiAvatar({ seed = 0, accentColor = '#3b82f6', size = 32, className = '' }) {
+// ── TamagochiAvatar — Canvas wrapper with eye-tracking ────────────────────────────
+export function TamagochiAvatar({ seed = 0, accentColor = '#3b82f6', accessories, size = 36, trackMouse = true }) {
   const canvasRef = useRef(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const mousePos = useRef({ x: 0, y: 0 });
   const rafRef = useRef(null);
 
-  // Global mouse tracking
-  useEffect(() => {
-    const onMove = (e) => {
-      if (rafRef.current) return; // throttle
-      rafRef.current = requestAnimationFrame(() => {
-        // Normalize mouse position relative to window center
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
-        setMousePos({ x, y });
-        rafRef.current = null;
+  const draw = useCallback(() => {
+    if (canvasRef.current) {
+      renderAvatar(canvasRef.current, seed, {
+        width: size * 2,
+        height: size * 2,
+        accentColor,
+        mouseX: mousePos.current.x,
+        mouseY: mousePos.current.y,
+        accessories,
       });
-    };
-    window.addEventListener('mousemove', onMove, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+    }
+  }, [seed, accentColor, accessories, size]);
 
-  // Render avatar
+  // Initial render
+  useEffect(() => { draw(); }, [draw]);
+
+  // Mouse tracking on the document
+  const handleMouseMove = useCallback((e) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2));
+    const y = ((e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2));
+    mousePos.current = {
+      x: Math.max(-1, Math.min(1, x)),
+      y: Math.max(-1, Math.min(1, y)),
+    };
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(draw);
+  }, [draw]);
+
   useEffect(() => {
-    if (!canvasRef.current) return;
-    renderAvatar(canvasRef.current, seed, {
-      width: size * 2, // 2x for retina
-      height: size * 2,
-      accentColor,
-      mouseX: mousePos.x,
-      mouseY: mousePos.y,
-    });
-  }, [seed, accentColor, size, mousePos]);
+    if (!trackMouse) return;
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [handleMouseMove, trackMouse]);
 
   return (
     <canvas
       ref={canvasRef}
-      className={`rounded-full cursor-pointer transition-transform hover:scale-110 ${className}`}
-      style={{ width: size, height: size, imageRendering: 'auto' }}
-      title="Seu Avatar"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        display: 'block',
+        imageRendering: 'crisp-edges',
+      }}
     />
   );
 }

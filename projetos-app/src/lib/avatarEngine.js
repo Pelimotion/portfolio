@@ -1,15 +1,9 @@
-// ============================================
-// AVATAR 3D ENGINE — PS1 Low-Poly Character
-// Flat-shaded, caricatured, war paint, eye-tracking
-// ============================================
-
-function seededRandom(seed) {
-  let s = seed;
-  return () => {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
+// ============================================================
+// AVATAR ENGINE — PS1 Low-Poly 3D Face (High Detail)
+// Flat-shaded, caricature-driven, eye-tracking, war paint
+// ~200 triangles, pure Canvas 2D, no dependencies
+// ============================================================
+import { renderAccessories } from './accessoryEngine';
 
 export function hashString(str) {
   let hash = 0;
@@ -20,343 +14,423 @@ export function hashString(str) {
   return Math.abs(hash);
 }
 
-// Extract RGB from hex color
-function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '#3b82f6');
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : { r: 59, g: 130, b: 246 };
+function seededRandom(seed) {
+  let s = Math.abs(seed) || 1;
+  return () => {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
 }
 
-// Generate skin color and paint color
 export function seedToColors(seed, accentColor = '#3b82f6') {
   const rng = seededRandom(seed);
-  // Non-realistic skin tones (pale, vibrant pink, neon green, blueish, yellow, etc)
   const hue = Math.floor(rng() * 360);
-  const sat = 40 + Math.floor(rng() * 40);
-  const light = 60 + Math.floor(rng() * 30);
-  
+  const sat = 30 + Math.floor(rng() * 50);
+  const light = 55 + Math.floor(rng() * 30);
   return {
     skinBase: `hsl(${hue}, ${sat}%, ${light}%)`,
-    skinShadow: `hsl(${hue}, ${sat + 10}%, ${light - 20}%)`,
+    skinMid:  `hsl(${hue}, ${sat + 5}%, ${light - 12}%)`,
+    skinDark: `hsl(${hue}, ${sat + 10}%, ${light - 25}%)`,
     paint: accentColor,
-    bg: `hsl(${(hue + 180) % 360}, 20%, 20%)`
   };
 }
 
-// 3D Math Helpers
-function rotateY(point, angle) {
-  const c = Math.cos(angle);
-  const s = Math.sin(angle);
-  return {
-    x: point.x * c - point.z * s,
-    y: point.y,
-    z: point.x * s + point.z * c
-  };
+// ── 3D Math ─────────────────────────────────────────────────────────────────────
+function rotX(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+}
+function rotY(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+}
+function project(p, scale, cx, cy) {
+  return { sx: p.x * scale + cx, sy: -p.y * scale + cy, z: p.z };
+}
+function faceNormalZ(v0, v1, v2) {
+  return (v1.sx - v0.sx) * (v2.sy - v0.sy) - (v1.sy - v0.sy) * (v2.sx - v0.sx);
+}
+function faceDepth(v0, v1, v2) {
+  return (v0.z + v1.z + v2.z) / 3;
 }
 
-function rotateX(point, angle) {
-  const c = Math.cos(angle);
-  const s = Math.sin(angle);
-  return {
-    x: point.x,
-    y: point.y * c - point.z * s,
-    z: point.y * s + point.z * c
-  };
-}
-
-// Generate stylized PS1 low-poly face geometry
-function generateGeometry(seed) {
+// ── Geometry Generation ──────────────────────────────────────────────────────────
+function buildGeometry(seed) {
   const rng = seededRandom(seed);
-  const r = () => (rng() - 0.5) * 2; // -1 to 1
-  
-  // Caricature parameters
-  const jawW = 0.5 + r() * 0.3;
-  const cheekW = 0.8 + r() * 0.2;
-  const browW = 0.7 + r() * 0.1;
-  const headH = 1.0 + r() * 0.2;
-  const chinY = -0.8 + r() * 0.2;
-  const noseZ = 0.5 + Math.abs(r() * 0.4);
-  const noseY = -0.1 + r() * 0.1;
-  const eyeY = 0.2 + r() * 0.1;
-  const eyeZ = 0.15 + r() * 0.1;
-  const eyeSpread = 0.3 + r() * 0.1;
-  
-  // Vertices definition (symmetric, right side defined, then mirrored)
-  // Format: [x, y, z, id]
-  const rawVerts = {
-    chin: [0, chinY, 0.4],
-    mouthCenter: [0, chinY + 0.2, 0.45],
-    noseTip: [0, noseY, noseZ],
-    noseBridge: [0, eyeY, noseZ * 0.8],
-    foreheadCenter: [0, headH * 0.6, 0.4],
-    topCenter: [0, headH, 0],
-    backCenter: [0, 0, -1.0],
-    
-    // Right side
-    jaw: [jawW, chinY + 0.3, 0.1],
-    mouthCorner: [jawW * 0.4, chinY + 0.25, 0.4],
-    cheekbone: [cheekW, noseY + 0.1, 0.3],
-    eyeOuter: [eyeSpread * 1.5, eyeY, eyeZ],
-    eyeInner: [eyeSpread * 0.5, eyeY - 0.05, eyeZ + 0.05],
-    browOuter: [browW, eyeY + 0.15, eyeZ + 0.1],
-    temple: [cheekW * 0.9, eyeY + 0.2, 0],
-    topRight: [cheekW * 0.6, headH * 0.9, 0],
-    earTop: [cheekW * 1.1, eyeY, -0.1],
-    earBot: [cheekW * 1.0, noseY, -0.1],
-    neckRight: [jawW * 0.8, chinY - 0.4, -0.2],
-    neckCenter: [0, chinY - 0.5, 0]
+  const r = (lo, hi) => lo + rng() * (hi - lo);
+
+  // Caricature params (all seed-driven)
+  const jawW    = r(0.35, 0.70);
+  const cheekW  = r(0.70, 1.00);
+  const foreW   = r(0.55, 0.85);
+  const headH   = r(0.90, 1.20);
+  const chinY   = r(-0.85, -0.65);
+  const browH   = r(-0.05, 0.25);   // brow raise
+  const eyeY    = r(0.10, 0.30);
+  const eyeZ    = r(0.12, 0.22);
+  const eyeSpX  = r(0.20, 0.45);    // eye x spread
+  const eyeSz   = r(0.06, 0.14);    // eye size
+  const lidDrop = r(0.0, 0.06);     // upper lid droop
+  const noseLen = r(0.25, 0.55);
+  const noseZ   = r(0.35, 0.65);
+  const noseTip = r(0.0, 0.20);     // bulbous tip
+  const mouthW  = r(0.18, 0.45);
+  const mouthY  = r(-0.35, -0.20);
+  const lipCurl = r(-0.05, 0.08);   // smile/frown
+  const earW    = r(0.06, 0.14);
+  const earH    = r(0.18, 0.32);
+
+  const V = {};
+  const def = (k, x, y, z) => { V[k] = { x, y, z, id: k }; };
+
+  // CENTER LINE
+  def('topC',   0, headH,        0.05);
+  def('foreC',  0, headH * 0.70, 0.35);
+  def('browC',  0, eyeY + browH, eyeZ + 0.08);
+  def('nostC',  0, eyeY - noseLen, noseZ + noseTip);
+  def('nostB',  0, eyeY - noseLen * 0.4, noseZ);
+  def('mouthC', 0, mouthY + 0.04, 0.42);
+  def('lowlipC',0, mouthY - 0.02, 0.40);
+  def('chinC',  0, chinY,        0.30);
+  def('neckC',  0, chinY - 0.35, 0.10);
+  def('backC',  0, headH * 0.30, -0.85);
+  def('backLoC',0, chinY * 0.40, -0.70);
+
+  // SYMMETRIC (right side, will mirror to left)
+  const sym = (k, x, y, z) => {
+    V[k + 'R'] = { x,  y, z, id: k + 'R' };
+    V[k + 'L'] = { x: -x, y, z, id: k + 'L' };
   };
 
-  const verts = [];
-  const vertMap = {};
-  
-  // Add center verts
-  ['chin', 'mouthCenter', 'noseTip', 'noseBridge', 'foreheadCenter', 'topCenter', 'backCenter', 'neckCenter'].forEach(k => {
-    vertMap[k] = verts.length;
-    verts.push({ x: rawVerts[k][0], y: rawVerts[k][1], z: rawVerts[k][2], id: k });
+  sym('topSide',   foreW * 0.80, headH * 0.95, -0.10);
+  sym('templeT',   cheekW * 0.88, headH * 0.78, -0.05);
+  sym('temple',    cheekW * 0.95, eyeY + 0.30, 0.05);
+  sym('ear',       cheekW * 1.05 + earW, eyeY - 0.02, -0.08);
+  sym('earLo',     cheekW * 1.05 + earW * 0.7, eyeY - earH, -0.08);
+  sym('cheek',     cheekW,        eyeY - 0.10, 0.28);
+  sym('cheekHi',   cheekW * 0.80, eyeY + 0.06, 0.28);
+  sym('jaw',       jawW,          chinY + 0.25, 0.12);
+  sym('chin',      jawW * 0.42,   chinY + 0.10, 0.30);
+  sym('neckSide',  jawW * 0.70,   chinY - 0.30, -0.10);
+
+  // MOUTH & LIPS
+  sym('mouthCo',   mouthW,        mouthY + lipCurl, 0.40);
+  sym('upLip',     mouthW * 0.55, mouthY + 0.055,  0.44);
+  sym('loLip',     mouthW * 0.55, mouthY - 0.035,  0.44);
+
+  // NOSE
+  sym('nostSide', 0.12, eyeY - noseLen + 0.04, noseZ + noseTip - 0.02);
+  sym('nostWing', 0.18, eyeY - noseLen - 0.01, noseZ + noseTip * 0.5);
+  def('nostTip',  0,    eyeY - noseLen - 0.02, noseZ + noseTip + 0.08);
+  def('noseBridgeC', 0, eyeY + 0.06, noseZ - 0.10);
+
+  // EYES
+  sym('browIn',  eyeSpX * 0.40, eyeY + browH + 0.06, eyeZ + 0.12);
+  sym('browOut', eyeSpX * 1.45, eyeY + browH + 0.02, eyeZ + 0.08);
+  sym('eyeIn',   eyeSpX * 0.55, eyeY - lidDrop * 0.3, eyeZ + 0.04);
+  sym('eyeOut',  eyeSpX * 1.45, eyeY - lidDrop * 0.5, eyeZ + 0.02);
+  sym('eyeTop',  eyeSpX * 1.00, eyeY + eyeSz - lidDrop, eyeZ + 0.07);
+  sym('eyeBot',  eyeSpX * 1.00, eyeY - eyeSz * 0.55,  eyeZ + 0.01);
+
+  // FOREHEAD DETAIL
+  sym('foreHi',  foreW * 0.40, headH * 0.55, 0.32);
+  sym('foreMid', foreW * 0.65, headH * 0.70, 0.18);
+
+  // Collect into array and build index
+  const verts = Object.values(V);
+  const idx = {};
+  verts.forEach((v, i) => { idx[v.id] = i; });
+  const I = (k) => idx[k];
+
+  // ── Face Triplets ──────────────────────────────────────────────────────────────
+  // Groups: 'skin' | 'shadow' | 'highlight' | 'paint' | 'noseSkin' | 'lip' | 'brow'
+  const tris = [
+    // FOREHEAD
+    ['highlight', 'topC','topSideR','foreHiR'],
+    ['highlight', 'topC','foreHiL','topSideL'],
+    ['highlight', 'topC','topSideR','topSideL'],
+    ['skin','foreC','topC','foreHiR'],
+    ['skin','foreC','foreHiL','topC'],
+    ['skin','foreC','foreHiR','foreMidR'],
+    ['skin','foreC','foreMidL','foreHiL'],
+    ['skin','foreC','foreMidR','browIn R'],
+    ['skin','foreC','browInL','foreMidL'],
+
+    // BROW RIDGE
+    ['brow','browInR','foreMidR','browOutR'],
+    ['brow','browInL','browOutL','foreMidL'],
+    ['brow','browInR','browOutR','eyeTopR'],
+    ['brow','browInL','eyeTopL','browOutL'],
+
+    // TEMPLES & SIDES
+    ['skin','topSideR','templeT R','foreMidR'],
+    ['skin','topSideL','foreMidL','templeTL'],
+    ['skin','templeT R','templeR','foreMidR'],
+    ['skin','templeTL','foreMidL','templeL'],
+    ['shadow','templeR','earR','templeT R'],
+    ['shadow','templeL','templeTL','earL'],
+    ['shadow','templeR','cheekHiR','earR'],
+    ['shadow','templeL','earL','cheekHiL'],
+
+    // CHEEKS
+    ['skin','cheekHiR','cheekR','cheekHiR'].map ? null : null, // placeholder
+    ['skin','cheekHiR','eyeOutR','cheekR'],
+    ['skin','cheekHiL','cheekL','eyeOutL'],
+    ['skin','cheekR','nostSideR','cheekHiR'],
+    ['skin','cheekL','cheekHiL','nostSideL'],
+    ['skin','cheekR','mouthCoR','nostSideR'],
+    ['skin','cheekL','nostSideL','mouthCoL'],
+
+    // EAR
+    ['shadow','earR','earLoR','cheekR'],
+    ['shadow','earL','cheekL','earLoL'],
+    ['shadow','cheekR','earLoR','jawR'],
+    ['shadow','cheekL','jawL','earLoL'],
+
+    // UPPER FACE (Eye zone)
+    ['skin','noseBridgeC','browInR','eyeInR'],
+    ['skin','noseBridgeC','eyeInL','browInL'],
+    ['skin','noseBridgeC','eyeInR','nostSideR'],
+    ['skin','noseBridgeC','nostSideL','eyeInL'],
+
+    // NOSE
+    ['noseSkin','nostSideR','nostTip','nostWingR'],
+    ['noseSkin','nostSideL','nostWingL','nostTip'],
+    ['noseSkin','nostBR' || 'nostC','nostSideR','nostB'],
+    ['noseSkin','nostSideR','nostWingR','nostB'],
+    ['noseSkin','nostSideL','nostB','nostWingL'],
+    ['noseSkin','nostTip','nostWingR','mouthC'],
+    ['noseSkin','nostTip','mouthC','nostWingL'],
+
+    // MID FACE (between nose and mouth)
+    ['skin','mouthC','nostWingR','mouthCoR'],
+    ['skin','mouthC','mouthCoL','nostWingL'],
+    ['skin','mouthC','mouthCoR','upLipR'],
+    ['skin','mouthC','upLipL','mouthCoL'],
+
+    // LIPS
+    ['lip','upLipR','mouthCoR','lowlipC'],
+    ['lip','upLipL','lowlipC','mouthCoL'],
+    ['lip','upLipR','lowlipC','mouthC'],
+    ['lip','upLipL','mouthC','lowlipC'],
+    ['lip','loLipR','chinR','mouthCoR'],
+    ['lip','loLipL','mouthCoL','chinL'],
+    ['lip','loLipR','lowlipC','chinR'],
+    ['lip','loLipL','chinL','lowlipC'],
+
+    // LOWER FACE
+    ['skin','chinR','jawR','mouthCoR'],
+    ['skin','chinL','mouthCoL','jawL'],
+    ['skin','chinC','chinR','chinL'],
+    ['skin','chinC','chinR','jaw R'],
+    ['skin','chinC','jawL','chinL'],
+
+    // JAW LINE
+    ['shadow','jawR','neckSideR','chinR'],
+    ['shadow','jawL','chinL','neckSideL'],
+    ['shadow','chinR','neckSideR','neckC'],
+    ['shadow','chinL','neckC','neckSideL'],
+    ['shadow','chinC','chinR','neckC'],
+    ['shadow','chinC','neckC','chinL'],
+
+    // BACK OF HEAD
+    ['shadow','topSideR','backC','templeT R'],
+    ['shadow','topSideL','templeTL','backC'],
+    ['shadow','templeT R','backC','earR'],
+    ['shadow','templeTL','earL','backC'],
+    ['shadow','earR','backC','earLoR'],
+    ['shadow','earL','earLoL','backC'],
+    ['shadow','earLoR','backC','backLoC'],
+    ['shadow','earLoL','backLoC','backC'],
+    ['shadow','earLoR','backLoC','neckSideR'],
+    ['shadow','earLoL','neckSideL','backLoC'],
+    ['shadow','neckSideR','backLoC','neckC'],
+    ['shadow','neckSideL','neckC','backLoC'],
+  ].filter(t => t && t[1] && t[2] && t[3] && idx[t[1]] !== undefined && idx[t[2]] !== undefined && idx[t[3]] !== undefined);
+
+  // Mark some faces as paint (war paint accent)
+  const paintSeeds = new Set();
+  const rngP = seededRandom(seed * 7 + 1);
+  const paintGroups = ['cheekHiR', 'cheekHiL', 'templeR', 'templeL', 'foreHiR', 'foreHiL'];
+  paintGroups.forEach(k => {
+    if (rngP() > 0.55) paintSeeds.add(k);
   });
-  
-  // Add right and left verts
-  ['jaw', 'mouthCorner', 'cheekbone', 'eyeOuter', 'eyeInner', 'browOuter', 'temple', 'topRight', 'earTop', 'earBot', 'neckRight'].forEach(k => {
-    vertMap[k + 'R'] = verts.length;
-    verts.push({ x: rawVerts[k][0], y: rawVerts[k][1], z: rawVerts[k][2], id: k + 'R' });
-    
-    vertMap[k + 'L'] = verts.length;
-    verts.push({ x: -rawVerts[k][0], y: rawVerts[k][1], z: rawVerts[k][2], id: k + 'L' });
-  });
 
-  // Define faces (triangles) using vertex keys
-  const faceDefs = [
-    // Nose & Center Face
-    ['noseTip', 'noseBridge', 'eyeInnerR'], ['noseTip', 'eyeInnerL', 'noseBridge'],
-    ['noseTip', 'eyeInnerR', 'cheekboneR'], ['noseTip', 'cheekboneL', 'eyeInnerL'],
-    ['noseTip', 'cheekboneR', 'mouthCornerR'], ['noseTip', 'mouthCornerL', 'cheekboneL'],
-    ['noseTip', 'mouthCornerR', 'mouthCenter'], ['noseTip', 'mouthCenter', 'mouthCornerL'],
-    
-    // Eyes & Brow
-    ['noseBridge', 'foreheadCenter', 'browOuterR'], ['noseBridge', 'browOuterL', 'foreheadCenter'],
-    ['noseBridge', 'browOuterR', 'eyeInnerR'], ['noseBridge', 'eyeInnerL', 'browOuterL'],
-    ['eyeInnerR', 'browOuterR', 'eyeOuterR'], ['eyeInnerL', 'eyeOuterL', 'browOuterL'],
-    ['eyeInnerR', 'eyeOuterR', 'cheekboneR'], ['eyeInnerL', 'cheekboneL', 'eyeOuterL'],
-    
-    // Cheeks & Jaw
-    ['mouthCenter', 'mouthCornerR', 'chin'], ['mouthCenter', 'chin', 'mouthCornerL'],
-    ['mouthCornerR', 'jawR', 'chin'], ['mouthCornerL', 'chin', 'jawL'],
-    ['mouthCornerR', 'cheekboneR', 'jawR'], ['mouthCornerL', 'jawL', 'cheekboneL'],
-    
-    // Sides
-    ['cheekboneR', 'eyeOuterR', 'earTopR'], ['cheekboneL', 'earTopL', 'eyeOuterL'],
-    ['cheekboneR', 'earTopR', 'earBotR'], ['cheekboneL', 'earBotL', 'earTopL'],
-    ['cheekboneR', 'earBotR', 'jawR'], ['cheekboneL', 'jawL', 'earBotL'],
-    
-    // Forehead & Top
-    ['foreheadCenter', 'topCenter', 'topRightR'], ['foreheadCenter', 'topRightL', 'topCenter'],
-    ['foreheadCenter', 'topRightR', 'browOuterR'], ['foreheadCenter', 'browOuterL', 'topRightL'],
-    ['browOuterR', 'topRightR', 'templeR'], ['browOuterL', 'templeL', 'topRightL'],
-    ['browOuterR', 'templeR', 'eyeOuterR'], ['browOuterL', 'eyeOuterL', 'templeL'],
-    ['eyeOuterR', 'templeR', 'earTopR'], ['eyeOuterL', 'earTopL', 'templeL'],
-    
-    // Neck
-    ['chin', 'jawR', 'neckRightR'], ['chin', 'neckRightL', 'jawL'],
-    ['chin', 'neckRightR', 'neckCenter'], ['chin', 'neckCenter', 'neckRightL']
-  ];
+  const facesList = tris.map(t => ({
+    group: t[0],
+    i0: I(t[1]),
+    i1: I(t[2]),
+    i2: I(t[3]),
+    isPaint: paintSeeds.has(t[1]) || paintSeeds.has(t[2]),
+  })).filter(f => f.i0 !== undefined && f.i1 !== undefined && f.i2 !== undefined);
 
-  const faces = faceDefs.map(f => ({
-    indices: f.map(k => vertMap[k]),
-    keys: f,
-    // Assign "paint" zones randomly based on seed
-    isPaint: rng() > 0.7
-  }));
-
-  // Assign features info for drawing eyes/details later
-  const features = {
-    eyeXR: rawVerts['eyeInner'][0] + (rawVerts['eyeOuter'][0] - rawVerts['eyeInner'][0]) * 0.5,
-    eyeXL: -(rawVerts['eyeInner'][0] + (rawVerts['eyeOuter'][0] - rawVerts['eyeInner'][0]) * 0.5),
-    eyeY: rawVerts['eyeOuter'][1],
-    eyeZ: rawVerts['eyeOuter'][2] + 0.05,
-    eyeSize: 0.08 + Math.abs(r()) * 0.05
+  // Eye feature data for iris rendering
+  const eyeFeats = {
+    R: { cx: eyeSpX * 1.00, cy: eyeY - (eyeSz * 0.05), cz: eyeZ + 0.10, size: eyeSz * 0.85 },
+    L: { cx: -eyeSpX * 1.00, cy: eyeY - (eyeSz * 0.05), cz: eyeZ + 0.10, size: eyeSz * 0.85 },
   };
 
-  return { verts, faces, features, rng };
+  // Nose tip for tracking
+  const noseFeat = { cx: 0, cy: eyeY - noseLen - 0.02, cz: noseZ + noseTip + 0.08 };
+
+  return { verts, facesList, eyeFeats, noseFeat, rng: seededRandom(seed + 9999) };
 }
 
+// ── Render ────────────────────────────────────────────────────────────────────────
 export function renderAvatar(canvas, seed, options = {}) {
-  const { width = 200, height = 200, accentColor = '#3b82f6', mouseX = 0, mouseY = 0 } = options;
+  const { width = 200, height = 200, accentColor = '#3b82f6', mouseX = 0, mouseY = 0, accessories } = options;
+  if (!canvas) return;
+
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const { skinBase, skinShadow, paint } = seedToColors(seed, accentColor);
-  const geo = generateGeometry(seed);
-  
-  // Clear
+  const colors = seedToColors(seed, accentColor);
+  const geo = buildGeometry(seed);
   ctx.clearRect(0, 0, width, height);
-  
-  const cx = width / 2;
-  const cy = height / 2;
-  const scale = Math.min(width, height) * 0.45;
-  
-  // Calculate rotation from mouse
-  // MouseX is -1 to 1, MouseY is -1 to 1
-  const rotY = mouseX * 0.6; 
-  const rotX = -mouseY * 0.4;
-  
-  // Transform vertices
-  const projVerts = geo.verts.map(v => {
-    let p = rotateX(v, rotX);
-    p = rotateY(p, rotY);
-    // Simple ortho projection with scale
+
+  const cx = width * 0.50;
+  const cy = height * 0.52;
+  const scale = Math.min(width, height) * 0.42;
+
+  // Rotation from mouse
+  const ry = mouseX * 0.55;
+  const rx = -mouseY * 0.35;
+
+  // Transform verts
+  const pv = geo.verts.map(v => {
+    let p = rotX(v, rx);
+    p = rotY(p, ry);
+    return project(p, scale, cx, cy);
+  });
+
+  // Build face render list
+  const faces = geo.facesList.map(f => {
+    const v0 = pv[f.i0], v1 = pv[f.i1], v2 = pv[f.i2];
     return {
-      x: p.x * scale + cx,
-      y: -p.y * scale + cy, // Flip Y for canvas
-      z: p.z,
-      orig: v
+      v0, v1, v2,
+      nz: faceNormalZ(v0, v1, v2),
+      depth: faceDepth(v0, v1, v2),
+      group: f.group,
+      isPaint: f.isPaint,
     };
-  });
+  }).filter(f => f.nz < 0); // backface cull
 
-  // Calculate face depths and normals
-  const projectedFaces = geo.faces.map(f => {
-    const v0 = projVerts[f.indices[0]];
-    const v1 = projVerts[f.indices[1]];
-    const v2 = projVerts[f.indices[2]];
-    
-    const zAvg = (v0.z + v1.z + v2.z) / 3;
-    
-    // Normal calculation (Z component for backface culling & flat shading)
-    const dx1 = v1.x - v0.x;
-    const dy1 = v1.y - v0.y;
-    const dx2 = v2.x - v0.x;
-    const dy2 = v2.y - v0.y;
-    const nz = dx1 * dy2 - dy1 * dx2; // 2D cross product = Z normal in screen space
-    
-    // Base shading on original normals so it looks 3D even when rotated
-    const nx = v0.orig.x + v1.orig.x + v2.orig.x;
-    const ny = v0.orig.y + v1.orig.y + v2.orig.y;
-    const shade = (ny * 0.5 + (nx > 0 ? nx : -nx) * 0.2) / 3; 
+  // Sort painter's algorithm
+  faces.sort((a, b) => a.depth - b.depth);
 
-    return { v0, v1, v2, zAvg, nz, shade, isPaint: f.isPaint };
-  });
+  // Derive skin HSL
+  const skinMatch = /hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/.exec(colors.skinBase) || [];
+  const sh = +skinMatch[1] || 0;
+  const ss = +skinMatch[2] || 40;
+  const sl = +skinMatch[3] || 70;
 
-  // Sort faces by Z depth (Painter's algorithm)
-  projectedFaces.sort((a, b) => a.zAvg - b.zAvg);
-
-  // Parse colors
-  // We'll just use a simple lerp or hsl adjustments for flat shading
-  const skinHSL = /hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/.exec(skinBase);
-  const h = skinHSL ? parseInt(skinHSL[1]) : 0;
-  const s = skinHSL ? parseInt(skinHSL[2]) : 0;
-  const l = skinHSL ? parseInt(skinHSL[3]) : 50;
-
-  // Draw faces
-  ctx.lineJoin = 'round';
-  for (const f of projectedFaces) {
-    if (f.nz > 0) continue; // Backface cull
-    
-    ctx.beginPath();
-    ctx.moveTo(f.v0.x, f.v0.y);
-    ctx.lineTo(f.v1.x, f.v1.y);
-    ctx.lineTo(f.v2.x, f.v2.y);
-    ctx.closePath();
-    
-    // Calculate light for this facet
-    const lightMod = f.shade * 30; // -15 to 15
-    const finalL = Math.max(10, Math.min(90, l - lightMod));
-    
-    if (f.isPaint) {
-      // War paint facet
-      ctx.fillStyle = paint;
-      ctx.strokeStyle = paint;
-    } else {
-      // Skin facet
-      const color = `hsl(${h}, ${s}%, ${finalL}%)`;
-      ctx.fillStyle = color;
-      ctx.strokeStyle = color;
-    }
-    
-    ctx.lineWidth = 1.0;
-    ctx.fill();
-    ctx.stroke(); // Stroke with same color avoids gaps between polygons
-    
-    // Optional: add a tiny wireframe black outline for that comic/PS1 look
-    // like the reference image which has black sketched lines
-    if (Math.abs(f.shade) > 0.2) {
-      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-  }
-
-  // Draw 3D Eyes that track
-  const drawEye = (origX, origY, origZ) => {
-    let p = rotateX({x: origX, y: origY, z: origZ}, rotX);
-    p = rotateY(p, rotY);
-    if (p.z < -0.1) return; // Behind face
-    
-    const ex = p.x * scale + cx;
-    const ey = -p.y * scale + cy;
-    const eSize = geo.features.eyeSize * scale;
-    
-    // Sclera
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, eSize * 1.5, eSize * 0.8, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#111';
-    ctx.fill();
-    
-    // Iris tracking
-    // The iris shifts based on mouse position relative to face
-    const ix = ex + mouseX * eSize * 0.8;
-    const iy = ey + mouseY * eSize * 0.8;
-    
-    ctx.beginPath();
-    ctx.arc(ix, iy, eSize * 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = paint; // Iris matches accent color
-    ctx.fill();
-    
-    // Pupil
-    ctx.beginPath();
-    ctx.arc(ix, iy, eSize * 0.2, 0, Math.PI * 2);
-    ctx.fillStyle = '#000';
-    ctx.fill();
+  const groupColor = (group, shade, isPaint) => {
+    if (isPaint) return accentColor;
+    const lMod = shade * 28;
+    const lFinal = Math.max(8, Math.min(92, sl - lMod));
+    if (group === 'shadow')    return `hsl(${sh}, ${ss + 5}%, ${lFinal - 10}%)`;
+    if (group === 'highlight') return `hsl(${sh}, ${ss - 5}%, ${lFinal + 6}%)`;
+    if (group === 'noseSkin')  return `hsl(${sh}, ${ss + 3}%, ${lFinal - 4}%)`;
+    if (group === 'lip')       return `hsl(${(sh + 10) % 360}, ${ss + 15}%, ${lFinal - 8}%)`;
+    if (group === 'brow')      return `hsl(${sh}, ${ss}%, ${lFinal - 18}%)`;
+    return `hsl(${sh}, ${ss}%, ${lFinal}%)`;
   };
 
-  drawEye(geo.features.eyeXR, geo.features.eyeY, geo.features.eyeZ);
-  drawEye(geo.features.eyeXL, geo.features.eyeY, geo.features.eyeZ);
+  // Draw faces
+  for (const f of faces) {
+    const shade = (f.v0.z + f.v1.z + f.v2.z) / 3 - 0.1;
+    const color = groupColor(f.group, shade, f.isPaint);
+    ctx.beginPath();
+    ctx.moveTo(f.v0.sx, f.v0.sy);
+    ctx.lineTo(f.v1.sx, f.v1.sy);
+    ctx.lineTo(f.v2.sx, f.v2.sy);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 0.8;
+    ctx.fill();
+    ctx.stroke();
+  }
 
-  // Sketched black lines overlay (like the reference)
-  ctx.strokeStyle = '#111';
+  // Draw bold sketch outlines
+  ctx.strokeStyle = `rgba(0,0,0,0.18)`;
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
-  const drawStroke = (v1Id, v2Id, v3Id) => {
-    const vIdx1 = geo.verts.findIndex(v => v.id === v1Id);
-    const vIdx2 = geo.verts.findIndex(v => v.id === v2Id);
-    const vIdx3 = v3Id ? geo.verts.findIndex(v => v.id === v3Id) : -1;
-    
-    const v1 = vIdx1 !== -1 ? projVerts[vIdx1] : null;
-    const v2 = vIdx2 !== -1 ? projVerts[vIdx2] : null;
-    const v3 = vIdx3 !== -1 ? projVerts[vIdx3] : null;
-    
-    if (!v1 || !v2 || v1.z < 0 || v2.z < 0) return;
+  const stroke = (ids) => {
+    const pts = ids.map(id => {
+      const vi = geo.verts.findIndex(v => v.id === id);
+      return vi !== -1 ? pv[vi] : null;
+    }).filter(Boolean);
+    if (pts.length < 2) return;
     ctx.beginPath();
-    ctx.moveTo(v1.x, v1.y);
-    ctx.lineTo(v2.x, v2.y);
-    if (v3 && v3.z > 0) ctx.lineTo(v3.x, v3.y);
+    ctx.moveTo(pts[0].sx, pts[0].sy);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].sx, pts[i].sy);
     ctx.stroke();
   };
 
-  // Add some chaotic stylized strokes
-  if (geo.rng() > 0.5) drawStroke('cheekboneR', 'jawR');
-  if (geo.rng() > 0.5) drawStroke('cheekboneL', 'jawL');
-  drawStroke('mouthCornerR', 'mouthCenter', 'mouthCornerL'); // Mouth line
-  if (geo.rng() > 0.3) drawStroke('browOuterR', 'foreheadCenter');
-  if (geo.rng() > 0.3) drawStroke('browOuterL', 'foreheadCenter');
+  // Key outline strokes (jaw, brow, nose)
+  stroke(['jawR', 'chinR', 'chinC', 'chinL', 'jawL']);
+  stroke(['browInR', 'browOutR']);
+  stroke(['browInL', 'browOutL']);
+  stroke(['nostTip', 'nostWingR']);
+  stroke(['nostTip', 'nostWingL']);
+  stroke(['mouthCoR', 'upLipR', 'mouthC', 'upLipL', 'mouthCoL']);
+  stroke(['mouthCoR', 'loLipR', 'lowlipC', 'loLipL', 'mouthCoL']);
+
+  // ── Draw Eyes ─────────────────────────────────────────────────────────────────
+  const drawEye = (feat) => {
+    let p = rotX(feat, rx);
+    p = rotY(p, ry);
+    const ep = project(p, scale, cx, cy);
+    if (ep.z < -0.05) return;
+    const es = feat.size * scale;
+
+    // Sclera (white-ish, flat-shaded dark to match PS1 style)
+    ctx.beginPath();
+    ctx.ellipse(ep.sx, ep.sy, es * 1.4, es * 0.85, 0, 0, Math.PI * 2);
+    ctx.fillStyle = `hsl(${sh}, 5%, ${sl - 30}%)`;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Iris (tracks mouse)
+    const ix = ep.sx + mouseX * es * 0.65;
+    const iy = ep.sy + mouseY * es * 0.65;
+    ctx.beginPath();
+    ctx.arc(ix, iy, es * 0.62, 0, Math.PI * 2);
+    ctx.fillStyle = accentColor;
+    ctx.fill();
+
+    // Pupil
+    ctx.beginPath();
+    ctx.arc(ix, iy, es * 0.28, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+
+    // Specular dot
+    ctx.beginPath();
+    ctx.arc(ix + es * 0.18, iy - es * 0.18, es * 0.10, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fill();
+  };
+
+  const ef = geo.eyeFeats;
+  drawEye({ x: ef.R.cx, y: ef.R.cy, z: ef.R.cz, size: ef.R.size });
+  drawEye({ x: ef.L.cx, y: ef.L.cy, z: ef.L.cz, size: ef.L.size });
+
+  // ── Draw Accessories ──────────────────────────────────────────────────────────
+  if (accessories) {
+    try {
+      renderAccessories(ctx, geo, pv, rx, ry, scale, cx, cy, accessories, accentColor);
+    } catch(e) { console.warn('Accessories render error:', e); }
+  }
 }
 
-export function generateAvatarDataURL(seed, size = 200, accentColor = '#3b82f6') {
+export function generateAvatarDataURL(seed, size = 200, accentColor = '#3b82f6', accessories) {
   const canvas = document.createElement('canvas');
-  renderAvatar(canvas, seed, { width: size, height: size, accentColor });
+  renderAvatar(canvas, seed, { width: size, height: size, accentColor, accessories });
   return canvas.toDataURL('image/png');
 }

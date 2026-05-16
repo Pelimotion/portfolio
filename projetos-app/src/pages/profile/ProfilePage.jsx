@@ -2,271 +2,273 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { supabase } from '../../lib/supabase';
 import { renderAvatar, hashString, seedToColors } from '../../lib/avatarEngine';
-import { ArrowLeft, RefreshCw, Palette, Save, Check, User, Mail, Briefcase, Hash, Sparkles } from 'lucide-react';
+import { accessoriesFromSeed } from '../../lib/accessoryEngine';
+import { GamificationWidget } from '../../components/ui/GamificationWidget';
+import {
+  ArrowLeft, RefreshCw, Save, Check, User, Briefcase, Hash,
+  Sparkles, Shuffle, Moon, Sun, MessageSquare
+} from 'lucide-react';
 
 // ============================================
-// PROFILE PAGE — User Settings + 3D Avatar
+// PROFILE PAGE — User Identity + 3D Avatar + Gamification
 // ============================================
-
-// No presets needed anymore, using free color picker
 
 export default function ProfilePage() {
-  const { user } = useAuth();
-  const { theme } = useTheme();
+  const { user, profile: authProfile, updateProfile } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const canvasRef = useRef(null);
-  
-  const [profile, setProfile] = useState({
+  const mousePos = useRef({ x: 0, y: 0 });
+  const rafRef = useRef(null);
+
+  const [form, setForm] = useState({
     display_name: '',
     nickname: '',
     role: '',
+    status_text: '',
     accent_color: '#3b82f6',
     avatar_seed: 0,
+    avatar_accessories: {},
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // Load profile on mount
+  // Sync form from authProfile
   useEffect(() => {
-    if (!user) return;
-    async function loadProfile() {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      if (data) {
-        setProfile({
-          display_name: data.display_name || user.email?.split('@')[0] || '',
-          nickname: data.nickname || '',
-          role: data.role || '',
-          accent_color: data.accent_color || '#3b82f6',
-          avatar_seed: data.avatar_seed ?? hashString(user.id),
-        });
-      } else {
-        // Initialize defaults from auth data
-        setProfile(prev => ({
-          ...prev,
-          display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-          avatar_seed: hashString(user.id),
-        }));
-      }
-    }
-    loadProfile();
-  }, [user]);
-
-  // Render avatar on canvas
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    renderAvatar(canvasRef.current, profile.avatar_seed, {
-      width: 280,
-      height: 280,
-      accentColor: profile.accent_color,
-      mouseX: mousePos.x,
-      mouseY: mousePos.y,
+    if (!authProfile && !user) return;
+    setForm({
+      display_name: authProfile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
+      nickname: authProfile?.nickname || '',
+      role: authProfile?.role || '',
+      status_text: authProfile?.status_text || '',
+      accent_color: authProfile?.accent_color || '#3b82f6',
+      avatar_seed: authProfile?.avatar_seed ?? hashString(user?.id || '0'),
+      avatar_accessories: authProfile?.avatar_accessories || {},
     });
-  }, [profile.avatar_seed, profile.accent_color, mousePos]);
+  }, [authProfile, user]);
+
+  // Render avatar
+  const drawAvatar = useCallback(() => {
+    if (!canvasRef.current) return;
+    renderAvatar(canvasRef.current, form.avatar_seed, {
+      width: 320, height: 320,
+      accentColor: form.accent_color,
+      mouseX: mousePos.current.x,
+      mouseY: mousePos.current.y,
+      accessories: form.avatar_accessories,
+    });
+  }, [form.avatar_seed, form.accent_color, form.avatar_accessories]);
+
+  useEffect(() => { drawAvatar(); }, [drawAvatar]);
 
   const handleMouseMove = useCallback((e) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setMousePos({ x, y });
-  }, []);
-
-  const randomizeSeed = () => {
-    setProfile(prev => ({ ...prev, avatar_seed: Math.floor(Math.random() * 999999999) }));
-  };
+    mousePos.current = {
+      x: Math.max(-1, Math.min(1, ((e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)))),
+      y: Math.max(-1, Math.min(1, ((e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)))),
+    };
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(drawAvatar);
+  }, [drawAvatar]);
 
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          display_name: profile.display_name,
-          nickname: profile.nickname,
-          role: profile.role,
-          accent_color: profile.accent_color,
-          avatar_seed: profile.avatar_seed,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'id' });
-      
-      if (error) throw error;
+      await updateProfile({
+        display_name: form.display_name,
+        nickname: form.nickname,
+        role: form.role,
+        status_text: form.status_text,
+        accent_color: form.accent_color,
+        avatar_seed: form.avatar_seed,
+        avatar_accessories: form.avatar_accessories,
+      });
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => setSaved(false), 2500);
     } catch (e) {
       console.error('Save profile error:', e);
-      alert('Erro ao salvar perfil. Verifique se a tabela profiles existe no Supabase.');
+      alert(`Erro ao salvar: ${e.message || 'Verifique o Supabase.'}`);
     } finally {
       setSaving(false);
     }
   };
 
-  const colors = seedToColors(profile.avatar_seed, profile.accent_color);
+  const randomizeFace = () => {
+    setForm(prev => ({ ...prev, avatar_seed: Math.floor(Math.random() * 999999999) }));
+  };
+
+  const randomizeAccessories = () => {
+    const newSeed = Math.floor(Math.random() * 999999999);
+    setForm(prev => ({ ...prev, avatar_accessories: { seed: newSeed, ...accessoriesFromSeed(newSeed) } }));
+  };
+
+  const ac = form.accent_color;
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-[var(--surface-0)]">
       {/* Header */}
-      <header className="h-14 flex items-center gap-4 px-6 border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-1)]">
-        <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-        <div className="flex flex-col">
-          <h1 className="font-bold text-sm text-foreground">Perfil & Preferências</h1>
-          <span className="text-[10px] text-muted-foreground/50">{user?.email}</span>
+      <header className="h-14 flex items-center justify-between px-6 border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-1)]">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="font-bold text-sm text-foreground">Perfil & Preferências</h1>
+            <span className="text-[10px] text-muted-foreground/50">{user?.email}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground transition-colors" title="Alternar tema">
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50"
+            style={{ background: saved ? '#22c55e' : ac, boxShadow: `0 4px 16px ${ac}44` }}
+          >
+            {saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+            {saved ? 'Salvo!' : saving ? 'Salvando...' : 'Salvar'}
+          </button>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto custom-scrollbar p-8">
-        <div className="max-w-2xl mx-auto space-y-8">
-          
-          {/* Avatar Section */}
-          <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6 space-y-5">
-            <div className="flex items-center gap-2 text-sm font-bold" style={{ color: profile.accent_color }}>
+      <main className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="max-w-3xl mx-auto p-6 space-y-6">
+
+          {/* ── Avatar + Identity ── */}
+          <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6">
+            <div className="flex items-center gap-2 text-sm font-bold mb-5" style={{ color: ac }}>
               <Sparkles className="w-4 h-4" />
-              Avatar Generativo
+              Identidade Visual
             </div>
-            
-            <div className="flex items-start gap-8">
-              {/* Avatar Canvas */}
-              <div 
-                className="relative shrink-0"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
-              >
-                <canvas
-                  ref={canvasRef}
-                  className="w-[180px] h-[180px] rounded-2xl border-2 border-[var(--border-strong)] shadow-xl cursor-crosshair"
-                  style={{ imageRendering: 'auto' }}
-                />
-                <button
-                  onClick={randomizeSeed}
-                  className="absolute -bottom-2 -right-2 p-2 rounded-xl bg-[var(--surface-3)] border border-[var(--border-strong)] text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all shadow-lg"
-                  title="Gerar novo avatar"
+            <div className="flex gap-8 items-start">
+              {/* Canvas */}
+              <div className="shrink-0 flex flex-col items-center gap-3">
+                <div
+                  className="rounded-3xl overflow-hidden border-4 shadow-2xl cursor-crosshair"
+                  style={{ borderColor: `${ac}66`, boxShadow: `0 0 40px ${ac}33` }}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={() => { mousePos.current = { x: 0, y: 0 }; drawAvatar(); }}
                 >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
+                  <canvas
+                    ref={canvasRef}
+                    style={{ width: 160, height: 160, display: 'block' }}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={randomizeFace}
+                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-2 rounded-xl border transition-all hover:scale-105"
+                    style={{ borderColor: `${ac}44`, color: ac, background: `${ac}11` }}
+                    title="Randomizar rosto"
+                  >
+                    <RefreshCw className="w-3 h-3" /> Rosto
+                  </button>
+                  <button
+                    onClick={randomizeAccessories}
+                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-2 rounded-xl border transition-all hover:scale-105"
+                    style={{ borderColor: `${ac}44`, color: ac, background: `${ac}11` }}
+                    title="Randomizar acessórios"
+                  >
+                    <Shuffle className="w-3 h-3" /> Estilo
+                  </button>
+                </div>
               </div>
 
-              {/* Seed + Color Controls */}
-              <div className="flex-1 space-y-4">
-                <div>
-                  <label className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-1.5 block">Seed</label>
-                  <div className="flex items-center gap-2">
+              {/* Form fields */}
+              <div className="flex-1 grid grid-cols-1 gap-4">
+                {[
+                  { key: 'display_name', label: 'Nome de Exibição', icon: User,         ph: 'Como você é chamado no sistema' },
+                  { key: 'nickname',     label: 'Apelido (@)',      icon: Hash,         ph: 'seu_handle' },
+                  { key: 'role',         label: 'Cargo',            icon: Briefcase,    ph: 'Ex: Motion Designer' },
+                  { key: 'status_text',  label: 'Status',           icon: MessageSquare, ph: '☕ Disponível para calls...' },
+                ].map(({ key, label, icon: Icon, ph }) => (
+                  <div key={key}>
+                    <label className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest flex items-center gap-1 mb-1.5">
+                      <Icon className="w-3 h-3" /> {label}
+                    </label>
                     <input
-                      type="number"
-                      value={profile.avatar_seed}
-                      onChange={e => setProfile(prev => ({ ...prev, avatar_seed: parseInt(e.target.value) || 0 }))}
-                      className="flex-1 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-foreground font-mono focus:outline-none focus:border-primary/50 transition-colors"
+                      value={form[key]}
+                      onChange={e => setForm(prev => ({ ...prev, [key]: e.target.value }))}
+                      placeholder={ph}
+                      className="w-full bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-xl px-3 py-2.5 text-sm text-foreground focus:outline-none transition-colors placeholder:text-muted-foreground/30"
+                      style={{ '--tw-ring-color': ac }}
+                      onFocus={e => { e.target.style.borderColor = `${ac}66`; }}
+                      onBlur={e => { e.target.style.borderColor = ''; }}
                     />
-                    <button onClick={randomizeSeed} className="px-3 py-2 rounded-lg bg-[var(--surface-3)] text-xs font-medium text-muted-foreground hover:text-foreground border border-[var(--border-subtle)] transition-colors">
-                      Random
-                    </button>
                   </div>
-                </div>
+                ))}
 
+                {/* Color picker */}
                 <div>
-                  <label className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2 block flex items-center gap-1.5">
-                    <Palette className="w-3 h-3" /> Cor de Preferência
+                  <label className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest flex items-center gap-1 mb-1.5">
+                    <span className="w-3 h-3 rounded-full shrink-0 border border-border" style={{ background: ac }} />
+                    Cor de Destaque
                   </label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <input
                       type="color"
-                      value={profile.accent_color}
-                      onChange={e => setProfile(prev => ({ ...prev, accent_color: e.target.value }))}
-                      className="w-12 h-12 rounded-lg cursor-pointer bg-transparent border-none p-0"
+                      value={form.accent_color}
+                      onChange={e => setForm(prev => ({ ...prev, accent_color: e.target.value }))}
+                      className="w-10 h-10 rounded-xl cursor-pointer border-2 border-[var(--border-strong)] bg-transparent p-0.5"
                     />
-                    <span className="text-sm font-mono text-muted-foreground uppercase">{profile.accent_color}</span>
+                    <div className="flex-1 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-xl px-3 py-2.5 text-sm font-mono" style={{ color: ac }}>
+                      {form.accent_color}
+                    </div>
+                    {/* Quick presets */}
+                    <div className="flex gap-1.5">
+                      {['#3b82f6','#a855f7','#22c55e','#f59e0b','#ef4444','#ec4899'].map(c => (
+                        <button key={c} onClick={() => setForm(prev => ({ ...prev, accent_color: c }))}
+                          className="w-5 h-5 rounded-full border-2 transition-all hover:scale-125"
+                          style={{ background: c, borderColor: form.accent_color === c ? '#fff' : 'transparent' }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                <p className="text-[11px] text-muted-foreground/40 italic">
-                  Mova o mouse sobre o avatar para vê-lo seguir seu cursor ✨
-                </p>
               </div>
             </div>
           </div>
 
-          {/* Profile Fields */}
-          <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6 space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold" style={{ color: profile.accent_color }}>
-              <User className="w-4 h-4" />
-              Informações
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Field
-                label="Nome"
-                icon={<User className="w-3.5 h-3.5" />}
-                value={profile.display_name}
-                onChange={v => setProfile(prev => ({ ...prev, display_name: v }))}
-                placeholder="Seu nome completo"
-              />
-              <Field
-                label="Apelido"
-                icon={<Hash className="w-3.5 h-3.5" />}
-                value={profile.nickname}
-                onChange={v => setProfile(prev => ({ ...prev, nickname: v }))}
-                placeholder="Como quer ser chamado"
-              />
-              <Field
-                label="Cargo"
-                icon={<Briefcase className="w-3.5 h-3.5" />}
-                value={profile.role}
-                onChange={v => setProfile(prev => ({ ...prev, role: v }))}
-                placeholder="Ex: Motion Designer"
-              />
-              <Field
-                label="E-mail"
-                icon={<Mail className="w-3.5 h-3.5" />}
-                value={user?.email || ''}
-                disabled
-                placeholder=""
-              />
+          {/* ── Preview section — how others see you ── */}
+          <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6">
+            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest mb-4">Como você aparece no sistema</p>
+            <div className="flex items-center gap-4 p-4 bg-[var(--surface-2)] rounded-xl">
+              <div className="rounded-2xl overflow-hidden border-2 shrink-0" style={{ borderColor: `${ac}66` }}>
+                <canvas ref={undefined} style={{ display: 'none' }} />
+                {/* Static preview using same seed */}
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black" style={{ background: `${ac}22`, color: ac }}>
+                  {(form.display_name || form.nickname || '?')[0]?.toUpperCase()}
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-black" style={{ color: ac }}>
+                  {form.display_name || 'Seu Nome'}
+                </span>
+                {form.nickname && (
+                  <span className="text-[11px] text-muted-foreground/60">@{form.nickname}</span>
+                )}
+                {form.role && (
+                  <span className="text-[11px] text-muted-foreground/50">{form.role}</span>
+                )}
+                {form.status_text && (
+                  <span className="text-[11px] text-muted-foreground/70 italic mt-0.5 border-l-2 pl-2" style={{ borderColor: ac }}>
+                    {form.status_text}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all text-white disabled:opacity-50`}
-              style={{ backgroundColor: saved ? '#22c55e' : profile.accent_color }}
-            >
-              {saved ? <><Check className="w-4 h-4" /> Salvo!</> : saving ? 'Salvando...' : <><Save className="w-4 h-4" /> Salvar Perfil</>}
-            </button>
-          </div>
+          {/* ── Gamification ── */}
+          <GamificationWidget profile={{ ...authProfile, ...form }} />
 
         </div>
       </main>
-    </div>
-  );
-}
-
-function Field({ label, icon, value, onChange, placeholder, disabled }) {
-  return (
-    <div>
-      <label className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-        {icon} {label}
-      </label>
-      <input
-        type="text"
-        value={value || ''}
-        onChange={e => onChange?.(e.target.value)}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`w-full bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-      />
     </div>
   );
 }

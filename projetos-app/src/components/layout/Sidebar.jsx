@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FolderOpen, Search,
-  Plus, ChevronDown, LogOut, MoreHorizontal, Trash2,
-  PanelLeftClose, PanelLeft, Sun, Moon, Settings,
+  Plus, LogOut, MoreHorizontal, Trash2,
+  PanelLeftClose, PanelLeft, Sun, Moon,
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,6 +12,7 @@ import { usePageStore } from '../../stores/usePageStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { TamagochiAvatar } from '../ui/TamagochiAvatar';
+import { GamificationWidget } from '../ui/GamificationWidget';
 import { hashString } from '../../lib/avatarEngine';
 
 export function Sidebar() {
@@ -201,21 +202,48 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Footer: Theme + User */}
-      <div className="p-2 border-t border-[var(--border-subtle)] space-y-1">
+      {/* Footer: Theme + User Identity */}
+      <div className="p-2 border-t border-[var(--border-subtle)] space-y-1.5">
         {/* Theme toggle */}
         <button onClick={toggleTheme} className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground rounded-md transition-all text-left">
           {theme === 'dark' ? <Sun className="w-3.5 h-3.5 opacity-60" /> : <Moon className="w-3.5 h-3.5 opacity-60" />}
           <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>
         </button>
 
-        {/* User section */}
-        <div onClick={() => navigate('/profile')} className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[var(--surface-2)] transition-colors cursor-pointer group">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <TamagochiAvatar size={20} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentColor={profile?.accent_color ?? '#3b82f6'} />
-            <span className="truncate text-[13px] text-muted-foreground group-hover:text-foreground">{profile?.display_name || user?.email?.split('@')[0]}</span>
+        {/* Gamification mini bar */}
+        {profile && <GamificationWidget profile={profile} compact />}
+
+        {/* User identity card */}
+        <div
+          onClick={() => navigate('/profile')}
+          className="flex items-center justify-between px-2 py-2 rounded-xl hover:bg-[var(--surface-2)] transition-colors cursor-pointer group border border-transparent hover:border-[var(--border-subtle)]"
+        >
+          <div className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0">
+            <div className="shrink-0 rounded-xl overflow-hidden border-2" style={{ borderColor: `${profile?.accent_color || '#3b82f6'}66` }}>
+              <TamagochiAvatar
+                size={28}
+                seed={profile?.avatar_seed ?? hashString(user?.id || '0')}
+                accentColor={profile?.accent_color ?? '#3b82f6'}
+                accessories={profile?.avatar_accessories}
+                trackMouse={false}
+              />
+            </div>
+            <div className="overflow-hidden min-w-0">
+              <p className="text-[13px] font-bold truncate" style={{ color: profile?.accent_color || '#3b82f6' }}>
+                {profile?.display_name || profile?.nickname || user?.email?.split('@')[0]}
+              </p>
+              {profile?.status_text ? (
+                <p className="text-[10px] text-muted-foreground/50 truncate italic">{profile.status_text}</p>
+              ) : (
+                <p className="text-[10px] text-muted-foreground/30 truncate">{user?.email}</p>
+              )}
+            </div>
           </div>
-          <button onClick={(e) => { e.stopPropagation(); signOut(); }} className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); signOut(); }}
+            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground/40 transition-all shrink-0"
+            title="Sair"
+          >
             <LogOut className="w-3 h-3" />
           </button>
         </div>
