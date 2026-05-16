@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { renderAvatar, hashString, seedToColors } from '../../lib/avatarEngine';
-import { accessoriesFromSeed } from '../../lib/accessoryEngine';
+import AvatarWidget from '../../components/ui/AvatarWidget';
 import { GamificationWidget } from '../../components/ui/GamificationWidget';
 import {
   ArrowLeft, RefreshCw, Save, Check, User, Briefcase, Hash,
@@ -18,9 +16,6 @@ export default function ProfilePage() {
   const { user, profile: authProfile, updateProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const canvasRef = useRef(null);
-  const mousePos = useRef({ x: 0, y: 0 });
-  const rafRef = useRef(null);
 
   const [form, setForm] = useState({
     display_name: '',
@@ -28,8 +23,6 @@ export default function ProfilePage() {
     role: '',
     status_text: '',
     accent_color: '#3b82f6',
-    avatar_seed: 0,
-    avatar_accessories: {},
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -43,35 +36,8 @@ export default function ProfilePage() {
       role: authProfile?.role || '',
       status_text: authProfile?.status_text || '',
       accent_color: authProfile?.accent_color || '#3b82f6',
-      avatar_seed: authProfile?.avatar_seed ?? hashString(user?.id || '0'),
-      avatar_accessories: authProfile?.avatar_accessories || {},
     });
   }, [authProfile, user]);
-
-  // Render avatar
-  const drawAvatar = useCallback(() => {
-    if (!canvasRef.current) return;
-    renderAvatar(canvasRef.current, form.avatar_seed, {
-      width: 320, height: 320,
-      accentColor: form.accent_color,
-      mouseX: mousePos.current.x,
-      mouseY: mousePos.current.y,
-      accessories: form.avatar_accessories,
-    });
-  }, [form.avatar_seed, form.accent_color, form.avatar_accessories]);
-
-  useEffect(() => { drawAvatar(); }, [drawAvatar]);
-
-  const handleMouseMove = useCallback((e) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    mousePos.current = {
-      x: Math.max(-1, Math.min(1, ((e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)))),
-      y: Math.max(-1, Math.min(1, ((e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)))),
-    };
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(drawAvatar);
-  }, [drawAvatar]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -83,8 +49,6 @@ export default function ProfilePage() {
         role: form.role,
         status_text: form.status_text,
         accent_color: form.accent_color,
-        avatar_seed: form.avatar_seed,
-        avatar_accessories: form.avatar_accessories,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -94,15 +58,6 @@ export default function ProfilePage() {
     } finally {
       setSaving(false);
     }
-  };
-
-  const randomizeFace = () => {
-    setForm(prev => ({ ...prev, avatar_seed: Math.floor(Math.random() * 999999999) }));
-  };
-
-  const randomizeAccessories = () => {
-    const newSeed = Math.floor(Math.random() * 999999999);
-    setForm(prev => ({ ...prev, avatar_accessories: { seed: newSeed, ...accessoriesFromSeed(newSeed) } }));
   };
 
   const ac = form.accent_color;
@@ -146,37 +101,17 @@ export default function ProfilePage() {
               Identidade Visual
             </div>
             <div className="flex gap-8 items-start">
-              {/* Canvas */}
+              {/* Avatar 3D (New PS2 System) */}
               <div className="shrink-0 flex flex-col items-center gap-3">
                 <div
-                  className="rounded-3xl overflow-hidden border-4 shadow-2xl cursor-crosshair"
+                  className="w-[280px] h-[320px] rounded-3xl overflow-hidden border-4 shadow-2xl transition-all"
                   style={{ borderColor: `${ac}66`, boxShadow: `0 0 40px ${ac}33` }}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={() => { mousePos.current = { x: 0, y: 0 }; drawAvatar(); }}
                 >
-                  <canvas
-                    ref={canvasRef}
-                    style={{ width: 160, height: 160, display: 'block' }}
-                  />
+                  <AvatarWidget userId={user?.id} className="w-full h-full" />
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={randomizeFace}
-                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-2 rounded-xl border transition-all hover:scale-105"
-                    style={{ borderColor: `${ac}44`, color: ac, background: `${ac}11` }}
-                    title="Randomizar rosto"
-                  >
-                    <RefreshCw className="w-3 h-3" /> Rosto
-                  </button>
-                  <button
-                    onClick={randomizeAccessories}
-                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-2 rounded-xl border transition-all hover:scale-105"
-                    style={{ borderColor: `${ac}44`, color: ac, background: `${ac}11` }}
-                    title="Randomizar acessórios"
-                  >
-                    <Shuffle className="w-3 h-3" /> Estilo
-                  </button>
-                </div>
+                <p className="text-[10px] text-muted-foreground/40 font-mono uppercase tracking-widest">
+                  Sistema PS2 Engine v2.0
+                </p>
               </div>
 
               {/* Form fields */}
