@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelimotion Studio — Agêntico V1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050505; --bg-sec: #0f0f0f; --border: #1e1e1e; --accent: #e8d5a3; --accent-blue: #3b82f6; --fg: #f0ede8; --fg-mut: #666; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--fg); height: 100vh; overflow: hidden; display: flex; }
+        
+        /* Sidebar */
+        .sidebar { width: 300px; background: var(--bg-sec); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 25px; border-bottom: 1px solid var(--border); }
+        .sidebar-header h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; text-transform: uppercase; }
+        .post-list { flex: 1; overflow-y: auto; padding: 15px; }
+        .post-item { padding: 12px; border: 1px solid transparent; border-bottom-color: var(--border); cursor: pointer; border-radius: 6px; transition: 0.2s; }
+        .post-item:hover { background: rgba(255,255,255,0.03); }
+        .post-item.active { background: #151515; border-color: var(--border); }
+        .post-title { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Main Workspace */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #000; }
+        
+        /* Workflow Tabs */
+        .workflow-tabs { display: flex; background: var(--bg-sec); border-bottom: 1px solid var(--border); padding: 0 30px; }
+        .tab { padding: 15px 25px; cursor: pointer; border-bottom: 2px solid transparent; font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase; color: var(--fg-mut); transition: 0.2s; }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(232, 213, 163, 0.05); }
+        .tab span { margin-right: 8px; opacity: 0.5; }
+
+        .workspace { flex: 1; overflow-y: auto; padding: 30px; }
+        .stage-container { max-width: 1000px; margin: 0 auto; display: none; }
+        .stage-container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .card { background: var(--bg-sec); border: 1px solid var(--border); border-radius: 10px; padding: 25px; margin-bottom: 25px; position: relative; }
+        .card-title { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; color: var(--fg-mut); margin-bottom: 15px; letter-spacing: 1px; display: flex; justify-content: space-between; }
+        
+        .field { margin-bottom: 20px; }
+        .field label { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-bottom: 8px; color: var(--fg-mut); }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: var(--fg); padding: 12px; border-radius: 6px; font-size: 14px; transition: 0.2s; }
+        input:focus, textarea:focus { border-color: var(--accent); outline: none; }
+        
+        .btn { padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 11px; border: 1px solid var(--border); transition: 0.2s; }
+        .btn.primary { background: var(--accent); color: #000; border: none; font-weight: 600; }
+        .btn.ai { background: rgba(59, 130, 246, 0.1); border-color: var(--accent-blue); color: #60a5fa; }
+        .btn.ai:hover { background: rgba(59, 130, 246, 0.2); }
+        
+        .outline-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .outline-item input { flex: 1; }
+
+        /* Micro-actions menu */
+        #selection-menu { position: fixed; display: none; background: #1a1a1a; border: 1px solid var(--border); border-radius: 6px; padding: 5px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #selection-menu button { background: none; border: none; color: var(--fg); padding: 8px 12px; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; border-radius: 4px; }
+        #selection-menu button:hover { background: #333; color: var(--accent); }
+
+        /* Loader */
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.05); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .image-card { aspect-ratio: 16/9; background: #000; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; position: relative; }
+        .image-card img { width: 100%; height: 100%; object-fit: cover; }
+        .image-card .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; opacity: 0; transition: 0.2s; }
+        .image-card:hover .overlay { opacity: 1; }
+        
+        .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="loader">
+        <div class="spinner"></div>
+        <div id="loader-text" style="margin-top: 20px; font-family: 'DM Mono', monospace; color: var(--accent);">PROCESSANDO FLUXO AGÊNTICO...</div>
+    </div>
+
+    <div id="auth-barrier" style="position:fixed; inset:0; background:#000; z-index:5000; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+        <h1 style="font-family:'Barlow Condensed'; font-size:40px; margin-bottom:20px;">ACID TEST</h1>
+        <input type="password" id="auth-pin" placeholder="ENTER ACCESS PIN" style="width:200px; text-align:center; font-family:'DM Mono';">
+        <button class="btn primary" style="margin-top:20px;" onclick="checkAuth()">UNLOCK STUDIO</button>
+    </div>
+
+    <div id="selection-menu">
+        <button onclick="aiAction('optimize')">✨ Otimizar</button>
+        <button onclick="aiAction('expand')">➕ Expandir</button>
+        <button onclick="aiAction('technical')">🛠️ Mais Técnico</button>
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>PELIMOTION STUDIO</h1>
+            <p style="font-size: 9px; color: var(--fg-mut); font-family: 'DM Mono'; letter-spacing: 1px;">MODO AGÊNTICO V1</p>
+            <button class="btn primary" style="width: 100%; margin-top: 20px;" onclick="newPost()">+ NOVO RASCUNHO</button>
+        </div>
+        <div class="post-list" id="post-list"></div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div style="display:flex; align-items:center; gap:20px;">
+                <input type="text" id="f-fileName" style="width:250px; background:transparent; border:none; font-family:'DM Mono'; font-size:12px;" placeholder="nome-do-arquivo.md">
+                <select id="f-status" style="width:140px; border:none; background:transparent; font-family:'DM Mono'; font-size:10px;">
+                    <option value="draft">🟡 DRAFT (UNLISTED)</option>
+                    <option value="published">🟢 PUBLISHED</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button class="btn danger" onclick="deletePost()">EXCLUIR</button>
+                <button class="btn primary" onclick="savePost()">SALVAR TUDO</button>
+            </div>
+        </div>
+
+        <nav class="workflow-tabs">
+            <div class="tab active" onclick="switchStage(1)"><span>01</span> PESQUISA & ESTRUTURA</div>
+            <div class="tab" onclick="switchStage(2)"><span>02</span> ESQUELETO (OUTLINE)</div>
+            <div class="tab" onclick="switchStage(3)"><span>03</span> REDAÇÃO (CHUNKS)</div>
+            <div class="tab" onclick="switchStage(4)"><span>04</span> VISUAL & NANO BANANA</div>
+            <div class="tab" onclick="switchStage(5)"><span>05</span> ⚙️ CONFIGURAÇÕES DE IA</div>
+        </nav>
+
+        <div class="workspace">
+            <!-- Stage 1: Research -->
+            <div class="stage-container active" id="stage-1">
+                <div class="card">
+                    <div class="card-title">BRAINSTORM & SEO (MODEL: FLASH)</div>
+                    <div class="field">
+                        <label>Assunto / Categoria</label>
+                        <select id="f-category-select" onchange="document.getElementById('f-category').value = this.value">
+                            <option value="Negócio">Negócio</option>
+                            <option value="Técnica">Técnica</option>
+                            <option value="Branding">Branding</option>
+                            <option value="Direção de Arte">Direção de Arte</option>
+                            <option value="Processos">Processos</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Palavra-Chave ou Tema</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="f-keyword" placeholder="ex: motion branding workflow">
+                            <button class="btn ai" onclick="aiStep1()">✨ PESQUISAR & GERAR IDEIA</button>
+                            <button class="btn" onclick="aiRandomTheme()">🎲 TEMA ALEATÓRIO</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Título Sugerido</label>
+                        <input type="text" id="f-title">
+                    </div>
+                    <div class="field">
+                        <label>Meta Description</label>
+                        <textarea id="f-metaDescription" rows="2"></textarea>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="field"><label>Slug</label><input type="text" id="f-slug"></div>
+                        <div class="field"><label>Categoria Final</label><input type="text" id="f-category"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2: Outline -->
+            <div class="stage-container" id="stage-2">
+                <div class="card">
+                    <div class="card-title">ESTRUTURA H2/H3 (MODEL: FLASH) <button class="btn ai" style="padding:2px 10px;" onclick="aiStep2()">✨ GERAR ESTRUTURA</button></div>
+                    <div id="outline-list">
+                        <!-- Items injected here -->
+                    </div>
+                    <button class="btn" onclick="addOutlineItem()">+ ADICIONAR SEÇÃO</button>
+                    <div style="margin-top:25px; text-align:right;">
+                        <button class="btn primary" onclick="switchStage(3)">AVANÇAR PARA REDAÇÃO →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3: Content -->
+            <div class="stage-container" id="stage-3">
+                <div class="card-title">EDITOR PROFISSIONAL (MODEL: PRO) <button class="btn ai" style="padding:2px 10px;" onclick="aiStep3()">✨ REDIGIR SEÇÃO POR SEÇÃO</button></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <textarea id="f-content" style="height:700px; font-family:'DM Mono'; line-height:1.7; padding:30px; background:#000; font-size:14px; border:1px solid var(--border); border-radius:8px;" onmouseup="checkSelection(event)" oninput="updateLivePreview()"></textarea>
+                    <div id="live-preview" style="height:700px; overflow-y:auto; padding:30px; background:var(--bg-sec); border:1px solid var(--border); border-radius:8px; font-size:14px; line-height:1.6; color:#ccc;">
+                        <!-- Rendered Markdown will go here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 4: Visuals -->
+            <div class="stage-container" id="stage-4">
+                <div class="card">
+                    <div class="card-title">PROMPTS & NANO BANANA <button class="btn ai" style="padding:2px 10px;" onclick="aiStep4()">✨ CRIAR DIREÇÃO DE ARTE</button></div>
+                    <div class="field">
+                        <label>Instrução de Câmera / Estilo (Global)</label>
+                        <textarea id="f-heroPrompt" rows="3"></textarea>
+                    </div>
+                    <button class="btn primary" style="width:100%; background:var(--accent-blue); color:#fff;" onclick="generateImagesNow()">📸 DISPARAR NANO BANANA (4 IMAGENS)</button>
+                    
+                    <div class="image-preview-grid">
+                        <div class="image-card">
+                            <img id="preview-hero" src="">
+                            <div class="overlay">
+                                <span style="font-size:10px; font-family:'DM Mono'; margin-right:10px;">CLIQUE PARA SUBIR</span>
+                                <input type="file" class="upload-input" onchange="uploadImage(this, 'hero')">
+                                <button class="btn">HERO</button>
+                            </div>
+                        </div>
+                        <div class="image-card">
+                            <img id="preview-image-1" src="">
+                            <div class="overlay"><input type="file" class="upload-input" onchange="uploadImage(this, 'image-1')"><button class="btn">IMG 1</button></div>
+                        </div>
+                        <div class="image-card">
+                            <img id="preview-image-2" src="">
+                            <div class="overlay"><input type="file" class="upload-input" onchange="uploadImage(this, 'image-2')"><button class="btn">IMG 2</button></div>
+                        </div>
+                        <div class="image-card">
+                            <img id="preview-image-3" src="">
+                            <div class="overlay"><input type="file" class="upload-input" onchange="uploadImage(this, 'image-3')"><button class="btn">IMG 3</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 5: AI Settings -->
+            <div class="stage-container" id="stage-5">
+                <div class="card">
+                    <div class="card-title">DIRETRIZES DO ESTÚDIO (CUMULATIVO NO SUPABASE)</div>
+                    <div class="field">
+                        <label>Seção das Diretrizes</label>
+                        <select id="f-guideline-section">
+                            <option value="Tom de Voz">Tom de Voz</option>
+                            <option value="Estrutura de Conteúdo">Estrutura de Conteúdo</option>
+                            <option value="Regras de Imagem">Regras de Imagem</option>
+                            <option value="Dicionário Técnico">Dicionário Técnico</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Conteúdo da Regra</label>
+                        <textarea id="f-guideline-content" rows="10" placeholder="Insira as novas regras ou edite as existentes..."></textarea>
+                    </div>
+                    <button class="btn primary" style="width:100%" onclick="saveGuideline()">ATUALIZAR DIRETRIZES & SUPABASE</button>
+                </div>
+                <div class="card">
+                    <div class="card-title">VISUALIZAÇÃO DO CLAUDE.MD ATUAL</div>
+                    <pre id="claude-preview" style="font-size: 11px; background: #000; padding: 15px; border-radius: 6px; overflow-x: auto; color: #888; max-height: 300px;"></pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPost = null;
+        let posts = [];
+        let brandVoice = "";
+        const CDN = 'https://pelimotion-portfolio.b-cdn.net';
+
+        // Stage Management
+        function switchStage(n) {
+            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i+1 === n));
+            document.querySelectorAll('.stage-container').forEach((s, i) => s.classList.toggle('active', i+1 === n));
+        }
+
+        function showLoader(text) {
+            document.getElementById('loader-text').innerText = text;
+            document.getElementById('loader').style.display = 'flex';
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        // Selection Menu Logic
+        function checkSelection(e) {
+            const sel = window.getSelection().toString().trim();
+            const menu = document.getElementById('selection-menu');
+            if (sel) {
+                menu.style.display = 'flex';
+                menu.style.top = `${e.clientY - 40}px`;
+                menu.style.left = `${e.clientX}px`;
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        async function aiAction(action) {
+            const sel = window.getSelection().toString().trim();
+            if (!sel) return;
+            showLoader(`REFINANDO (${action.toUpperCase()})...`);
+            try {
+                let prompt = "";
+                if (action === 'optimize') prompt = `Melhore o estilo e SEO deste parágrafo, mantendo o significado original: "${sel}"`;
+                if (action === 'expand') prompt = `Expanda este parágrafo com mais detalhes e profundidade técnica: "${sel}"`;
+                if (action === 'technical') prompt = `Reescreva este parágrafo com um tom mais técnico e voltado para especialistas em motion branding: "${sel}"`;
+                
+                const result = await askAI(prompt, 'flash');
+                const area = document.getElementById('f-content');
+                area.value = area.value.replace(sel, result);
+                document.getElementById('selection-menu').style.display = 'none';
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        // AI Calls
+        async function askAI(prompt, modelType = 'flash') {
+            const res = await fetch('/api/blog/generate-text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    prompt: `CONTEXTO BRAND VOICE:\n${brandVoice}\n\nINSTRUÇÃO:\n${prompt}`, 
+                    modelType 
+                })
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            return data.text;
+        }
+
+        async function aiStep1() {
+            const keyword = document.getElementById('f-keyword').value;
+            const category = document.getElementById('f-category').value;
+            if (!keyword) return alert("Insira uma palavra-chave!");
+            showLoader("PESQUISANDO & GERANDO IDEIA...");
+            try {
+                const prompt = `Gere uma ideia de post de blog altamente profissional para a Pelimotion sobre "${keyword}" dentro da categoria "${category}". 
+                Considere as diretrizes do estúdio para o tom de voz.
+                Retorne APENAS um JSON no formato: {"title": "...", "meta": "...", "slug": "...", "category": "..."}`;
+                let res = await askAI(prompt, 'flash');
+                res = res.replace(/```json/g, '').replace(/```/g, '').trim();
+                const data = JSON.parse(res);
+                document.getElementById('f-title').value = data.title;
+                document.getElementById('f-metaDescription').value = data.meta;
+                document.getElementById('f-slug').value = data.slug;
+                document.getElementById('f-category').value = data.category || category;
+            } catch(e) { alert("Erro na IA: " + e.message); }
+            hideLoader();
+        }
+
+        async function aiRandomTheme() {
+            const category = document.getElementById('f-category').value || 'Negócio';
+            showLoader("GERANDO TEMA ALEATÓRIO...");
+            try {
+                const prompt = `Sugira 1 tema aleatório e provocativo para um post de blog de um estúdio de motion branding (Pelimotion) na categoria "${category}".
+                O tema deve ser focado em atrair clientes corporativos de alto nível.
+                Retorne APENAS a palavra-chave/tema curto.`;
+                const res = await askAI(prompt, 'flash');
+                document.getElementById('f-keyword').value = res.trim();
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        async function aiStep2() {
+            const title = document.getElementById('f-title').value;
+            showLoader("GERANDO ESTRUTURA (OUTLINE)...");
+            try {
+                const prompt = `Crie um outline (esqueleto) para um post de blog com o título "${title}". 
+                Liste apenas os títulos das seções (H2s e H3s) separados por quebras de linha.`;
+                const res = await askAI(prompt, 'flash');
+                const list = document.getElementById('outline-list');
+                list.innerHTML = "";
+                res.split('\n').filter(l => l.trim()).forEach(line => addOutlineItem(line));
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        function addOutlineItem(val = "") {
+            const div = document.createElement('div');
+            div.className = 'outline-item';
+            div.innerHTML = `<input type="text" value="${val.replace(/^[-*]\s*/, '')}"><button class="btn" onclick="this.parentElement.remove()">✕</button>`;
+            document.getElementById('outline-list').appendChild(div);
+        }
+
+        async function aiStep3() {
+            const title = document.getElementById('f-title').value;
+            const outlines = Array.from(document.querySelectorAll('.outline-item input')).map(i => i.value);
+            if (outlines.length === 0) return alert("Gere o outline primeiro!");
+            
+            showLoader("REDIGINDO CHUNKS (MODEL: PRO)...");
+            let fullContent = `# ${title}\n\n`;
+            try {
+                for (let section of outlines) {
+                    document.getElementById('loader-text').innerText = `REDIGINDO: ${section.toUpperCase()}...`;
+                    const prompt = `Escreva a seção "${section}" para um post de blog chamado "${title}". 
+                    Use um tom profissional, técnico e engajador. Retorne em Markdown, começando com o título da seção (H2 ou H3).`;
+                    const res = await askAI(prompt, 'pro');
+                    fullContent += res + "\n\n";
+                    document.getElementById('f-content').value = fullContent; // Show progress
+                }
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        async function aiStep4() {
+            const title = document.getElementById('f-title').value;
+            showLoader("CRIANDO DIREÇÃO DE ARTE...");
+            try {
+                const prompt = `Crie um prompt visual cinematográfico em inglês para este post: "${title}". 
+                Siga as regras: Editorial photography, Rio de Janeiro urban context, natural light, cinematic, NO TEXT.`;
+                const res = await askAI(prompt, 'flash');
+                document.getElementById('f-heroPrompt').value = res;
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        // Image Handling
+        async function generateImagesNow() {
+            const prompt = document.getElementById('f-heroPrompt').value;
+            const slug = document.getElementById('f-slug').value;
+            if (!prompt || !slug) return alert("Falta prompt ou slug!");
+            showLoader("NANO BANANA TRABALHANDO...");
+            const names = ['hero', 'image-1', 'image-2', 'image-3'];
+            try {
+                for (let name of names) {
+                    document.getElementById('loader-text').innerText = `GERANDO ${name.toUpperCase()}...`;
+                    await fetch('/api/blog/generate-image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt, slug, imageName: name })
+                    });
+                    updatePreviews(slug);
+                }
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        function updatePreviews(slug) {
+            const t = Date.now();
+            ['hero', 'image-1', 'image-2', 'image-3'].forEach(name => {
+                const img = document.getElementById(`preview-${name}`);
+                img.src = `${CDN}/blog/assets/${slug}/${name}.jpg?t=${t}`;
+            });
+        }
+
+        async function uploadImage(input, name) {
+            const file = input.files[0];
+            if (!file) return;
+            const slug = document.getElementById('f-slug').value;
+            if (!slug) return alert("Crie o slug primeiro!");
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const imageData = e.target.result;
+                showLoader("SUBINDO IMAGEM...");
+                await fetch('/api/blog/upload-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageData, slug, imageName: name })
+                });
+                updatePreviews(slug);
+                hideLoader();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Data Management
+        async function loadPosts() {
+            const res = await fetch('/api/blog/posts');
+            posts = await res.json();
+            const list = document.getElementById('post-list');
+            list.innerHTML = "";
+            posts.forEach(p => {
+                const div = document.createElement('div');
+                div.className = `post-item ${currentPost?.fileName === p.fileName ? 'active' : ''}`;
+                div.innerHTML = `<div class="post-title">${p.data.title || p.fileName}</div>`;
+                div.onclick = () => openPost(p);
+                list.appendChild(div);
+            });
+        }
+
+        function openPost(p) {
+            currentPost = p;
+            document.getElementById('f-fileName').value = p.fileName;
+            document.getElementById('f-status').value = p.data.status || 'draft';
+            document.getElementById('f-title').value = p.data.title || '';
+            document.getElementById('f-keyword').value = p.data.keywords?.[0] || '';
+            document.getElementById('f-slug').value = p.data.slug || '';
+            document.getElementById('f-category').value = p.data.category || '';
+            document.getElementById('f-metaDescription').value = p.data.metaDescription || '';
+            document.getElementById('f-content').value = p.content || '';
+            document.getElementById('f-heroPrompt').value = p.data.heroPrompt || '';
+            updatePreviews(p.data.slug);
+            loadPosts();
+        }
+
+        async function savePost() {
+            showLoader("SALVANDO...");
+            const v = id => document.getElementById(id).value;
+            const data = {
+                fileName: v('f-fileName'),
+                data: {
+                    title: v('f-title'),
+                    status: v('f-status'),
+                    slug: v('f-slug'),
+                    category: v('f-category'),
+                    metaDescription: v('f-metaDescription'),
+                    heroPrompt: v('f-heroPrompt'),
+                    keywords: [v('f-keyword')],
+                    date: new Date().toISOString().split('T')[0]
+                },
+                content: v('f-content')
+            };
+            await fetch('/api/blog/posts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            await loadPosts();
+            hideLoader();
+        }
+
+        async function saveGuideline() {
+            const section = document.getElementById('f-guideline-section').value;
+            const content = document.getElementById('f-guideline-content').value;
+            if (!content) return alert("Conteúdo vazio!");
+            
+            showLoader("ATUALIZANDO DIRETRIZES...");
+            try {
+                await fetch('/api/blog/guidelines', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ section, content })
+                });
+                alert("Diretrizes atualizadas no Supabase e CLAUDE.md!");
+                init(); // Refresh brandVoice and preview
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        function updateLivePreview() {
+            const content = document.getElementById('f-content').value;
+            if (typeof marked !== 'undefined') {
+                document.getElementById('live-preview').innerHTML = marked.parse(content);
+            }
+        }
+
+        function checkAuth() {
+            const pin = document.getElementById('auth-pin').value;
+            // Simple check for now, can be replaced by real Supabase Auth later
+            if (pin === '2026') { 
+                document.getElementById('auth-barrier').style.display = 'none';
+                init();
+            } else {
+                alert("ACCESS DENIED");
+            }
+        }
+
+        async function init() {
+            // Load marked library dynamically
+            if (typeof marked === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                script.onload = () => updateLivePreview();
+                document.head.appendChild(script);
+            }
+
+            const res = await fetch('/api/blog/brand-voice');
+            const data = await res.json();
+            brandVoice = data.content;
+            document.getElementById('claude-preview').innerText = brandVoice;
+            loadPosts();
+        }
+
+        // init() is now called from checkAuth
+    </script>
+</body>
+</html>

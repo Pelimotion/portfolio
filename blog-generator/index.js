@@ -249,14 +249,19 @@ function parseDirectory(dirName) {
     if (!fs.existsSync(dirPath)) return [];
     return fs.readdirSync(dirPath).filter(f => f.endsWith('.md')).map(file => {
         const fileContent = fs.readFileSync(path.join(dirPath, file), 'utf-8');
-        return matter(fileContent);
+        const parsed = matter(fileContent);
+        parsed.fileName = file;
+        return parsed;
     });
 }
 
 async function build() {
     console.log('Starting build...');
-    const posts = parseDirectory('posts');
+    let posts = parseDirectory('posts');
     
+    // Filter out drafts
+    posts = posts.filter(post => post.data.status !== 'draft');
+
     for (const post of posts) {
         if (!post.data.slug) continue;
 
