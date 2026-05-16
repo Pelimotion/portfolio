@@ -11,9 +11,11 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { usePageStore } from '../../stores/usePageStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { ROOT_HUB_ID } from '../../core/schemas';
+import { TamagochiAvatar } from '../ui/TamagochiAvatar';
+import { hashString } from '../../lib/avatarEngine';
 
 export function Sidebar() {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { fetchDatabaseItems, getChildren, archivePage } = usePageStore();
@@ -84,6 +86,9 @@ export function Sidebar() {
 
         <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground hover:text-foreground transition-colors mb-2" title={theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}>
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+        <button onClick={() => navigate('/profile')} className="mb-2 transition-transform hover:scale-110" title="Perfil">
+          <TamagochiAvatar size={28} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
         </button>
         <button onClick={signOut} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Sair">
           <LogOut className="w-3.5 h-3.5" />
@@ -205,14 +210,12 @@ export function Sidebar() {
         </button>
 
         {/* User section */}
-        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[var(--surface-2)] transition-colors cursor-pointer group">
+        <div onClick={() => navigate('/profile')} className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[var(--surface-2)] transition-colors cursor-pointer group">
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 shrink-0 flex items-center justify-center text-[9px] text-white font-bold">
-              {user?.email?.charAt(0)?.toUpperCase()}
-            </div>
-            <span className="truncate text-[13px] text-muted-foreground group-hover:text-foreground">{user?.email?.split('@')[0]}</span>
+            <TamagochiAvatar size={20} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
+            <span className="truncate text-[13px] text-muted-foreground group-hover:text-foreground">{profile?.display_name || user?.email?.split('@')[0]}</span>
           </div>
-          <button onClick={signOut} className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all shrink-0">
+          <button onClick={(e) => { e.stopPropagation(); signOut(); }} className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all shrink-0">
             <LogOut className="w-3 h-3" />
           </button>
         </div>

@@ -26,6 +26,9 @@ import {
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
 import { getAccentColorFromId } from '../../lib/artPatternEngine';
+import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
+import { hashString } from '../../lib/avatarEngine';
+import { useAuth } from '../../contexts/AuthContext';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
@@ -44,6 +47,7 @@ const ROOT_HUB_ID = '00000000-0000-0000-0000-000000000000';
 export function UniversalEntityPage() {
   const { pageId } = useParams();
   const navigate   = useNavigate();
+  const { user, profile } = useAuth();
   const { pages, fetchPage, updatePage } = usePageStore();
 
   const [activeTab,     setActiveTab]     = useState('notes');
@@ -231,6 +235,10 @@ export function UniversalEntityPage() {
             </button>
             <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
               <MoreHorizontal className="w-4 h-4" />
+            </button>
+            <div className="w-px h-8 bg-border/50 mx-2" />
+            <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
+              <TamagochiAvatar size={36} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
             </button>
           </div>
         </div>

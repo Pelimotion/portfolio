@@ -8,6 +8,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import { UniversalEntityPage } from './pages/entity/UniversalEntityPage';
+import ProfilePage from './pages/profile/ProfilePage';
 
 import { ToastProvider } from './components/ui/Toast';
 
@@ -25,6 +26,7 @@ function App() {
                 {/* Rota universal unificada para qualquer página (projeto, cena, task) */}
                 <Route path="/project/:pageId" element={<UniversalEntityPage />} />
                 <Route path="/page/:pageId" element={<UniversalEntityPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
             

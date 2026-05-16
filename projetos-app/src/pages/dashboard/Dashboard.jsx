@@ -3,14 +3,20 @@ import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { AddMemberModal } from '../../components/database/AddMemberModal';
 import { LayoutDashboard, Plus, Search, UserPlus } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
+import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
+import { hashString } from '../../lib/avatarEngine';
+import { useNavigate } from 'react-router-dom';
 
 // ============================================
 // DASHBOARD — Projects Hub Universal
 // ============================================
 
 export default function Dashboard() {
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isAddMemberOpen, setAddMemberOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -87,6 +93,12 @@ export default function Dashboard() {
           >
             <Plus className="w-4 h-4 stroke-[3px]" />
             Novo Projeto
+          </button>
+          
+          <div className="w-px h-8 bg-border/50 mx-2" />
+          
+          <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
+            <TamagochiAvatar size={36} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
           </button>
         </div>
       </header>
