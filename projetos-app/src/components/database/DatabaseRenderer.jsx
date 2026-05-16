@@ -452,6 +452,8 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
         )}
       </DragOverlay>
     </DndContext>
+  );
+}
 function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
