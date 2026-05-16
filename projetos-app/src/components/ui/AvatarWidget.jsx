@@ -1,5 +1,4 @@
-// AvatarWidget.jsx
-import { useEffect, useRef, useCallback, useState } from 'react'
+import React, { useEffect, useRef, useCallback, useState } from 'react'
 import * as THREE from 'three'
 import { AvatarController } from '../../avatar/AvatarController'
 import { generateFaceParams, buildFaceMesh } from '../../avatar/FaceGenerator'

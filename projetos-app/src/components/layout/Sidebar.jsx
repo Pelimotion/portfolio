@@ -89,7 +89,7 @@ export function Sidebar() {
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
         <button onClick={() => navigate('/profile')} className="mb-2 transition-transform hover:scale-110" title="Perfil">
-          <TamagochiAvatar size={28} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentColor={profile?.accent_color ?? '#3b82f6'} />
+          <TamagochiAvatar size={28} userId={user?.id} />
         </button>
         <button onClick={signOut} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Sair">
           <LogOut className="w-3.5 h-3.5" />
@@ -220,12 +220,9 @@ export function Sidebar() {
         >
           <div className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0">
             <div className="shrink-0 rounded-xl overflow-hidden border-2" style={{ borderColor: `${profile?.accent_color || '#3b82f6'}66` }}>
-              <TamagochiAvatar
+            <TamagochiAvatar
                 size={28}
-                seed={profile?.avatar_seed ?? hashString(user?.id || '0')}
-                accentColor={profile?.accent_color ?? '#3b82f6'}
-                accessories={profile?.avatar_accessories}
-                trackMouse={false}
+                userId={user?.id}
               />
             </div>
             <div className="overflow-hidden min-w-0">
