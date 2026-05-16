@@ -14,6 +14,7 @@ import { ROOT_HUB_ID } from '../../core/schemas';
 import { TamagochiAvatar } from '../ui/TamagochiAvatar';
 import { GamificationWidget } from '../ui/GamificationWidget';
 import { hashString } from '../../lib/avatarEngine';
+import { GenerativeIcon } from '../ui/GenerativeIcon';
 
 export function Sidebar() {
   const { user, profile, signOut } = useAuth();
@@ -167,7 +168,7 @@ export function Sidebar() {
                       ? 'bg-[var(--surface-3)] text-foreground font-semibold' 
                       : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}
                 >
-                  {project.icon && <span className="text-sm leading-none shrink-0">{project.icon}</span>}
+                  <GenerativeIcon slug={project.id} size={16} className="shrink-0" />
                   <span className="truncate flex-1 text-[13px]">{project.title}</span>
                 </NavLink>
 

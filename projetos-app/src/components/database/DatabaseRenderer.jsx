@@ -141,6 +141,19 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
     } catch (e) { console.error(e); }
   }, []);
 
+  const [cardFields, setCardFields] = useState(() => {
+    const saved = localStorage.getItem(`peli-card-fields-${databaseId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const toggleCardField = (propId) => {
+    setCardFields(prev => {
+      const next = { ...prev, [propId]: !prev[propId] };
+      localStorage.setItem(`peli-card-fields-${databaseId}`, JSON.stringify(next));
+      return next;
+    });
+  };
+
   const handleCreate = useCallback(async () => {
     setCreating(true);
     try {
@@ -194,6 +207,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
       setProperties(prev => prev.map(p => p.id === propertyId ? newProperty : p));
     },
     density,
+    cardFields,
   };
 
   return (
@@ -237,9 +251,37 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
               ))}
             </div>
 
-            <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors">
-              <Filter className="w-3.5 h-3.5" />
-            </button>
+            {/* Configurações do Card */}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors">
+                  <Settings2 className="w-3.5 h-3.5" />
+                  Card
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content align="end" className="z-50 min-w-[200px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-2 animate-in fade-in zoom-in-95">
+                  <div className="px-2 py-1.5 mb-1">
+                    <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">Exibir no Card</span>
+                  </div>
+                  {properties.map(p => (
+                    <DropdownMenu.CheckboxItem
+                      key={p.id}
+                      checked={cardFields[p.id] !== false}
+                      onCheckedChange={() => toggleCardField(p.id)}
+                      className="flex items-center justify-between px-2 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none font-medium"
+                    >
+                      {p.name}
+                      <DropdownMenu.ItemIndicator>
+                        <Check className="w-3 h-3 text-primary" />
+                      </DropdownMenu.ItemIndicator>
+                    </DropdownMenu.CheckboxItem>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <button onClick={handleCreate} disabled={creating}
 
             {/* Gerenciador de Propriedades */}
             <PropertyManagerModal 
@@ -269,7 +311,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
 // ============================================
 // KANBAN VIEW — Fixed DnD persistence
 // ============================================
-function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density, activeView }) {
+function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density, activeView, cardFields }) {
   const navigate = useNavigate();
   const [groupPropId, setGroupPropId] = useState(null);
 
@@ -396,10 +438,19 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     const newStatusId = targetCol.id === '__none' ? '' : (targetCol.id === '__all' ? '' : targetCol.id);
 
     if (!sourceCol || sourceCol.id !== targetCol.id) {
-      setLocalAllValues(prev => ({
-        ...prev,
-        [activeId]: { ...(prev[activeId] || {}), [groupProp.id]: { selected: newStatusId } },
-      }));
+      setLocalAllValues(prev => {
+        const itemValues = { ...(prev[activeId] || {}), [groupProp.id]: { selected: newStatusId } };
+        
+        // Auto-uncheck "Feito" or "Concluído" when moving
+        const doneProp = properties.find(p => p.property_type === 'checkbox' && (p.name.toLowerCase() === 'feito' || p.name.toLowerCase() === 'concluído'));
+        if (doneProp) {
+          itemValues[doneProp.id] = { checked: false };
+          // Persist to DB
+          import('../../services/propertyService').then(m => m.propertyService.upsertValue(activeId, doneProp.id, { checked: false })).catch(console.error);
+        }
+
+        return { ...prev, [activeId]: itemValues };
+      });
       onStatusChange(activeId, groupProp.id, newStatusId);
       return;
     }
@@ -457,6 +508,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
               groupProp={groupProp}
               onPropertyUpdate={onPropertyUpdate}
               onDelete={onDelete}
+              cardFields={cardFields}
             />
           ))}
           {groupProp && (
@@ -488,6 +540,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
             values={localAllValues[activeItem.id] || {}} 
             onPropertyUpdate={onPropertyUpdate}
             density={density}
+            cardFields={cardFields}
           />
         )}
         {activeCol && (
@@ -499,7 +552,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     </DndContext>
   );
 }
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
@@ -558,7 +611,9 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
             }}
             className="text-[11px] font-bold text-foreground/80 uppercase tracking-[0.08em] flex-1 bg-transparent border-none focus:outline-none focus:bg-[var(--surface-3)] px-1 rounded transition-colors cursor-text"
           />
-          <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold ${col.items.length > 10 ? 'bg-red-500/20 text-red-400' : 'text-muted-foreground/40 bg-secondary/30'}`}>
+            {col.items.length}
+          </span>
           <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
             <button onClick={onAdd} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors" title="Nova Cena">
               <Plus className="w-3.5 h-3.5" />
@@ -623,6 +678,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
               onDelete={onDelete}
               onPropertyUpdate={onPropertyUpdate}
               density={density}
+              cardFields={cardFields}
             />
           ))}
         </div>

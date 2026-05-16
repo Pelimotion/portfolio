@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import AvatarWidget from '../../components/ui/AvatarWidget';
 import { GamificationWidget } from '../../components/ui/GamificationWidget';
+import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
 import {
   ArrowLeft, Save, Check, User, Briefcase, Hash,
   Sparkles, Moon, Sun, MessageSquare, Settings, 
@@ -125,13 +126,15 @@ export default function ProfilePage() {
 
       {/* ── MAIN CONTENT ── */}
       <main className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-10 bg-[var(--surface-0)] border-b border-[var(--border-subtle)] z-10">
-          <h2 className="text-xl font-black tracking-tight text-foreground">
+        <header className="h-20 flex items-center justify-between px-10 bg-[var(--surface-0)] border-b border-[var(--border-subtle)] z-10 relative overflow-hidden shrink-0">
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+             <GenerativeHeader slug={user?.id} />
+          </div>
+          <h2 className="text-xl font-black tracking-tight text-foreground relative z-10">
             {sections.find(s => s.id === activeSection)?.label}
           </h2>
-          <div className="flex items-center gap-4">
-            <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border-subtle)] text-muted-foreground hover:text-foreground transition-all">
+          <div className="flex items-center gap-4 relative z-10">
+            <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-[var(--surface-1)]/80 backdrop-blur-md border border-[var(--border-subtle)] text-muted-foreground hover:text-foreground transition-all">
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
             <button

@@ -6,7 +6,7 @@ import { LayoutDashboard, Plus, Search, UserPlus } from 'lucide-react';
 import { DashboardOverview } from '../../components/dashboard/DashboardOverview';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROOT_HUB_ID } from '../../core/schemas';
-import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
+import { GenerativePattern } from '../../components/ui/GenerativePattern';
 import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
 import { hashString } from '../../lib/avatarEngine';
 import { useNavigate } from 'react-router-dom';
@@ -50,11 +50,10 @@ export default function Dashboard() {
       {/* ── Topbar ── */}
       <header className="h-16 flex items-center justify-between px-8 border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-1)] relative overflow-hidden">
         {/* Decorative Art Pattern for Hub */}
-        <ProjectArtPattern 
-          projectId="hub-seed" 
-          size="header" 
-          opacity={0.05} 
-          style="escher"
+        <GenerativePattern 
+          slug="dashboard-hub" 
+          className="absolute inset-0"
+          opacity={0.1}
         />
 
         <div className="relative z-10 flex items-center gap-4">

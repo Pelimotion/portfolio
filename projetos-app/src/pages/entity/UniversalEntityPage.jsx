@@ -187,8 +187,7 @@ export function UniversalEntityPage() {
       {/* ── PROJECT COVER ── */}
       <div className="h-48 w-full bg-[var(--surface-2)] relative overflow-hidden group/cover shrink-0">
         <GenerativeHeader 
-          accentColor={getAccentColorFromId(pageId)} 
-          opacity={0.35} 
+          slug={pageId} 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-0)]/80 to-transparent" />
         

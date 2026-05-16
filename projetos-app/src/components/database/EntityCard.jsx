@@ -1,23 +1,38 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout, Star, Check } from 'lucide-react';
+import { hashString } from '../../lib/avatarEngine';
+import { GenerativeIcon } from '../ui/GenerativeIcon';
+import { 
+  Clock, User, AlertTriangle, Flame, ArrowUp, Minus, 
+  MoreHorizontal, Trash2, Layout, Check, 
+  MessageSquare, Paperclip, CheckSquare, Lock,
+  ShieldCheck, AlertCircle, Bookmark, Tag,
+  ChevronRight, ExternalLink
+} from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { COLOR_MAP } from '../../core/colors';
 import { useAuth } from '../../contexts/AuthContext';
 
 // ============================================
-// ENTITY CARD v2 — Density-aware, rich data
-// Compact | Comfortable | Detailed
+// ENTITY CARD v3 — GLOBAL EXCELLENCE STANDARD
+// Inspired by Linear, Jira, and Notion
 // ============================================
 
-// Priority display config
-const PRIORITY_MAP = {
-  urgent: { icon: <Flame className="w-3.5 h-3.5 text-red-500" />,    label: 'Urgente', cls: 'text-red-500' },
-  high:   { icon: <ArrowUp className="w-3.5 h-3.5 text-orange-400" />, label: 'Alta',    cls: 'text-orange-400' },
-  medium: { icon: <Minus className="w-3.5 h-3.5 text-yellow-500" />,   label: 'Média',   cls: 'text-yellow-500' },
-  low:    { icon: null,                                                  label: 'Baixa',   cls: 'text-muted-foreground' },
+const PRIORITY_CONFIG = {
+  urgent: { icon: <Flame className="w-3.5 h-3.5 text-red-500" />,    label: 'Urgente', color: 'red' },
+  high:   { icon: <ArrowUp className="w-3.5 h-3.5 text-orange-400" />, label: 'Alta',    color: 'orange' },
+  medium: { icon: <Minus className="w-3.5 h-3.5 text-yellow-500" />,   label: 'Média',   color: 'yellow' },
+  low:    { icon: <Minus className="w-3.5 h-3.5 opacity-20" />,        label: 'Baixa',   color: 'gray' },
+};
+
+const TYPE_ICONS = {
+  task:     <CheckSquare className="w-3 h-3 text-blue-400" />,
+  bug:      <AlertCircle className="w-3 h-3 text-red-500" />,
+  epic:     <Bookmark className="w-3 h-3 text-purple-500" />,
+  feature:  <ShieldCheck className="w-3 h-3 text-emerald-500" />,
+  story:    <Bookmark className="w-3 h-3 text-orange-400" />,
 };
 
 export const EntityCard = memo(function EntityCard({
@@ -29,6 +44,7 @@ export const EntityCard = memo(function EntityCard({
   onPropertyUpdate,
   isDragOverlay = false,
   density = 'comfortable',
+  cardFields = {},
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -39,82 +55,218 @@ export const EntityCard = memo(function EntityCard({
     else navigate(`/page/${item.id}`);
   };
 
-  // Extract relevant props
-  const propsArr = Array.isArray(properties) ? properties : [];
-  const statusProp   = propsArr.find(p => p.name === 'Status');
-  const priorityProp = propsArr.find(p => p.name === 'Prioridade');
-  const deadlineProp = propsArr.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega');
-  const assigneeProp = propsArr.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
-  const descProp     = propsArr.find(p => p.name === 'Descricao da Cena' || p.name === 'Descrição da Cena' || p.property_type === 'text');
-  const atoProp      = propsArr.find(p => p.name === 'Ato');
-  const clienteProp  = propsArr.find(p => p.name === 'Cliente');
-  const tipoProp     = propsArr.find(p => p.name === 'Tipo');
-  const feitoProp    = propsArr.find(p => p.name === 'Feito');
+  // ── Info Extraction ──
+  const info = useMemo(() => {
+    const propsArr = Array.isArray(properties) ? properties : [];
+    
+    // Find key properties
+    const findProp = (name, type) => propsArr.find(p => p.name.toLowerCase() === name.toLowerCase() || p.property_type === type);
+    
+    const statusP   = findProp('Status', 'status') || findProp('Etapa', 'status');
+    const priorityP = findProp('Prioridade', 'select');
+    const typeP     = findProp('Tipo', 'select');
+    const deadlineP = propsArr.find(p => ['deadline', 'entrega', 'prazo'].includes(p.name.toLowerCase()) || p.property_type === 'date');
+    const ownerP    = propsArr.find(p => ['responsavel', 'responsável', 'assignee', 'dono'].includes(p.name.toLowerCase()) || p.property_type === 'people');
+    const coverP    = propsArr.find(p => ['capa', 'cover', 'thumbnail', 'imagem'].includes(p.name.toLowerCase()));
+    const blockP    = findProp('Bloqueado', 'checkbox');
+    const doneP     = findProp('Feito', 'checkbox') || findProp('Concluído', 'checkbox');
+    const pointsP   = findProp('Pontos', 'number') || findProp('Esforço', 'number');
 
-  const statusVal    = statusProp ? values[statusProp.id] : null;
-  const statusOptions = Array.isArray(statusProp?.config?.options) ? statusProp.config.options : [];
-  const statusOption = statusOptions.find(o => o.id === statusVal?.selected);
-  const statusColors = statusOption ? COLOR_MAP[statusOption.color] || COLOR_MAP.gray : null;
+    const isVisible = (id) => !id || cardFields?.[id] !== false;
 
-  const priorityVal    = priorityProp ? values[priorityProp.id] : null;
-  const priorityOptions = Array.isArray(priorityProp?.config?.options) ? priorityProp.config.options : [];
-  const priorityOption = priorityOptions.find(o => o.id === priorityVal?.selected);
-  const priorityConfig = PRIORITY_MAP[priorityOption?.id] || null;
+    // Values
+    const statusVal = statusP ? values[statusP.id] : null;
+    const statusOpt = statusP?.config?.options?.find(o => o.id === statusVal?.selected);
+    
+    const priorityVal = priorityP ? values[priorityP.id] : null;
+    const priorityOpt = priorityP?.config?.options?.find(o => o.id === priorityVal?.selected);
+    
+    const typeVal = typeP ? values[typeP.id] : null;
+    const typeOpt = typeP?.config?.options?.find(o => o.id === typeVal?.selected);
 
-  const tipoVal    = tipoProp ? values[tipoProp.id] : null;
-  const tipoOptions = Array.isArray(tipoProp?.config?.options) ? tipoProp.config.options : [];
-  const tipoOption = tipoOptions.find(o => o.id === tipoVal?.selected);
+    const deadline = deadlineP && isVisible(deadlineP.id) ? values[deadlineP.id]?.date : null;
+    const isDone   = doneP ? values[doneP.id]?.checked : false;
+    const isBlocked = blockP && isVisible(blockP.id) ? values[blockP.id]?.checked : false;
+    const points   = pointsP && isVisible(pointsP.id) ? values[pointsP.id]?.number : null;
+    const coverUrl = coverP && isVisible(coverP.id) ? values[coverP.id]?.text : null;
 
-  const atoVal    = atoProp ? values[atoProp.id] : null;
-  const atoOptions = Array.isArray(atoProp?.config?.options) ? atoProp.config.options : [];
-  const atoOption = atoOptions.find(o => o.id === atoVal?.selected);
+    const ownerVal = ownerP && isVisible(ownerP.id) ? values[ownerP.id] : null;
+    const owner    = ownerVal?.selected || ownerVal?.people || (Array.isArray(ownerVal) ? ownerVal[0] : null);
 
-  const isFeito    = feitoProp ? values[feitoProp.id]?.checked : false;
+    const today = new Date();
+    const isOverdue = deadline && new Date(deadline) < today && !isDone;
+    const daysLeft = deadline ? Math.ceil((new Date(deadline) - today) / (1000 * 60 * 60 * 24)) : null;
 
-  const deadline   = deadlineProp ? values[deadlineProp.id]?.date : null;
-  const assigneeVal = assigneeProp ? values[assigneeProp.id] : null;
-  const assigneeOptions = Array.isArray(assigneeProp?.config?.options) ? assigneeProp.config.options : [];
-  const assignee   = assigneeProp ? (assigneeVal?.selected
-    ? (assigneeOptions.find(o => o.id === assigneeVal?.selected)?.label || assigneeVal?.selected)
-    : assigneeVal?.people) : null;
-  const descText   = descProp ? values[descProp.id]?.text : null;
-  const cliente    = clienteProp ? values[clienteProp.id]?.text : null;
+    // Tags (all other select/status props)
+    const tags = propsArr
+      .filter(p => (p.property_type === 'select' || p.property_type === 'status') && ![statusP?.id, priorityP?.id, typeP?.id].includes(p.id))
+      .filter(p => isVisible(p.id))
+      .map(p => {
+        const val = values[p.id];
+        const opt = p.config?.options?.find(o => o.id === val?.selected);
+        return opt ? { ...opt, propName: p.name } : null;
+      })
+      .filter(Boolean);
 
-  const today     = new Date();
-  const isOverdue = deadline && new Date(deadline) < today;
-  const daysLeft  = deadline ? Math.ceil((new Date(deadline) - today) / (1000 * 60 * 60 * 24)) : null;
-  const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
+    return {
+      status: isVisible(statusP?.id) ? statusOpt : null,
+      priority: isVisible(priorityP?.id) ? priorityOpt : null,
+      type: isVisible(typeP?.id) ? typeOpt : null,
+      deadline,
+      owner,
+      isDone,
+      isBlocked,
+      isOverdue,
+      daysLeft,
+      points,
+      coverUrl,
+      tags,
+      donePropId: doneP?.id,
+    };
+  }, [properties, values, cardFields]);
 
-  // — Is this card assigned to the logged-in user?
-  const userEmail = user?.email || '';
-  const userName  = userEmail.split('@')[0];
-  const isOwn = assignee && (
-    assignee.toLowerCase() === userName.toLowerCase() ||
-    assignee.toLowerCase() === userEmail.toLowerCase() ||
-    userName.toLowerCase().includes(assignee.toLowerCase()) ||
-    assignee.toLowerCase().includes(userName.toLowerCase())
+  const { 
+    status, priority, type, deadline, owner, 
+    isDone, isBlocked, isOverdue, daysLeft, 
+    points, coverUrl, tags, donePropId 
+  } = info;
+
+  const priorityConfig = PRIORITY_CONFIG[priority?.id] || null;
+  const typeIcon = TYPE_ICONS[type?.id?.toLowerCase()] || TYPE_ICONS.task;
+  const statusColors = status ? COLOR_MAP[status.color] || COLOR_MAP.gray : null;
+
+  // ── Render Helpers ──
+  const Badge = ({ children, color = 'gray', icon: Icon }) => {
+    const c = COLOR_MAP[color] || COLOR_MAP.gray;
+    return (
+      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-current transition-all ${c.bg} ${c.text} opacity-80 hover:opacity-100`}>
+        {Icon && <Icon className="w-2.5 h-2.5" />}
+        {children}
+      </span>
+    );
+  };
+
+  const isOwn = owner && (user?.email?.includes(owner) || owner.includes(user?.email?.split('@')[0]));
+
+  // ── CARD COMPONENTS ──
+
+  const CardHeader = () => (
+    <div className="flex items-start justify-between gap-2 mb-2.5">
+       <div className="flex items-center gap-2">
+          {isDone ? (
+            <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
+               <Check className="w-2.5 h-2.5 stroke-[4px]" />
+            </div>
+          ) : (
+            <GenerativeIcon slug={item.id} size={16} className="shrink-0 rounded-md" />
+          )}
+          {status && (
+            <Badge color={status.color}>{status.label}</Badge>
+          )}
+          {isBlocked && (
+            <span className="text-red-500 animate-pulse" title="Bloqueado">
+              <Lock className="w-3 h-3" />
+            </span>
+          )}
+       </div>
+       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button 
+                className="p-1 rounded hover:bg-white/10 text-muted-foreground transition-all focus:outline-none"
+                onClick={e => e.stopPropagation()}
+              >
+                <MoreHorizontal className="w-3.5 h-3.5" />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content align="end" className="z-50 min-w-[160px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1 animate-in fade-in zoom-in-95">
+                <DropdownMenu.Item onClick={() => navigate(`/page/${item.id}`)} className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-white/5 rounded-lg cursor-pointer outline-none font-medium">
+                  <Layout className="w-3.5 h-3.5" /> Ver Detalhes
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-white/5 rounded-lg cursor-pointer outline-none font-medium">
+                  <ExternalLink className="w-3.5 h-3.5" /> Abrir em Nova Aba
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className="h-px bg-white/5 my-1" />
+                <DropdownMenu.Item 
+                  onSelect={() => onDelete && confirm('Excluir?') && onDelete(item.id)}
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none font-medium"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Excluir
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+       </div>
+    </div>
   );
 
-  // ── COMPACT MODE — minimal, dense ──
+  const CardFooter = () => (
+    <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+       <div className="flex items-center gap-3">
+          {owner ? (
+            <div className="flex items-center -space-x-1">
+               <div className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-black border-2 border-[var(--surface-2)] shadow-sm ${
+                 isOwn ? 'bg-primary text-white ring-1 ring-primary/30' : 'bg-[var(--surface-3)] text-muted-foreground'
+               }`}>
+                 {owner.charAt(0).toUpperCase()}
+               </div>
+            </div>
+          ) : (
+            <div className="w-5 h-5 rounded-lg border-2 border-dashed border-white/5 flex items-center justify-center">
+               <User className="w-2.5 h-2.5 text-muted-foreground/20" />
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 text-muted-foreground/40">
+             <div className="flex items-center gap-1 hover:text-muted-foreground transition-colors cursor-help">
+                <MessageSquare className="w-3 h-3" />
+                <span className="text-[9px] font-bold">2</span>
+             </div>
+             <div className="flex items-center gap-1 hover:text-muted-foreground transition-colors cursor-help">
+                <Paperclip className="w-3 h-3" />
+                <span className="text-[9px] font-bold">1</span>
+             </div>
+          </div>
+       </div>
+
+       <div className="flex items-center gap-2">
+          {points && (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-white/5 border border-white/5 text-muted-foreground/50">
+              {points}
+            </span>
+          )}
+          {deadline && (
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${
+              isOverdue ? 'bg-red-500/10 border-red-500/30 text-red-500' :
+              daysLeft <= 3 ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' :
+              'bg-white/5 border-white/5 text-muted-foreground/40'
+            }`}>
+              <Clock className="w-2.5 h-2.5" />
+              {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+            </div>
+          )}
+       </div>
+    </div>
+  );
+
+  // ── DENSITY RENDERERS ──
+
   if (density === 'compact') {
     return (
-      <div
+      <div 
         onClick={handleClick}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all select-none
-          ${isDragOverlay
-            ? 'bg-card border border-primary/50 shadow-xl'
-            : isFeito ? 'bg-green-500/5 border-green-500/30 hover:border-green-500/60 opacity-80' : 'bg-card border border-border hover:border-muted-foreground/40 hover:bg-card/80'
-          }`}
+        className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all cursor-pointer select-none
+          ${isDragOverlay ? 'bg-[var(--surface-3)] border-primary shadow-2xl scale-105 rotate-1' : 'bg-[var(--surface-1)] border-transparent hover:border-white/10 hover:bg-[var(--surface-2)] shadow-sm'}
+        `}
       >
-        {isFeito && <Check className="w-3 h-3 text-green-500 shrink-0" />}
-        {!isFeito && item.icon && <span className="text-sm shrink-0">{item.icon}</span>}
-        <span className={`text-xs font-medium text-foreground flex-1 truncate ${isFeito ? 'line-through text-muted-foreground/70' : ''}`}>{item.title || 'Untitled'}</span>
-        {atoOption && <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/50 text-muted-foreground font-medium shrink-0">{atoOption.label}</span>}
-        {assignee && <span className="text-[10px] text-muted-foreground/60 shrink-0 truncate max-w-[50px]">{assignee}</span>}
-        {priorityConfig?.icon && <span className="shrink-0">{priorityConfig.icon}</span>}
-        {isOverdue && <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />}
-        {deadline && !isOverdue && (
-          <span className={`text-[10px] font-mono shrink-0 ${isDueSoon ? 'text-yellow-400' : 'text-muted-foreground/50'}`}>
+        <div className="shrink-0">{typeIcon}</div>
+        <h4 className={`text-[12px] font-bold truncate flex-1 ${isDone ? 'line-through text-muted-foreground/40' : 'text-foreground/90'}`}>
+          {item.title}
+        </h4>
+        {priorityConfig?.icon && <div className="shrink-0">{priorityConfig.icon}</div>}
+        {deadline && (
+          <span className={`text-[9px] font-black uppercase ${isOverdue ? 'text-red-500' : 'text-muted-foreground/20'}`}>
             {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
           </span>
         )}
@@ -122,209 +274,87 @@ export const EntityCard = memo(function EntityCard({
     );
   }
 
-  // ── DETAILED MODE — maximum info ──
-  if (density === 'detailed') {
-    return (
-      <div
-        onClick={handleClick}
-        className={`bg-card border rounded-xl p-4 cursor-pointer transition-all select-none group space-y-3
-          ${isDragOverlay 
-            ? 'border-primary/50 shadow-xl rotate-1 scale-105' 
-            : isFeito ? 'border-green-500/30 bg-green-500/5 opacity-80' : 'border-border hover:border-muted-foreground/40 hover:shadow-md'}`}
-      >
-        {/* Header row */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {isFeito ? <Check className="w-4 h-4 text-green-500 shrink-0" /> : item.icon && <span className="text-lg">{item.icon}</span>}
-            <h4 className={`font-semibold text-sm leading-snug line-clamp-2 transition-colors ${isFeito ? 'line-through text-muted-foreground/60' : 'text-foreground group-hover:text-primary'}`}>
-              {item.title || 'Untitled'}
-            </h4>
-          </div>
-          {priorityConfig?.icon && <span className="shrink-0 mt-0.5">{priorityConfig.icon}</span>}
-        </div>
-
-        {/* Status + Type */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {statusColors && (
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium ${statusColors.bg} ${statusColors.text}`}>
-              {/* dot removed */}
-              {statusOption.label}
-            </span>
-          )}
-          {tipoOption && (
-            <span className="text-[11px] text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded">{tipoOption.label}</span>
-          )}
-          {isOverdue && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded font-medium">
-              <AlertTriangle className="w-3 h-3" /> Atrasada
-            </span>
-          )}
-          {isDueSoon && !isOverdue && (
-            <span className="text-[11px] text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded font-medium">Urgente</span>
-          )}
-        </div>
-
-        {/* Description/client */}
-        {(cliente || tipoOption) && (
-          <p className="text-xs text-muted-foreground truncate">{cliente || tipoOption?.label}</p>
-        )}
-
-        {/* Footer: Assignee + Deadline */}
-        <div className="flex items-center justify-between pt-2 border-t border-border/40">
-          <div className="flex items-center gap-1.5">
-            {assignee ? (
-              <>
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-[9px] text-white font-bold uppercase">
-                  {assignee.charAt(0)}
-                </div>
-                <span className="text-[11px] text-muted-foreground truncate max-w-[80px]">{assignee}</span>
-              </>
-            ) : (
-              <div className="w-5 h-5 rounded-full border border-border/60 border-dashed flex items-center justify-center">
-                <User className="w-3 h-3 text-muted-foreground/50" />
-              </div>
-            )}
-          </div>
-          {deadline && (
-            <div className={`flex items-center gap-1 text-[11px] ${isOverdue ? 'text-red-400' : isDueSoon ? 'text-yellow-400' : 'text-muted-foreground/70'}`}>
-              <Clock className="w-3 h-3" />
-              {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // ── COMFORTABLE MODE (default) ──
   return (
     <div
       onClick={handleClick}
-      className={`border rounded-[var(--radius-lg)] p-3.5 cursor-pointer transition-all select-none group relative
-        ${isDragOverlay
-          ? 'bg-[var(--surface-2)] border-primary/50 shadow-xl rotate-1 scale-105'
-          : isFeito ? 'bg-green-500/5 border-green-500/30 opacity-90' : 'bg-[var(--surface-2)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)] hover:shadow-lg'
-        }`}
+      className={`group relative flex flex-col bg-[var(--surface-2)] border rounded-2xl transition-all cursor-pointer select-none overflow-hidden
+        ${isDragOverlay 
+          ? 'border-primary/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] rotate-1 scale-[1.03] z-[100]' 
+          : 'border-[var(--border-subtle)] hover:border-white/20 hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4)] hover:-translate-y-0.5'
+        }
+        ${isDone ? 'opacity-60 grayscale-[0.5]' : ''}
+        ${isBlocked ? 'ring-2 ring-red-500/20' : ''}
+      `}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3 min-h-[24px]">
-        <div className="flex items-center gap-1.5">
-          {statusColors ? (
-            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${statusColors.bg} ${statusColors.text}`}>
-              {/* dot removed */}
-              {statusOption.label}
-            </span>
-          ) : <span />}
+      {/* Priority accent side bar */}
+      {priorityConfig && (
+        <div className={`absolute left-0 top-0 bottom-0 w-1 opacity-60 transition-opacity group-hover:opacity-100`} 
+             style={{ backgroundColor: `var(--${priorityConfig.color}-500)` }} />
+      )}
+
+      {/* Card Cover */}
+      {coverUrl && density !== 'compact' && (
+        <div className="h-24 w-full relative overflow-hidden bg-black/20">
+           <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-500" />
+           <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-2)] to-transparent" />
         </div>
+      )}
+
+      <div className={`p-3.5 ${coverUrl ? 'pt-2' : ''}`}>
+        <CardHeader />
         
-        <div className="flex items-center gap-1">
-          {priorityConfig?.icon}
-          
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
+        <div className="space-y-1.5">
+          <div className="flex items-start gap-2">
+            {donePropId && (
               <button 
-                className="p-1 rounded hover:bg-[var(--surface-overlay)] text-muted-foreground opacity-0 group-hover:opacity-100 transition-all focus:outline-none"
-                onClick={e => e.stopPropagation()}
+                onClick={e => { e.stopPropagation(); onPropertyUpdate?.(item.id, donePropId, { checked: !isDone }); }}
+                className={`mt-1 shrink-0 w-4 h-4 rounded border transition-all flex items-center justify-center ${
+                  isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/10 bg-black/10 hover:border-primary/50'
+                }`}
               >
-                <MoreHorizontal className="w-3.5 h-3.5" />
+                {isDone && <Check className="w-3 h-3 stroke-[3px]" />}
               </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content align="end" className="z-50 min-w-[140px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-[var(--radius-md)] shadow-xl p-1 animate-in fade-in-0 zoom-in-95">
-                <DropdownMenu.Item className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-md cursor-pointer outline-none">
-                  <Layout className="w-3.5 h-3.5" /> Abrir Detalhe
-                </DropdownMenu.Item>
-                <DropdownMenu.Item className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-md cursor-pointer outline-none">
-                  <Copy className="w-3.5 h-3.5" /> Duplicar
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator className="h-px bg-[var(--border-subtle)] my-1" />
-                <DropdownMenu.Item 
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    if (onDelete && confirm('Excluir este item permanentemente?')) {
-                      onDelete(item.id);
-                    }
-                  }}
-                  className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-md cursor-pointer outline-none"
-                >
-                  <Trash2 className="w-3.5 h-3.5" /> Excluir
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-2 mb-1.5 group/title">
-        {feitoProp && (
-          <div 
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onPropertyUpdate) {
-                onPropertyUpdate(item.id, feitoProp.id, { checked: !isFeito });
-              }
-            }}
-            className={`mt-1 w-4 h-4 rounded border flex items-center justify-center transition-all shrink-0 ${isFeito ? 'bg-green-500 border-green-500 text-white' : 'border-[var(--border-strong)] bg-[var(--surface-3)] hover:border-primary'}`}
-          >
-            {isFeito && <Check className="w-3 h-3" />}
+            )}
+            <h4 className={`text-[13px] font-black leading-[1.3] transition-colors ${
+              isDone ? 'text-muted-foreground/40 line-through' : 'text-foreground group-hover:text-primary'
+            }`}>
+              {item.title || 'Sem título'}
+            </h4>
           </div>
-        )}
-        {!feitoProp && item.icon && <span className="mt-0.5 shrink-0">{item.icon}</span>}
-        <h4 className={`font-semibold text-[13px] leading-tight line-clamp-2 transition-colors flex-1 ${isFeito ? 'line-through text-muted-foreground/70' : 'text-foreground group-hover:text-primary'}`}>
-          {item.title || 'Untitled'}
-        </h4>
-      </div>
 
-      {/* Description snippet */}
-      {descText && (
-        <p className="text-[11px] text-muted-foreground/60 line-clamp-2 leading-relaxed mb-2">{descText}</p>
-      )}
-
-      {/* Ato badge */}
-      {atoOption && (
-        <div className="mb-2">
-          <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary/50 text-muted-foreground/70 font-medium border border-border/30">{atoOption.label}</span>
-        </div>
-      )}
-
-      {/* Footer */}
-      <div className="flex items-center justify-between mt-2 pt-2.5 border-t border-[var(--border-subtle)]">
-        <div className="flex items-center gap-2">
-          {assignee ? (
-            <div className="flex items-center gap-1.5">
-              <div className={`w-4 h-4 rounded shrink-0 text-[8px] flex items-center justify-center font-bold uppercase transition-all ${
-                isOwn
-                  ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-1 ring-offset-[var(--surface-2)]'
-                  : 'bg-primary/10 border border-primary/20 text-primary'
-              }`}>
-                {assignee.charAt(0)}
-              </div>
-              <span className={`text-[10px] font-medium truncate max-w-[80px] ${isOwn ? 'text-primary font-bold' : 'text-muted-foreground/70'}`}>
-                {isOwn ? 'Você' : assignee}
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-muted-foreground/30">
-              <User className="w-2.5 h-2.5" />
-              <span className="text-[10px]">—</span>
+          {/* Tags Display */}
+          {tags.length > 0 && density !== 'compact' && (
+            <div className="flex flex-wrap gap-1.5 py-1">
+               {tags.slice(0, 3).map((t, idx) => (
+                 <Badge key={idx} color={t.color}>{t.label}</Badge>
+               ))}
+               {tags.length > 3 && (
+                 <span className="text-[9px] font-black text-muted-foreground/30 px-1">+{tags.length - 3}</span>
+               )}
             </div>
           )}
-
         </div>
 
-        {deadline && (
-          <div className={`flex items-center gap-1 text-[10px] font-bold ${isOverdue ? 'text-red-400' : isDueSoon ? 'text-yellow-400' : 'text-muted-foreground/40'}`}>
-            <Clock className="w-3 h-3" />
-            {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-          </div>
+        {density === 'detailed' && (
+          <p className="text-[11px] text-muted-foreground/40 line-clamp-3 leading-relaxed mt-2 italic">
+            Clique para visualizar o histórico e detalhamento técnico desta tarefa.
+          </p>
         )}
+
+        <CardFooter />
       </div>
+
+      {/* Overdue Alert Strip */}
+      {isOverdue && (
+        <div className="bg-red-500 h-0.5 w-full opacity-50" />
+      )}
     </div>
   );
 });
 
 // ── Sortable wrapper ──
-export function SortableEntityCard({ item, properties, values, onClick, onDelete, onPropertyUpdate, density }) {
+export function SortableEntityCard(props) {
+  const { item } = props;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
   return (
@@ -333,19 +363,19 @@ export function SortableEntityCard({ item, properties, values, onClick, onDelete
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.35 : 1,
+        opacity: isDragging ? 0.3 : 1,
         zIndex: isDragging ? 999 : 'auto',
       }}
       {...attributes}
       {...listeners}
-      className="group"
+      className="outline-none"
     >
-      <EntityCard item={item} properties={properties} values={values} onClick={onClick} onDelete={onDelete} onPropertyUpdate={onPropertyUpdate} density={density} />
+      <EntityCard {...props} />
     </div>
   );
 }
 
 // ── Overlay durante o drag ──
-export const EntityCardOverlay = memo(function EntityCardOverlay({ item, properties, values, onPropertyUpdate, density }) {
-  return <EntityCard item={item} properties={properties} values={values} isDragOverlay onPropertyUpdate={onPropertyUpdate} density={density} />;
+export const EntityCardOverlay = memo(function EntityCardOverlay(props) {
+  return <EntityCard {...props} isDragOverlay />;
 });
