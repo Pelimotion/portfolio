@@ -1,4 +1,4 @@
-import { db } from '../supabase';
+import { supabase as db } from '../supabase';
 import { generateIcon } from './icon-generator';
 import { generatePattern } from './pattern-generator';
 
