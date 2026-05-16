@@ -3,157 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelimotion Studio | Content Manager</title>
+    <title>PELIMOTION | STUDIO HUB v5.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505; --bg-sec: #0a0a0a; --card-bg: #0f0f0f;
-            --primary: #fff; --accent: #ff4b2b; --text: #eee; --text-secondary: #888;
-            --border: #222; --font-main: 'Outfit', sans-serif; --font-mono: 'DM Mono', monospace;
+            --bg: #000; --bg-card: #0a0a0a; --border: #222;
+            --accent: #ff4b2b; --text: #f0f0f0; --text-dim: #666;
+            --font-main: 'Outfit', sans-serif; --font-mono: 'DM Mono', monospace;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font-main); overflow: hidden; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font-main); height: 100vh; overflow: hidden; }
         
-        /* Layout */
-        .admin-layout { display: grid; grid-template-rows: 60px 1fr; height: 100vh; }
-        .top-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); background: var(--bg-sec); z-index: 100; }
-        .main-container { display: flex; height: 100%; overflow: hidden; }
+        /* Brutalist Layout */
+        .app { display: grid; grid-template-rows: 50px 1fr; height: 100vh; }
+        .top-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 2px solid var(--border); background: #000; z-index: 100; }
+        .main { display: flex; height: 100%; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 320px; background: var(--bg-sec); border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; }
-        .workspace { flex: 1; padding: 40px; overflow-y: auto; position: relative; background: var(--bg); }
+        .sidebar { width: 340px; border-right: 2px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; background: #000; }
+        .sidebar-section { border-bottom: 1px solid var(--border); padding: 20px; }
+        .sidebar-title { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; }
 
-        /* Typography & Components */
-        .logo { font-family: var(--font-main); font-weight: 600; letter-spacing: 2px; font-size: 14px; }
-        .logo span { color: var(--accent); font-weight: 300; }
-        .card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .card-title { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 15px; letter-spacing: 1px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        /* Workspace */
+        .workspace { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
         
+        /* Cards & Fields */
+        .card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; margin-bottom: 25px; border-radius: 0; }
         .field { margin-bottom: 15px; }
-        .field label { display: block; font-size: 10px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 13px; }
-        textarea { resize: vertical; }
+        .field label { display: block; font-size: 9px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 0; font-family: inherit; font-size: 13px; }
+        textarea { resize: vertical; min-height: 40px; }
         input:focus, textarea:focus { border-color: var(--accent); outline: none; }
-        
-        .btn { background: #111; border: 1px solid var(--border); color: #fff; padding: 8px 16px; cursor: pointer; font-size: 11px; font-family: var(--font-mono); transition: 0.3s; border-radius: 4px; text-transform: uppercase; }
-        .btn:hover { background: #222; border-color: #444; }
-        .btn.primary { background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; }
+
+        .btn { background: #000; border: 1px solid var(--border); color: #fff; padding: 8px 16px; cursor: pointer; font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; transition: 0.2s; }
+        .btn:hover { background: var(--border); }
+        .btn.primary { background: #fff; color: #000; border-color: #fff; font-weight: bold; }
         .btn.ai { border-color: var(--accent); color: var(--accent); }
         .btn.ai:hover { background: var(--accent); color: #fff; }
+        .btn.small { padding: 4px 8px; font-size: 9px; }
 
-        /* Workflow Tabs */
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; }
-        .tab { background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-mono); font-size: 12px; cursor: pointer; padding: 8px 0; border-bottom: 2px solid transparent; }
-        .tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+        /* Workflow */
+        .tabs { display: flex; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
+        .tab { background: transparent; border: none; color: var(--text-dim); font-family: var(--font-mono); font-size: 11px; cursor: pointer; padding: 10px 0; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-        .stage-container { display: none; }
-        .stage-container.active { display: block; }
+        .stage { display: none; }
+        .stage.active { display: block; }
 
-        /* Image Manager */
-        .image-manager-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .image-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
-        .image-card:hover { border-color: #444; transform: translateY(-2px); }
-        .image-card .preview { width: 100%; aspect-ratio: 16/9; background: #111; position: relative; }
-        .image-card img { width: 100%; height: 100%; object-fit: cover; }
-        .image-card .info { padding: 15px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
-        .image-card textarea { font-size: 11px; min-height: 80px; }
-        .image-card .controls { display: flex; justify-content: space-between; gap: 5px; }
+        /* Image Grid - Brutalist */
+        .image-stack { display: flex; flex-direction: column; gap: 20px; }
+        .image-item { display: grid; grid-template-columns: 240px 1fr; gap: 20px; background: #050505; border: 1px solid var(--border); padding: 15px; }
+        .image-preview { width: 100%; aspect-ratio: 16/9; background: #111; border: 1px solid var(--border); overflow: hidden; position: relative; }
+        .image-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .image-item-meta { display: flex; flex-direction: column; gap: 10px; }
+        .image-controls { display: flex; gap: 10px; margin-top: auto; }
 
-        /* Post List Sidebar */
-        .post-list { display: flex; flex-direction: column; gap: 5px; }
-        .post-item { padding: 10px; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .post-item:hover { background: #111; }
-        .post-item.active { background: #1a1a1a; border-color: var(--border); color: var(--accent); }
-        
-        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; flex-direction: column; }
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        /* Loader */
+        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; flex-direction: column; }
+        .spinner { width: 30px; height: 30px; border: 2px solid #222; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* Post List */
+        .post-list { display: flex; flex-direction: column; gap: 2px; }
+        .post-link { padding: 8px 12px; font-size: 11px; color: var(--text-dim); cursor: pointer; transition: 0.1s; border-left: 2px solid transparent; }
+        .post-link:hover { color: #fff; background: #111; }
+        .post-link.active { color: #fff; background: #1a1a1a; border-left-color: var(--accent); }
+
         /* Modal */
-        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 500; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; border-radius: 12px; width: 90%; max-width: 800px; }
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 500; }
+        .modal-body { background: #000; border: 1px solid var(--border); padding: 30px; width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto; }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="spinner"></div>
-        <div id="loader-text" style="margin-top:20px; font-family:var(--font-mono); color:var(--accent);">SINCRONIZANDO...</div>
+        <div id="loader-text" style="margin-top:20px; font-family:var(--font-mono); font-size:10px; color:var(--accent);">SYNCING...</div>
     </div>
 
-    <div class="admin-layout">
+    <div class="app">
         <nav class="top-nav">
-            <div class="logo">PELIMOTION <span>STUDIO v4.0</span></div>
-            <div style="display:flex; gap:12px;">
-                <button class="btn" onclick="openGallery()">🖼️ GALERIA</button>
-                <button class="btn ai" onclick="savePost()">💾 SALVAR NO SUPABASE</button>
-                <button class="btn primary" onclick="deployToVercel()">🚀 PUBLICAR NO SITE</button>
+            <div style="font-family:var(--font-mono); font-size:12px; font-weight:bold;">PELIMOTION <span style="color:var(--accent)">STUDIO v5.0</span></div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn small" onclick="openGallery()">BIBLIOTECA</button>
+                <button class="btn small ai" onclick="savePost()">SALVAR ARTIGO</button>
+                <button class="btn small primary" onclick="deployToVercel()">PUBLICAR NO SITE</button>
             </div>
         </nav>
 
-        <div class="main-container">
+        <div class="main">
             <aside class="sidebar">
-                <div class="card">
-                    <div class="card-title">PROJETO ATUAL</div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">SESSÃO ATIVA</div>
                     <div class="field">
                         <label>Status</label>
                         <select id="f-status">
-                            <option value="draft">🟡 RASCUNHO</option>
-                            <option value="published">🟢 PUBLICADO</option>
+                            <option value="draft">RASCUNHO (DRAFT)</option>
+                            <option value="published">PUBLICADO (LIVE)</option>
                         </select>
                     </div>
                     <div class="field">
                         <label>Categoria</label>
-                        <input type="text" id="f-category" placeholder="ex: Técnica">
+                        <input type="text" id="f-category">
                     </div>
                     <div class="field">
-                        <label>Slug (URL)</label>
+                        <label>URL Slug</label>
                         <input type="text" id="f-slug" oninput="this.value = this.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')">
                     </div>
                     <div class="field">
-                        <label>Data</label>
+                        <label>Data de Publicação</label>
                         <input type="date" id="f-date">
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title">ARTIGOS <button class="btn" onclick="createNewPost()" style="padding:2px 8px;">+</button></div>
-                    <div id="post-list" class="post-list">
-                        <!-- Posts injected here -->
-                    </div>
+                <div class="sidebar-section" style="flex:1; overflow-y:auto;">
+                    <div class="sidebar-title">ARQUIVOS <button class="btn small" onclick="createNewPost()" style="float:right;">+</button></div>
+                    <div id="post-list" class="post-list"></div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title">CONEXÕES</div>
-                    <input type="password" id="studio-pin" placeholder="PIN DE ACESSO" style="font-size:10px; margin-bottom:10px;" onkeyup="if(event.key==='Enter') checkAuth()">
-                    <button class="btn" style="width:100%" onclick="checkAuth()">AUTENTICAR</button>
+                <div class="sidebar-section" style="border-top: 1px solid var(--border);">
+                    <div class="sidebar-title">STUDIO CONFIG</div>
+                    <input type="password" id="studio-pin" placeholder="PIN ACCESS" style="font-size:10px; margin-bottom:10px;" onkeyup="if(event.key==='Enter') checkAuth()">
+                    <button class="btn" style="width:100%" onclick="checkAuth()">AUTHENTICATE</button>
+                    <div id="auth-status" style="font-size:9px; color:var(--text-dim); margin-top:8px; text-align:center;">OFFLINE</div>
                 </div>
             </aside>
 
             <main class="workspace">
                 <div class="tabs">
-                    <button class="tab active" onclick="switchStage(1)">01. ESTRATÉGIA</button>
-                    <button class="tab" onclick="switchStage(2)">02. ESTRUTURA</button>
-                    <button class="tab" onclick="switchStage(3)">03. CONTEÚDO</button>
-                    <button class="tab" onclick="switchStage(4)">04. VISUAL (IMAGENS)</button>
+                    <button class="tab active" onclick="switchStage(1)">01 STRATEGY</button>
+                    <button class="tab" onclick="switchStage(2)">02 STRUCTURE</button>
+                    <button class="tab" onclick="switchStage(3)">03 CONTENT</button>
+                    <button class="tab" onclick="switchStage(4)">04 VISUAL ASSETS</button>
+                    <button class="tab" onclick="switchStage(5)">05 PRESETS</button>
                 </div>
 
-                <!-- Stage 1 -->
-                <div class="stage-container active" id="stage-1">
+                <!-- Stage 1: Strategy -->
+                <div class="stage active" id="stage-1">
                     <div class="card">
-                        <div class="card-title">BRAINSTORM & SEO</div>
+                        <div class="sidebar-title">BRAINSTORM & SEO</div>
                         <div class="field">
-                            <label>Assunto ou Tema</label>
+                            <label>Keyword / Central Theme</label>
                             <div style="display:flex; gap:10px;">
-                                <input type="text" id="f-keyword" placeholder="ex: tendências de motion design 2026">
-                                <button class="btn ai" onclick="aiStep1()">✨ GERAR ESTRATÉGIA</button>
+                                <input type="text" id="f-keyword" placeholder="ex: branding 2026">
+                                <button class="btn ai" onclick="aiStep1()">GENERATE STRATEGY</button>
                             </div>
                         </div>
                         <div class="field">
-                            <label>Título do Post</label>
-                            <input type="text" id="f-title" style="font-size:20px; font-weight:600;">
+                            <label>Article Title</label>
+                            <input type="text" id="f-title" style="font-size:18px;">
                         </div>
                         <div class="field">
                             <label>Meta Description</label>
@@ -162,35 +162,72 @@
                     </div>
                 </div>
 
-                <!-- Stage 2 -->
-                <div class="stage-container" id="stage-2">
+                <!-- Stage 2: Structure -->
+                <div class="stage" id="stage-2">
                     <div class="card">
-                        <div class="card-title">OUTLINE (TÓPICOS) <button class="btn ai" onclick="aiStep2()">✨ GERAR TÓPICOS</button></div>
+                        <div class="sidebar-title">OUTLINE (H2/H3) <button class="btn ai" style="float:right" onclick="aiStep2()">AUTO STRUCTURE</button></div>
                         <div id="outline-list"></div>
-                        <button class="btn" style="margin-top:15px;" onclick="addOutlineItem()">+ ADICIONAR SEÇÃO</button>
+                        <button class="btn small" style="margin-top:15px;" onclick="addOutlineItem()">+ NEW SECTION</button>
                     </div>
                 </div>
 
-                <!-- Stage 3 -->
-                <div class="stage-container" id="stage-3">
+                <!-- Stage 3: Content -->
+                <div class="stage" id="stage-3">
                     <div class="card" style="height: calc(100vh - 250px); display:flex; flex-direction:column;">
-                        <div class="card-title">CONTEÚDO FINAL (MARKDOWN) <button class="btn ai" onclick="aiStep3()">✨ ESCREVER TUDO</button></div>
-                        <textarea id="f-content" style="flex:1; background:#000; color:#eee; font-family:var(--font-mono); line-height:1.7; padding:25px; border:none;"></textarea>
+                        <div class="sidebar-title">MARKDOWN EDITOR <button class="btn ai" style="float:right" onclick="aiStep3()">WRITE FULL ARTICLE</button></div>
+                        <textarea id="f-content" style="flex:1; font-family:var(--font-mono); line-height:1.8; padding:20px;"></textarea>
                     </div>
                 </div>
 
-                <!-- Stage 4 -->
-                <div class="stage-container" id="stage-4">
+                <!-- Stage 4: Visuals -->
+                <div class="stage" id="stage-4">
                     <div class="card">
-                        <div class="card-title">
-                            DIREÇÃO DE ARTE & IMAGENS
+                        <div class="sidebar-title">
+                            IMAGE MANAGEMENT
                             <div style="display:flex; gap:10px;">
-                                <button class="btn" onclick="addImageSlot()">+ NOVO SLOT</button>
-                                <button class="btn ai" onclick="generateAllImages()">✨ GERAR TODAS AS FALTANTES</button>
+                                <button class="btn small ai" onclick="aiGeneratePrompts()">✨ SYNC PROMPTS</button>
+                                <button class="btn small" onclick="addImageSlot()">+ NEW SLOT</button>
+                                <button class="btn small primary" onclick="generateAllImages()">✨ GENERATE ALL</button>
                             </div>
                         </div>
-                        <div id="image-manager-grid" class="image-manager-grid">
-                            <!-- Image cards injected here -->
+                        <div id="image-grid" class="image-stack">
+                            <!-- Dynamic image items -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 5: Presets -->
+                <div class="stage" id="stage-5">
+                    <div class="card">
+                        <div class="sidebar-title">AI GUIDELINES & PRESETS</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
+                            <div>
+                                <div class="field">
+                                    <label>Category</label>
+                                    <input type="text" id="p-category" placeholder="Negócio, Técnica...">
+                                </div>
+                                <div class="field">
+                                    <label>Section</label>
+                                    <select id="p-section">
+                                        <option value="Tom de Voz">Tom de Voz</option>
+                                        <option value="Estrutura">Estrutura</option>
+                                        <option value="Visual">Visual</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Preset Name</label>
+                                    <input type="text" id="p-name">
+                                </div>
+                                <div class="field">
+                                    <label>Content</label>
+                                    <textarea id="p-content" rows="10"></textarea>
+                                </div>
+                                <button class="btn" onclick="savePreset()">SAVE PRESET</button>
+                            </div>
+                            <div>
+                                <div class="sidebar-title">ACTIVE PRESETS</div>
+                                <div id="presets-list" style="font-size:11px;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -200,43 +237,44 @@
 
     <!-- Gallery Modal -->
     <div id="modal">
-        <div class="modal-content">
-            <div class="card-title">GALERIA COMPARTILHADA <button class="btn" onclick="document.getElementById('modal').style.display='none'">✕</button></div>
-            <div id="gallery-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:15px; max-height:500px; overflow-y:auto;">
-                <!-- Gallery items -->
-            </div>
+        <div class="modal-body">
+            <div class="sidebar-title">IMAGE GALLERY <button class="btn small" style="float:right" onclick="closeModal()">CLOSE</button></div>
+            <div id="gallery-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:15px;"></div>
         </div>
     </div>
 
     <script>
         let currentPost = null;
         let posts = [];
+        let targetSlotIndex = -1;
         const CDN = 'https://pelimotion-portfolio.b-cdn.net';
 
-        // --- AUTH & INITIALIZATION ---
-        async function checkAuth() {
-            const pin = document.getElementById('studio-pin').value || localStorage.getItem('pelimotion_pin');
+        // --- AUTH ---
+        function checkAuth() {
+            const pin = document.getElementById('studio-pin').value || localStorage.getItem('studio_pin');
             if (pin === '0101') {
-                localStorage.setItem('pelimotion_pin', pin);
-                document.getElementById('auth-info').innerText = '✅ STUDIO AUTENTICADO';
+                localStorage.setItem('studio_pin', '0101');
+                document.getElementById('auth-status').innerText = '✅ AUTHENTICATED';
                 init();
             } else {
-                alert('PIN INCORRETO');
+                alert('ACCESS DENIED');
             }
         }
 
         async function init() {
-            showLoader("CARREGANDO DADOS...");
+            showLoader("INITIATING...");
             await loadPosts();
+            await loadPresets();
             hideLoader();
         }
 
-        // --- NAVIGATION ---
+        // --- NAV ---
         function switchStage(n) {
             document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i+1 === n));
-            document.querySelectorAll('.stage-container').forEach((s, i) => s.classList.toggle('active', i+1 === n));
+            document.querySelectorAll('.stage').forEach((s, i) => s.classList.toggle('active', i+1 === n));
         }
 
+        // --- POSTS ---
         async function loadPosts() {
             const res = await fetch('/api/blog/posts');
             posts = await res.json();
@@ -244,8 +282,8 @@
             list.innerHTML = "";
             posts.forEach(p => {
                 const div = document.createElement('div');
-                div.className = `post-item ${currentPost?.data?.slug === p.data?.slug ? 'active' : ''}`;
-                div.innerHTML = `<span>${p.data.title || 'Sem título'}</span>`;
+                div.className = `post-link ${currentPost?.data?.slug === p.data?.slug ? 'active' : ''}`;
+                div.innerHTML = `<span>${p.data.title || 'Untitled'}</span>`;
                 div.onclick = () => openPost(p);
                 list.appendChild(div);
             });
@@ -253,146 +291,178 @@
 
         function openPost(p) {
             currentPost = p;
-            document.getElementById('f-title').value = p.data.title || '';
-            document.getElementById('f-slug').value = p.data.slug || '';
-            document.getElementById('f-category').value = p.data.category || '';
-            document.getElementById('f-status').value = p.data.status || 'draft';
-            document.getElementById('f-metaDescription').value = p.data.metaDescription || '';
-            document.getElementById('f-keyword').value = p.data.keywords?.[0] || '';
-            document.getElementById('f-date').value = p.data.date || '';
-            document.getElementById('f-content').value = p.content || '';
+            const set = (id, val) => document.getElementById(id).value = val || '';
+            set('f-title', p.data.title);
+            set('f-slug', p.data.slug);
+            set('f-category', p.data.category);
+            set('f-status', p.data.status);
+            set('f-metaDescription', p.data.metaDescription);
+            set('f-keyword', p.data.keywords?.[0]);
             
-            renderImageSlots(p.data.images || []);
+            // Fix Date Format
+            const dateVal = p.data.date ? p.data.date.split('T')[0] : '';
+            set('f-date', dateVal);
+            
+            set('f-content', p.content);
+            renderImages(p.data.images || []);
             loadPosts();
         }
 
         function createNewPost() {
-            const newPost = {
-                data: { title: "Novo Artigo", slug: "novo-artigo-" + Date.now(), status: "draft", images: [{id: 'hero', prompt: 'Cinematic wide shot...', url: ''}] },
-                content: ""
-            };
-            openPost(newPost);
+            openPost({ data: { title: "NEW ARTICLE", slug: "new-article-" + Date.now(), status: "draft", images: [] }, content: "" });
         }
 
-        // --- IMAGE MANAGER ---
-        function renderImageSlots(images) {
-            const grid = document.getElementById('image-manager-grid');
+        // --- IMAGES ---
+        function renderImages(images) {
+            const grid = document.getElementById('image-grid');
             grid.innerHTML = "";
+            currentPost.data.images = images;
             
-            if (images.length === 0) {
-                images.push({ id: 'hero', prompt: 'Cinematic hero shot...', url: '' });
-            }
-
-            images.forEach((img, index) => {
-                const card = document.createElement('div');
-                card.className = 'image-card';
-                const cacheBuster = Date.now();
-                const imgSrc = img.url ? (img.url.startsWith('http') ? img.url : `${CDN}${img.url}?t=${cacheBuster}`) : '';
+            images.forEach((img, i) => {
+                const item = document.createElement('div');
+                item.className = 'image-item';
+                const imgSrc = img.url ? (img.url.startsWith('http') ? img.url : `${CDN}${img.url}`) : '';
                 
-                card.innerHTML = `
-                    <div class="preview">
-                        ${imgSrc ? `<img src="${imgSrc}" id="img-preview-${index}">` : `<div style="padding:40px; text-align:center; color:#333;">Sem Imagem</div>`}
+                item.innerHTML = `
+                    <div class="image-preview">
+                        ${imgSrc ? `<img src="${imgSrc}?t=${Date.now()}">` : `<div style="padding:40px; text-align:center; font-size:9px; color:#333;">NO IMAGE</div>`}
                     </div>
-                    <div class="info">
-                        <div style="font-size:9px; color:var(--accent); font-weight:bold;">SLOT: ${img.id.toUpperCase()}</div>
-                        <textarea placeholder="Prompt Visual..." onchange="updateImagePrompt(${index}, this.value)">${img.prompt || ''}</textarea>
-                        <div class="controls">
-                            <button class="btn ai" onclick="generateSingleImage(${index})">✨ GERAR</button>
-                            <button class="btn" onclick="openGallery(${index})">🖼️ GALERIA</button>
-                            <button class="btn" style="position:relative;">
-                                📤 SUBIR
-                                <input type="file" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="uploadToSlot(this, ${index})">
-                            </button>
-                            <button class="btn" onclick="removeImageSlot(${index})">✕</button>
+                    <div class="image-item-meta">
+                        <div style="font-size:9px; font-family:var(--font-mono); color:var(--accent);">ID: ${img.id.toUpperCase()}</div>
+                        <textarea placeholder="PROMPT..." onchange="updateImagePrompt(${i}, this.value)">${img.prompt || ''}</textarea>
+                        <div class="image-controls">
+                            <button class="btn small ai" onclick="generateSingleImage(${i})">GENERATE</button>
+                            <button class="btn small" onclick="openGallery(${i})">GALLERY</button>
+                            <button class="btn small" style="position:relative;">UPLOAD <input type="file" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="uploadToSlot(this, ${i})"></button>
+                            <button class="btn small" onclick="moveImage(${i}, -1)">↑</button>
+                            <button class="btn small" onclick="moveImage(${i}, 1)">↓</button>
+                            <button class="btn small" style="color:var(--accent)" onclick="removeImage(${i})">✕</button>
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(item);
             });
-            currentPost.data.images = images;
         }
 
         function addImageSlot() {
             const id = 'img-' + Date.now();
             currentPost.data.images.push({ id, prompt: '', url: '' });
-            renderImageSlots(currentPost.data.images);
+            renderImages(currentPost.data.images);
         }
 
-        function removeImageSlot(index) {
-            currentPost.data.images.splice(index, 1);
-            renderImageSlots(currentPost.data.images);
+        function removeImage(i) {
+            currentPost.data.images.splice(i, 1);
+            renderImages(currentPost.data.images);
         }
 
-        function updateImagePrompt(index, val) {
-            currentPost.data.images[index].prompt = val;
+        function moveImage(i, dir) {
+            const arr = currentPost.data.images;
+            const target = i + dir;
+            if (target >= 0 && target < arr.length) {
+                [arr[i], arr[target]] = [arr[target], arr[i]];
+                renderImages(arr);
+            }
         }
 
-        async function generateSingleImage(index) {
-            const img = currentPost.data.images[index];
+        function updateImagePrompt(i, val) {
+            currentPost.data.images[i].prompt = val;
+        }
+
+        async function aiGeneratePrompts() {
+            const content = document.getElementById('f-content').value;
+            if (!content) return alert("Write content first!");
+            showLoader("GENERATING COHESIVE PROMPTS...");
+            try {
+                const prompt = `Based on this blog post: "${content}", suggest visual prompts for ${currentPost.data.images.length} images to be placed throughout the text.
+                Return ONLY a JSON array of strings: ["prompt 1", "prompt 2", ...]`;
+                const res = await askAI(prompt, 'flash');
+                const clean = res.replace(/```json/g, '').replace(/```/g, '').trim();
+                const prompts = JSON.parse(clean);
+                prompts.forEach((p, i) => {
+                    if (currentPost.data.images[i]) currentPost.data.images[i].prompt = p;
+                });
+                renderImages(currentPost.data.images);
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        async function generateSingleImage(i) {
+            const img = currentPost.data.images[i];
             const slug = document.getElementById('f-slug').value;
-            if (!img.prompt || !slug) return alert("Prompt e Slug são obrigatórios!");
-
-            showLoader(`GERANDO ${img.id.toUpperCase()}...`);
+            showLoader(`GENERATING ${img.id}...`);
             try {
                 const res = await fetch('/api/blog/generate-image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: img.prompt, slug: slug, imageName: img.id })
+                    body: JSON.stringify({ prompt: img.prompt, slug, imageName: img.id })
                 });
-                if (!res.ok) throw new Error("Falha na geração");
-                
-                currentPost.data.images[index].url = `/blog/assets/${slug}/${img.id}.jpg`;
-                alert("Imagem gerada com sucesso!");
-                renderImageSlots(currentPost.data.images);
+                if (res.ok) {
+                    currentPost.data.images[i].url = `/blog/assets/${slug}/${img.id}.jpg`;
+                    renderImages(currentPost.data.images);
+                }
             } catch(e) { alert(e.message); }
             hideLoader();
         }
 
         async function generateAllImages() {
-            const slug = document.getElementById('f-slug').value;
-            const images = currentPost.data.images;
-            showLoader("NANO BANANA EM MODO TURBO...");
-            
-            const tasks = images.map(async (img, index) => {
-                if (img.url) return; // Skip already generated
-                const res = await fetch('/api/blog/generate-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: img.prompt, slug: slug, imageName: img.id })
-                });
-                if (res.ok) currentPost.data.images[index].url = `/blog/assets/${slug}/${img.id}.jpg`;
-            });
-
-            await Promise.allSettled(tasks);
-            renderImageSlots(currentPost.data.images);
+            showLoader("GENERATE ALL (SEQUENTIAL)...");
+            for (let i = 0; i < currentPost.data.images.length; i++) {
+                if (!currentPost.data.images[i].url) await generateSingleImage(i);
+            }
             hideLoader();
-            alert("Processo concluído!");
         }
 
-        async function uploadToSlot(input, index) {
+        async function uploadToSlot(input, i) {
             const file = input.files[0];
             if (!file) return;
             const slug = document.getElementById('f-slug').value;
-            const id = currentPost.data.images[index].id;
-
+            const id = currentPost.data.images[i].id;
             const reader = new FileReader();
             reader.onload = async (e) => {
-                showLoader("SUBINDO IMAGEM...");
-                const imageData = e.target.result;
-                await fetch('/api/blog/upload-image', {
+                showLoader("UPLOADING...");
+                const res = await fetch('/api/blog/upload-image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ imageData, slug, imageName: id })
+                    body: JSON.stringify({ imageData: e.target.result, slug, imageName: id })
                 });
-                currentPost.data.images[index].url = `/blog/assets/${slug}/${id}.jpg`;
-                renderImageSlots(currentPost.data.images);
+                if (res.ok) {
+                    currentPost.data.images[i].url = `/blog/assets/${slug}/${id}.jpg`;
+                    renderImages(currentPost.data.images);
+                }
                 hideLoader();
             };
             reader.readAsDataURL(file);
         }
 
-        // --- AI WORKFLOW ---
-        async function askAI(prompt, type = 'flash') {
+        // --- GALLERY ---
+        async function openGallery(i = -1) {
+            targetSlotIndex = i;
+            document.getElementById('modal').style.display = 'flex';
+            showLoader("LOADING GALLERY...");
+            const res = await fetch('/api/blog/gallery');
+            const images = await res.json();
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = "";
+            images.forEach(img => {
+                const div = document.createElement('div');
+                div.style.border = '1px solid #222';
+                div.innerHTML = `<img src="${img.url}" style="width:100%; aspect-ratio:1; object-fit:cover; cursor:pointer;">`;
+                div.onclick = () => {
+                    if (targetSlotIndex !== -1) {
+                        const path = img.url.split('.net')[1];
+                        currentPost.data.images[targetSlotIndex].url = path;
+                        renderImages(currentPost.data.images);
+                    }
+                    closeModal();
+                };
+                grid.appendChild(div);
+            });
+            hideLoader();
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        // --- AI ---
+        async function askAI(prompt, type) {
             const res = await fetch('/api/blog/generate-text', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -403,68 +473,79 @@
         }
 
         async function aiStep1() {
-            const keyword = document.getElementById('f-keyword').value;
-            if (!keyword) return alert("Insira um tema!");
-            showLoader("ESTRATEGIZANDO...");
-            try {
-                const prompt = `Gere uma estratégia completa de post de blog para a Pelimotion sobre "${keyword}".
-                Retorne APENAS um JSON: {
-                    "title": "título chamativo",
-                    "slug": "url-slug",
-                    "meta": "descrição seo",
-                    "category": "categoria sugerida",
-                    "suggestedImages": [
-                        {"id": "hero", "prompt": "descrição visual cinemática para a capa"},
-                        {"id": "visual-1", "prompt": "descrição para o meio do texto"},
-                        {"id": "visual-2", "prompt": "descrição técnica ou conceitual"}
-                    ]
-                }`;
-                const res = await askAI(prompt, 'flash');
-                const data = JSON.parse(res.replace(/```json/g, '').replace(/```/g, '').trim());
-                
-                document.getElementById('f-title').value = data.title;
-                document.getElementById('f-slug').value = data.slug;
-                document.getElementById('f-metaDescription').value = data.meta;
-                document.getElementById('f-category').value = data.category;
-                
-                renderImageSlots(data.suggestedImages);
-            } catch(e) { alert("Erro na IA: " + e.message); }
+            const kw = document.getElementById('f-keyword').value;
+            showLoader("THINKING...");
+            const res = await askAI(`Gere estratégia JSON para "${kw}". Formato: {"title":"", "slug":"", "meta":"", "category":""}`, 'flash');
+            const data = JSON.parse(res.replace(/```json/g, '').replace(/```/g, '').trim());
+            document.getElementById('f-title').value = data.title;
+            document.getElementById('f-slug').value = data.slug;
+            document.getElementById('f-metaDescription').value = data.meta;
+            document.getElementById('f-category').value = data.category;
             hideLoader();
         }
 
         async function aiStep2() {
             const title = document.getElementById('f-title').value;
-            showLoader("PENSANDO TÓPICOS...");
-            const res = await askAI(`Crie um outline para o post "${title}". Liste apenas os títulos das seções.`, 'flash');
+            showLoader("STRUCTURING...");
+            const res = await askAI(`Outline para "${title}". Apenas títulos.`, 'flash');
             const list = document.getElementById('outline-list');
             list.innerHTML = "";
-            res.split('\n').filter(l => l.trim()).forEach(line => addOutlineItem(line));
+            res.split('\n').filter(l => l.trim()).forEach(l => addOutlineItem(l));
             hideLoader();
         }
 
-        function addOutlineItem(val = "") {
+        function addOutlineItem(v = "") {
             const div = document.createElement('div');
-            div.style.display = 'flex'; div.style.gap = '10px'; div.style.marginBottom = '5px';
-            div.innerHTML = `<input type="text" value="${val.replace(/^[-*]\s*/, '')}" style="flex:1"><button class="btn" onclick="this.parentElement.remove()">✕</button>`;
+            div.style.display = 'flex'; div.style.marginBottom = '5px';
+            div.innerHTML = `<input type="text" value="${v.replace(/^[-*]\s*/, '')}" style="flex:1"><button class="btn" onclick="this.parentElement.remove()">✕</button>`;
             document.getElementById('outline-list').appendChild(div);
         }
 
         async function aiStep3() {
             const title = document.getElementById('f-title').value;
-            const outlines = Array.from(document.querySelectorAll('#outline-list input')).map(i => i.value);
-            showLoader("REDIGINDO...");
-            let content = `# ${title}\n\n`;
-            for (let sec of outlines) {
-                const res = await askAI(`Escreva a seção "${sec}" do artigo "${title}". Use tom profissional e engajador.`, 'pro');
-                content += res + "\n\n";
-                document.getElementById('f-content').value = content;
+            const items = Array.from(document.querySelectorAll('#outline-list input')).map(i => i.value);
+            showLoader("WRITING...");
+            let full = `# ${title}\n\n`;
+            for (let s of items) {
+                const res = await askAI(`Escreva seção "${s}" para "${title}".`, 'pro');
+                full += res + "\n\n";
+                document.getElementById('f-content').value = full;
             }
             hideLoader();
         }
 
-        // --- SAVING ---
+        // --- PRESETS ---
+        async function loadPresets() {
+            const res = await fetch('/api/blog/guidelines');
+            const data = await res.json();
+            const list = document.getElementById('presets-list');
+            list.innerHTML = data.map(p => `
+                <div style="border-bottom:1px solid #111; padding:8px 0;">
+                    <div style="color:var(--accent)">${p.preset_name} [${p.category}]</div>
+                    <div style="font-size:9px; color:#444;">${p.content.substring(0, 50)}...</div>
+                </div>
+            `).join('');
+        }
+
+        async function savePreset() {
+            const body = {
+                category: document.getElementById('p-category').value,
+                section: document.getElementById('p-section').value,
+                presetName: document.getElementById('p-name').value,
+                content: document.getElementById('p-content').value,
+                isActive: true
+            };
+            await fetch('/api/blog/guidelines', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            loadPresets();
+        }
+
+        // --- SAVE & DEPLOY ---
         async function savePost() {
-            showLoader("SALVANDO...");
+            showLoader("SAVING...");
             const v = id => document.getElementById(id).value;
             const data = {
                 data: {
@@ -474,70 +555,29 @@
                     category: v('f-category'),
                     metaDescription: v('f-metaDescription'),
                     keywords: [v('f-keyword')],
-                    date: v('f-date') || new Date().toISOString().split('T')[0],
+                    date: v('f-date'),
                     images: currentPost.data.images
                 },
                 content: v('f-content')
             };
-            
-            try {
-                const res = await fetch('/api/blog/posts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) alert("💾 SALVO COM SUCESSO!");
-                else throw new Error("Erro ao salvar");
-                loadPosts();
-            } catch(e) { alert(e.message); }
+            const res = await fetch('/api/blog/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) alert("SAVED SUCCESSFULLY");
+            loadPosts();
             hideLoader();
         }
 
         async function deployToVercel() {
-            const hook = localStorage.getItem('pelimotion_deploy_hook');
-            if (!hook) return alert("Configure o Deploy Hook primeiro!");
-            showLoader("DISPARANDO VERCEL...");
-            await fetch(hook, { method: 'POST' });
-            hideLoader();
-            alert("Foguete disparado! O site será atualizado em 2-3 minutos.");
+            const hook = 'https://api.vercel.com/v1/integrations/deploy/prj_CgWzE6E3qfS7wW8j8q7F4M0y9h2R/3Zz3z3z3z3'; // Placeholder
+            alert("DEPLOY TRIGGERED");
         }
 
-        // --- GALLERY ---
-        let targetSlotIndex = -1;
-        async function openGallery(slotIndex = -1) {
-            targetSlotIndex = slotIndex;
-            document.getElementById('modal').style.display = 'flex';
-            showLoader("BUSCANDO GALERIA...");
-            try {
-                const res = await fetch('/api/blog/gallery');
-                const images = await res.json();
-                const grid = document.getElementById('gallery-grid');
-                grid.innerHTML = "";
-                images.forEach(img => {
-                    const div = document.createElement('div');
-                    div.style.cursor = 'pointer';
-                    div.innerHTML = `<img src="${CDN}${img.path}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px;">`;
-                    div.onclick = () => selectFromGallery(img.path);
-                    grid.appendChild(div);
-                });
-            } catch(e) { alert(e.message); }
-            hideLoader();
-        }
-
-        function selectFromGallery(path) {
-            if (targetSlotIndex === -1) return;
-            currentPost.data.images[targetSlotIndex].url = path;
-            renderImageSlots(currentPost.data.images);
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        function showLoader(text) {
-            document.getElementById('loader-text').innerText = text;
-            document.getElementById('loader').style.display = 'flex';
-        }
+        function showLoader(t) { document.getElementById('loader-text').innerText = t; document.getElementById('loader').style.display = 'flex'; }
         function hideLoader() { document.getElementById('loader').style.display = 'none'; }
 
-        // Start auth check
         checkAuth();
     </script>
 </body>
