@@ -281,8 +281,6 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
 
-            <button onClick={handleCreate} disabled={creating}
-
             {/* Gerenciador de Propriedades */}
             <PropertyManagerModal 
               databaseId={databaseId} 
