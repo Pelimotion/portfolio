@@ -159,6 +159,26 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
     onReorder: (newItems) => setLocalItems(newItems),
     onReorderPersist: handleReorderPersist,
     onDelete: handleDelete,
+    onCreateWithStatus: async (statusPropId, statusOptionId) => {
+      setCreating(true);
+      try {
+        const newItem = await createPage({ title: 'Nova Cena', parentId: databaseId, pageType: 'database_item', icon: null });
+        setLocalItems(prev => [...prev, newItem]);
+        const initialValue = statusOptionId && statusOptionId !== '__all' && statusOptionId !== '__none' 
+          ? { selected: statusOptionId } 
+          : {};
+        
+        setAllValues(prev => ({ 
+          ...prev, 
+          [newItem.id]: { [statusPropId]: initialValue } 
+        }));
+        
+        if (initialValue.selected) {
+          await propertyService.upsertValue(newItem.id, statusPropId, initialValue);
+        }
+      } catch (e) { console.error(e); }
+      finally { setCreating(false); }
+    },
     density,
   };
 
@@ -235,7 +255,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
 // ============================================
 // KANBAN VIEW — Fixed DnD persistence
 // ============================================
-function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, density }) {
+function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, density }) {
   const navigate = useNavigate();
   const groupProp = properties.find(p => p.property_type === 'status' || p.property_type === 'select');
 
@@ -378,8 +398,28 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
               navigate={navigate}
               density={density}
               isOver={overId === col.id}
+              onAdd={() => onCreateWithStatus(groupProp?.id, col.id)}
             />
           ))}
+          {groupProp && (
+            <button 
+              onClick={async () => {
+                const newLabel = prompt("Nome da nova etapa:");
+                if (!newLabel) return;
+                try {
+                  const opts = groupProp.config?.options || [];
+                  const newOpts = [...opts, { id: `opt_${Date.now()}`, label: newLabel, color: 'gray' }];
+                  await propertyService.update(groupProp.id, { config: { ...groupProp.config, options: newOpts } });
+                  // Trigger reload (assuming parent will reload on update or we just reload window for simplicity, but ideally we have an onUpdate callback)
+                  window.location.reload();
+                } catch(e) { console.error(e); }
+              }}
+              className={`${colWidth} shrink-0 rounded-xl border-2 border-dashed border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all h-[42px] mt-0`}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              <span className="text-xs font-bold uppercase tracking-wider">Nova Etapa</span>
+            </button>
+          )}
         </div>
       </SortableContext>
       <DragOverlay dropAnimation={{ duration: 150 }}>
@@ -393,10 +433,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
         )}
       </DragOverlay>
     </DndContext>
-  );
-}
-
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
@@ -416,7 +453,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
         <span className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-[0.08em] flex-1">{col.label}</span>
         <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
         <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
-          <button className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
+          <button onClick={onAdd} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
             <Plus className="w-3.5 h-3.5" />
           </button>
           <button className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
@@ -565,20 +602,41 @@ function CalendarView({ items, properties, allValues }) {
   const month = current.getMonth();
 
   const itemsByDay = useMemo(() => {
-    if (!deadlineProp) return {};
     const map = {};
-    for (const item of (items || [])) {
-      const dateVal = (allValues || {})[item.id]?.[deadlineProp.id]?.date;
-      if (!dateVal) continue;
-      const d = new Date(dateVal);
-      if (d.getFullYear() === year && d.getMonth() === month) {
-        const day = d.getDate();
-        if (!map[day]) map[day] = [];
-        map[day].push(item);
+    
+    // Process scene deadlines
+    if (deadlineProp) {
+      for (const item of (items || [])) {
+        const dateVal = (allValues || {})[item.id]?.[deadlineProp.id]?.date;
+        if (!dateVal) continue;
+        const d = new Date(dateVal);
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const day = d.getDate();
+          if (!map[day]) map[day] = [];
+          map[day].push({ type: 'scene', data: item });
+        }
       }
     }
+
+    // Process status milestones
+    if (statusProp && statusProp.config?.options) {
+      for (const opt of statusProp.config.options) {
+        if (!opt.deadline) continue;
+        // The deadline is typically 'YYYY-MM-DD'
+        // Need to parse properly so timezone doesn't shift it
+        const [y, m, d_str] = opt.deadline.split('-');
+        const d = new Date(Number(y), Number(m) - 1, Number(d_str));
+        
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const day = d.getDate();
+          if (!map[day]) map[day] = [];
+          map[day].push({ type: 'milestone', data: opt });
+        }
+      }
+    }
+
     return map;
-  }, [items, allValues, deadlineProp, year, month]);
+  }, [items, allValues, deadlineProp, statusProp, year, month]);
 
   const firstDay    = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -626,18 +684,31 @@ function CalendarView({ items, properties, allValues }) {
                         {day}
                       </div>
                       <div className="space-y-0.5">
-                        {dayItems.slice(0, 3).map(item => {
-                          const statusVal = statusProp ? allValues[item.id]?.[statusProp.id] : null;
-                          const opt = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
-                          const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
-                          return (
-                            <div key={item.id} onClick={() => navigate(`/page/${item.id}`)}
-                              className={`text-[10px] px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity font-medium ${colors.bg} ${colors.text}`}>
-                              {item.title}
-                            </div>
-                          );
+                        {dayItems.slice(0, 4).map((itemWrap, i) => {
+                          if (itemWrap.type === 'milestone') {
+                            const opt = itemWrap.data;
+                            const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
+                            return (
+                              <div key={`ms-${opt.id}-${i}`}
+                                className={`text-[10px] px-1.5 py-0.5 rounded truncate font-bold border border-current ${colors.bg} ${colors.text}`}
+                                title={`Entrega: ${opt.label}`}>
+                                ⭐ {opt.label}
+                              </div>
+                            );
+                          } else {
+                            const item = itemWrap.data;
+                            const statusVal = statusProp ? allValues[item.id]?.[statusProp.id] : null;
+                            const opt = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
+                            const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
+                            return (
+                              <div key={`sc-${item.id}-${i}`} onClick={() => navigate(`/page/${item.id}`)}
+                                className={`text-[10px] px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity font-medium ${colors.bg} ${colors.text}`}>
+                                {item.title}
+                              </div>
+                            );
+                          }
                         })}
-                        {dayItems.length > 3 && <div className="text-[10px] text-muted-foreground/60 px-1">+{dayItems.length - 3}</div>}
+                        {dayItems.length > 4 && <div className="text-[10px] text-muted-foreground/60 px-1">+{dayItems.length - 4}</div>}
                       </div>
                     </>
                   )}
@@ -648,7 +719,7 @@ function CalendarView({ items, properties, allValues }) {
         ))}
       </div>
 
-      {!deadlineProp && (
+      {(!deadlineProp && !statusProp) && (
         <p className="text-xs text-muted-foreground/60 text-center">
           Adicione uma propriedade "Deadline" ou "Entrega" para ver itens no calendário.
         </p>

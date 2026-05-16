@@ -399,15 +399,16 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
     return { total, done, active, standby, overdue, progress };
   }, [items, allValues, statusProp, deadlineProp, doneProp, statusOptions]);
 
-  // Stage deadlines: group scenes by status, find latest deadline per stage
+  // Stage deadlines: group scenes by status, find latest deadline per stage, or use status milestone deadline
   const stageSummary = useMemo(() => {
     return statusOptions.map(opt => {
       const stageItems = items.filter(i => allValues[i.id]?.[statusProp?.id]?.selected === opt.id);
       const dates = stageItems.map(i => allValues[i.id]?.[deadlineProp?.id]?.date).filter(Boolean);
       const latestDate = dates.length > 0 ? dates.reduce((a, b) => a > b ? a : b) : null;
+      const finalDeadline = opt.deadline || latestDate;
       const isDone = DONE_IDS.some(k => opt.id.includes(k));
-      return { ...opt, count: stageItems.length, deadline: latestDate, isDone };
-    }).filter(s => s.count > 0);
+      return { ...opt, count: stageItems.length, deadline: finalDeadline, isDone };
+    }).filter(s => s.count > 0 || s.deadline);
   }, [items, allValues, statusProp, deadlineProp, statusOptions]);
 
   // Workload by assignee (select type)

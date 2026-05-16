@@ -236,6 +236,16 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                               className="flex-1 bg-transparent border-none py-1 text-sm focus:ring-0 outline-none transition-colors font-medium"
                             />
                             
+                            {selectedProp.property_type === 'status' && (
+                              <input 
+                                type="date"
+                                value={opt.deadline || ''}
+                                onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { deadline: e.target.value })}
+                                className="w-32 bg-secondary/30 border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground"
+                                title="Data de Entrega desta Etapa"
+                              />
+                            )}
+                            
                             {/* Color Selector */}
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mx-2">
                               {Object.keys(COLOR_MAP).map(color => (
