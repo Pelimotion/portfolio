@@ -125,22 +125,30 @@ function createHtml(post) {
     
     // Replace image placeholders with CDN paths
     let processedContent = post.content;
-    if (post.data.slug) {
-        // More robust replacement for markdown image syntax
-        processedContent = processedContent.replace(/image-([1-9])/g, (match, num) => {
-            return `${CDN_URL}/blog/assets/${post.data.slug}/image-${num}.jpg`;
+    let heroImageUrl = post.data.heroImage || '';
+
+    if (post.data.images && post.data.images.length > 0) {
+        post.data.images.forEach(img => {
+            const imgUrl = img.url ? (img.url.startsWith('http') ? img.url : `${CDN_URL}${img.url}`) : '';
+            if (!imgUrl) return;
+
+            // Replace [ID] or ID.jpg with the URL
+            const regex = new RegExp(`\\[${img.id}\\]`, 'g');
+            processedContent = processedContent.replace(regex, `![${post.data.title}](${imgUrl})`);
+            
+            const fileRegex = new RegExp(`${img.id}\\.jpg`, 'g');
+            processedContent = processedContent.replace(fileRegex, imgUrl);
+
+            if (img.id === 'hero') heroImageUrl = imgUrl;
         });
-        
-        // Also handle cases where they might be used as raw text or other tags
-        processedContent = processedContent.replace(/hero\.jpg/g, `${CDN_URL}/blog/assets/${post.data.slug}/hero.jpg`);
+    }
+
+    // Fallback hero logic
+    if (!heroImageUrl && post.data.slug) {
+        heroImageUrl = `${CDN_URL}/blog/assets/${post.data.slug}/hero.jpg`;
     }
 
     marked.setOptions({ renderer });
-
-    let heroImageUrl = post.data.heroImage;
-    if (heroImageUrl && !heroImageUrl.startsWith('http')) {
-        heroImageUrl = heroImageUrl.startsWith('/') ? `${CDN_URL}${heroImageUrl}` : `${CDN_URL}/blog/assets/${post.data.slug}/${heroImageUrl}`;
-    }
 
     return `<!DOCTYPE html>
 <html lang="${post.data.lang || 'pt'}">

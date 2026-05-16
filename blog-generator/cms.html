@@ -1,556 +1,242 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelimotion Studio — Agêntico V1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <title>Pelimotion Studio | Content Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #050505; --bg-sec: #0f0f0f; --border: #1e1e1e; --accent: #e8d5a3; --accent-blue: #3b82f6; --fg: #f0ede8; --fg-mut: #666; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--fg); height: 100vh; overflow: hidden; display: flex; }
+        :root {
+            --bg: #050505; --bg-sec: #0a0a0a; --card-bg: #0f0f0f;
+            --primary: #fff; --accent: #ff4b2b; --text: #eee; --text-secondary: #888;
+            --border: #222; --font-main: 'Outfit', sans-serif; --font-mono: 'DM Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font-main); overflow: hidden; }
+        
+        /* Layout */
+        .admin-layout { display: grid; grid-template-rows: 60px 1fr; height: 100vh; }
+        .top-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); background: var(--bg-sec); z-index: 100; }
+        .main-container { display: flex; height: 100%; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 300px; background: var(--bg-sec); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 25px; border-bottom: 1px solid var(--border); }
-        .sidebar-header h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; text-transform: uppercase; }
-        .post-list { flex: 1; overflow-y: auto; padding: 15px; }
-        .post-item { padding: 12px; border: 1px solid transparent; border-bottom-color: var(--border); cursor: pointer; border-radius: 6px; transition: 0.2s; }
-        .post-item:hover { background: rgba(255,255,255,0.03); }
-        .post-item.active { background: #151515; border-color: var(--border); }
-        .post-title { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar { width: 320px; background: var(--bg-sec); border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; }
+        .workspace { flex: 1; padding: 40px; overflow-y: auto; position: relative; background: var(--bg); }
 
-        /* Main Workspace */
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .topbar { padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #000; }
+        /* Typography & Components */
+        .logo { font-family: var(--font-main); font-weight: 600; letter-spacing: 2px; font-size: 14px; }
+        .logo span { color: var(--accent); font-weight: 300; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .card-title { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 15px; letter-spacing: 1px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Workflow Tabs */
-        .workflow-tabs { display: flex; background: var(--bg-sec); border-bottom: 1px solid var(--border); padding: 0 30px; }
-        .tab { padding: 15px 25px; cursor: pointer; border-bottom: 2px solid transparent; font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase; color: var(--fg-mut); transition: 0.2s; }
-        .tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(232, 213, 163, 0.05); }
-        .tab span { margin-right: 8px; opacity: 0.5; }
-
-        .workspace { flex: 1; overflow-y: auto; padding: 30px; }
-        .stage-container { max-width: 1000px; margin: 0 auto; display: none; }
-        .stage-container.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* UI Elements */
-        .card { background: var(--bg-sec); border: 1px solid var(--border); border-radius: 10px; padding: 25px; margin-bottom: 25px; position: relative; }
-        .card-title { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; color: var(--fg-mut); margin-bottom: 15px; letter-spacing: 1px; display: flex; justify-content: space-between; }
-        
-        .field { margin-bottom: 20px; }
-        .field label { display: block; font-size: 11px; font-family: 'DM Mono', monospace; margin-bottom: 8px; color: var(--fg-mut); }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: var(--fg); padding: 12px; border-radius: 6px; font-size: 14px; transition: 0.2s; }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; font-size: 10px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 13px; }
+        textarea { resize: vertical; }
         input:focus, textarea:focus { border-color: var(--accent); outline: none; }
         
-        .btn { padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 11px; border: 1px solid var(--border); transition: 0.2s; }
-        .btn.primary { background: var(--accent); color: #000; border: none; font-weight: 600; }
-        .btn.ai { background: rgba(59, 130, 246, 0.1); border-color: var(--accent-blue); color: #60a5fa; }
-        .btn.ai:hover { background: rgba(59, 130, 246, 0.2); }
+        .btn { background: #111; border: 1px solid var(--border); color: #fff; padding: 8px 16px; cursor: pointer; font-size: 11px; font-family: var(--font-mono); transition: 0.3s; border-radius: 4px; text-transform: uppercase; }
+        .btn:hover { background: #222; border-color: #444; }
+        .btn.primary { background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; }
+        .btn.ai { border-color: var(--accent); color: var(--accent); }
+        .btn.ai:hover { background: var(--accent); color: #fff; }
+
+        /* Workflow Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+        .tab { background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-mono); font-size: 12px; cursor: pointer; padding: 8px 0; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+        .stage-container { display: none; }
+        .stage-container.active { display: block; }
+
+        /* Image Manager */
+        .image-manager-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .image-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
+        .image-card:hover { border-color: #444; transform: translateY(-2px); }
+        .image-card .preview { width: 100%; aspect-ratio: 16/9; background: #111; position: relative; }
+        .image-card img { width: 100%; height: 100%; object-fit: cover; }
+        .image-card .info { padding: 15px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .image-card textarea { font-size: 11px; min-height: 80px; }
+        .image-card .controls { display: flex; justify-content: space-between; gap: 5px; }
+
+        /* Post List Sidebar */
+        .post-list { display: flex; flex-direction: column; gap: 5px; }
+        .post-item { padding: 10px; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .post-item:hover { background: #111; }
+        .post-item.active { background: #1a1a1a; border-color: var(--border); color: var(--accent); }
         
-        .outline-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-        .outline-item input { flex: 1; }
-
-        /* Micro-actions menu */
-        #selection-menu { position: fixed; display: none; background: #1a1a1a; border: 1px solid var(--border); border-radius: 6px; padding: 5px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #selection-menu button { background: none; border: none; color: var(--fg); padding: 8px 12px; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; border-radius: 4px; }
-        #selection-menu button:hover { background: #333; color: var(--accent); }
-
-        /* Loader */
-        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.05); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .image-card { aspect-ratio: 16/9; background: #000; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; position: relative; }
-        .image-card img { width: 100%; height: 100%; object-fit: cover; }
-        .image-card .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; opacity: 0; transition: 0.2s; }
-        .image-card:hover .overlay { opacity: 1; }
-        
-        .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-
-        /* Gallery Modal Styles */
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 25px; }
-        .gallery-item { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: 250ms cubic-bezier(0.4, 0, 0.2, 1); background: #080808; }
-        .gallery-item:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; }
-        .gallery-item .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); opacity: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 15px; transition: 0.3s; pointer-events: none; }
-        .gallery-item:hover .overlay { opacity: 1; }
-        .gallery-item .overlay span { font-size: 8px; color: var(--accent); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
-        .gallery-item .overlay strong { font-size: 11px; color: #fff; line-height: 1.2; }
-        
-        #gallery-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 6000; padding: 40px; backdrop-filter: blur(10px); }
-        .modal-content { background: var(--bg); width: 100%; height: 100%; border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 0 100px rgba(0,0,0,1); }
-        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        /* Modal */
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 500; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; border-radius: 12px; width: 90%; max-width: 800px; }
     </style>
 </head>
 <body>
+
     <div id="loader">
         <div class="spinner"></div>
-        <div id="loader-text" style="margin-top: 20px; font-family: 'DM Mono', monospace; color: var(--accent);">PROCESSANDO FLUXO AGÊNTICO...</div>
+        <div id="loader-text" style="margin-top:20px; font-family:var(--font-mono); color:var(--accent);">SINCRONIZANDO...</div>
     </div>
 
-    <div id="auth-barrier" style="position:fixed; inset:0; background:#000; z-index:5000; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-        <h1 style="font-family:'Barlow Condensed'; font-size:40px; margin-bottom:20px; letter-spacing:4px;">ACID TEST</h1>
-        <input type="password" id="auth-pin" placeholder="ACCESS PIN" style="width:240px; text-align:center; font-family:'DM Mono'; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:4px;" onkeydown="if(event.key==='Enter') checkAuth()">
-        <button class="btn primary" style="margin-top:20px; width:240px;" onclick="checkAuth()">UNLOCK STUDIO</button>
-    </div>
-
-    <div id="gallery-modal">
-        <div class="modal-content">
-            <div class="blog-header" style="position:relative; border-bottom:1px solid var(--border);">
-                <div class="blog-logo">GALERIA GLOBAL <span class="blog-logo-sub">BUNNY STORAGE</span></div>
-                <button class="btn" onclick="toggleGallery()">FECHAR (ESC)</button>
-            </div>
-            <div id="gallery-container" class="gallery-grid" style="overflow-y:auto; flex:1;">
-                <!-- Images injected here -->
-            </div>
-        </div>
-    </div>
-
-    <div id="selection-menu">
-        <button onclick="aiAction('optimize')">✨ Otimizar</button>
-        <button onclick="aiAction('expand')">➕ Expandir</button>
-        <button onclick="aiAction('technical')">🛠️ Mais Técnico</button>
-    </div>
-
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1>PELIMOTION STUDIO</h1>
-            <p style="font-size: 9px; color: var(--fg-mut); font-family: 'DM Mono'; letter-spacing: 1px;">MODO AGÊNTICO V1</p>
-            <button class="btn primary" style="width: 100%; margin-top: 20px;" onclick="newPost()">+ NOVO RASCUNHO</button>
-        </div>
-        <div class="post-list" id="post-list"></div>
-    </aside>
-
-    <main class="main">
-        <div class="topbar">
-            <div style="display:flex; align-items:center; gap:20px;">
-                <input type="text" id="f-fileName" style="width:250px; background:transparent; border:none; font-family:'DM Mono'; font-size:12px;" placeholder="nome-do-arquivo.md">
-                <select id="f-status" style="width:140px; border:none; background:transparent; font-family:'DM Mono'; font-size:10px;">
-                    <option value="draft">🟡 DRAFT (UNLISTED)</option>
-                    <option value="published">🟢 PUBLISHED</option>
-                </select>
-                <button class="btn primary" style="margin-left:20px; background:#ff4b2b; color:#fff;" onclick="triggerGlobalDeploy()">🚀 PUBLICAR NO SITE</button>
-                <button class="btn" style="margin-left:10px;" onclick="toggleGallery()">🖼️ GALERIA</button>
-            </div>
+    <div class="admin-layout">
+        <nav class="top-nav">
+            <div class="logo">PELIMOTION <span>STUDIO v4.0</span></div>
             <div style="display:flex; gap:12px;">
-                <button class="btn danger" onclick="deletePost()">EXCLUIR</button>
-                <button class="btn primary" onclick="savePost()">SALVAR TUDO</button>
+                <button class="btn" onclick="openGallery()">🖼️ GALERIA</button>
+                <button class="btn ai" onclick="savePost()">💾 SALVAR NO SUPABASE</button>
+                <button class="btn primary" onclick="deployToVercel()">🚀 PUBLICAR NO SITE</button>
             </div>
-        </div>
-
-        <nav class="workflow-tabs">
-            <div class="tab active" onclick="switchStage(1)"><span>01</span> PESQUISA & ESTRUTURA</div>
-            <div class="tab" onclick="switchStage(2)"><span>02</span> ESQUELETO (OUTLINE)</div>
-            <div class="tab" onclick="switchStage(3)"><span>03</span> REDAÇÃO (CHUNKS)</div>
-            <div class="tab" onclick="switchStage(4)"><span>04</span> VISUAL & NANO BANANA</div>
-            <div class="tab" onclick="switchStage(5)"><span>05</span> ⚙️ CONFIGURAÇÕES DE IA</div>
         </nav>
 
-        <div class="workspace">
-            <!-- Stage 1: Research -->
-            <div class="stage-container active" id="stage-1">
+        <div class="main-container">
+            <aside class="sidebar">
                 <div class="card">
-                    <div class="card-title">BRAINSTORM & SEO (MODEL: FLASH)</div>
+                    <div class="card-title">PROJETO ATUAL</div>
                     <div class="field">
-                        <label>Assunto / Categoria</label>
-                        <select id="f-category-select" onchange="document.getElementById('f-category').value = this.value">
-                            <option value="Negócio">Negócio</option>
-                            <option value="Técnica">Técnica</option>
-                            <option value="Branding">Branding</option>
-                            <option value="Direção de Arte">Direção de Arte</option>
-                            <option value="Processos">Processos</option>
+                        <label>Status</label>
+                        <select id="f-status">
+                            <option value="draft">🟡 RASCUNHO</option>
+                            <option value="published">🟢 PUBLICADO</option>
                         </select>
                     </div>
                     <div class="field">
-                        <label>Palavra-Chave ou Tema</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="f-keyword" placeholder="ex: motion branding workflow">
-                            <button class="btn ai" onclick="aiStep1()">✨ PESQUISAR & GERAR IDEIA</button>
-                            <button class="btn" onclick="aiRandomTheme()">🎲 TEMA ALEATÓRIO</button>
-                        </div>
+                        <label>Categoria</label>
+                        <input type="text" id="f-category" placeholder="ex: Técnica">
                     </div>
                     <div class="field">
-                        <label>Título Sugerido</label>
-                        <input type="text" id="f-title">
+                        <label>Slug (URL)</label>
+                        <input type="text" id="f-slug" oninput="this.value = this.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')">
                     </div>
                     <div class="field">
-                        <label>Meta Description</label>
-                        <textarea id="f-metaDescription" rows="2"></textarea>
-                    </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                        <div class="field"><label>Slug</label><input type="text" id="f-slug" oninput="this.value = this.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')"></div>
-                        <div class="field"><label>Categoria Final</label><input type="text" id="f-category"></div>
+                        <label>Data</label>
+                        <input type="date" id="f-date">
                     </div>
                 </div>
-            </div>
 
-            <!-- Stage 2: Outline -->
-            <div class="stage-container" id="stage-2">
                 <div class="card">
-                    <div class="card-title">ESTRUTURA H2/H3 (MODEL: FLASH) <button class="btn ai" style="padding:2px 10px;" onclick="aiStep2()">✨ GERAR ESTRUTURA</button></div>
-                    <div id="outline-list">
-                        <!-- Items injected here -->
-                    </div>
-                    <button class="btn" onclick="addOutlineItem()">+ ADICIONAR SEÇÃO</button>
-                    <div style="margin-top:25px; text-align:right;">
-                        <button class="btn primary" onclick="switchStage(3)">AVANÇAR PARA REDAÇÃO →</button>
+                    <div class="card-title">ARTIGOS <button class="btn" onclick="createNewPost()" style="padding:2px 8px;">+</button></div>
+                    <div id="post-list" class="post-list">
+                        <!-- Posts injected here -->
                     </div>
                 </div>
-            </div>
 
-            <!-- Stage 3: Content -->
-            <div class="stage-container" id="stage-3">
-                <div class="card-title">EDITOR PROFISSIONAL (MODEL: PRO) <button class="btn ai" style="padding:2px 10px;" onclick="aiStep3()">✨ REDIGIR SEÇÃO POR SEÇÃO</button></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <textarea id="f-content" style="height:700px; font-family:'DM Mono'; line-height:1.7; padding:30px; background:#000; font-size:14px; border:1px solid var(--border); border-radius:8px;" onmouseup="checkSelection(event)" oninput="updateLivePreview()"></textarea>
-                    <div id="live-preview" style="height:700px; overflow-y:auto; padding:30px; background:var(--bg-sec); border:1px solid var(--border); border-radius:8px; font-size:14px; line-height:1.6; color:#ccc;">
-                        <!-- Rendered Markdown will go here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stage 4: Visuals -->
-            <div class="stage-container" id="stage-4">
                 <div class="card">
-                    <div class="card-title">PROMPTS & NANO BANANA <button class="btn ai" style="padding:2px 10px;" onclick="aiStep4()">✨ CRIAR DIREÇÃO DE ARTE</button></div>
-                    <div class="field">
-                        <label>Instrução de Câmera / Estilo (Global)</label>
-                        <textarea id="f-heroPrompt" rows="3"></textarea>
-                    </div>
-                    <button class="btn primary" style="width:100%; background:var(--accent-blue); color:#fff;" onclick="generateImagesNow()">📸 DISPARAR NANO BANANA (4 IMAGENS)</button>
-                    
-                    <div class="image-preview-grid">
-                        <div class="image-card">
-                            <img id="preview-hero" src="">
-                            <div class="overlay">
-                                <span style="font-size:10px; font-family:'DM Mono'; margin-right:10px;">CLIQUE PARA SUBIR</span>
-                                <input type="file" class="upload-input" onchange="uploadImage(this, 'hero')">
-                                <button class="btn">HERO</button>
+                    <div class="card-title">CONEXÕES</div>
+                    <input type="password" id="studio-pin" placeholder="PIN DE ACESSO" style="font-size:10px; margin-bottom:10px;" onkeyup="if(event.key==='Enter') checkAuth()">
+                    <button class="btn" style="width:100%" onclick="checkAuth()">AUTENTICAR</button>
+                </div>
+            </aside>
+
+            <main class="workspace">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchStage(1)">01. ESTRATÉGIA</button>
+                    <button class="tab" onclick="switchStage(2)">02. ESTRUTURA</button>
+                    <button class="tab" onclick="switchStage(3)">03. CONTEÚDO</button>
+                    <button class="tab" onclick="switchStage(4)">04. VISUAL (IMAGENS)</button>
+                </div>
+
+                <!-- Stage 1 -->
+                <div class="stage-container active" id="stage-1">
+                    <div class="card">
+                        <div class="card-title">BRAINSTORM & SEO</div>
+                        <div class="field">
+                            <label>Assunto ou Tema</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="f-keyword" placeholder="ex: tendências de motion design 2026">
+                                <button class="btn ai" onclick="aiStep1()">✨ GERAR ESTRATÉGIA</button>
                             </div>
                         </div>
-                        <div class="image-card">
-                            <img id="preview-image-1" src="">
-                            <div class="overlay"><input type="file" class="upload-input" onchange="uploadImage(this, 'image-1')"><button class="btn">IMG 1</button></div>
+                        <div class="field">
+                            <label>Título do Post</label>
+                            <input type="text" id="f-title" style="font-size:20px; font-weight:600;">
                         </div>
-                        <div class="image-card">
-                            <img id="preview-image-2" src="">
-                            <div class="overlay"><input type="file" class="upload-input" onchange="uploadImage(this, 'image-2')"><button class="btn">IMG 2</button></div>
-                        </div>
-                        <div class="image-card">
-                            <img id="preview-image-3" src="">
-                            <div class="overlay"><input type="file" class="upload-input" onchange="uploadImage(this, 'image-3')"><button class="btn">IMG 3</button></div>
+                        <div class="field">
+                            <label>Meta Description</label>
+                            <textarea id="f-metaDescription" rows="3"></textarea>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Stage 5: AI Settings -->
-            <div class="stage-container" id="stage-5">
-                <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:20px;">
-                    <!-- Preset Editor -->
+                <!-- Stage 2 -->
+                <div class="stage-container" id="stage-2">
                     <div class="card">
-                        <div class="card-title">NOVO PRESET / EDIÇÃO</div>
-                        <div class="field">
-                            <label>Categoria Alvo</label>
-                            <select id="f-guideline-category">
-                                <option value="Negócio">Negócio</option>
-                                <option value="Técnica">Técnica</option>
-                                <option value="Branding">Branding</option>
-                                <option value="Direção de Arte">Direção de Arte</option>
-                                <option value="Processos">Processos</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Seção</label>
-                            <select id="f-guideline-section">
-                                <option value="Tom de Voz">Tom de Voz</option>
-                                <option value="Estrutura de Conteúdo">Estrutura de Conteúdo</option>
-                                <option value="Regras de Imagem">Regras de Imagem</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Nome do Preset</label>
-                            <input type="text" id="f-guideline-preset-name" placeholder="ex: Minimalista V1">
-                        </div>
-                        <div class="field">
-                            <label>Conteúdo</label>
-                            <textarea id="f-guideline-content" rows="12" style="font-size:12px;"></textarea>
-                        </div>
-                        <div style="display:flex; gap:10px;">
-                            <label style="display:flex; align-items:center; gap:8px; font-size:11px; cursor:pointer;">
-                                <input type="checkbox" id="f-guideline-active" checked> DEFINIR COMO ATIVO
-                            </label>
-                        </div>
-                        <button class="btn primary" style="width:100%; margin-top:15px;" onclick="saveGuideline()">SALVAR NA BIBLIOTECA</button>
-                    </div>
-
-                    <!-- Library List -->
-                    <div class="card">
-                        <div class="card-title">BIBLIOTECA DE PRESETS <button class="btn" onclick="loadLibrary()" style="padding:2px 8px; font-size:9px;">RECARREGAR</button></div>
-                        <div id="library-list" style="display:flex; flex-direction:column; gap:10px; max-height:400px; overflow-y:auto; margin-bottom:20px;">
-                            <!-- Items injected here -->
-                        </div>
-                        
-                        <div class="card-title">CONFIGURAÇÃO DE DEPLOY</div>
-                        <div class="field">
-                            <label>Vercel Deploy Hook URL</label>
-                            <input type="text" id="f-deploy-hook" placeholder="https://api.vercel.com/v1/integrations/deploy/..." style="font-size:10px;">
-                        </div>
-                        <button class="btn" style="width:100%" onclick="saveDeployHook()">SALVAR HOOK</button>
+                        <div class="card-title">OUTLINE (TÓPICOS) <button class="btn ai" onclick="aiStep2()">✨ GERAR TÓPICOS</button></div>
+                        <div id="outline-list"></div>
+                        <button class="btn" style="margin-top:15px;" onclick="addOutlineItem()">+ ADICIONAR SEÇÃO</button>
                     </div>
                 </div>
+
+                <!-- Stage 3 -->
+                <div class="stage-container" id="stage-3">
+                    <div class="card" style="height: calc(100vh - 250px); display:flex; flex-direction:column;">
+                        <div class="card-title">CONTEÚDO FINAL (MARKDOWN) <button class="btn ai" onclick="aiStep3()">✨ ESCREVER TUDO</button></div>
+                        <textarea id="f-content" style="flex:1; background:#000; color:#eee; font-family:var(--font-mono); line-height:1.7; padding:25px; border:none;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Stage 4 -->
+                <div class="stage-container" id="stage-4">
+                    <div class="card">
+                        <div class="card-title">
+                            DIREÇÃO DE ARTE & IMAGENS
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn" onclick="addImageSlot()">+ NOVO SLOT</button>
+                                <button class="btn ai" onclick="generateAllImages()">✨ GERAR TODAS AS FALTANTES</button>
+                            </div>
+                        </div>
+                        <div id="image-manager-grid" class="image-manager-grid">
+                            <!-- Image cards injected here -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div id="modal">
+        <div class="modal-content">
+            <div class="card-title">GALERIA COMPARTILHADA <button class="btn" onclick="document.getElementById('modal').style.display='none'">✕</button></div>
+            <div id="gallery-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:15px; max-height:500px; overflow-y:auto;">
+                <!-- Gallery items -->
             </div>
         </div>
-    </main>
+    </div>
 
     <script>
         let currentPost = null;
         let posts = [];
-        let brandVoice = "";
         const CDN = 'https://pelimotion-portfolio.b-cdn.net';
 
-        // Stage Management
+        // --- AUTH & INITIALIZATION ---
+        async function checkAuth() {
+            const pin = document.getElementById('studio-pin').value || localStorage.getItem('pelimotion_pin');
+            if (pin === '0101') {
+                localStorage.setItem('pelimotion_pin', pin);
+                document.getElementById('auth-info').innerText = '✅ STUDIO AUTENTICADO';
+                init();
+            } else {
+                alert('PIN INCORRETO');
+            }
+        }
+
+        async function init() {
+            showLoader("CARREGANDO DADOS...");
+            await loadPosts();
+            hideLoader();
+        }
+
+        // --- NAVIGATION ---
         function switchStage(n) {
             document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i+1 === n));
             document.querySelectorAll('.stage-container').forEach((s, i) => s.classList.toggle('active', i+1 === n));
         }
 
-        function showLoader(text) {
-            document.getElementById('loader-text').innerText = text;
-            document.getElementById('loader').style.display = 'flex';
-        }
-
-        function hideLoader() {
-            document.getElementById('loader').style.display = 'none';
-        }
-
-        // Selection Menu Logic
-        function checkSelection(e) {
-            const sel = window.getSelection().toString().trim();
-            const menu = document.getElementById('selection-menu');
-            if (sel) {
-                menu.style.display = 'flex';
-                menu.style.top = `${e.clientY - 40}px`;
-                menu.style.left = `${e.clientX}px`;
-            } else {
-                menu.style.display = 'none';
-            }
-        }
-
-        async function aiAction(action) {
-            const sel = window.getSelection().toString().trim();
-            if (!sel) return;
-            showLoader(`REFINANDO (${action.toUpperCase()})...`);
-            try {
-                let prompt = "";
-                if (action === 'optimize') prompt = `Melhore o estilo e SEO deste parágrafo, mantendo o significado original: "${sel}"`;
-                if (action === 'expand') prompt = `Expanda este parágrafo com mais detalhes e profundidade técnica: "${sel}"`;
-                if (action === 'technical') prompt = `Reescreva este parágrafo com um tom mais técnico e voltado para especialistas em motion branding: "${sel}"`;
-                
-                const result = await askAI(prompt, 'flash');
-                const area = document.getElementById('f-content');
-                area.value = area.value.replace(sel, result);
-                document.getElementById('selection-menu').style.display = 'none';
-            } catch(e) { alert(e.message); }
-            hideLoader();
-        }
-
-        // AI Calls
-        async function askAI(prompt, modelType = 'flash') {
-            const res = await fetch('/api/blog/generate-text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    prompt: `CONTEXTO BRAND VOICE:\n${brandVoice}\n\nINSTRUÇÃO:\n${prompt}`, 
-                    modelType 
-                })
-            });
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            return data.text;
-        }
-
-        async function aiStep1() {
-            const keyword = document.getElementById('f-keyword').value;
-            const category = document.getElementById('f-category').value;
-            if (!keyword) return alert("Insira uma palavra-chave!");
-            showLoader("PESQUISANDO & GERANDO IDEIA...");
-            try {
-                const prompt = `Gere uma ideia de post de blog altamente profissional para a Pelimotion sobre "${keyword}" dentro da categoria "${category}". 
-                Considere as diretrizes do estúdio para o tom de voz.
-                Retorne APENAS um JSON no formato: {"title": "...", "meta": "...", "slug": "...", "category": "..."}`;
-                let res = await askAI(prompt, 'flash');
-                res = res.replace(/```json/g, '').replace(/```/g, '').trim();
-                const data = JSON.parse(res);
-                document.getElementById('f-title').value = data.title;
-                document.getElementById('f-metaDescription').value = data.meta;
-                document.getElementById('f-slug').value = data.slug;
-                document.getElementById('f-category').value = data.category || category;
-            } catch(e) { alert("Erro na IA: " + e.message); }
-            hideLoader();
-        }
-
-        async function aiRandomTheme() {
-            const category = document.getElementById('f-category').value || 'Negócio';
-            showLoader("GERANDO TEMA ALEATÓRIO...");
-            try {
-                const prompt = `Sugira 1 tema aleatório e provocativo para um post de blog de um estúdio de motion branding (Pelimotion) na categoria "${category}".
-                O tema deve ser focado em atrair clientes corporativos de alto nível.
-                Retorne APENAS a palavra-chave/tema curto.`;
-                const res = await askAI(prompt, 'flash');
-                document.getElementById('f-keyword').value = res.trim();
-            } catch(e) { alert(e.message); }
-            hideLoader();
-        }
-
-        async function aiStep2() {
-            const title = document.getElementById('f-title').value;
-            showLoader("GERANDO ESTRUTURA (OUTLINE)...");
-            try {
-                const prompt = `Crie um outline (esqueleto) para um post de blog com o título "${title}". 
-                Liste apenas os títulos das seções (H2s e H3s) separados por quebras de linha.`;
-                const res = await askAI(prompt, 'flash');
-                const list = document.getElementById('outline-list');
-                list.innerHTML = "";
-                res.split('\n').filter(l => l.trim()).forEach(line => addOutlineItem(line));
-            } catch(e) { alert(e.message); }
-            hideLoader();
-        }
-
-        function addOutlineItem(val = "") {
-            const div = document.createElement('div');
-            div.className = 'outline-item';
-            div.innerHTML = `<input type="text" value="${val.replace(/^[-*]\s*/, '')}"><button class="btn" onclick="this.parentElement.remove()">✕</button>`;
-            document.getElementById('outline-list').appendChild(div);
-        }
-
-        async function aiStep3() {
-            const title = document.getElementById('f-title').value;
-            const outlines = Array.from(document.querySelectorAll('.outline-item input')).map(i => i.value);
-            if (outlines.length === 0) return alert("Gere o outline primeiro!");
-            
-            showLoader("REDIGINDO CHUNKS (MODEL: PRO)...");
-            let fullContent = `# ${title}\n\n`;
-            try {
-                for (let section of outlines) {
-                    document.getElementById('loader-text').innerText = `REDIGINDO: ${section.toUpperCase()}...`;
-                    const prompt = `Escreva a seção "${section}" para um post de blog chamado "${title}". 
-                    Use um tom profissional, técnico e engajador. Retorne em Markdown, começando com o título da seção (H2 ou H3).`;
-                    const res = await askAI(prompt, 'pro');
-                    fullContent += res + "\n\n";
-                    document.getElementById('f-content').value = fullContent; // Show progress
-                }
-            } catch(e) { alert(e.message); }
-            hideLoader();
-        }
-
-        async function aiStep4() {
-            const title = document.getElementById('f-title').value;
-            showLoader("CRIANDO DIREÇÃO DE ARTE...");
-            try {
-                const prompt = `Crie um prompt visual cinematográfico em inglês para este post: "${title}". 
-                Siga as regras: Editorial photography, Rio de Janeiro urban context, natural light, cinematic, NO TEXT.`;
-                const res = await askAI(prompt, 'flash');
-                document.getElementById('f-heroPrompt').value = res;
-            } catch(e) { alert(e.message); }
-            hideLoader();
-        }
-
-        // Image Handling
-        async function generateImagesNow() {
-            const prompt = document.getElementById('f-heroPrompt').value;
-            const slug = document.getElementById('f-slug').value;
-            if (!prompt || !slug) return alert("Falta prompt ou slug!");
-            
-            if (!confirm("Isso consumirá créditos de IA. Gerar as 4 imagens cinematográficas em paralelo agora?")) return;
-            
-            showLoader("NANO BANANA TRABALHANDO EM PARALELO...");
-            const names = ['hero', 'image-1', 'image-2', 'image-3'];
-            
-            try {
-                // Generate in parallel for speed
-                const tasks = names.map(async (name) => {
-                    console.log(`Iniciando geração de ${name}...`);
-                    const res = await fetch('/api/blog/generate-image', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt, slug, imageName: name })
-                    });
-                    if (!res.ok) throw new Error(`${name} falhou: ${res.statusText}`);
-                    updatePreviews(slug);
-                    return name;
-                });
-
-                const results = await Promise.allSettled(tasks);
-                const failed = results.filter(r => r.status === 'rejected');
-                
-                if (failed.length > 0) {
-                    alert(`Atenção: ${failed.length} imagens falharam. Tente gerá-las individualmente ou clique novamente.`);
-                } else {
-                    alert("Todas as imagens foram enviadas com sucesso!");
-                }
-            } catch(e) { 
-                console.error(e);
-                alert("Erro crítico na geração: " + e.message); 
-            }
-            hideLoader();
-        }
-
-        function updatePreviews(slug) {
-            const t = Date.now();
-            ['hero', 'image-1', 'image-2', 'image-3'].forEach(name => {
-                const img = document.getElementById(`preview-${name}`);
-                if (img) {
-                    const newSrc = `${CDN}/blog/assets/${slug}/${name}.jpg?t=${t}`;
-                    img.style.opacity = '0.4';
-                    
-                    // Recursive retry logic
-                    const tryLoad = (attempt = 1) => {
-                        const tempImg = new Image();
-                        tempImg.onload = () => {
-                            img.src = newSrc;
-                            img.style.opacity = '1';
-                        };
-                        tempImg.onerror = () => {
-                            if (attempt < 15) { // Try for 30 seconds
-                                console.log(`Retry ${name} (attempt ${attempt})...`);
-                                setTimeout(() => tryLoad(attempt + 1), 2000);
-                            } else {
-                                img.style.opacity = '1'; // Show broken icon eventually
-                            }
-                        };
-                        tempImg.src = newSrc;
-                    };
-                    tryLoad();
-                }
-            });
-        }
-
-        async function uploadImage(input, name) {
-            const file = input.files[0];
-            if (!file) return;
-            const slug = document.getElementById('f-slug').value;
-            if (!slug) return alert("Crie o slug primeiro!");
-            
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const imageData = e.target.result;
-                showLoader("SUBINDO IMAGEM...");
-                await fetch('/api/blog/upload-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ imageData, slug, imageName: name })
-                });
-                updatePreviews(slug);
-                hideLoader();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Data Management
         async function loadPosts() {
             const res = await fetch('/api/blog/posts');
             posts = await res.json();
@@ -558,8 +244,8 @@
             list.innerHTML = "";
             posts.forEach(p => {
                 const div = document.createElement('div');
-                div.className = `post-item ${currentPost?.fileName === p.fileName ? 'active' : ''}`;
-                div.innerHTML = `<div class="post-title">${p.data.title || p.fileName}</div>`;
+                div.className = `post-item ${currentPost?.data?.slug === p.data?.slug ? 'active' : ''}`;
+                div.innerHTML = `<span>${p.data.title || 'Sem título'}</span>`;
                 div.onclick = () => openPost(p);
                 list.appendChild(div);
             });
@@ -567,221 +253,292 @@
 
         function openPost(p) {
             currentPost = p;
-            document.getElementById('f-fileName').value = p.fileName;
-            document.getElementById('f-status').value = p.data.status || 'draft';
             document.getElementById('f-title').value = p.data.title || '';
-            document.getElementById('f-keyword').value = p.data.keywords?.[0] || '';
             document.getElementById('f-slug').value = p.data.slug || '';
             document.getElementById('f-category').value = p.data.category || '';
+            document.getElementById('f-status').value = p.data.status || 'draft';
             document.getElementById('f-metaDescription').value = p.data.metaDescription || '';
+            document.getElementById('f-keyword').value = p.data.keywords?.[0] || '';
+            document.getElementById('f-date').value = p.data.date || '';
             document.getElementById('f-content').value = p.content || '';
-            document.getElementById('f-heroPrompt').value = p.data.heroPrompt || '';
-            updatePreviews(p.data.slug);
+            
+            renderImageSlots(p.data.images || []);
             loadPosts();
         }
 
-        async function savePost() {
-            showLoader("SALVANDO NO SUPABASE...");
-            const v = id => document.getElementById(id).value;
-            const data = {
-                fileName: v('f-fileName'),
-                data: {
-                    title: v('f-title'),
-                    status: v('f-status'),
-                    slug: v('f-slug'),
-                    category: v('f-category'),
-                    metaDescription: v('f-metaDescription'),
-                    heroPrompt: v('f-heroPrompt'),
-                    keywords: [v('f-keyword')],
-                    date: new Date().toISOString().split('T')[0]
-                },
-                content: v('f-content')
+        function createNewPost() {
+            const newPost = {
+                data: { title: "Novo Artigo", slug: "novo-artigo-" + Date.now(), status: "draft", images: [{id: 'hero', prompt: 'Cinematic wide shot...', url: ''}] },
+                content: ""
             };
-
-            try {
-                const res = await fetch('/api/blog/posts', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(data) 
-                });
-                
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error || "Erro desconhecido");
-                }
-
-                alert("💾 Post salvo com sucesso!");
-                
-                if (data.data.status === 'published') {
-                    alert("NOTA: O post está PUBLICADO. Não esqueça de clicar em 'PUBLICAR NO SITE' para atualizar o blog.");
-                }
-
-                await loadPosts();
-            } catch (e) {
-                alert("FALHA AO SALVAR: " + e.message);
-            }
-            hideLoader();
+            openPost(newPost);
         }
 
-        async function saveGuideline() {
-            const section = document.getElementById('f-guideline-section').value;
-            const category = document.getElementById('f-guideline-category').value;
-            const presetName = document.getElementById('f-guideline-preset-name').value;
-            const content = document.getElementById('f-guideline-content').value;
-            const isActive = document.getElementById('f-guideline-active').checked;
+        // --- IMAGE MANAGER ---
+        function renderImageSlots(images) {
+            const grid = document.getElementById('image-manager-grid');
+            grid.innerHTML = "";
             
-            if (!content || !presetName) return alert("Preencha nome e conteúdo!");
-            
-            showLoader("SALVANDO PRESET...");
+            if (images.length === 0) {
+                images.push({ id: 'hero', prompt: 'Cinematic hero shot...', url: '' });
+            }
+
+            images.forEach((img, index) => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                const cacheBuster = Date.now();
+                const imgSrc = img.url ? (img.url.startsWith('http') ? img.url : `${CDN}${img.url}?t=${cacheBuster}`) : '';
+                
+                card.innerHTML = `
+                    <div class="preview">
+                        ${imgSrc ? `<img src="${imgSrc}" id="img-preview-${index}">` : `<div style="padding:40px; text-align:center; color:#333;">Sem Imagem</div>`}
+                    </div>
+                    <div class="info">
+                        <div style="font-size:9px; color:var(--accent); font-weight:bold;">SLOT: ${img.id.toUpperCase()}</div>
+                        <textarea placeholder="Prompt Visual..." onchange="updateImagePrompt(${index}, this.value)">${img.prompt || ''}</textarea>
+                        <div class="controls">
+                            <button class="btn ai" onclick="generateSingleImage(${index})">✨ GERAR</button>
+                            <button class="btn" onclick="openGallery(${index})">🖼️ GALERIA</button>
+                            <button class="btn" style="position:relative;">
+                                📤 SUBIR
+                                <input type="file" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="uploadToSlot(this, ${index})">
+                            </button>
+                            <button class="btn" onclick="removeImageSlot(${index})">✕</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            currentPost.data.images = images;
+        }
+
+        function addImageSlot() {
+            const id = 'img-' + Date.now();
+            currentPost.data.images.push({ id, prompt: '', url: '' });
+            renderImageSlots(currentPost.data.images);
+        }
+
+        function removeImageSlot(index) {
+            currentPost.data.images.splice(index, 1);
+            renderImageSlots(currentPost.data.images);
+        }
+
+        function updateImagePrompt(index, val) {
+            currentPost.data.images[index].prompt = val;
+        }
+
+        async function generateSingleImage(index) {
+            const img = currentPost.data.images[index];
+            const slug = document.getElementById('f-slug').value;
+            if (!img.prompt || !slug) return alert("Prompt e Slug são obrigatórios!");
+
+            showLoader(`GERANDO ${img.id.toUpperCase()}...`);
             try {
-                await fetch('/api/blog/guidelines', {
+                const res = await fetch('/api/blog/generate-image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ section, category, presetName, content, isActive })
+                    body: JSON.stringify({ prompt: img.prompt, slug: slug, imageName: img.id })
                 });
-                alert("Preset salvo!");
-                loadLibrary();
-                init(); 
+                if (!res.ok) throw new Error("Falha na geração");
+                
+                currentPost.data.images[index].url = `/blog/assets/${slug}/${img.id}.jpg`;
+                alert("Imagem gerada com sucesso!");
+                renderImageSlots(currentPost.data.images);
             } catch(e) { alert(e.message); }
             hideLoader();
         }
 
-        async function loadLibrary() {
-            const res = await fetch('/api/blog/guidelines');
-            const data = await res.json();
-            const list = document.getElementById('library-list');
-            list.innerHTML = "";
-            data.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'post-item';
-                div.style.border = item.is_active ? '1px solid var(--accent)' : '1px solid var(--border)';
-                div.style.padding = '10px';
-                div.style.marginBottom = '5px';
-                div.style.cursor = 'default';
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span style="font-size:9px; color:var(--accent); font-family:var(--font-mono);">${item.category.toUpperCase()}</span>
-                            <div class="post-title" style="margin-top:2px;">${item.preset_name}</div>
-                            <div style="font-size:10px; color:#666;">${item.section}</div>
-                        </div>
-                        <button class="btn" style="padding:2px 8px; font-size:9px;" onclick='usePreset(${JSON.stringify(item).replace(/'/g, "&apos;")})'>CARREGAR</button>
-                    </div>
-                `;
-                list.appendChild(div);
+        async function generateAllImages() {
+            const slug = document.getElementById('f-slug').value;
+            const images = currentPost.data.images;
+            showLoader("NANO BANANA EM MODO TURBO...");
+            
+            const tasks = images.map(async (img, index) => {
+                if (img.url) return; // Skip already generated
+                const res = await fetch('/api/blog/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: img.prompt, slug: slug, imageName: img.id })
+                });
+                if (res.ok) currentPost.data.images[index].url = `/blog/assets/${slug}/${img.id}.jpg`;
             });
+
+            await Promise.allSettled(tasks);
+            renderImageSlots(currentPost.data.images);
+            hideLoader();
+            alert("Processo concluído!");
         }
 
-        function usePreset(item) {
-            document.getElementById('f-guideline-category').value = item.category;
-            document.getElementById('f-guideline-section').value = item.section;
-            document.getElementById('f-guideline-preset-name').value = item.preset_name;
-            document.getElementById('f-guideline-content').value = item.content;
-            document.getElementById('f-guideline-active').checked = item.is_active;
+        async function uploadToSlot(input, index) {
+            const file = input.files[0];
+            if (!file) return;
+            const slug = document.getElementById('f-slug').value;
+            const id = currentPost.data.images[index].id;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                showLoader("SUBINDO IMAGEM...");
+                const imageData = e.target.result;
+                await fetch('/api/blog/upload-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageData, slug, imageName: id })
+                });
+                currentPost.data.images[index].url = `/blog/assets/${slug}/${id}.jpg`;
+                renderImageSlots(currentPost.data.images);
+                hideLoader();
+            };
+            reader.readAsDataURL(file);
         }
 
-        function updateLivePreview() {
-            const content = document.getElementById('f-content').value;
-            if (typeof marked !== 'undefined') {
-                document.getElementById('live-preview').innerHTML = marked.parse(content);
-            }
+        // --- AI WORKFLOW ---
+        async function askAI(prompt, type = 'flash') {
+            const res = await fetch('/api/blog/generate-text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, modelType: type })
+            });
+            const data = await res.json();
+            return data.content;
         }
 
-        function checkAuth() {
-            const pin = document.getElementById('auth-pin').value;
-            const validPin = '2026';
-            if (pin === validPin) { 
-                localStorage.setItem('pelimotion_session', Date.now());
-                document.getElementById('auth-barrier').style.display = 'none';
-                init();
-            } else {
-                alert("ACCESS DENIED");
-            }
-        }
-
-        async function triggerGlobalDeploy() {
-            const hook = localStorage.getItem('pelimotion_deploy_hook');
-            if (!hook) return alert("Configure a URL do Deploy Hook na aba AI Settings primeiro!");
-            
-            if (!confirm("Isso iniciará um novo build na Vercel para publicar todos os posts 'published'. Continuar?")) return;
-            
-            showLoader("DISPARANDO DEPLOY...");
+        async function aiStep1() {
+            const keyword = document.getElementById('f-keyword').value;
+            if (!keyword) return alert("Insira um tema!");
+            showLoader("ESTRATEGIZANDO...");
             try {
-                await fetch(hook, { method: 'POST' });
-                alert("Deploy disparado! O site será atualizado em 2-3 minutos.");
-            } catch(e) { alert("Erro ao disparar: " + e.message); }
+                const prompt = `Gere uma estratégia completa de post de blog para a Pelimotion sobre "${keyword}".
+                Retorne APENAS um JSON: {
+                    "title": "título chamativo",
+                    "slug": "url-slug",
+                    "meta": "descrição seo",
+                    "category": "categoria sugerida",
+                    "suggestedImages": [
+                        {"id": "hero", "prompt": "descrição visual cinemática para a capa"},
+                        {"id": "visual-1", "prompt": "descrição para o meio do texto"},
+                        {"id": "visual-2", "prompt": "descrição técnica ou conceitual"}
+                    ]
+                }`;
+                const res = await askAI(prompt, 'flash');
+                const data = JSON.parse(res.replace(/```json/g, '').replace(/```/g, '').trim());
+                
+                document.getElementById('f-title').value = data.title;
+                document.getElementById('f-slug').value = data.slug;
+                document.getElementById('f-metaDescription').value = data.meta;
+                document.getElementById('f-category').value = data.category;
+                
+                renderImageSlots(data.suggestedImages);
+            } catch(e) { alert("Erro na IA: " + e.message); }
             hideLoader();
         }
 
-        function saveDeployHook() {
-            const val = document.getElementById('f-deploy-hook').value;
-            localStorage.setItem('pelimotion_deploy_hook', val);
-            alert("Hook salvo localmente!");
+        async function aiStep2() {
+            const title = document.getElementById('f-title').value;
+            showLoader("PENSANDO TÓPICOS...");
+            const res = await askAI(`Crie um outline para o post "${title}". Liste apenas os títulos das seções.`, 'flash');
+            const list = document.getElementById('outline-list');
+            list.innerHTML = "";
+            res.split('\n').filter(l => l.trim()).forEach(line => addOutlineItem(line));
+            hideLoader();
         }
 
-        async function toggleGallery() {
-            const modal = document.getElementById('gallery-modal');
-            if (modal.style.display === 'block') {
-                modal.style.display = 'none';
-            } else {
-                modal.style.display = 'block';
-                loadGallery();
+        function addOutlineItem(val = "") {
+            const div = document.createElement('div');
+            div.style.display = 'flex'; div.style.gap = '10px'; div.style.marginBottom = '5px';
+            div.innerHTML = `<input type="text" value="${val.replace(/^[-*]\s*/, '')}" style="flex:1"><button class="btn" onclick="this.parentElement.remove()">✕</button>`;
+            document.getElementById('outline-list').appendChild(div);
+        }
+
+        async function aiStep3() {
+            const title = document.getElementById('f-title').value;
+            const outlines = Array.from(document.querySelectorAll('#outline-list input')).map(i => i.value);
+            showLoader("REDIGINDO...");
+            let content = `# ${title}\n\n`;
+            for (let sec of outlines) {
+                const res = await askAI(`Escreva a seção "${sec}" do artigo "${title}". Use tom profissional e engajador.`, 'pro');
+                content += res + "\n\n";
+                document.getElementById('f-content').value = content;
             }
+            hideLoader();
         }
 
-        async function loadGallery() {
-            const container = document.getElementById('gallery-container');
-            container.innerHTML = "<div style='padding:40px; text-align:center; font-family:var(--font-mono); opacity:0.5;'>INDEXANDO BIBLIOTECA DE ASSETS...</div>";
+        // --- SAVING ---
+        async function savePost() {
+            showLoader("SALVANDO...");
+            const v = id => document.getElementById(id).value;
+            const data = {
+                data: {
+                    title: v('f-title'),
+                    slug: v('f-slug'),
+                    status: v('f-status'),
+                    category: v('f-category'),
+                    metaDescription: v('f-metaDescription'),
+                    keywords: [v('f-keyword')],
+                    date: v('f-date') || new Date().toISOString().split('T')[0],
+                    images: currentPost.data.images
+                },
+                content: v('f-content')
+            };
+            
+            try {
+                const res = await fetch('/api/blog/posts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) alert("💾 SALVO COM SUCESSO!");
+                else throw new Error("Erro ao salvar");
+                loadPosts();
+            } catch(e) { alert(e.message); }
+            hideLoader();
+        }
+
+        async function deployToVercel() {
+            const hook = localStorage.getItem('pelimotion_deploy_hook');
+            if (!hook) return alert("Configure o Deploy Hook primeiro!");
+            showLoader("DISPARANDO VERCEL...");
+            await fetch(hook, { method: 'POST' });
+            hideLoader();
+            alert("Foguete disparado! O site será atualizado em 2-3 minutos.");
+        }
+
+        // --- GALLERY ---
+        let targetSlotIndex = -1;
+        async function openGallery(slotIndex = -1) {
+            targetSlotIndex = slotIndex;
+            document.getElementById('modal').style.display = 'flex';
+            showLoader("BUSCANDO GALERIA...");
             try {
                 const res = await fetch('/api/blog/gallery');
                 const images = await res.json();
-                container.innerHTML = "";
+                const grid = document.getElementById('gallery-grid');
+                grid.innerHTML = "";
                 images.forEach(img => {
                     const div = document.createElement('div');
-                    div.className = 'gallery-item';
-                    div.onclick = () => {
-                        navigator.clipboard.writeText(img.url);
-                        alert("Link copiado para o clipboard!");
-                    };
-                    div.innerHTML = `
-                        <img src="${img.url}?width=400" loading="lazy" onload="this.style.opacity=1">
-                        <div class="overlay">
-                            <span>${img.slug.toUpperCase()}</span>
-                            <strong>${img.name}</strong>
-                        </div>
-                    `;
-                    container.appendChild(div);
+                    div.style.cursor = 'pointer';
+                    div.innerHTML = `<img src="${CDN}${img.path}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px;">`;
+                    div.onclick = () => selectFromGallery(img.path);
+                    grid.appendChild(div);
                 });
-            } catch(e) {
-                container.innerHTML = "<div style='padding:40px; text-align:center; color:#ff4b2b;'>Erro ao carregar biblioteca.</div>";
-            }
+            } catch(e) { alert(e.message); }
+            hideLoader();
         }
 
-        // Close gallery on ESC
-        window.addEventListener('keydown', e => {
-            if (e.key === 'Escape') document.getElementById('gallery-modal').style.display = 'none';
-        });
-
-        async function init() {
-            // Restore hook from local storage
-            document.getElementById('f-deploy-hook').value = localStorage.getItem('pelimotion_deploy_hook') || '';
-            
-            if (typeof marked === 'undefined') {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-                script.onload = () => updateLivePreview();
-                document.head.appendChild(script);
-            }
-
-            const category = document.getElementById('f-category').value;
-            const res = await fetch(`/api/blog/brand-voice?category=${category}`);
-            const data = await res.json();
-            brandVoice = data.content;
-            loadPosts();
-            loadLibrary();
+        function selectFromGallery(path) {
+            if (targetSlotIndex === -1) return;
+            currentPost.data.images[targetSlotIndex].url = path;
+            renderImageSlots(currentPost.data.images);
+            document.getElementById('modal').style.display = 'none';
         }
 
-        // init() is now called from checkAuth
+        function showLoader(text) {
+            document.getElementById('loader-text').innerText = text;
+            document.getElementById('loader').style.display = 'flex';
+        }
+        function hideLoader() { document.getElementById('loader').style.display = 'none'; }
+
+        // Start auth check
+        checkAuth();
     </script>
 </body>
 </html>
