@@ -105,7 +105,7 @@ export default function ProfilePage() {
               {/* Avatar 3D (New PS2 System) */}
               <div className="shrink-0 flex flex-col items-center gap-3">
                 <div
-                  className="w-[280px] h-[320px] rounded-3xl overflow-hidden border-4 shadow-2xl transition-all"
+                  className="w-[280px] h-[380px] rounded-3xl overflow-hidden border-4 shadow-2xl transition-all"
                   style={{ borderColor: `${ac}66`, boxShadow: `0 0 40px ${ac}33` }}
                 >
                   <AvatarWidget userId={user?.id} className="w-full h-full" />

@@ -14,13 +14,35 @@ export class AvatarController {
     this.avatarGroup = null
     this.isRunning = true
 
+    // Mouse Tracking
+    this.targetRot = new THREE.Vector2(0, 0)
+    this.currentRot = new THREE.Vector2(0, 0)
+    this.mouseHandler = this.onMouseMove.bind(this)
+    window.addEventListener('mousemove', this.mouseHandler)
+
     this._startLoop()
+  }
+
+  onMouseMove(e) {
+    const x = (e.clientX / window.innerWidth) * 2 - 1
+    const y = (e.clientY / window.innerHeight) * 2 - 1
+    // Limites de rotação sutis para o estilo PS2
+    this.targetRot.set(x * 0.35, y * 0.2)
   }
 
   _startLoop() {
     const loop = () => {
       if (!this.isRunning) return
       requestAnimationFrame(loop)
+      
+      // Interpolação suave (lerp)
+      this.currentRot.lerp(this.targetRot, 0.08)
+      
+      if (this.avatarGroup) {
+        this.avatarGroup.rotation.y = this.currentRot.x
+        this.avatarGroup.rotation.x = this.currentRot.y
+      }
+
       if (this.animator) this.animator.update()
       this.renderer.render(this.scene, this.camera)
     }
@@ -66,6 +88,7 @@ export class AvatarController {
 
   dispose() {
     this.isRunning = false
+    window.removeEventListener('mousemove', this.mouseHandler)
     this._dispose(this.scene)
     this.renderer.dispose()
   }
