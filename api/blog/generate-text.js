@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID || 'pelimotion-blog';
     const location = 'us-central1';
     
-    const modelId = modelType === 'pro' ? 'gemini-1.5-pro-001' : 'gemini-1.5-flash-001';
+    const modelId = modelType === 'pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
 
     try {
         const auth = new GoogleAuth({
