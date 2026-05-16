@@ -9,8 +9,8 @@ const CONTENT_DIR = path.join(__dirname, 'content');
 const BLOG_OUT_DIR = path.join(__dirname, '..', 'blog');
 const EN_BLOG_OUT_DIR = path.join(__dirname, '..', 'en', 'blog');
 
-const DOMAIN = 'http://pelimotion.art';
-const CDN_URL = `https://${process.env.BUNNY_STORAGE_ZONE}.b-cdn.net`;
+const DOMAIN = 'https://pelimotion.art';
+const CDN_URL = 'https://pelimotion-portfolio.b-cdn.net';
 
 // Setup directories
 ['', 'vagas', 'eventos', 'recursos', 'categoria'].forEach(dir => {
@@ -126,14 +126,21 @@ function createHtml(post) {
     // Replace image placeholders with CDN paths
     let processedContent = post.content;
     if (post.data.slug) {
+        // More robust replacement for markdown image syntax
         processedContent = processedContent.replace(/image-([1-9])/g, (match, num) => {
             return `${CDN_URL}/blog/assets/${post.data.slug}/image-${num}.jpg`;
         });
+        
+        // Also handle cases where they might be used as raw text or other tags
+        processedContent = processedContent.replace(/hero\.jpg/g, `${CDN_URL}/blog/assets/${post.data.slug}/hero.jpg`);
     }
 
     marked.setOptions({ renderer });
 
-    const heroImageUrl = post.data.heroImage.startsWith('http') ? post.data.heroImage : `${CDN_URL}${post.data.heroImage}`;
+    let heroImageUrl = post.data.heroImage;
+    if (heroImageUrl && !heroImageUrl.startsWith('http')) {
+        heroImageUrl = heroImageUrl.startsWith('/') ? `${CDN_URL}${heroImageUrl}` : `${CDN_URL}/blog/assets/${post.data.slug}/${heroImageUrl}`;
+    }
 
     return `<!DOCTYPE html>
 <html lang="${post.data.lang || 'pt'}">
