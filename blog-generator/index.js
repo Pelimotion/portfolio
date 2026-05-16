@@ -36,12 +36,24 @@ const GLOBAL_CSS = `
         --bg-secondary: #111111;
         --bg-tertiary: #1a1a1a;
         --text-primary: #f0ede8;
-        --text-secondary: #9a9690;
-        --accent: #e8d5a3;
-        --accent-2: #4a9eff;
-        --border: #222222;
+        --text-secondary: #666666;
+        --accent: #f0ede8;
+        --accent-warm: #e8d5a3;
+        --border: #1e1e1e;
+
+        --font-display: 'Barlow Condensed', sans-serif;
+        --font-editorial: 'Playfair Display', serif;
+        --font-mono: 'DM Mono', monospace;
+
+        --wordmark-size: clamp(72px, 18vw, 180px);
+        --card-title: clamp(16px, 2vw, 22px);
+        --meta-size: 11px;
+        --body-size: 14px;
+
+        --max-width: 1400px;
+        --gutter: 40px;
     }
-    
+
     * {
         box-sizing: border-box;
         margin: 0;
@@ -57,11 +69,11 @@ const GLOBAL_CSS = `
     }
 
     h1, h2, .playfair {
-        font-family: 'Playfair Display', serif;
+        font-family: var(--font-editorial);
         font-weight: 700;
         color: var(--text-primary);
     }
-    
+
     a {
         text-decoration: none;
         color: inherit;
@@ -73,7 +85,7 @@ const GLOBAL_CSS = `
         top: 0;
         left: 0;
         height: 2px;
-        background: var(--accent);
+        background: var(--accent-warm);
         width: 0%;
         z-index: 1000;
         transition: width 100ms linear;
@@ -81,51 +93,49 @@ const GLOBAL_CSS = `
 
     /* Header */
     .blog-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: rgba(10, 10, 10, 0.85);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 2rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-    }
-    
-    .header-logo {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .header-logo .brand {
-        font-family: 'Playfair Display', serif;
-        font-size: 18px;
-        font-weight: 700;
+        padding: 20px var(--gutter);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: rgba(10,10,10,0.92);
+        backdrop-filter: blur(12px);
+        z-index: 100;
     }
 
-    .header-logo .tag {
-        font-family: 'DM Mono', monospace;
-        font-size: 11px;
-        letter-spacing: 0.15em;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-    }
-
-    .header-nav {
-        display: flex;
-        gap: 1.5rem;
-        font-family: 'DM Mono', monospace;
+    .blog-logo {
+        font-family: var(--font-mono);
         font-size: 13px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text-primary);
     }
     
-    .header-nav a {
+    .blog-logo-sub {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: var(--text-secondary);
+        vertical-align: middle;
+        margin-left: 8px;
+    }
+
+    .blog-nav {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+    }
+
+    .blog-nav a {
         color: var(--text-secondary);
         transition: color 0.2s ease;
     }
-    
-    .header-nav a:hover {
+
+    .blog-nav a:hover {
         color: var(--accent);
     }
 
@@ -134,12 +144,12 @@ const GLOBAL_CSS = `
         border-top: 1px solid var(--border);
         padding: 3rem 2rem;
         text-align: center;
-        font-family: 'DM Mono', monospace;
+        font-family: var(--font-mono);
         font-size: 12px;
         color: var(--text-secondary);
         margin-top: 5rem;
     }
-    
+
     .blog-footer a {
         color: var(--text-primary);
     }
@@ -150,7 +160,7 @@ const GLOBAL_CSS = `
         transform: translateY(16px);
         animation: fadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    
+
     @keyframes fadeInUp {
         to {
             opacity: 1;
@@ -162,6 +172,11 @@ const GLOBAL_CSS = `
         * { animation: none !important; transition: none !important; }
         .progress-bar { display: none; }
     }
+    
+    @media (max-width: 767px) {
+        :root { --gutter: 20px; }
+        .blog-nav { gap: 16px; }
+    }
 `;
 
 function getHeader(lang) {
@@ -170,14 +185,14 @@ function getHeader(lang) {
     return `
     <div class="progress-bar" id="progressBar"></div>
     <header class="blog-header">
-        <div class="header-logo">
-            <a href="${linkPrefix}" class="brand">Pelimotion</a>
-            <span class="tag">Journal</span>
+        <div class="blog-logo">
+            <a href="${linkPrefix}">PELIMOTION</a> <span class="blog-logo-sub">JOURNAL</span>
         </div>
-        <nav class="header-nav">
+        <nav class="blog-nav">
             <a href="${linkPrefix}">Blog</a>
             <a href="${isPt ? '/en/blog' : '/blog'}">${isPt ? 'EN' : 'PT'}</a>
-            <a href="/">Portfolio</a>
+            <a href="/">Portfólio</a>
+            <a href="${linkPrefix}/sobre">${isPt ? 'Sobre' : 'About'}</a>
         </nav>
     </header>
     `;
@@ -285,7 +300,7 @@ function createHtml(post) {
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
         ${GLOBAL_CSS}
@@ -309,7 +324,7 @@ function createHtml(post) {
         }
 
         .breadcrumb {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 11px;
             color: var(--text-secondary);
             margin-bottom: 1rem;
@@ -321,7 +336,7 @@ function createHtml(post) {
             display: inline-block;
             background: var(--accent);
             color: var(--bg-primary);
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 10px;
             font-weight: 500;
             padding: 4px 8px;
@@ -338,7 +353,7 @@ function createHtml(post) {
         }
 
         .post-meta {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 13px;
             color: var(--text-secondary);
         }
@@ -346,9 +361,9 @@ function createHtml(post) {
         .post-layout {
             display: grid;
             grid-template-columns: 1fr;
-            max-width: 1200px;
+            max-width: var(--max-width);
             margin: 4rem auto;
-            padding: 0 2rem;
+            padding: 0 var(--gutter);
             gap: 4rem;
         }
 
@@ -377,11 +392,11 @@ function createHtml(post) {
         }
 
         .post-content h3 {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--accent);
+            color: var(--accent-warm);
             margin-top: 2.5rem;
             margin-bottom: 1rem;
         }
@@ -445,7 +460,7 @@ function createHtml(post) {
         }
 
         .sidebar-title {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
@@ -481,13 +496,13 @@ function createHtml(post) {
 
         .cta-box {
             background: var(--bg-secondary);
-            border-left: 3px solid var(--accent);
+            border-left: 3px solid var(--accent-warm);
             padding: 2rem;
             margin: 4rem 0;
         }
         
         .cta-box h4 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-editorial);
             font-size: 24px;
             margin-bottom: 0.5rem;
         }
@@ -502,7 +517,7 @@ function createHtml(post) {
             display: inline-block;
             background: var(--text-primary);
             color: var(--bg-primary);
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 13px;
             font-weight: 500;
             padding: 12px 24px;
@@ -512,7 +527,7 @@ function createHtml(post) {
         }
         
         .cta-button:hover {
-            background: var(--accent);
+            background: var(--accent-warm);
         }
 
         .author-bio {
@@ -522,7 +537,7 @@ function createHtml(post) {
         }
         
         .author-bio-label {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 11px;
             text-transform: uppercase;
             color: var(--text-secondary);
@@ -581,8 +596,6 @@ function createIndexHtml(posts, lang) {
     
     // Sort posts by date descending
     const sortedPosts = [...posts].sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
-    const featuredPost = sortedPosts[0];
-    const gridPosts = sortedPosts.slice(1);
 
     let html = `<!DOCTYPE html>
 <html lang="${lang}">
@@ -594,241 +607,263 @@ function createIndexHtml(posts, lang) {
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
         ${GLOBAL_CSS}
         
-        .hero {
-            position: relative;
-            width: 100%;
-            height: 70vh;
-            display: flex;
-            align-items: flex-end;
-            padding: 4rem 2rem;
-        }
-
-        .hero-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: -2;
-        }
-        
-        .hero-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.5) 40%, transparent 100%);
-            z-index: -1;
-        }
-
-        .hero-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .featured-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 0.1em;
-            color: var(--accent);
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .hero-h1 {
-            font-size: clamp(32px, 5vw, 56px);
-            margin-bottom: 1rem;
-            max-width: 800px;
-            line-height: 1.1;
-        }
-
-        .hero-meta {
-            font-family: 'DM Mono', monospace;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .btn-read {
-            display: inline-block;
-            font-family: 'DM Mono', monospace;
-            font-size: 13px;
+        .blog-wordmark {
+            font-family: var(--font-display);
+            font-size: var(--wordmark-size);
+            font-weight: 900;
+            line-height: 0.85;
+            letter-spacing: -0.03em;
             color: var(--text-primary);
-            border-bottom: 1px solid var(--accent);
-            padding-bottom: 4px;
-            transition: color 0.2s;
+            text-transform: uppercase;
+            padding: 40px var(--gutter) 0;
         }
 
-        .btn-read:hover {
-            color: var(--accent);
+        .blog-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px var(--gutter) 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pill {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .pill.active,
+        .pill:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
         }
 
         /* Container */
         .container {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 2rem;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 var(--gutter);
         }
 
-        /* Filter */
-        .filter-bar {
-            display: flex;
-            gap: 1rem;
-            overflow-x: auto;
-            padding-bottom: 1rem;
-            margin-bottom: 3rem;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .filter-pill {
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            padding: 6px 16px;
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-pill:hover, .filter-pill.active {
-            background: var(--accent);
-            color: var(--bg-primary);
-            border-color: var(--accent);
-        }
-
-        /* Grid */
-        .grid {
+        .posts-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 3rem 2rem;
+            grid-template-columns: repeat(3, 1fr);
+            border-left: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            margin-bottom: 4rem;
         }
 
-        @media (min-width: 768px) {
-            .grid { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 1023px) {
+            .posts-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (min-width: 1024px) {
-            .grid { grid-template-columns: repeat(3, 1fr); }
+        @media (max-width: 767px) {
+            .posts-grid { grid-template-columns: 1fr; }
+            .blog-filter-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            .filter-pills {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .blog-wordmark {
+                padding-top: 24px;
+            }
         }
 
-        .card {
+        .post-card {
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            group: hover;
+            gap: 12px;
+            transition: background 200ms ease;
         }
 
-        .card-img-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            overflow: hidden;
-            border-radius: 2px;
-            margin-bottom: 1.5rem;
+        .post-card:hover {
             background: var(--bg-secondary);
         }
 
-        .card-img {
+        /* Meta line topo do card */
+        .card-meta-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-date {
+            font-family: var(--font-mono);
+            font-size: var(--meta-size);
+            color: var(--text-secondary);
+        }
+
+        .card-category-pill {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* Imagem */
+        .card-image-wrapper {
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .card-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 400ms ease;
+            display: block;
+            transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .card:hover .card-img {
-            transform: scale(1.03);
+        .post-card:hover .card-image {
+            transform: scale(1.04);
         }
 
-        .card-tag {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--accent);
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-        }
-
+        /* Título */
         .card-title {
-            font-size: 20px;
-            line-height: 1.3;
-            margin-bottom: 0.75rem;
+            font-family: var(--font-editorial);
+            font-size: var(--card-title);
+            font-weight: 700;
+            line-height: 1.25;
+            color: var(--text-primary);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            transition: color 250ms ease;
         }
 
-        .card:hover .card-title {
-            color: var(--accent);
+        .card-title a {
+            transition: color 200ms ease;
         }
 
+        .post-card:hover .card-title a {
+            color: var(--accent-warm);
+        }
+
+        /* Excerpt */
         .card-excerpt {
-            font-family: 'DM Mono', monospace;
-            font-size: 13px;
+            font-family: var(--font-mono);
+            font-size: var(--body-size);
+            line-height: 1.6;
             color: var(--text-secondary);
-            margin-bottom: 1rem;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            flex: 1;
         }
 
-        .card-meta {
-            margin-top: auto;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
+        /* Meta base do card */
+        .card-meta-bottom {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-family: var(--font-mono);
+            font-size: var(--meta-size);
             color: var(--text-secondary);
+        }
+
+        .card-meta-bottom span {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .card-meta-bottom strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card-image, .pill, .card-title a { transition: none; }
         }
     </style>
 </head>
 <body>
     ${getHeader(lang)}
     
-    ${featuredPost ? `
-    <section class="hero">
-        <img src="${featuredPost.data.heroImage}" alt="" class="hero-bg">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <span class="featured-label fade-in-up" style="animation-delay: 0ms">Featured</span>
-            <h1 class="hero-h1 playfair fade-in-up" style="animation-delay: 50ms">
-                <a href="./${featuredPost.data.slug}">${featuredPost.data.title}</a>
-            </h1>
-            <div class="hero-meta fade-in-up" style="animation-delay: 100ms">
-                ${formatDate(featuredPost.data.date, lang)} · ${calculateReadingTime(featuredPost.content)} min
-            </div>
-            <a href="./${featuredPost.data.slug}" class="btn-read fade-in-up" style="animation-delay: 150ms">${isPt ? 'Ler artigo →' : 'Read article →'}</a>
+    <div class="blog-wordmark fade-in-up" style="animation-delay: 0ms">JOURNAL</div>
+    
+    <div class="blog-filter-bar fade-in-up" style="animation-delay: 50ms">
+        <span class="filter-label">${isPt ? 'Categorias' : 'Categories'}</span>
+        <div class="filter-pills">
+            <button class="pill active" data-filter="all">${isPt ? 'Todos' : 'All'}</button>
+            <button class="pill" data-filter="tecnica">Técnica</button>
+            <button class="pill" data-filter="processo">Processo</button>
+            <button class="pill" data-filter="negocio">Negócio</button>
+            <button class="pill" data-filter="ia">IA & Processo</button>
+            <button class="pill" data-filter="psicologia">Psicologia</button>
+            <button class="pill" data-filter="branding">Branding</button>
         </div>
-    </section>
-    ` : ''}
+    </div>
 
     <main class="container">
-        <div class="filter-bar">
-            <div class="filter-pill active">${isPt ? 'Todos' : 'All'}</div>
-            <div class="filter-pill">Técnica</div>
-            <div class="filter-pill">Processo</div>
-            <div class="filter-pill">Negócio</div>
-            <div class="filter-pill">Branding</div>
-        </div>
-
-        <div class="grid">
-            ${gridPosts.map((post, i) => `
-            <article class="card fade-in-up" style="animation-delay: ${(i % 3) * 100}ms">
-                <a href="./${post.data.slug}">
-                    <div class="card-img-wrapper">
-                        <img src="${post.data.thumbImage}" alt="" class="card-img" loading="lazy">
-                    </div>
-                    <div class="card-tag">${post.data.category}</div>
-                    <h2 class="card-title playfair">${post.data.title}</h2>
-                    <div class="card-excerpt">${post.data.metaDescription}</div>
-                    <div class="card-meta">
-                        ${formatDate(post.data.date, lang)} · ${calculateReadingTime(post.content)} min
-                    </div>
-                </a>
+        <div class="posts-grid">
+            ${sortedPosts.map((post, i) => `
+            <article class="post-card fade-in-up" data-category="${post.data.category.toLowerCase().replace(/&/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim()}" style="animation-delay: ${(i % 3) * 100}ms">
+                <div class="card-meta-top">
+                    <time class="card-date" datetime="${post.data.date}">${formatDate(post.data.date, lang)}</time>
+                    <span class="card-category-pill">${post.data.category}</span>
+                </div>
+                <div class="card-image-wrapper">
+                    <img
+                        class="card-image"
+                        src="${post.data.thumbImage}"
+                        alt=""
+                        loading="lazy"
+                        width="400"
+                        height="300"
+                    />
+                </div>
+                <h2 class="card-title">
+                    <a href="./${post.data.slug}">${post.data.title}</a>
+                </h2>
+                <p class="card-excerpt">
+                    ${post.data.metaDescription}
+                </p>
+                <div class="card-meta-bottom">
+                    <span><strong>${isPt ? 'Texto' : 'Text'}</strong> · Pelimotion</span>
+                    <span><strong>${isPt ? 'Leitura' : 'Read'}</strong> · ${calculateReadingTime(post.content)} min</span>
+                </div>
             </article>
             `).join('')}
         </div>
@@ -836,6 +871,23 @@ function createIndexHtml(posts, lang) {
 
     ${getFooter()}
     ${getScripts()}
+    <script>
+        document.querySelectorAll('.pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const filter = pill.dataset.filter;
+                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                document.querySelectorAll('.post-card').forEach(card => {
+                    // Check if it matches exactly or if filter is "all" or if category matches partial like "ia" matches "ia-processo"
+                    if (filter === 'all' || card.dataset.category.includes(filter)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>`;
 
