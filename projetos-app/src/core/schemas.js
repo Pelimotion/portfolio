@@ -50,9 +50,15 @@ export const PROJECT_PROPERTY_SCHEMA = [
     config: {},
   },
   {
+    name: 'Feito',
+    property_type: 'checkbox',
+    position: 4,
+    config: {},
+  },
+  {
     name: 'Drive',
     property_type: 'url',
-    position: 4,
+    position: 5,
     config: {},
   },
 ];
@@ -118,7 +124,7 @@ export const SCENE_PROPERTY_SCHEMA = [
   {
     name: 'Entrega',
     property_type: 'date',
-    position: 4,
+    position: 5,
     config: {},
   },
   {

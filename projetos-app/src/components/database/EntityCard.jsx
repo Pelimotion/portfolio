@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout, Star } from 'lucide-react';
+import { Clock, User, AlertTriangle, Flame, ArrowUp, Minus, ExternalLink, MoreHorizontal, Copy, Trash2, Layout, Star, Check } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { COLOR_MAP } from '../../core/colors';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,6 +46,7 @@ export const EntityCard = memo(function EntityCard({
   const atoProp      = properties.find(p => p.name === 'Ato');
   const clienteProp  = properties.find(p => p.name === 'Cliente');
   const tipoProp     = properties.find(p => p.name === 'Tipo');
+  const feitoProp    = properties.find(p => p.name === 'Feito');
 
   const statusVal    = statusProp ? values[statusProp.id] : null;
   const statusOption = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
@@ -60,6 +61,8 @@ export const EntityCard = memo(function EntityCard({
 
   const atoVal    = atoProp ? values[atoProp.id] : null;
   const atoOption = atoProp?.config?.options?.find(o => o.id === atoVal?.selected);
+
+  const isFeito    = feitoProp ? values[feitoProp.id]?.checked : false;
 
   const deadline   = deadlineProp ? values[deadlineProp.id]?.date : null;
   const assignee   = assigneeProp ? (values[assigneeProp.id]?.selected
@@ -91,11 +94,12 @@ export const EntityCard = memo(function EntityCard({
         className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all select-none
           ${isDragOverlay
             ? 'bg-card border border-primary/50 shadow-xl'
-            : 'bg-card border border-border hover:border-muted-foreground/40 hover:bg-card/80'
+            : isFeito ? 'bg-green-500/5 border-green-500/30 hover:border-green-500/60 opacity-80' : 'bg-card border border-border hover:border-muted-foreground/40 hover:bg-card/80'
           }`}
       >
-        {item.icon && <span className="text-sm shrink-0">{item.icon}</span>}
-        <span className="text-xs font-medium text-foreground flex-1 truncate">{item.title || 'Untitled'}</span>
+        {isFeito && <Check className="w-3 h-3 text-green-500 shrink-0" />}
+        {!isFeito && item.icon && <span className="text-sm shrink-0">{item.icon}</span>}
+        <span className={`text-xs font-medium text-foreground flex-1 truncate ${isFeito ? 'line-through text-muted-foreground/70' : ''}`}>{item.title || 'Untitled'}</span>
         {atoOption && <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/50 text-muted-foreground font-medium shrink-0">{atoOption.label}</span>}
         {assignee && <span className="text-[10px] text-muted-foreground/60 shrink-0 truncate max-w-[50px]">{assignee}</span>}
         {priorityConfig?.icon && <span className="shrink-0">{priorityConfig.icon}</span>}
@@ -115,13 +119,15 @@ export const EntityCard = memo(function EntityCard({
       <div
         onClick={handleClick}
         className={`bg-card border rounded-xl p-4 cursor-pointer transition-all select-none group space-y-3
-          ${isDragOverlay ? 'border-primary/50 shadow-xl rotate-1 scale-105' : 'border-border hover:border-muted-foreground/40 hover:shadow-md'}`}
+          ${isDragOverlay 
+            ? 'border-primary/50 shadow-xl rotate-1 scale-105' 
+            : isFeito ? 'border-green-500/30 bg-green-500/5 opacity-80' : 'border-border hover:border-muted-foreground/40 hover:shadow-md'}`}
       >
         {/* Header row */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
-            {item.icon && <span className="text-lg">{item.icon}</span>}
-            <h4 className="font-semibold text-sm text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+            {isFeito ? <Check className="w-4 h-4 text-green-500 shrink-0" /> : item.icon && <span className="text-lg">{item.icon}</span>}
+            <h4 className={`font-semibold text-sm leading-snug line-clamp-2 transition-colors ${isFeito ? 'line-through text-muted-foreground/60' : 'text-foreground group-hover:text-primary'}`}>
               {item.title || 'Untitled'}
             </h4>
           </div>
@@ -185,10 +191,10 @@ export const EntityCard = memo(function EntityCard({
   return (
     <div
       onClick={handleClick}
-      className={`bg-[var(--surface-2)] border rounded-[var(--radius-lg)] p-3.5 cursor-pointer transition-all select-none group relative
+      className={`border rounded-[var(--radius-lg)] p-3.5 cursor-pointer transition-all select-none group relative
         ${isDragOverlay
-          ? 'border-primary/50 shadow-xl rotate-1 scale-105'
-          : 'border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)] hover:shadow-lg'
+          ? 'bg-[var(--surface-2)] border-primary/50 shadow-xl rotate-1 scale-105'
+          : isFeito ? 'bg-green-500/5 border-green-500/30 opacity-90' : 'bg-[var(--surface-2)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)] hover:shadow-lg'
         }`}
     >
       {/* Header */}
@@ -233,9 +239,9 @@ export const EntityCard = memo(function EntityCard({
       </div>
 
       {/* Title */}
-      <h4 className="font-semibold text-[13px] text-foreground leading-tight mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
-        {item.icon && <span className="mr-2">{item.icon}</span>}
-        {item.title || 'Untitled'}
+      <h4 className={`font-semibold text-[13px] leading-tight mb-1.5 line-clamp-2 transition-colors flex items-start gap-1.5 ${isFeito ? 'line-through text-muted-foreground/70' : 'text-foreground group-hover:text-primary'}`}>
+        {isFeito ? <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" /> : item.icon && <span className="mt-0.5 shrink-0">{item.icon}</span>}
+        <span>{item.title || 'Untitled'}</span>
       </h4>
 
       {/* Description snippet */}

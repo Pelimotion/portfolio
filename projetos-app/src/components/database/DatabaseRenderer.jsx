@@ -22,6 +22,7 @@ import {
   LayoutGrid, AlignJustify, LayoutList, Trash2,
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { ProCalendarPicker } from '../ui/calendar/ProCalendarPicker';
 
 import { PropertyManagerModal } from './PropertyManagerModal';
 
@@ -432,6 +433,8 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
               density={density}
               isOver={overId === col.id}
               onAdd={() => onCreateWithStatus(groupProp?.id, col.id)}
+              groupProp={groupProp}
+              onPropertyUpdate={onPropertyUpdate}
             />
           ))}
           {groupProp && (
@@ -468,10 +471,29 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     </DndContext>
   );
 }
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
+
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const containerRef = useRef(null);
+  
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) setDatePickerOpen(false);
+    }
+    if (datePickerOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [datePickerOpen]);
+
+  const handleSetDate = (field, dateStr) => {
+    const onlyDate = dateStr.split('T')[0];
+    const newOpts = groupProp.config.options.map(o => o.id === col.id ? { ...o, [field]: onlyDate } : o);
+    const updatedProp = { ...groupProp, config: { ...groupProp.config, options: newOpts } };
+    onPropertyUpdate?.(groupProp.id, updatedProp);
+    import('../../services/propertyService').then(m => m.propertyService.update(groupProp.id, { config: updatedProp.config })).catch(console.error);
+  };
 
   return (
     <div
@@ -495,35 +517,40 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
           </div>
         </div>
 
-        {/* Dates Row */}
+        {/* Dates Row with Popover */}
         {col.id !== '__all' && col.id !== '__none' && (
-          <div 
-            onClick={(e) => {
-               // To avoid dragging when clicking
-               e.stopPropagation();
-               const novoInicio = prompt("Data de Início (YYYY-MM-DD):", col.startDate || "");
-               if (novoInicio === null) return;
-               const novaEntrega = prompt("Data Final (YYYY-MM-DD):", col.deadline || "");
-               if (novaEntrega === null) return;
-               
-               const newOpts = groupProp.config.options.map(o => 
-                 o.id === col.id ? { ...o, startDate: novoInicio, deadline: novaEntrega } : o
-               );
-               propertyService.update(groupProp.id, { config: { ...groupProp.config, options: newOpts } })
-                 .then(() => window.location.reload())
-                 .catch(console.error);
-            }}
-            className="flex items-center gap-1.5 text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mt-0.5 cursor-pointer hover:text-primary transition-colors"
-          >
-            <CalendarDays className="w-3 h-3 opacity-50" />
-            {(col.startDate || col.deadline) ? (
-              <span>
-                {col.startDate ? new Date(col.startDate + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) : '?'} 
-                {' - '} 
-                {col.deadline ? new Date(col.deadline + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) : '?'}
-              </span>
-            ) : (
-              <span className="opacity-60 border-b border-dashed border-muted-foreground/40">+ Definir Prazo</span>
+          <div className="relative" ref={containerRef}>
+            <div 
+              onClick={(e) => { e.stopPropagation(); setDatePickerOpen(!datePickerOpen); }}
+              className="flex items-center gap-1.5 text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mt-0.5 cursor-pointer hover:text-primary transition-colors"
+            >
+              <CalendarDays className="w-3 h-3 opacity-50" />
+              {(col.startDate || col.deadline) ? (
+                <span>
+                  {col.startDate ? new Date(col.startDate + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) : '?'} 
+                  {' - '} 
+                  {col.deadline ? new Date(col.deadline + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) : '?'}
+                </span>
+              ) : (
+                <span className="opacity-60 border-b border-dashed border-muted-foreground/40">+ Definir Prazo</span>
+              )}
+            </div>
+
+            {datePickerOpen && (
+              <div 
+                className="absolute top-full left-0 mt-2 z-50 flex gap-2 bg-card border border-border shadow-2xl rounded-2xl p-3 animate-in fade-in zoom-in-95" 
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Início da Etapa</span>
+                  <ProCalendarPicker value={col.startDate ? col.startDate + 'T12:00:00Z' : null} onChange={d => handleSetDate('startDate', d)} />
+                </div>
+                <div className="w-[1px] bg-border/50 mx-1" />
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Entrega (Final)</span>
+                  <ProCalendarPicker value={col.deadline ? col.deadline + 'T12:00:00Z' : null} onChange={d => handleSetDate('deadline', d)} />
+                </div>
+              </div>
             )}
           </div>
         )}
