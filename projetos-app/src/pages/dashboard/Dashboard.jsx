@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { AddMemberModal } from '../../components/database/AddMemberModal';
-import { LayoutDashboard, Plus, Search, Sparkles, UserPlus, Grid, Filter } from 'lucide-react';
+import { LayoutDashboard, Plus, Search, UserPlus } from 'lucide-react';
 import { ROOT_HUB_ID } from '../../core/schemas';
-import { ensureRootHub } from '../../core/databaseFactory';
-import { generateMockData } from '../../scripts/mockData';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
 
 // ============================================
@@ -17,11 +15,11 @@ export default function Dashboard() {
   const [isAddMemberOpen, setAddMemberOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [initializing, setInitializing] = useState(true);
-  const [isMocking, setIsMocking] = useState(false);
 
   useEffect(() => {
     async function init() {
       try {
+        const { ensureRootHub } = await import('../../core/databaseFactory');
         await ensureRootHub();
       } catch (e) {
         console.error('Falha ao inicializar Hub:', e);
@@ -31,12 +29,6 @@ export default function Dashboard() {
     }
     init();
   }, []);
-
-  const handleMock = async () => {
-    setIsMocking(true);
-    await generateMockData();
-    setIsMocking(false);
-  };
 
   if (initializing) {
     return (
@@ -76,14 +68,6 @@ export default function Dashboard() {
             >
               <UserPlus className="w-3.5 h-3.5" />
               Equipe
-            </button>
-            <button
-              onClick={handleMock}
-              disabled={isMocking}
-              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 px-3 py-1.5 rounded-lg transition-all disabled:opacity-30"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              Seed Mock
             </button>
           </div>
 

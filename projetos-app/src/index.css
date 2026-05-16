@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* =============================================
+   * DARK MODE (Default)
+   * ============================================= */
+  :root,
+  [data-theme="dark"] {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -32,7 +36,9 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
 
-    /* Novos Tokens Pelimotion OS 2025 */
+    --sidebar: #111113;
+
+    /* Pelimotion OS Surfaces */
     --surface-0: #09090B;
     --surface-1: #111113;
     --surface-2: #1A1A1E;
@@ -43,6 +49,7 @@
     --border-default: rgba(255,255,255,0.10);
     --border-strong: rgba(255,255,255,0.18);
 
+    /* Status Colors */
     --status-backlog: #52525B;
     --status-ai-gen: #6366F1;
     --status-selects: #3B82F6;
@@ -50,6 +57,7 @@
     --status-revisao: #F59E0B;
     --status-entregue: #22C55E;
 
+    /* Spacing & Radius */
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
@@ -63,6 +71,53 @@
     --radius-lg: 12px;
     --radius-xl: 16px;
   }
+
+  /* =============================================
+   * LIGHT MODE
+   * Inspired by Notion, Linear, Figma
+   * ============================================= */
+  [data-theme="light"] {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 46%;
+
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 64%;
+
+    --sidebar: #FFFFFF;
+
+    /* Pelimotion OS Surfaces — Light */
+    --surface-0: #FFFFFF;
+    --surface-1: #FAFAFA;
+    --surface-2: #F5F5F5;
+    --surface-3: #EEEEEE;
+    --surface-overlay: rgba(255,255,255,0.90);
+
+    --border-subtle: rgba(0,0,0,0.06);
+    --border-default: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+  }
 }
 
 @layer base {
@@ -71,6 +126,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   
   /* Tiptap Placeholder CSS */
@@ -80,5 +136,20 @@
     float: left;
     height: 0;
     pointer-events: none;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.15);
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
   }
 }

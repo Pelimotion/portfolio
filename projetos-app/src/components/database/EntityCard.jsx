@@ -25,6 +25,7 @@ export const EntityCard = memo(function EntityCard({
   properties = [],
   values = {},
   onClick,
+  onDelete,
   isDragOverlay = false,
   density = 'comfortable',
 }) {
@@ -229,7 +230,15 @@ export const EntityCard = memo(function EntityCard({
                   <Copy className="w-3.5 h-3.5" /> Duplicar
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator className="h-px bg-[var(--border-subtle)] my-1" />
-                <DropdownMenu.Item className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-md cursor-pointer outline-none">
+                <DropdownMenu.Item 
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    if (onDelete && confirm('Excluir este item permanentemente?')) {
+                      onDelete(item.id);
+                    }
+                  }}
+                  className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded-md cursor-pointer outline-none"
+                >
                   <Trash2 className="w-3.5 h-3.5" /> Excluir
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -293,7 +302,7 @@ export const EntityCard = memo(function EntityCard({
 });
 
 // ── Sortable wrapper ──
-export function SortableEntityCard({ item, properties, values, onClick, density }) {
+export function SortableEntityCard({ item, properties, values, onClick, onDelete, density }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
   return (
@@ -309,7 +318,7 @@ export function SortableEntityCard({ item, properties, values, onClick, density 
       {...listeners}
       className="group"
     >
-      <EntityCard item={item} properties={properties} values={values} onClick={onClick} density={density} />
+      <EntityCard item={item} properties={properties} values={values} onClick={onClick} onDelete={onDelete} density={density} />
     </div>
   );
 }

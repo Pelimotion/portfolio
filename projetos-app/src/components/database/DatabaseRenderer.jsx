@@ -135,7 +135,6 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
   }, []);
 
   const handleDelete = useCallback(async (itemId) => {
-    if (!window.confirm('Tem certeza que deseja excluir este item?')) return;
     try {
       await usePageStore.getState().archivePage(itemId);
       setLocalItems(prev => prev.filter(i => i.id !== itemId));
@@ -270,7 +269,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
 // ============================================
 // KANBAN VIEW — Fixed DnD persistence
 // ============================================
-function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, density }) {
+function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, onDelete, density }) {
   const navigate = useNavigate();
   const groupProp = properties.find(p => p.property_type === 'status' || p.property_type === 'select');
 
@@ -435,6 +434,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
               onAdd={() => onCreateWithStatus(groupProp?.id, col.id)}
               groupProp={groupProp}
               onPropertyUpdate={onPropertyUpdate}
+              onDelete={onDelete}
             />
           ))}
           {groupProp && (
@@ -471,7 +471,7 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
     </DndContext>
   );
 }
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const colorDot = COLOR_DOT[col.color] || COLOR_DOT.gray;
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
@@ -566,6 +566,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
               properties={properties}
               values={allValues[item.id] || {}}
               onClick={() => navigate(`/page/${item.id}`)}
+              onDelete={onDelete}
               density={density}
             />
           ))}

@@ -1,108 +1,219 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, FolderOpen, Calendar, Search,
-  Plus, ChevronDown, LogOut, MoreHorizontal, FileText, Briefcase,
+  LayoutDashboard, FolderOpen, Search,
+  Plus, ChevronDown, LogOut, MoreHorizontal, Trash2,
+  PanelLeftClose, PanelLeft, Sun, Moon, Settings,
 } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { usePageStore } from '../../stores/usePageStore';
+import { useUIStore } from '../../stores/useUIStore';
 import { ROOT_HUB_ID } from '../../core/schemas';
 
 export function Sidebar() {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { fetchDatabaseItems, getChildren } = usePageStore();
+  const { fetchDatabaseItems, getChildren, archivePage } = usePageStore();
+  const { sidebarOpen, toggleSidebar } = useUIStore();
   const projects = getChildren(ROOT_HUB_ID);
+
+  // Resize state
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('peli-sidebar-w');
+    return saved ? parseInt(saved) : 240;
+  });
+  const isResizing = useRef(false);
 
   useEffect(() => {
     fetchDatabaseItems(ROOT_HUB_ID);
   }, [fetchDatabaseItems]);
 
+  // Keyboard shortcut: Cmd+\ to toggle sidebar
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === '\\') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggleSidebar]);
+
+  // Resize logic
+  const startResize = (e) => {
+    e.preventDefault();
+    isResizing.current = true;
+    const onMove = (moveEvent) => {
+      if (!isResizing.current) return;
+      const newW = Math.max(200, Math.min(400, moveEvent.clientX));
+      setSidebarWidth(newW);
+    };
+    const onUp = () => {
+      isResizing.current = false;
+      localStorage.setItem('peli-sidebar-w', String(sidebarWidth));
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    if (!confirm('Excluir este projeto permanentemente?')) return;
+    try {
+      await archivePage(projectId);
+    } catch (e) { console.error(e); }
+  };
+
+  // Collapsed sidebar — icon-only mode
+  if (!sidebarOpen) {
+    return (
+      <aside className="w-12 border-r border-[var(--border-subtle)] bg-[var(--sidebar)] h-screen flex flex-col items-center py-3 shrink-0 transition-all duration-200">
+        <button onClick={toggleSidebar} className="p-2 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground hover:text-foreground transition-colors mb-4" title="Expandir Sidebar">
+          <PanelLeft className="w-4 h-4" />
+        </button>
+        <NavLink to="/" end className={({isActive}) => `p-2 rounded-lg mb-1 transition-colors ${isActive ? 'bg-[var(--surface-3)] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)]'}`} title="Projects Hub">
+          <LayoutDashboard className="w-4 h-4" />
+        </NavLink>
+
+        <div className="flex-1" />
+
+        <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-[var(--surface-3)] text-muted-foreground hover:text-foreground transition-colors mb-2" title={theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}>
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+        <button onClick={signOut} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Sair">
+          <LogOut className="w-3.5 h-3.5" />
+        </button>
+      </aside>
+    );
+  }
+
   return (
-    <aside className="w-60 border-r border-border bg-sidebar h-screen flex flex-col shrink-0">
+    <aside
+      className="border-r border-[var(--border-subtle)] bg-[var(--sidebar)] h-screen flex flex-col shrink-0 relative transition-all duration-200"
+      style={{ width: sidebarWidth }}
+    >
+      {/* Resize handle */}
+      <div
+        onMouseDown={startResize}
+        className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/30 active:bg-primary/50 transition-colors z-20"
+      />
 
       {/* Workspace Header */}
-      <div className="h-14 flex items-center px-4 border-b border-[var(--border-subtle)] hover:bg-[var(--surface-3)] cursor-pointer transition-all justify-between group">
+      <div className="h-12 flex items-center px-3 border-b border-[var(--border-subtle)] justify-between shrink-0">
         <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-black text-xs shrink-0 shadow-lg shadow-primary/10">
+          <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center font-black text-[10px] shrink-0">
             P
           </div>
           <div className="flex flex-col overflow-hidden">
-            <span className="font-bold text-sm truncate text-foreground leading-none mb-0.5">Pelimotion</span>
-            <span className="text-[10px] text-muted-foreground/60 font-medium truncate">Workspace Pro</span>
+            <span className="font-bold text-[13px] truncate text-foreground leading-none">Pelimotion</span>
           </div>
         </div>
-        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
+        <button onClick={toggleSidebar} className="p-1.5 rounded-md hover:bg-[var(--surface-3)] text-muted-foreground/50 hover:text-foreground transition-all" title="Recolher Sidebar (⌘\\)">
+          <PanelLeftClose className="w-3.5 h-3.5" />
+        </button>
       </div>
 
-      <div className="p-2 flex-1 overflow-y-auto space-y-5">
+      <div className="p-2 flex-1 overflow-y-auto custom-scrollbar space-y-4">
 
-        {/* Search */}
-        <button className="w-full flex items-center gap-2.5 px-3 py-1.5 text-sm text-muted-foreground hover:bg-[var(--surface-3)] hover:text-foreground rounded-lg transition-all text-left mt-1 border border-transparent hover:border-[var(--border-subtle)] group">
-          <Search className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-          <span className="flex-1 font-medium">Buscar...</span>
-          <span className="text-[9px] bg-[var(--surface-overlay)] text-muted-foreground/50 border border-[var(--border-subtle)] px-1.5 py-0.5 rounded font-mono font-bold tracking-tighter">⌘K</span>
+        {/* Search trigger */}
+        <button 
+          onClick={() => useUIStore.getState().openCommandPalette()}
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[13px] text-muted-foreground/60 hover:bg-[var(--surface-2)] hover:text-muted-foreground rounded-md transition-all text-left group"
+        >
+          <Search className="w-3.5 h-3.5 opacity-40 group-hover:opacity-70" />
+          <span className="flex-1">Buscar...</span>
+          <span className="text-[9px] text-muted-foreground/30 font-mono">⌘K</span>
         </button>
 
         {/* Navigation */}
         <div>
-          <div className="px-3 mb-2 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.1em]">Sistema</div>
-          <nav className="space-y-1">
+          <nav className="space-y-0.5">
             <NavLink to="/" end className={({isActive}) =>
-              `flex items-center gap-3 px-3 py-1.5 text-sm rounded-lg transition-all border border-transparent ${isActive 
-                ? 'bg-[var(--surface-3)] text-foreground font-bold border-[var(--border-subtle)] shadow-sm' 
+              `flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] rounded-md transition-all ${isActive 
+                ? 'bg-[var(--surface-3)] text-foreground font-semibold' 
                 : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}>
-              <LayoutDashboard className="w-4 h-4" />
+              <LayoutDashboard className="w-4 h-4 opacity-70" />
               <span>Projects Hub</span>
             </NavLink>
-            <div className="flex items-center gap-3 px-3 py-1.5 text-sm rounded-lg text-muted-foreground/20 cursor-not-allowed justify-between group">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-4 h-4" />
-                <span className="font-medium">Timeline</span>
-              </div>
-              <span className="text-[8px] uppercase tracking-wider font-black px-1.5 py-0.5 rounded bg-secondary/30 opacity-60">Soon</span>
-            </div>
           </nav>
         </div>
 
         {/* Projects */}
         <div>
-          <div className="px-3 mb-2 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.1em] flex items-center justify-between">
+          <div className="px-2.5 mb-1.5 text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-wider flex items-center justify-between">
             <span>Projetos</span>
-            <button className="p-1 hover:bg-[var(--surface-3)] rounded-md text-muted-foreground transition-all">
-              <Plus className="w-3.5 h-3.5" />
+            <button className="p-0.5 hover:bg-[var(--surface-3)] rounded text-muted-foreground/40 hover:text-muted-foreground transition-all">
+              <Plus className="w-3 h-3" />
             </button>
           </div>
-          <nav className="space-y-1">
-            {projects.slice(0, 15).map(project => (
-              <NavLink
-                key={project.id}
-                to={`/project/${project.id}`}
-                className={({isActive}) =>
-                  `flex items-center gap-3 px-3 py-1.5 text-sm rounded-lg transition-all border border-transparent group ${isActive 
-                    ? 'bg-[var(--surface-3)] text-foreground font-bold border-[var(--border-strong)]' 
-                    : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}
-              >
-                {project.icon && <span className="text-sm leading-none shrink-0 filter grayscale group-hover:grayscale-0 transition-all">{project.icon}</span>}
-                <span className="truncate flex-1 text-[13px] font-medium">{project.title}</span>
-                <MoreHorizontal className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 hover:!opacity-100 shrink-0 transition-opacity" />
-              </NavLink>
+          <nav className="space-y-0.5">
+            {projects.slice(0, 20).map(project => (
+              <div key={project.id} className="group relative flex items-center">
+                <NavLink
+                  to={`/project/${project.id}`}
+                  className={({isActive}) =>
+                    `flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] rounded-md transition-all flex-1 min-w-0 ${isActive 
+                      ? 'bg-[var(--surface-3)] text-foreground font-semibold' 
+                      : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}
+                >
+                  {project.icon && <span className="text-sm leading-none shrink-0">{project.icon}</span>}
+                  <span className="truncate flex-1 text-[13px]">{project.title}</span>
+                </NavLink>
+
+                {/* Project context menu */}
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <button className="absolute right-1 p-1 rounded hover:bg-[var(--surface-3)] text-muted-foreground/30 opacity-0 group-hover:opacity-100 hover:!text-foreground transition-all shrink-0 z-10" onClick={e => e.stopPropagation()}>
+                      <MoreHorizontal className="w-3.5 h-3.5" />
+                    </button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.Content align="start" side="right" sideOffset={4} className="z-50 min-w-[160px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-lg shadow-xl p-1 animate-in fade-in-0 zoom-in-95">
+                      <DropdownMenu.Item 
+                        onSelect={() => navigate(`/project/${project.id}`)}
+                        className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground hover:bg-[var(--surface-2)] rounded cursor-pointer outline-none"
+                      >
+                        <FolderOpen className="w-3.5 h-3.5" /> Abrir Projeto
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator className="h-px bg-[var(--border-subtle)] my-0.5" />
+                      <DropdownMenu.Item 
+                        onSelect={() => handleDeleteProject(project.id)}
+                        className="flex items-center gap-2 px-2 py-1.5 text-xs text-red-500 hover:bg-red-500/10 rounded cursor-pointer outline-none"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Excluir
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Root>
+              </div>
             ))}
           </nav>
         </div>
       </div>
 
-      {/* User Section */}
-      <div className="p-2 border-t border-border/50">
-        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-secondary/40 transition-colors cursor-pointer group">
+      {/* Footer: Theme + User */}
+      <div className="p-2 border-t border-[var(--border-subtle)] space-y-1">
+        {/* Theme toggle */}
+        <button onClick={toggleTheme} className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground rounded-md transition-all text-left">
+          {theme === 'dark' ? <Sun className="w-3.5 h-3.5 opacity-60" /> : <Moon className="w-3.5 h-3.5 opacity-60" />}
+          <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>
+        </button>
+
+        {/* User section */}
+        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[var(--surface-2)] transition-colors cursor-pointer group">
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 shrink-0 flex items-center justify-center text-[10px] text-white font-bold">
+            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 shrink-0 flex items-center justify-center text-[9px] text-white font-bold">
               {user?.email?.charAt(0)?.toUpperCase()}
             </div>
-            <span className="truncate text-sm text-muted-foreground group-hover:text-foreground">{user?.email?.split('@')[0]}</span>
+            <span className="truncate text-[13px] text-muted-foreground group-hover:text-foreground">{user?.email?.split('@')[0]}</span>
           </div>
           <button onClick={signOut} className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all shrink-0">
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="w-3 h-3" />
           </button>
         </div>
       </div>
