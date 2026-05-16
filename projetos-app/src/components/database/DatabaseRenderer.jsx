@@ -59,13 +59,21 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
       setProperties(props);
       setLocalItems(items);
 
-      let activeViews = dbViews || [];
-      if (activeViews.length === 0) {
-        const defK = await viewService.create({ databaseId, name: 'Kanban', viewType: 'kanban' });
-        const defT = await viewService.create({ databaseId, name: 'Tabela', viewType: 'table' });
-        const defL = await viewService.create({ databaseId, name: 'Lista', viewType: 'list' });
-        const defC = await viewService.create({ databaseId, name: 'Calendário', viewType: 'calendar' });
-        activeViews = [defK, defT, defL, defC];
+      let activeViews = [...(dbViews || [])];
+      const requiredViews = [
+        { name: 'Kanban', viewType: 'kanban' },
+        { name: 'Tabela', viewType: 'table' },
+        { name: 'Lista', viewType: 'list' },
+        { name: 'Calendário', viewType: 'calendar' }
+      ];
+      
+      let viewsChanged = false;
+      for (const req of requiredViews) {
+        if (!activeViews.some(v => v.view_type === req.viewType)) {
+          const newView = await viewService.create({ databaseId, name: req.name, viewType: req.viewType });
+          activeViews.push(newView);
+          viewsChanged = true;
+        }
       }
       setViews(activeViews);
 
@@ -182,6 +190,9 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
       } catch (e) { console.error(e); }
       finally { setCreating(false); }
     },
+    onPropertyUpdate: (propertyId, newProperty) => {
+      setProperties(prev => prev.map(p => p.id === propertyId ? newProperty : p));
+    },
     density,
   };
 
@@ -258,7 +269,7 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
 // ============================================
 // KANBAN VIEW — Fixed DnD persistence
 // ============================================
-function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, density }) {
+function KanbanView({ items, properties, allValues, databaseId, onStatusChange, onReorder, onReorderPersist, onCreateWithStatus, onPropertyUpdate, density }) {
   const navigate = useNavigate();
   const groupProp = properties.find(p => p.property_type === 'status' || p.property_type === 'select');
 
@@ -353,8 +364,11 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
           for (const opt of groupProp.config.options) {
             if (!newOptions.find(o => o.id === opt.id)) newOptions.push(opt);
           }
+          const updatedProp = { ...groupProp, config: { ...groupProp.config, options: newOptions } };
+          onPropertyUpdate?.(groupProp.id, updatedProp);
+          
           propertyService.update(groupProp.id, { 
-            config: { ...groupProp.config, options: newOptions } 
+            config: updatedProp.config
           }).catch(console.error);
         }
       }
