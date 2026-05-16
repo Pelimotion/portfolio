@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "version": "1.0",
+    "updated": "2026-05-16",
+    "description": "Design tokens globais da marca Pelimotion. Usar em todos os subprojetos."
+  },
+  "colors": {
+    "bg": {
+      "primary": "#000000",
+      "card": "#0a0a0a",
+      "elevated": "#111111"
+    },
+    "border": {
+      "default": "#222222",
+      "subtle": "#111111",
+      "focus": "#ff4b2b"
+    },
+    "text": {
+      "primary": "#f0f0f0",
+      "secondary": "#888888",
+      "dim": "#444444",
+      "accent": "#ff4b2b"
+    },
+    "accent": {
+      "primary": "#ff4b2b",
+      "hover": "#ff6b4b",
+      "muted": "rgba(255,75,43,0.15)"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "main": "'Outfit', sans-serif",
+      "mono": "'DM Mono', monospace",
+      "display": "'Playfair Display', serif",
+      "condensed": "'Barlow Condensed', sans-serif"
+    },
+    "sizes": {
+      "xs": "9px",
+      "sm": "11px",
+      "base": "13px",
+      "md": "16px",
+      "lg": "20px",
+      "xl": "28px",
+      "2xl": "40px",
+      "3xl": "64px"
+    },
+    "weights": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "black": 900
+    }
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "40px",
+    "2xl": "64px",
+    "3xl": "120px"
+  },
+  "radii": {
+    "none": "0",
+    "sm": "2px",
+    "md": "4px",
+    "lg": "8px",
+    "full": "9999px"
+  },
+  "cdn": {
+    "base": "https://pelimotion-portfolio.b-cdn.net",
+    "blog_assets": "https://pelimotion-portfolio.b-cdn.net/blog/assets"
+  },
+  "domain": "https://pelimotion.art",
+  "brand": {
+    "name": "Pelimotion",
+    "tagline": "Motion Branding & Creative Direction",
+    "locale": "pt-BR"
+  }
+}

@@ -1,0 +1,48 @@
+# Portfolio/.claudeignore
+
+# Dependências
+node_modules/
+.next/
+.nuxt/
+dist/
+build/
+.cache/
+
+# Git
+.git/
+
+# Assets pesados (IA não precisa "ver" imagens)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.mp4
+*.mov
+*.svg
+public/assets/
+public/images/
+blog/assets/
+
+# Logs e temporários
+*.log
+*.lock
+.env
+.env.*
+npm-debug.log*
+
+# Gerados pelo build
+blog/*.html
+blog/blog/*.html
+blog/en/
+
+# Bunny.net configs (irrelevantes para lógica)
+bunny.json
+
+# Arquivos técnicos de auditoria (contexto pesado, desnecessário na maioria das sessões)
+_technical_audit/
+PELIMOTION_AUDIT_ROADMAP.md
+PELIMOTION_ECOSYSTEM_STRATEGY*.md
+
+# Projetos separados com seus próprios agentes — não abrir aqui
+projetos-app/
