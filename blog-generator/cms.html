@@ -69,7 +69,20 @@
         .image-card:hover .overlay { opacity: 1; }
         
         .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    </style>
+
+        /* Gallery Modal Styles */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 25px; }
+        .gallery-item { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: 250ms cubic-bezier(0.4, 0, 0.2, 1); background: #080808; }
+        .gallery-item:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; }
+        .gallery-item .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); opacity: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 15px; transition: 0.3s; pointer-events: none; }
+        .gallery-item:hover .overlay { opacity: 1; }
+        .gallery-item .overlay span { font-size: 8px; color: var(--accent); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
+        .gallery-item .overlay strong { font-size: 11px; color: #fff; line-height: 1.2; }
+        
+        #gallery-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 6000; padding: 40px; backdrop-filter: blur(10px); }
+        .modal-content { background: var(--bg); width: 100%; height: 100%; border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 0 100px rgba(0,0,0,1); }
+        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 </head>
 <body>
     <div id="loader">
@@ -81,6 +94,18 @@
         <h1 style="font-family:'Barlow Condensed'; font-size:40px; margin-bottom:20px; letter-spacing:4px;">ACID TEST</h1>
         <input type="password" id="auth-pin" placeholder="ACCESS PIN" style="width:240px; text-align:center; font-family:'DM Mono'; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:4px;" onkeydown="if(event.key==='Enter') checkAuth()">
         <button class="btn primary" style="margin-top:20px; width:240px;" onclick="checkAuth()">UNLOCK STUDIO</button>
+    </div>
+
+    <div id="gallery-modal">
+        <div class="modal-content">
+            <div class="blog-header" style="position:relative; border-bottom:1px solid var(--border);">
+                <div class="blog-logo">GALERIA GLOBAL <span class="blog-logo-sub">BUNNY STORAGE</span></div>
+                <button class="btn" onclick="toggleGallery()">FECHAR (ESC)</button>
+            </div>
+            <div id="gallery-container" class="gallery-grid" style="overflow-y:auto; flex:1;">
+                <!-- Images injected here -->
+            </div>
+        </div>
     </div>
 
     <div id="selection-menu">
@@ -107,6 +132,7 @@
                     <option value="published">🟢 PUBLISHED</option>
                 </select>
                 <button class="btn primary" style="margin-left:20px; background:#ff4b2b; color:#fff;" onclick="triggerGlobalDeploy()">🚀 PUBLICAR NO SITE</button>
+                <button class="btn" style="margin-left:10px;" onclick="toggleGallery()">🖼️ GALERIA</button>
             </div>
             <div style="display:flex; gap:12px;">
                 <button class="btn danger" onclick="deletePost()">EXCLUIR</button>
@@ -437,21 +463,30 @@
             const prompt = document.getElementById('f-heroPrompt').value;
             const slug = document.getElementById('f-slug').value;
             if (!prompt || !slug) return alert("Falta prompt ou slug!");
+            
+            if (!confirm("Isso consumirá créditos de IA. Gerar as 4 imagens cinematográficas agora?")) return;
+            
             showLoader("NANO BANANA TRABALHANDO...");
             const names = ['hero', 'image-1', 'image-2', 'image-3'];
             try {
                 for (let name of names) {
-                    document.getElementById('loader-text').innerText = `GERANDO ${name.toUpperCase()} (QUALIDADE PRO)...`;
-                    await fetch('/api/blog/generate-image', {
+                    document.getElementById('loader-text').innerText = `PROCESSANDO ${name.toUpperCase()} (QUALIDADE PRO)...`;
+                    const res = await fetch('/api/blog/generate-image', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ prompt, slug, imageName: name })
                     });
-                    // Small delay to allow Bunny to propagate
-                    await new Promise(r => setTimeout(r, 1500));
+                    if (!res.ok) throw new Error(`Erro na imagem ${name}: ${res.statusText}`);
+                    
+                    // Increased delay to 3s to ensure Bunny consistency
+                    await new Promise(r => setTimeout(r, 3000));
                     updatePreviews(slug);
                 }
-            } catch(e) { alert(e.message); }
+                alert("Todas as imagens foram geradas com sucesso!");
+            } catch(e) { 
+                console.error(e);
+                alert("Erro na geração: " + e.message); 
+            }
             hideLoader();
         }
 
@@ -459,7 +494,17 @@
             const t = Date.now();
             ['hero', 'image-1', 'image-2', 'image-3'].forEach(name => {
                 const img = document.getElementById(`preview-${name}`);
-                img.src = `${CDN}/blog/assets/${slug}/${name}.jpg?t=${t}`;
+                if (img) {
+                    // Force reload by changing src
+                    const newSrc = `${CDN}/blog/assets/${slug}/${name}.jpg?t=${t}`;
+                    img.style.opacity = '0.5';
+                    img.onerror = () => {
+                        console.log(`Retrying ${name}...`);
+                        setTimeout(() => { img.src = newSrc; }, 2000);
+                    };
+                    img.onload = () => { img.style.opacity = '1'; img.onerror = null; };
+                    img.src = newSrc;
+                }
             });
         }
 
@@ -636,6 +681,49 @@
             localStorage.setItem('pelimotion_deploy_hook', val);
             alert("Hook salvo localmente!");
         }
+
+        async function toggleGallery() {
+            const modal = document.getElementById('gallery-modal');
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'block';
+                loadGallery();
+            }
+        }
+
+        async function loadGallery() {
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = "<div style='padding:40px; text-align:center; font-family:var(--font-mono); opacity:0.5;'>INDEXANDO BIBLIOTECA DE ASSETS...</div>";
+            try {
+                const res = await fetch('/api/blog/gallery');
+                const images = await res.json();
+                container.innerHTML = "";
+                images.forEach(img => {
+                    const div = document.createElement('div');
+                    div.className = 'gallery-item';
+                    div.onclick = () => {
+                        navigator.clipboard.writeText(img.url);
+                        alert("Link copiado para o clipboard!");
+                    };
+                    div.innerHTML = `
+                        <img src="${img.url}?width=400" loading="lazy" onload="this.style.opacity=1">
+                        <div class="overlay">
+                            <span>${img.slug.toUpperCase()}</span>
+                            <strong>${img.name}</strong>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch(e) {
+                container.innerHTML = "<div style='padding:40px; text-align:center; color:#ff4b2b;'>Erro ao carregar biblioteca.</div>";
+            }
+        }
+
+        // Close gallery on ESC
+        window.addEventListener('keydown', e => {
+            if (e.key === 'Escape') document.getElementById('gallery-modal').style.display = 'none';
+        });
 
         async function init() {
             // Restore hook from local storage
