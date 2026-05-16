@@ -83,7 +83,6 @@ function generateGeometry(seed) {
   const eyeY = 0.2 + r() * 0.1;
   const eyeZ = 0.15 + r() * 0.1;
   const eyeSpread = 0.3 + r() * 0.1;
-  const headW = cheekW * 0.9;
   
   // Vertices definition (symmetric, right side defined, then mirrored)
   // Format: [x, y, z, id]
@@ -103,8 +102,8 @@ function generateGeometry(seed) {
     eyeOuter: [eyeSpread * 1.5, eyeY, eyeZ],
     eyeInner: [eyeSpread * 0.5, eyeY - 0.05, eyeZ + 0.05],
     browOuter: [browW, eyeY + 0.15, eyeZ + 0.1],
-    temple: [headW, eyeY + 0.2, 0],
-    topRight: [headW * 0.7, headH * 0.9, 0],
+    temple: [cheekW * 0.9, eyeY + 0.2, 0],
+    topRight: [cheekW * 0.6, headH * 0.9, 0],
     earTop: [cheekW * 1.1, eyeY, -0.1],
     earBot: [cheekW * 1.0, noseY, -0.1],
     neckRight: [jawW * 0.8, chinY - 0.4, -0.2],
@@ -361,5 +360,3 @@ export function generateAvatarDataURL(seed, size = 200, accentColor = '#3b82f6')
   renderAvatar(canvas, seed, { width: size, height: size, accentColor });
   return canvas.toDataURL('image/png');
 }
-
-export { };

@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { AppLayout } from './components/layout/AppLayout';
+import { AccentColorManager } from './components/layout/AccentColorManager';
 
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -16,6 +17,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <AccentColorManager />
         <ToastProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
