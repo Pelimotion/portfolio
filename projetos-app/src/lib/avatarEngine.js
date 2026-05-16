@@ -83,6 +83,7 @@ function generateGeometry(seed) {
   const eyeY = 0.2 + r() * 0.1;
   const eyeZ = 0.15 + r() * 0.1;
   const eyeSpread = 0.3 + r() * 0.1;
+  const headW = cheekW * 0.9;
   
   // Vertices definition (symmetric, right side defined, then mirrored)
   // Format: [x, y, z, id]
@@ -102,7 +103,7 @@ function generateGeometry(seed) {
     eyeOuter: [eyeSpread * 1.5, eyeY, eyeZ],
     eyeInner: [eyeSpread * 0.5, eyeY - 0.05, eyeZ + 0.05],
     browOuter: [browW, eyeY + 0.15, eyeZ + 0.1],
-    temple: [headW = cheekW * 0.9, eyeY + 0.2, 0],
+    temple: [headW, eyeY + 0.2, 0],
     topRight: [headW * 0.7, headH * 0.9, 0],
     earTop: [cheekW * 1.1, eyeY, -0.1],
     earBot: [cheekW * 1.0, noseY, -0.1],
@@ -331,9 +332,14 @@ export function renderAvatar(canvas, seed, options = {}) {
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
   const drawStroke = (v1Id, v2Id, v3Id) => {
-    const v1 = projVerts[geo.verts.findIndex(v => v.id === v1Id)];
-    const v2 = projVerts[geo.verts.findIndex(v => v.id === v2Id)];
-    const v3 = projVerts[geo.verts.findIndex(v => v.id === v3Id)];
+    const vIdx1 = geo.verts.findIndex(v => v.id === v1Id);
+    const vIdx2 = geo.verts.findIndex(v => v.id === v2Id);
+    const vIdx3 = v3Id ? geo.verts.findIndex(v => v.id === v3Id) : -1;
+    
+    const v1 = vIdx1 !== -1 ? projVerts[vIdx1] : null;
+    const v2 = vIdx2 !== -1 ? projVerts[vIdx2] : null;
+    const v3 = vIdx3 !== -1 ? projVerts[vIdx3] : null;
+    
     if (!v1 || !v2 || v1.z < 0 || v2.z < 0) return;
     ctx.beginPath();
     ctx.moveTo(v1.x, v1.y);
@@ -355,3 +361,5 @@ export function generateAvatarDataURL(seed, size = 200, accentColor = '#3b82f6')
   renderAvatar(canvas, seed, { width: size, height: size, accentColor });
   return canvas.toDataURL('image/png');
 }
+
+export { };
