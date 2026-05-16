@@ -8,10 +8,9 @@ const { generatePostImages } = require('./services/imageProvider');
 const CONTENT_DIR = path.join(__dirname, 'content');
 const BLOG_OUT_DIR = path.join(__dirname, '..', 'blog');
 const EN_BLOG_OUT_DIR = path.join(__dirname, '..', 'en', 'blog');
-const SITEMAP_PATH = path.join(__dirname, '..', 'sitemap.xml');
-const ROBOTS_PATH = path.join(__dirname, '..', 'robots.txt');
 
 const DOMAIN = 'http://pelimotion.art';
+const CDN_URL = `https://${process.env.BUNNY_STORAGE_ZONE}.b-cdn.net`;
 
 // Setup directories
 ['', 'vagas', 'eventos', 'recursos', 'categoria'].forEach(dir => {
@@ -114,8 +113,7 @@ function createHtml(post) {
     const readingTime = calculateReadingTime(post.content);
     const formattedDate = formatDate(post.data.date, post.data.lang || 'pt');
     const isPt = (post.data.lang || 'pt') === 'pt';
-    const linkPrefix = isPt ? '/blog' : '/en/blog';
-
+    
     const renderer = new marked.Renderer();
     renderer.heading = function({text, depth}) {
       if (depth === 2) {
@@ -125,15 +123,17 @@ function createHtml(post) {
       return `<h${depth}>${text}</h${depth}>`;
     };
     
-    // Replace image placeholders with actual paths
+    // Replace image placeholders with CDN paths
     let processedContent = post.content;
     if (post.data.slug) {
         processedContent = processedContent.replace(/image-([1-9])/g, (match, num) => {
-            return `/blog/assets/${post.data.slug}/image-${num}.jpg`;
+            return `${CDN_URL}/blog/assets/${post.data.slug}/image-${num}.jpg`;
         });
     }
 
     marked.setOptions({ renderer });
+
+    const heroImageUrl = post.data.heroImage.startsWith('http') ? post.data.heroImage : `${CDN_URL}${post.data.heroImage}`;
 
     return `<!DOCTYPE html>
 <html lang="${post.data.lang || 'pt'}">
@@ -144,7 +144,7 @@ function createHtml(post) {
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         ${GLOBAL_CSS}
-        .post-hero { position: relative; width: 100%; height: 60vh; display: flex; align-items: flex-end; padding: 4rem 2rem; background-image: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 60%, rgba(10,10,10,0.1) 100%), url('${post.data.heroImage}'); background-size: cover; background-position: center; }
+        .post-hero { position: relative; width: 100%; height: 60vh; display: flex; align-items: flex-end; padding: 4rem 2rem; background-image: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 60%, rgba(10,10,10,0.1) 100%), url('${heroImageUrl}'); background-size: cover; background-position: center; }
         .post-hero-content { max-width: 800px; margin: 0 auto; width: 100%; }
         .category-pill { display: inline-block; background: var(--accent); color: var(--bg-primary); font-family: var(--font-mono); font-size: 10px; font-weight: 500; padding: 4px 8px; border-radius: 2px; margin-bottom: 1.5rem; text-transform: uppercase; }
         .post-h1 { font-size: clamp(36px, 5vw, 64px); margin-bottom: 1.5rem; line-height: 1.1; }
@@ -208,22 +208,25 @@ function createIndexHtml(posts, lang, customTitle = null, isTagPage = false) {
     ${!isTagPage ? `<div class="blog-wordmark fade-in-up">JOURNAL</div>` : `<div class="container"><h1 class="page-title playfair fade-in-up">${title}</h1></div>`}
     <main class="container">
         <div class="posts-grid">
-            ${sortedPosts.map((post, i) => `
-            <article class="post-card fade-in-up" style="animation-delay: ${(i%3)*100}ms">
-                <div class="card-meta-top">
-                    <time class="card-date">${formatDate(post.data.date, lang)}</time>
-                    <span class="card-category-pill" style="border:1px solid var(--border);padding:2px 6px;border-radius:100px">${post.data.category}</span>
-                </div>
-                <div class="card-image-wrapper">
-                    <img class="card-image" src="${post.data.thumbImage}" alt="" loading="lazy">
-                </div>
-                <h2 class="card-title playfair"><a href="${isPt?'/blog':'/en/blog'}/${post.data.slug}">${post.data.title}</a></h2>
-                <p class="card-excerpt">${post.data.metaDescription}</p>
-                <div class="card-meta-bottom">
-                    <span><strong>TEXTO</strong> · Pelimotion</span>
-                    <span><strong>LEITURA</strong> · ${calculateReadingTime(post.content)} min</span>
-                </div>
-            </article>`).join('')}
+            ${sortedPosts.map((post, i) => {
+                const thumbUrl = post.data.thumbImage.startsWith('http') ? post.data.thumbImage : `${CDN_URL}${post.data.thumbImage}`;
+                return `
+                <article class="post-card fade-in-up" style="animation-delay: ${(i%3)*100}ms">
+                    <div class="card-meta-top">
+                        <time class="card-date">${formatDate(post.data.date, lang)}</time>
+                        <span class="card-category-pill" style="border:1px solid var(--border);padding:2px 6px;border-radius:100px">${post.data.category}</span>
+                    </div>
+                    <div class="card-image-wrapper">
+                        <img class="card-image" src="${thumbUrl}" alt="" loading="lazy">
+                    </div>
+                    <h2 class="card-title playfair"><a href="${isPt?'/blog':'/en/blog'}/${post.data.slug}">${post.data.title}</a></h2>
+                    <p class="card-excerpt">${post.data.metaDescription}</p>
+                    <div class="card-meta-bottom">
+                        <span><strong>TEXTO</strong> · Pelimotion</span>
+                        <span><strong>LEITURA</strong> · ${calculateReadingTime(post.content)} min</span>
+                    </div>
+                </article>`;
+            }).join('')}
         </div>
     </main>
     ${getFooter()}
@@ -248,12 +251,8 @@ async function build() {
     const posts = parseDirectory('posts');
     
     for (const post of posts) {
-        if (!post.data.slug) {
-            console.log(`Skipping invalid post: ${post.data.title || 'Untitled'}`);
-            continue;
-        }
+        if (!post.data.slug) continue;
 
-        // Generate images (Hero + 3 content images)
         if (post.data.heroPrompt) {
             const prompts = [
                 post.data.heroPrompt,
@@ -266,7 +265,6 @@ async function build() {
                 const imgName = i === 0 ? 'hero' : `image-${i}`;
                 const imgPath = path.join(BLOG_OUT_DIR, 'assets', post.data.slug, `${imgName}.jpg`);
                 if (!fs.existsSync(imgPath)) {
-                    console.log(`Generating image ${imgName} for ${post.data.slug}...`);
                     await generatePostImages(prompts[i], post.data.slug, imgName);
                 }
             }

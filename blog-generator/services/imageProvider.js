@@ -3,9 +3,44 @@ const path = require('path');
 const https = require('https');
 const { GoogleAuth } = require('google-auth-library');
 
+const BUNNY_API_KEY = process.env.BUNNY_API_KEY;
+const BUNNY_STORAGE_ZONE = process.env.BUNNY_STORAGE_ZONE;
+
+async function uploadToBunny(buffer, remotePath) {
+    if (!BUNNY_API_KEY || !BUNNY_STORAGE_ZONE) return;
+
+    const url = `https://storage.bunnycdn.com/${BUNNY_STORAGE_ZONE}${remotePath}`;
+    const options = {
+        method: 'PUT',
+        headers: {
+            'AccessKey': BUNNY_API_KEY,
+            'Content-Type': 'image/jpeg',
+            'Content-Length': buffer.length
+        }
+    };
+
+    return new Promise((resolve) => {
+        const req = https.request(url, options, (res) => {
+            if (res.statusCode === 201 || res.statusCode === 200) {
+                console.log(`✅ Uploaded to Bunny: ${remotePath}`);
+            } else {
+                console.error(`❌ Bunny Upload Error (${res.statusCode}): ${remotePath}`);
+            }
+            resolve();
+        });
+        req.on('error', (e) => {
+            console.error(`❌ Bunny Request Error: ${e.message}`);
+            resolve();
+        });
+        req.write(buffer);
+        req.end();
+    });
+}
+
 /**
  * Image Provider Service
  * Using Google Cloud Vertex AI (Imagen) with Service Account
+ * And syncing to Bunny.net
  */
 async function generatePostImages(prompt, slug, imageName = 'hero') {
     const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID || 'pelimotion-blog';
@@ -19,9 +54,11 @@ async function generatePostImages(prompt, slug, imageName = 'hero') {
     const imgPath = path.join(assetsDir, `${imageName}.jpg`);
     const thumbPath = path.join(assetsDir, 'thumb.jpg');
 
-    // Skip if image already exists
+    // Remote path for Bunny.net
+    const remotePath = `/blog/assets/${slug}/${imageName}.jpg`;
+
+    // Skip if image already exists locally (we assume it's also on Bunny or will be overwritten if needed)
     if (fs.existsSync(imgPath)) {
-        // console.log(`Image ${imageName} for ${slug} already exists. Skipping API call.`);
         return;
     }
 
@@ -58,7 +95,7 @@ async function generatePostImages(prompt, slug, imageName = 'hero') {
             const req = https.request(endpoint, options, (res) => {
                 let body = '';
                 res.on('data', (chunk) => body += chunk);
-                res.on('end', () => {
+                res.on('end', async () => {
                     if (res.statusCode !== 200) {
                         console.error(`Vertex AI Error (${res.statusCode}):`, body);
                         createPlaceholder(imgPath, 1200, 630);
@@ -70,9 +107,15 @@ async function generatePostImages(prompt, slug, imageName = 'hero') {
                         const base64Image = response.predictions[0].bytesBase64Encoded;
                         const buffer = Buffer.from(base64Image, 'base64');
                         
+                        // Save locally
                         fs.writeFileSync(imgPath, buffer);
+                        
+                        // Upload to Bunny
+                        await uploadToBunny(buffer, remotePath);
+
                         if (imageName === 'hero' && !fs.existsSync(thumbPath)) {
                             fs.writeFileSync(thumbPath, buffer);
+                            await uploadToBunny(buffer, `/blog/assets/${slug}/thumb.jpg`);
                         }
                         
                         console.log(`Successfully generated and saved ${imageName} for ${slug}`);
