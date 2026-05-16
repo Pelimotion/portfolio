@@ -47,7 +47,7 @@ const GLOBAL_CSS = `
         --font-display: 'Barlow Condensed', sans-serif;
         --font-editorial: 'Playfair Display', serif;
         --font-mono: 'DM Mono', monospace;
-        --wordmark-size: clamp(72px, 18vw, 180px);
+        --wordmark-size: clamp(60px, 15vw, 140px);
         --card-title: clamp(16px, 2vw, 22px);
         --meta-size: 11px;
         --body-size: 14px;
@@ -60,23 +60,29 @@ const GLOBAL_CSS = `
     a { text-decoration: none; color: inherit; }
     .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent-warm); width: 0%; z-index: 1000; transition: width 100ms linear; }
     
-    .blog-header { display: flex; justify-content: space-between; align-items: center; padding: 20px var(--gutter); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); z-index: 100; }
+    .blog-header { display: flex; justify-content: space-between; align-items: center; padding: 20px var(--gutter); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); z-index: 1000; }
     .blog-logo { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-primary); }
     .blog-logo-sub { font-size: 9px; letter-spacing: 0.2em; color: var(--text-secondary); vertical-align: middle; margin-left: 8px; }
     .blog-nav { display: flex; gap: 32px; align-items: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; }
     .blog-nav a { color: var(--text-secondary); transition: color 0.2s ease; }
     .blog-nav a:hover, .blog-nav a.active { color: var(--accent); }
     
-    .blog-wordmark { font-family: var(--font-display); font-size: var(--wordmark-size); font-weight: 900; line-height: 0.85; letter-spacing: -0.03em; color: var(--text-primary); text-transform: uppercase; padding: 40px var(--gutter) 0; }
+    .blog-wordmark { font-family: var(--font-display); font-size: var(--wordmark-size); font-weight: 900; line-height: 0.85; letter-spacing: -0.03em; color: var(--text-primary); text-transform: uppercase; padding: 40px var(--gutter) 20px; }
     .container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--gutter); }
-    .page-title { margin: 3rem 0 2rem; font-size: 48px; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .page-title { margin: 2rem 0 1.5rem; font-size: 36px; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
     
     .blog-footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-top: 5rem; }
     .blog-footer a { color: var(--text-primary); }
-    .fade-in-up { opacity: 0; transform: translateY(16px); animation: fadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .progress-bar { display: none; } }
-    @media (max-width: 767px) { :root { --gutter: 20px; } .blog-nav { display: none; /* simple mobile nav override */ } }
+    
+    .fade-in-up { animation: fadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    
+    @media (max-width: 767px) { 
+        :root { --gutter: 20px; } 
+        .blog-nav { display: flex; gap: 12px; font-size: 10px; } 
+        .blog-logo-sub { display: none; }
+        .blog-wordmark { padding-top: 20px; }
+    }
 `;
 
 function getHeader(lang, active = '') {
@@ -93,7 +99,6 @@ function getHeader(lang, active = '') {
             <a href="${prefix}/vagas" class="${active==='vagas'?'active':''}">${isPt ? 'Vagas' : 'Jobs'}</a>
             <a href="${prefix}/eventos" class="${active==='eventos'?'active':''}">${isPt ? 'Eventos' : 'Events'}</a>
             <a href="${prefix}/recursos" class="${active==='recursos'?'active':''}">${isPt ? 'Recursos' : 'Resources'}</a>
-            <a href="${isPt ? '/en/blog' : '/blog'}" style="margin-left: 2rem;">${isPt ? 'EN' : 'PT'}</a>
         </nav>
     </header>
     `;
@@ -108,7 +113,7 @@ function getFooter() {
 }
 
 // ----------------------------------------------------
-// RSS GENERATOR (Fase 1)
+// RSS GENERATOR
 // ----------------------------------------------------
 function createRss(posts, lang) {
     const isPt = lang === 'pt';
@@ -129,7 +134,7 @@ function createRss(posts, lang) {
         <title><![CDATA[${post.data.title}]]></title>
         <link>${DOMAIN}${prefix}/${post.data.slug}</link>
         <description><![CDATA[${post.data.metaDescription}]]></description>
-        <pubDate>${new Date(post.data.date).toUTCString()}</pubDate>
+        <pubDate>${new Date(post.data.date || Date.now()).toUTCString()}</pubDate>
         <guid>${DOMAIN}${prefix}/${post.data.slug}</guid>
     </item>`;
     });
@@ -138,7 +143,7 @@ function createRss(posts, lang) {
 }
 
 // ----------------------------------------------------
-// VAGAS & EVENTOS & RECURSOS GENERATORS (Fase 3 & 4)
+// VAGAS & EVENTOS & RECURSOS GENERATORS
 // ----------------------------------------------------
 function createDirectoryPage(items, type, lang) {
     const isPt = lang === 'pt';
@@ -149,7 +154,6 @@ function createDirectoryPage(items, type, lang) {
     if (type === 'eventos') title = isPt ? 'Agenda de Eventos' : 'Events Calendar';
     if (type === 'recursos') title = isPt ? 'Recursos & Estúdios' : 'Resources & Studios';
 
-    // Basic styling for the list
     let listHtml = items.map((item, i) => `
         <div class="list-item fade-in-up" style="animation-delay: ${(i%5)*50}ms">
             <div class="item-meta">
@@ -164,28 +168,25 @@ function createDirectoryPage(items, type, lang) {
     `).join('');
 
     if (items.length === 0) {
-        listHtml = `<p style="color: var(--text-secondary); margin-top: 2rem;">${isPt ? 'Nenhum item encontrado. Nossa automação está buscando novidades!' : 'No items found. Our automation is fetching new entries!'}</p>`;
+        listHtml = `<p style="color: var(--text-secondary); margin-top: 2rem;">${isPt ? 'Nenhum item encontrado.' : 'No items found.'}</p>`;
     }
 
     let ipApiScript = '';
     if (type === 'vagas' || type === 'eventos') {
         ipApiScript = `
         <script>
-            // Geolocation filtering (Fase 3 Automation)
             fetch('https://ipapi.co/json/')
                 .then(r => r.json())
                 .then(data => {
                     const country = data.country_name;
-                    if(country) {
-                        document.getElementById('location-status').innerHTML = 'Filtrando para: <strong style="color:var(--accent-warm)">' + country + '</strong>';
-                        document.querySelectorAll('.list-item').forEach(el => {
-                            const loc = el.querySelector('.location');
-                            if(loc && !loc.dataset.location.includes(country) && loc.dataset.location !== 'Remote') {
-                                el.style.opacity = '0.3';
-                            }
-                        });
+                    const status = document.getElementById('location-status');
+                    if(country && status) {
+                        status.innerHTML = 'Filtrando para: <strong style="color:var(--accent-warm)">' + country + '</strong>';
                     }
-                }).catch(e => console.log('Geolocation skipped.'));
+                }).catch(e => {
+                    const status = document.getElementById('location-status');
+                    if(status) status.style.display = 'none';
+                });
         </script>`;
     }
 
@@ -202,7 +203,6 @@ function createDirectoryPage(items, type, lang) {
         .list-item { border-bottom: 1px solid var(--border); padding: 2rem 0; }
         .list-item h3 { font-size: 24px; margin-bottom: 0.5rem; }
         .list-item p { color: var(--text-secondary); font-size: 15px; margin-bottom: 1rem; }
-        .list-item a:hover { color: var(--accent-warm); }
         .item-meta { display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 1rem; align-items: center; }
         .pill { border: 1px solid var(--border); padding: 2px 8px; border-radius: 100px; }
         #location-status { font-family: var(--font-mono); font-size: 12px; margin-bottom: 2rem; padding: 1rem; background: var(--bg-secondary); border-left: 2px solid var(--border); }
@@ -230,8 +230,8 @@ function createDirectoryPage(items, type, lang) {
 // ----------------------------------------------------
 function createHtml(post) {
     const readingTime = calculateReadingTime(post.content);
-    const formattedDate = formatDate(post.data.date, post.data.lang);
-    const isPt = post.data.lang === 'pt';
+    const formattedDate = formatDate(post.data.date, post.data.lang || 'pt');
+    const isPt = (post.data.lang || 'pt') === 'pt';
     const linkPrefix = isPt ? '/blog' : '/en/blog';
 
     const hreflang = isPt ? `<link rel="alternate" hreflang="en" href="${DOMAIN}/en/blog/${post.data.slug}" />` : `<link rel="alternate" hreflang="pt" href="${DOMAIN}/blog/${post.data.slug}" />`;
@@ -247,7 +247,7 @@ function createHtml(post) {
     marked.setOptions({ renderer });
 
     return `<!DOCTYPE html>
-<html lang="${post.data.lang}">
+<html lang="${post.data.lang || 'pt'}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -264,8 +264,7 @@ function createHtml(post) {
         .post-content { font-family: 'IBM Plex Sans', sans-serif; font-size: 17px; max-width: 680px; margin: 4rem auto; width: 100%; padding: 0 2rem; }
         .post-content p { margin-bottom: 1.5rem; }
         .post-content h2 { font-size: 28px; margin-top: 3.5rem; margin-bottom: 1.5rem; }
-        .post-content a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; transition: 0.2s; }
-        .post-content a:hover { text-decoration-color: var(--accent); }
+        .post-content a { color: var(--accent); text-decoration: underline; transition: 0.2s; }
         .post-content img { max-width: 100%; height: auto; margin: 2rem 0; }
         .newsletter-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 2rem; margin: 4rem 0; text-align: center; }
         .newsletter-box h4 { font-family: var(--font-editorial); font-size: 24px; margin-bottom: 1rem; }
@@ -274,7 +273,7 @@ function createHtml(post) {
     </style>
 </head>
 <body>
-    ${getHeader(post.data.lang, 'blog')}
+    ${getHeader(post.data.lang || 'pt', 'blog')}
     <section class="post-hero">
         <div class="post-hero-content">
             <div class="category-pill fade-in-up">${post.data.category}</div>
@@ -285,23 +284,17 @@ function createHtml(post) {
         </div>
     </section>
     <article class="post-content fade-in-up">
-        ${marked(post.content)}
+        ${marked.parse(post.content)}
         <div class="newsletter-box">
             <h4>Pelimotion Weekly Hub</h4>
-            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem;">Receba automaticamente nossa curadoria de motion branding e vagas.</p>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem;">Receba nossa curadoria de motion branding e vagas.</p>
             <form action="#" method="POST" style="display: flex; justify-content: center; gap: 10px;">
-                <input type="email" placeholder="Seu melhor e-mail" required>
+                <input type="email" placeholder="E-mail" required>
                 <button type="submit">Inscrever</button>
             </form>
         </div>
     </article>
     ${getFooter()}
-    <script>
-        window.addEventListener('scroll', () => {
-            const el = document.getElementById('progressBar');
-            if(el) el.style.width = ((document.documentElement.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100) + "%";
-        });
-    </script>
 </body>
 </html>`;
 }
@@ -310,9 +303,8 @@ function createIndexHtml(posts, lang, customTitle = null, isTagPage = false) {
     const title = customTitle || (lang === 'pt' ? 'Pelimotion Hub' : 'Pelimotion Hub');
     const outDir = lang === 'pt' ? BLOG_OUT_DIR : EN_BLOG_OUT_DIR;
     const isPt = lang === 'pt';
-    const sortedPosts = [...posts].sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+    const sortedPosts = [...posts].sort((a, b) => new Date(b.data.date || Date.now()) - new Date(a.data.date || Date.now()));
 
-    // Unique Categories for filters
     const categories = [...new Set(posts.map(p => p.data.category))].filter(Boolean);
 
     let html = `<!DOCTYPE html>
@@ -321,7 +313,6 @@ function createIndexHtml(posts, lang, customTitle = null, isTagPage = false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} | Motion Branding</title>
-    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/blog/rss.xml" />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         ${GLOBAL_CSS}
@@ -331,41 +322,29 @@ function createIndexHtml(posts, lang, customTitle = null, isTagPage = false) {
         .pill:hover, .pill.active { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
         .posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-left: 1px solid var(--border); border-top: 1px solid var(--border); margin-bottom: 4rem; }
         @media (max-width: 1023px) { .posts-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 767px) { .posts-grid { grid-template-columns: 1fr; } .blog-filter-bar { flex-direction: column; align-items: flex-start; gap: 12px; } }
+        @media (max-width: 767px) { .posts-grid { grid-template-columns: 1fr; } }
         .post-card { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: 200ms ease; }
         .post-card:hover { background: var(--bg-secondary); }
-        .card-meta-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .card-date, .card-category-pill { font-family: var(--font-mono); font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.12em; }
-        .card-category-pill { padding: 3px 8px; border: 1px solid var(--border); border-radius: 100px; }
+        .card-meta-top { display: flex; justify-content: space-between; }
+        .card-date, .card-category-pill { font-family: var(--font-mono); font-size: 9px; color: var(--text-secondary); text-transform: uppercase; }
         .card-image-wrapper { aspect-ratio: 4/3; overflow: hidden; background: var(--bg-secondary); }
-        .card-image { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms; }
-        .post-card:hover .card-image { transform: scale(1.04); }
-        .card-title { font-size: 20px; line-height: 1.25; margin-bottom: 0.75rem; }
+        .card-image { width: 100%; height: 100%; object-fit: cover; }
+        .card-title { font-size: 20px; line-height: 1.25; margin: 0.5rem 0; }
         .card-excerpt { font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); flex: 1; }
         .card-meta-bottom { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
     </style>
 </head>
 <body>
     ${getHeader(lang, 'blog')}
+    ${!isTagPage ? `<div class="blog-wordmark fade-in-up">JOURNAL</div>` : `<div class="container"><h1 class="page-title playfair fade-in-up">${title}</h1></div>`}
     
-    ${!isTagPage ? `<div class="blog-wordmark fade-in-up">JOURNAL</div>` : `<h1 class="page-title playfair fade-in-up" style="margin-left: var(--gutter)">${title}</h1>`}
-    
-    ${!isTagPage ? `
-    <div class="blog-filter-bar fade-in-up">
-        <span class="filter-label" style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary)">${isPt ? 'CATEGORIAS' : 'CATEGORIES'}</span>
-        <div class="filter-pills">
-            <button class="pill active" data-filter="all">${isPt ? 'Todos' : 'All'}</button>
-            ${categories.map(cat => `<button class="pill" data-filter="${cat.toLowerCase().replace(/\s+/g,'-')}">${cat}</button>`).join('')}
-        </div>
-    </div>` : ''}
-
-    <main class="container" style="${isTagPage ? 'padding-top: 2rem;' : ''}">
+    <main class="container">
         <div class="posts-grid">
             ${sortedPosts.map((post, i) => `
             <article class="post-card fade-in-up" data-category="${post.data.category ? post.data.category.toLowerCase().replace(/\s+/g, '-') : ''}" style="animation-delay: ${(i%3)*100}ms">
                 <div class="card-meta-top">
                     <time class="card-date">${formatDate(post.data.date, lang)}</time>
-                    <span class="card-category-pill">${post.data.category}</span>
+                    <span class="card-category-pill" style="border:1px solid var(--border);padding:2px 6px;border-radius:100px">${post.data.category}</span>
                 </div>
                 <div class="card-image-wrapper">
                     <img class="card-image" src="${post.data.thumbImage}" alt="" loading="lazy">
@@ -373,27 +352,13 @@ function createIndexHtml(posts, lang, customTitle = null, isTagPage = false) {
                 <h2 class="card-title playfair"><a href="${isPt?'/blog':'/en/blog'}/${post.data.slug}">${post.data.title}</a></h2>
                 <p class="card-excerpt">${post.data.metaDescription}</p>
                 <div class="card-meta-bottom">
-                    <span><strong>${isPt ? 'Texto' : 'Text'}</strong> · Pelimotion</span>
-                    <span><strong>${isPt ? 'Leitura' : 'Read'}</strong> · ${calculateReadingTime(post.content)} min</span>
+                    <span><strong>TEXTO</strong> · Pelimotion</span>
+                    <span><strong>LEITURA</strong> · ${calculateReadingTime(post.content)} min</span>
                 </div>
             </article>`).join('')}
         </div>
     </main>
     ${getFooter()}
-    ${!isTagPage ? `
-    <script>
-        document.querySelectorAll('.pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                const filter = pill.dataset.filter;
-                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                document.querySelectorAll('.post-card').forEach(card => {
-                    if (filter === 'all' || card.dataset.category.includes(filter)) card.style.display = 'flex';
-                    else card.style.display = 'none';
-                });
-            });
-        });
-    </script>` : ''}
 </body>
 </html>`;
 
@@ -421,12 +386,6 @@ function parseDirectory(dirName) {
 
 async function build() {
     console.log('Starting automated hub generation...');
-    
-    // Create folders if missing
-    ['posts', 'jobs', 'events', 'resources'].forEach(d => {
-        if (!fs.existsSync(path.join(CONTENT_DIR, d))) fs.mkdirSync(path.join(CONTENT_DIR, d), {recursive: true});
-    });
-
     const posts = parseDirectory('posts');
     const jobs = parseDirectory('jobs');
     const events = parseDirectory('events');
@@ -434,20 +393,16 @@ async function build() {
 
     const urls = ['/blog', '/blog/vagas', '/blog/eventos', '/blog/recursos', '/en/blog'];
 
-    // 1. Generate Posts
     for (const post of posts) {
         if (post.data.heroPrompt) await generatePostImages(post.data.heroPrompt, post.data.slug);
-        const outDir = post.data.lang === 'pt' ? BLOG_OUT_DIR : EN_BLOG_OUT_DIR;
+        const outDir = (post.data.lang || 'pt') === 'pt' ? BLOG_OUT_DIR : EN_BLOG_OUT_DIR;
         fs.writeFileSync(path.join(outDir, `${post.data.slug}.html`), createHtml(post));
-        urls.push(`${post.data.lang === 'pt' ? '/blog' : '/en/blog'}/${post.data.slug}`);
+        urls.push(`${(post.data.lang || 'pt') === 'pt' ? '/blog' : '/en/blog'}/${post.data.slug}`);
     }
 
-    const ptPosts = posts.filter(p => p.data.lang === 'pt');
-    
-    // 2. Generate Indexes and Category Pages
+    const ptPosts = posts.filter(p => (p.data.lang || 'pt') === 'pt');
     if (ptPosts.length > 0) {
         createIndexHtml(ptPosts, 'pt');
-        // Category pages (Fase 1 Tags Automáticas)
         const categories = [...new Set(ptPosts.map(p => p.data.category))].filter(Boolean);
         categories.forEach(cat => {
             createIndexHtml(ptPosts.filter(p => p.data.category === cat), 'pt', cat, true);
@@ -455,13 +410,12 @@ async function build() {
         createRss(ptPosts, 'pt');
     }
 
-    // 3. Generate Utility Pages (Jobs, Events, Resources)
-    createDirectoryPage(jobs.filter(j => j.data.lang !== 'en'), 'vagas', 'pt');
-    createDirectoryPage(events.filter(e => e.data.lang !== 'en'), 'eventos', 'pt');
-    createDirectoryPage(resources.filter(r => r.data.lang !== 'en'), 'recursos', 'pt');
+    createDirectoryPage(jobs, 'vagas', 'pt');
+    createDirectoryPage(events, 'eventos', 'pt');
+    createDirectoryPage(resources, 'recursos', 'pt');
 
     updateSitemap(urls);
-    console.log('Build complete: RSS, Tags, Jobs, Events, Resources generated.');
+    console.log('Build complete.');
 }
 
 build();
