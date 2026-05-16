@@ -53,6 +53,8 @@ export default async function handler(req, res) {
 
         if (req.method === 'POST') {
             const { data, content } = req.body;
+            if (!data.slug) throw new Error("Slug é obrigatório para salvar.");
+
             const postData = {
                 slug: data.slug,
                 title: data.title,
@@ -61,14 +63,17 @@ export default async function handler(req, res) {
                 category: data.category,
                 meta_description: data.metaDescription,
                 hero_prompt: data.heroPrompt,
-                data: { ...data, status: data.status || 'draft' }, // Keep data object in sync
+                data: { ...data, status: data.status || 'draft' },
                 updated_at: new Date().toISOString()
             };
 
-            // Upsert by slug
-            const result = await supabaseFetch(`blog_posts?slug=eq.${data.slug}`, {
+            // Proper Supabase Upsert: POST with on_conflict and resolution=merge-duplicates
+            const result = await supabaseFetch('blog_posts?on_conflict=slug', {
                 method: 'POST',
-                headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+                headers: { 
+                    'Prefer': 'resolution=merge-duplicates,return=representation',
+                    'Content-Type': 'application/json'
+                },
                 body: postData
             });
 

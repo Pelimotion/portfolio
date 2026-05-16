@@ -28,7 +28,11 @@ async function uploadToBunny(buffer, slug, fileName) {
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end();
 
-    const { prompt, slug, imageName } = req.body;
+    let { prompt, slug, imageName } = req.body;
+    if (!slug) return res.status(400).json({ error: "Slug is required" });
+    
+    // Sanitize slug to match storage expectations
+    slug = slug.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
     const location = 'us-central1';
 

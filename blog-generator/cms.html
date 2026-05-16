@@ -181,7 +181,7 @@
                         <textarea id="f-metaDescription" rows="2"></textarea>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                        <div class="field"><label>Slug</label><input type="text" id="f-slug"></div>
+                        <div class="field"><label>Slug</label><input type="text" id="f-slug" oninput="this.value = this.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')"></div>
                         <div class="field"><label>Categoria Final</label><input type="text" id="f-category"></div>
                     </div>
                 </div>
@@ -465,28 +465,36 @@
             const slug = document.getElementById('f-slug').value;
             if (!prompt || !slug) return alert("Falta prompt ou slug!");
             
-            if (!confirm("Isso consumirá créditos de IA. Gerar as 4 imagens cinematográficas agora?")) return;
+            if (!confirm("Isso consumirá créditos de IA. Gerar as 4 imagens cinematográficas em paralelo agora?")) return;
             
-            showLoader("NANO BANANA TRABALHANDO...");
+            showLoader("NANO BANANA TRABALHANDO EM PARALELO...");
             const names = ['hero', 'image-1', 'image-2', 'image-3'];
+            
             try {
-                for (let name of names) {
-                    document.getElementById('loader-text').innerText = `PROCESSANDO ${name.toUpperCase()} (QUALIDADE PRO)...`;
+                // Generate in parallel for speed
+                const tasks = names.map(async (name) => {
+                    console.log(`Iniciando geração de ${name}...`);
                     const res = await fetch('/api/blog/generate-image', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ prompt, slug, imageName: name })
                     });
-                    if (!res.ok) throw new Error(`Erro na imagem ${name}: ${res.statusText}`);
-                    
-                    // Increased delay to 3s to ensure Bunny consistency
-                    await new Promise(r => setTimeout(r, 3000));
+                    if (!res.ok) throw new Error(`${name} falhou: ${res.statusText}`);
                     updatePreviews(slug);
+                    return name;
+                });
+
+                const results = await Promise.allSettled(tasks);
+                const failed = results.filter(r => r.status === 'rejected');
+                
+                if (failed.length > 0) {
+                    alert(`Atenção: ${failed.length} imagens falharam. Tente gerá-las individualmente ou clique novamente.`);
+                } else {
+                    alert("Todas as imagens foram enviadas com sucesso!");
                 }
-                alert("Todas as imagens foram geradas com sucesso!");
             } catch(e) { 
                 console.error(e);
-                alert("Erro na geração: " + e.message); 
+                alert("Erro crítico na geração: " + e.message); 
             }
             hideLoader();
         }
@@ -496,15 +504,27 @@
             ['hero', 'image-1', 'image-2', 'image-3'].forEach(name => {
                 const img = document.getElementById(`preview-${name}`);
                 if (img) {
-                    // Force reload by changing src
                     const newSrc = `${CDN}/blog/assets/${slug}/${name}.jpg?t=${t}`;
-                    img.style.opacity = '0.5';
-                    img.onerror = () => {
-                        console.log(`Retrying ${name}...`);
-                        setTimeout(() => { img.src = newSrc; }, 2000);
+                    img.style.opacity = '0.4';
+                    
+                    // Recursive retry logic
+                    const tryLoad = (attempt = 1) => {
+                        const tempImg = new Image();
+                        tempImg.onload = () => {
+                            img.src = newSrc;
+                            img.style.opacity = '1';
+                        };
+                        tempImg.onerror = () => {
+                            if (attempt < 15) { // Try for 30 seconds
+                                console.log(`Retry ${name} (attempt ${attempt})...`);
+                                setTimeout(() => tryLoad(attempt + 1), 2000);
+                            } else {
+                                img.style.opacity = '1'; // Show broken icon eventually
+                            }
+                        };
+                        tempImg.src = newSrc;
                     };
-                    img.onload = () => { img.style.opacity = '1'; img.onerror = null; };
-                    img.src = newSrc;
+                    tryLoad();
                 }
             });
         }
@@ -561,7 +581,7 @@
         }
 
         async function savePost() {
-            showLoader("SALVANDO...");
+            showLoader("SALVANDO NO SUPABASE...");
             const v = id => document.getElementById(id).value;
             const data = {
                 fileName: v('f-fileName'),
@@ -577,13 +597,29 @@
                 },
                 content: v('f-content')
             };
-            await fetch('/api/blog/posts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            
-            if (data.data.status === 'published') {
-                alert("O post foi salvo como PUBLICADO no banco de dados. \n\nNOTA: Para aparecer no site estático, um novo deploy da Vercel é necessário.");
-            }
 
-            await loadPosts();
+            try {
+                const res = await fetch('/api/blog/posts', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(data) 
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || "Erro desconhecido");
+                }
+
+                alert("💾 Post salvo com sucesso!");
+                
+                if (data.data.status === 'published') {
+                    alert("NOTA: O post está PUBLICADO. Não esqueça de clicar em 'PUBLICAR NO SITE' para atualizar o blog.");
+                }
+
+                await loadPosts();
+            } catch (e) {
+                alert("FALHA AO SALVAR: " + e.message);
+            }
             hideLoader();
         }
 
