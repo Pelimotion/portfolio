@@ -3,7 +3,6 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const { marked } = require('marked');
 const matter = require('gray-matter');
-const { generatePostImages } = require('./services/imageProvider');
 
 const CONTENT_DIR = path.join(__dirname, 'content');
 const BLOG_OUT_DIR = path.join(__dirname, '..', 'blog');
@@ -316,23 +315,6 @@ async function build() {
 
     for (const post of finalPosts) {
         if (!post.data.slug) continue;
-
-        if (post.data.heroPrompt) {
-            const prompts = [
-                post.data.heroPrompt,
-                `${post.data.heroPrompt} detailed workflow scene`,
-                `${post.data.heroPrompt} cinematic close-up`,
-                `${post.data.heroPrompt} abstract visual representation`
-            ];
-            
-            for (let i = 0; i < prompts.length; i++) {
-                const imgName = i === 0 ? 'hero' : `image-${i}`;
-                const imgPath = path.join(BLOG_OUT_DIR, 'assets', post.data.slug, `${imgName}.jpg`);
-                if (!fs.existsSync(imgPath)) {
-                    await generatePostImages(prompts[i], post.data.slug, imgName);
-                }
-            }
-        }
 
         const outDir = (post.data.lang || 'pt') === 'pt' ? BLOG_OUT_DIR : EN_BLOG_OUT_DIR;
         fs.writeFileSync(path.join(outDir, `${post.data.slug}.html`), createHtml(post));
