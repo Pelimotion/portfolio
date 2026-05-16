@@ -409,8 +409,7 @@ export function UniversalEntityPage() {
             );
           })}
         </div>
-      </div>
-
+      
       {/* ── MAIN CONTENT AREA ── */}
       <div className="flex-1 overflow-y-auto bg-[var(--surface-0)]">
         <div className="px-8 py-6">
