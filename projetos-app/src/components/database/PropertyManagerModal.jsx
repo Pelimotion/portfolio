@@ -237,13 +237,23 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                             />
                             
                             {selectedProp.property_type === 'status' && (
-                              <input 
-                                type="date"
-                                value={opt.deadline || ''}
-                                onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { deadline: e.target.value })}
-                                className="w-32 bg-secondary/30 border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground"
-                                title="Data de Entrega desta Etapa"
-                              />
+                              <div className="flex items-center gap-1">
+                                <input 
+                                  type="date"
+                                  value={opt.startDate || ''}
+                                  onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { startDate: e.target.value })}
+                                  className="w-[110px] bg-secondary/30 border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground"
+                                  title="Data de Início"
+                                />
+                                <span className="text-muted-foreground/40 text-xs">-</span>
+                                <input 
+                                  type="date"
+                                  value={opt.deadline || ''}
+                                  onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { deadline: e.target.value })}
+                                  className="w-[110px] bg-secondary/30 border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground"
+                                  title="Data de Entrega"
+                                />
+                              </div>
                             )}
                             
                             {/* Color Selector */}

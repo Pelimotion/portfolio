@@ -31,15 +31,12 @@ import { getAccentColorFromId } from '../../lib/artPatternEngine';
 const PROJECT_TABS = [
   { id: 'dashboard', label: 'Dashboard',  Icon: BarChart2 },
   { id: 'pipeline',  label: 'Pipeline',   Icon: Zap },
-  { id: 'calendar',  label: 'Calendar',   Icon: CalendarDays },
   { id: 'assets',    label: 'Assets',     Icon: FolderOpen },
-  { id: 'activity',  label: 'Activity',   Icon: Activity },
 ];
 
 const SCENE_TABS = [
   { id: 'notes',    label: 'Notes',    Icon: FileText },
   { id: 'assets',  label: 'Assets',   Icon: FolderOpen },
-  { id: 'activity',label: 'Activity', Icon: Activity },
 ];
 
 const ROOT_HUB_ID = '00000000-0000-0000-0000-000000000000';
@@ -303,18 +300,12 @@ export function UniversalEntityPage() {
           {activeTab === 'pipeline' && childDatabase && (
             <DatabaseRenderer key="pipeline" databaseId={childDatabase.id} defaultView="kanban" />
           )}
-          {activeTab === 'calendar' && childDatabase && (
-            <DatabaseRenderer key="calendar" databaseId={childDatabase.id} defaultView="calendar" />
-          )}
           {activeTab === 'assets' && (
             <AssetsPanel 
               pageId={pageId} 
               isProject={isProject} 
               parentProjectId={!isProject ? grandparentPageId : null}
             />
-          )}
-          {activeTab === 'activity' && (
-            <EmptyState Icon={Activity} title="Log de Atividade" sub="Histórico completo de modificações em breve." />
           )}
         </div>
       </div>

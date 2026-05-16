@@ -483,18 +483,50 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
       <div
         {...attributes}
         {...listeners}
-        className="flex items-center gap-2 px-2 py-2 mb-2 group/header cursor-grab active:cursor-grabbing rounded-lg hover:bg-[var(--surface-2)] transition-colors"
+        className="flex flex-col gap-1 px-2 py-2 mb-2 group/header cursor-grab active:cursor-grabbing rounded-lg hover:bg-[var(--surface-2)] transition-colors"
       >
-        <span className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-[0.08em] flex-1">{col.label}</span>
-        <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
-        <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
-          <button onClick={onAdd} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
-            <Plus className="w-3.5 h-3.5" />
-          </button>
-          <button className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
-            <MoreHorizontal className="w-3.5 h-3.5" />
-          </button>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold text-foreground/80 uppercase tracking-[0.08em] flex-1">{col.label}</span>
+          <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
+          <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
+            <button onClick={onAdd} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors" title="Nova Cena">
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
+
+        {/* Dates Row */}
+        {col.id !== '__all' && col.id !== '__none' && (
+          <div 
+            onClick={(e) => {
+               // To avoid dragging when clicking
+               e.stopPropagation();
+               const novoInicio = prompt("Data de Início (YYYY-MM-DD):", col.startDate || "");
+               if (novoInicio === null) return;
+               const novaEntrega = prompt("Data Final (YYYY-MM-DD):", col.deadline || "");
+               if (novaEntrega === null) return;
+               
+               const newOpts = groupProp.config.options.map(o => 
+                 o.id === col.id ? { ...o, startDate: novoInicio, deadline: novaEntrega } : o
+               );
+               propertyService.update(groupProp.id, { config: { ...groupProp.config, options: newOpts } })
+                 .then(() => window.location.reload())
+                 .catch(console.error);
+            }}
+            className="flex items-center gap-1.5 text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mt-0.5 cursor-pointer hover:text-primary transition-colors"
+          >
+            <CalendarDays className="w-3 h-3 opacity-50" />
+            {(col.startDate || col.deadline) ? (
+              <span>
+                {col.startDate ? new Date(col.startDate + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) : '?'} 
+                {' - '} 
+                {col.deadline ? new Date(col.deadline + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) : '?'}
+              </span>
+            ) : (
+              <span className="opacity-60 border-b border-dashed border-muted-foreground/40">+ Definir Prazo</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Cards */}
@@ -620,18 +652,46 @@ function ListView({ items, properties, allValues }) {
 // ============================================
 // CALENDAR VIEW — Sophisticated Modern Calendar
 // ============================================
-function CalendarView({ items, properties, allValues }) {
+function CalendarView({ items, properties, allValues, databaseId }) {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(() => new Date());
+  
+  // Global context for when we are inside a project
+  const [globalItems, setGlobalItems] = useState([]);
+  const [globalValues, setGlobalValues] = useState({});
+  const [globalProps, setGlobalProps] = useState([]);
 
-  // Search for any date properties
-  const deadlineProp = properties.find(p =>
-    p.property_type === 'date' ||
-    p.name === 'Deadline' ||
-    p.name === 'Entrega' ||
-    p.name === 'Data de Entrega'
-  );
+  useEffect(() => {
+    const ROOT_HUB_ID = '00000000-0000-0000-0000-000000000000';
+    if (databaseId !== ROOT_HUB_ID) {
+      async function loadGlobal() {
+        try {
+          const [projs, props, valsArr] = await Promise.all([
+            import('../../services/pageService').then(m => m.pageService.fetchDatabaseItems(ROOT_HUB_ID)),
+            import('../../services/propertyService').then(m => m.propertyService.fetchByDatabase(ROOT_HUB_ID)),
+            import('../../services/propertyService').then(m => m.propertyService.fetchAllValues(ROOT_HUB_ID))
+          ]);
+          const vMap = {};
+          for (const v of valsArr) {
+            if (!vMap[v.page_id]) vMap[v.page_id] = {};
+            vMap[v.page_id][v.property_id] = { date: v.value?.date, selected: v.value?.selected }; // simplified for calendar
+          }
+          setGlobalItems(projs || []);
+          setGlobalProps(props || []);
+          setGlobalValues(vMap);
+        } catch(e) { console.error('Failed to load global calendar context', e); }
+      }
+      loadGlobal();
+    }
+  }, [databaseId]);
+
+  // Local properties
+  const deadlineProp = properties.find(p => p.property_type === 'date' || p.name === 'Deadline' || p.name === 'Entrega');
   const statusProp   = properties.find(p => p.property_type === 'status' || p.name === 'Status');
+  
+  // Global properties
+  const globalDeadlineProp = globalProps.find(p => p.property_type === 'date' || p.name === 'Deadline' || p.name === 'Entrega');
+  const globalStatusProp   = globalProps.find(p => p.property_type === 'status' || p.name === 'Status');
 
   const year  = current.getFullYear();
   const month = current.getMonth();
@@ -656,14 +716,42 @@ function CalendarView({ items, properties, allValues }) {
     // Process status milestones
     if (statusProp && statusProp.config?.options) {
       for (const opt of statusProp.config.options) {
-        if (!opt.deadline) continue;
-        const [y, m, d_str] = opt.deadline.split('-');
+        if (!opt.deadline && !opt.startDate) continue;
+        const [y, m, d_str] = (opt.deadline || opt.startDate).split('-');
         const d = new Date(Number(y), Number(m) - 1, Number(d_str));
         
         if (d.getFullYear() === year && d.getMonth() === month) {
           const day = d.getDate();
           if (!map[day]) map[day] = [];
           map[day].push({ type: 'milestone', data: opt, date: d });
+        }
+      }
+    }
+    
+    // Process GLOBAL projects (if inside a sub-project)
+    if (globalDeadlineProp) {
+      for (const gItem of globalItems) {
+        const dateVal = globalValues[gItem.id]?.[globalDeadlineProp.id]?.date;
+        if (!dateVal) continue;
+        const d = new Date(dateVal);
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const day = d.getDate();
+          if (!map[day]) map[day] = [];
+          map[day].push({ type: 'entity', data: gItem, date: d, isGlobal: true });
+        }
+      }
+    }
+
+    if (globalStatusProp && globalStatusProp.config?.options) {
+      for (const opt of globalStatusProp.config.options) {
+        if (!opt.deadline && !opt.startDate) continue;
+        const [y, m, d_str] = (opt.deadline || opt.startDate).split('-');
+        const d = new Date(Number(y), Number(m) - 1, Number(d_str));
+        
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const day = d.getDate();
+          if (!map[day]) map[day] = [];
+          map[day].push({ type: 'milestone', data: opt, date: d, isGlobal: true });
         }
       }
     }
@@ -749,14 +837,17 @@ function CalendarView({ items, properties, allValues }) {
                       
                       <div className="space-y-1.5">
                         {dayItems.slice(0, 5).map((itemWrap, i) => {
+                          const isGlobal = itemWrap.isGlobal;
+                          const opacityClass = isGlobal ? 'opacity-40 hover:opacity-80' : 'opacity-100';
+                          
                           if (itemWrap.type === 'milestone') {
                             const opt = itemWrap.data;
                             const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
                             return (
                               <DropdownMenu.Root key={`ms-${opt.id}-${i}`}>
                                 <DropdownMenu.Trigger asChild>
-                                  <div className={`text-[10px] px-2 py-1.5 rounded-lg truncate font-bold border ${colors.bg} ${colors.text} border-${opt.color}-500/20 shadow-sm cursor-pointer hover:brightness-110 transition-all flex items-center gap-1.5`}>
-                                    <span>⭐</span> {opt.label}
+                                  <div className={`text-[10px] px-2 py-1.5 rounded-lg truncate font-bold border ${colors.bg} ${colors.text} border-${opt.color}-500/20 shadow-sm cursor-pointer hover:brightness-110 transition-all flex items-center gap-1.5 ${opacityClass}`}>
+                                    <span>⭐</span> {isGlobal ? `(Global) ` : ''}{opt.label}
                                   </div>
                                 </DropdownMenu.Trigger>
                                 <DropdownMenu.Portal>
@@ -772,21 +863,38 @@ function CalendarView({ items, properties, allValues }) {
                                         <span className="w-3.5 h-3.5 flex items-center justify-center bg-green-500/20 text-green-500 rounded text-[8px] font-bold">M</span> Criar Google Meet
                                       </a>
                                     </DropdownMenu.Item>
+                                    {!isGlobal && (
+                                      <DropdownMenu.Item 
+                                        onSelect={() => {
+                                          const dt = prompt("Nova data final (YYYY-MM-DD):", opt.deadline || "");
+                                          if (dt) {
+                                            const newOpts = statusProp.config.options.map(o => o.id === opt.id ? { ...o, deadline: dt } : o);
+                                            import('../../services/propertyService').then(m => m.propertyService.update(statusProp.id, { config: { ...statusProp.config, options: newOpts } }))
+                                              .then(() => window.location.reload())
+                                              .catch(console.error);
+                                          }
+                                        }}
+                                        className="flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer transition-colors outline-none mt-0.5 text-orange-400"
+                                      >
+                                        ✏️ Editar Prazo
+                                      </DropdownMenu.Item>
+                                    )}
                                   </DropdownMenu.Content>
                                 </DropdownMenu.Portal>
                               </DropdownMenu.Root>
                             );
                           } else {
                             const item = itemWrap.data;
-                            const statusVal = statusProp ? allValues[item.id]?.[statusProp.id] : null;
-                            const opt = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
+                            const statusVal = isGlobal ? globalValues[item.id]?.[globalStatusProp?.id] : (statusProp ? allValues[item.id]?.[statusProp.id] : null);
+                            const activeStatusProp = isGlobal ? globalStatusProp : statusProp;
+                            const opt = activeStatusProp?.config?.options?.find(o => o.id === statusVal?.selected);
                             const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
                             return (
                               <DropdownMenu.Root key={`sc-${item.id}-${i}`}>
                                 <DropdownMenu.Trigger asChild>
-                                  <div className={`text-[10px] px-2 py-1.5 rounded-lg truncate cursor-pointer shadow-sm hover:scale-[1.02] transition-all font-medium border border-border/20 ${colors.bg} ${colors.text} flex items-center gap-1.5`}>
+                                  <div className={`text-[10px] px-2 py-1.5 rounded-lg truncate cursor-pointer shadow-sm hover:scale-[1.02] transition-all font-medium border border-border/20 ${colors.bg} ${colors.text} flex items-center gap-1.5 ${opacityClass}`}>
                                     <span className={`w-1.5 h-1.5 rounded-full ${COLOR_DOT[opt?.color] || COLOR_DOT.gray}`} />
-                                    {item.title}
+                                    {isGlobal ? `(Proj) ` : ''}{item.title}
                                   </div>
                                 </DropdownMenu.Trigger>
                                 <DropdownMenu.Portal>
@@ -800,6 +908,21 @@ function CalendarView({ items, properties, allValues }) {
                                         <CalendarDays className="w-3.5 h-3.5 text-blue-400" /> Agendar no GCal
                                       </a>
                                     </DropdownMenu.Item>
+                                    {!isGlobal && deadlineProp && (
+                                      <DropdownMenu.Item 
+                                        onSelect={() => {
+                                          const dt = prompt("Nova data de entrega (YYYY-MM-DD):", itemWrap.date.toISOString().split('T')[0]);
+                                          if (dt) {
+                                            import('../../services/propertyService').then(m => m.propertyService.upsertValue(item.id, deadlineProp.id, { date: dt }))
+                                              .then(() => window.location.reload())
+                                              .catch(console.error);
+                                          }
+                                        }}
+                                        className="flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer transition-colors outline-none mt-0.5 text-orange-400"
+                                      >
+                                        ✏️ Editar Entrega
+                                      </DropdownMenu.Item>
+                                    )}
                                   </DropdownMenu.Content>
                                 </DropdownMenu.Portal>
                               </DropdownMenu.Root>
