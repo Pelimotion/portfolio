@@ -259,10 +259,53 @@ async function build() {
     console.log('Starting build...');
     let posts = parseDirectory('posts');
     
-    // Filter out drafts
-    posts = posts.filter(post => post.data.status !== 'draft');
+    // Fetch from Supabase if credentials exist
+    if (process.env.SUPABASE_URL) {
+        console.log('Fetching from Supabase...');
+        const https = require('https');
+        const SUPABASE_URL = process.env.SUPABASE_URL;
+        const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+        
+        const dbPosts = await new Promise((resolve) => {
+            const url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*&status=eq.published`;
+            https.get(url, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }, (res) => {
+                let body = '';
+                res.on('data', d => body += d);
+                res.on('end', () => resolve(JSON.parse(body || '[]')));
+            });
+        });
+        
+        dbPosts.forEach(p => {
+            posts.push({
+                data: {
+                    ...p.data,
+                    slug: p.slug,
+                    title: p.title,
+                    status: p.status,
+                    category: p.category,
+                    metaDescription: p.meta_description,
+                    heroPrompt: p.hero_prompt,
+                    date: p.created_at
+                },
+                content: p.content
+            });
+        });
+    }
 
-    for (const post of posts) {
+    // Filter out duplicates (prefer local if slug matches)
+    const uniquePosts = [];
+    const seenSlugs = new Set();
+    posts.forEach(p => {
+        if (!seenSlugs.has(p.data.slug)) {
+            uniquePosts.push(p);
+            seenSlugs.add(p.data.slug);
+        }
+    });
+
+    // Filter out drafts
+    const finalPosts = uniquePosts.filter(post => post.data.status !== 'draft');
+
+    for (const post of finalPosts) {
         if (!post.data.slug) continue;
 
         if (post.data.heroPrompt) {
@@ -286,7 +329,7 @@ async function build() {
         fs.writeFileSync(path.join(outDir, `${post.data.slug}.html`), createHtml(post));
     }
 
-    const ptPosts = posts.filter(p => p.data.slug && (p.data.lang || 'pt') === 'pt');
+    const ptPosts = finalPosts.filter(p => p.data.slug && (p.data.lang || 'pt') === 'pt');
     if (ptPosts.length > 0) createIndexHtml(ptPosts, 'pt');
 
     console.log('Build complete.');

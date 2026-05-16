@@ -27,9 +27,16 @@ async function supabaseFetch(path) {
 }
 
 export default async function handler(req, res) {
+    const { category } = req.query;
     try {
-        const supabaseRules = await supabaseFetch('studio_guidelines?select=*&order=created_at.desc');
-        const context = supabaseRules.map(r => `[${r.section}]: ${r.content}`).join('\n\n');
+        let query = 'studio_guidelines?select=*&is_active=eq.true';
+        if (category) query += `&category=eq.${category}`;
+        
+        const supabaseRules = await supabaseFetch(query);
+        const context = supabaseRules.length > 0 
+            ? supabaseRules.map(r => `[${r.section}]: ${r.content}`).join('\n\n')
+            : "Siga o tom de voz profissional e técnico da Pelimotion.";
+            
         res.status(200).json({ content: context });
     } catch (error) {
         res.status(500).json({ error: error.message });

@@ -31,14 +31,41 @@ async function supabaseFetch(path, options = {}) {
 }
 
 export default async function handler(req, res) {
+    if (req.method === 'GET') {
+        const { category, section } = req.query;
+        let query = 'studio_guidelines?select=*&order=created_at.desc';
+        if (category) query += `&category=eq.${category}`;
+        if (section) query += `&section=eq.${section}`;
+        try {
+            const data = await supabaseFetch(query);
+            return res.status(200).json(data);
+        } catch (e) {
+            return res.status(500).json({ error: e.message });
+        }
+    }
+    
     if (req.method !== 'POST') return res.status(405).end();
 
-    const { section, content } = req.body;
+    const { section, content, category, presetName, isActive } = req.body;
 
     try {
+        // If this is set as active, deactivate others in the same section/category
+        if (isActive) {
+            await supabaseFetch(`studio_guidelines?section=eq.${section}&category=eq.${category}`, {
+                method: 'PATCH',
+                body: { is_active: false }
+            });
+        }
+
         await supabaseFetch('studio_guidelines', {
             method: 'POST',
-            body: { section, content }
+            body: { 
+                section, 
+                content, 
+                category: category || 'Geral', 
+                preset_name: presetName || 'Sem nome', 
+                is_active: isActive || false 
+            }
         });
         res.status(200).json({ success: true });
     } catch (error) {

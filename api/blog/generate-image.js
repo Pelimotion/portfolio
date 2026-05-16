@@ -47,7 +47,9 @@ export default async function handler(req, res) {
             parameters: {
                 sampleCount: 1,
                 aspectRatio: "16:9",
-                outputOptions: { mimeType: "image/jpeg" }
+                safetySetting: "BLOCK_ONLY_HIGH",
+                personGeneration: "allow_adult",
+                outputOptions: { mimeType: "image/jpeg", compressionQuality: 95 }
             }
         });
 

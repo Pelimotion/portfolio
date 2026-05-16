@@ -106,6 +106,7 @@
                     <option value="draft">🟡 DRAFT (UNLISTED)</option>
                     <option value="published">🟢 PUBLISHED</option>
                 </select>
+                <button class="btn primary" style="margin-left:20px; background:#ff4b2b; color:#fff;" onclick="triggerGlobalDeploy()">🚀 PUBLICAR NO SITE</button>
             </div>
             <div style="display:flex; gap:12px;">
                 <button class="btn danger" onclick="deletePost()">EXCLUIR</button>
@@ -221,26 +222,58 @@
 
             <!-- Stage 5: AI Settings -->
             <div class="stage-container" id="stage-5">
-                <div class="card">
-                    <div class="card-title">DIRETRIZES DO ESTÚDIO (CUMULATIVO NO SUPABASE)</div>
-                    <div class="field">
-                        <label>Seção das Diretrizes</label>
-                        <select id="f-guideline-section">
-                            <option value="Tom de Voz">Tom de Voz</option>
-                            <option value="Estrutura de Conteúdo">Estrutura de Conteúdo</option>
-                            <option value="Regras de Imagem">Regras de Imagem</option>
-                            <option value="Dicionário Técnico">Dicionário Técnico</option>
-                        </select>
+                <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:20px;">
+                    <!-- Preset Editor -->
+                    <div class="card">
+                        <div class="card-title">NOVO PRESET / EDIÇÃO</div>
+                        <div class="field">
+                            <label>Categoria Alvo</label>
+                            <select id="f-guideline-category">
+                                <option value="Negócio">Negócio</option>
+                                <option value="Técnica">Técnica</option>
+                                <option value="Branding">Branding</option>
+                                <option value="Direção de Arte">Direção de Arte</option>
+                                <option value="Processos">Processos</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Seção</label>
+                            <select id="f-guideline-section">
+                                <option value="Tom de Voz">Tom de Voz</option>
+                                <option value="Estrutura de Conteúdo">Estrutura de Conteúdo</option>
+                                <option value="Regras de Imagem">Regras de Imagem</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Nome do Preset</label>
+                            <input type="text" id="f-guideline-preset-name" placeholder="ex: Minimalista V1">
+                        </div>
+                        <div class="field">
+                            <label>Conteúdo</label>
+                            <textarea id="f-guideline-content" rows="12" style="font-size:12px;"></textarea>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <label style="display:flex; align-items:center; gap:8px; font-size:11px; cursor:pointer;">
+                                <input type="checkbox" id="f-guideline-active" checked> DEFINIR COMO ATIVO
+                            </label>
+                        </div>
+                        <button class="btn primary" style="width:100%; margin-top:15px;" onclick="saveGuideline()">SALVAR NA BIBLIOTECA</button>
                     </div>
-                    <div class="field">
-                        <label>Conteúdo da Regra</label>
-                        <textarea id="f-guideline-content" rows="10" placeholder="Insira as novas regras ou edite as existentes..."></textarea>
+
+                    <!-- Library List -->
+                    <div class="card">
+                        <div class="card-title">BIBLIOTECA DE PRESETS <button class="btn" onclick="loadLibrary()" style="padding:2px 8px; font-size:9px;">RECARREGAR</button></div>
+                        <div id="library-list" style="display:flex; flex-direction:column; gap:10px; max-height:400px; overflow-y:auto; margin-bottom:20px;">
+                            <!-- Items injected here -->
+                        </div>
+                        
+                        <div class="card-title">CONFIGURAÇÃO DE DEPLOY</div>
+                        <div class="field">
+                            <label>Vercel Deploy Hook URL</label>
+                            <input type="text" id="f-deploy-hook" placeholder="https://api.vercel.com/v1/integrations/deploy/..." style="font-size:10px;">
+                        </div>
+                        <button class="btn" style="width:100%" onclick="saveDeployHook()">SALVAR HOOK</button>
                     </div>
-                    <button class="btn primary" style="width:100%" onclick="saveGuideline()">ATUALIZAR DIRETRIZES & SUPABASE</button>
-                </div>
-                <div class="card">
-                    <div class="card-title">VISUALIZAÇÃO DO CLAUDE.MD ATUAL</div>
-                    <pre id="claude-preview" style="font-size: 11px; background: #000; padding: 15px; border-radius: 6px; overflow-x: auto; color: #888; max-height: 300px;"></pre>
                 </div>
             </div>
         </div>
@@ -408,12 +441,14 @@
             const names = ['hero', 'image-1', 'image-2', 'image-3'];
             try {
                 for (let name of names) {
-                    document.getElementById('loader-text').innerText = `GERANDO ${name.toUpperCase()}...`;
+                    document.getElementById('loader-text').innerText = `GERANDO ${name.toUpperCase()} (QUALIDADE PRO)...`;
                     await fetch('/api/blog/generate-image', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ prompt, slug, imageName: name })
                     });
+                    // Small delay to allow Bunny to propagate
+                    await new Promise(r => setTimeout(r, 1500));
                     updatePreviews(slug);
                 }
             } catch(e) { alert(e.message); }
@@ -497,26 +532,70 @@
                 content: v('f-content')
             };
             await fetch('/api/blog/posts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            
+            if (data.data.status === 'published') {
+                alert("O post foi salvo como PUBLICADO no banco de dados. \n\nNOTA: Para aparecer no site estático, um novo deploy da Vercel é necessário.");
+            }
+
             await loadPosts();
             hideLoader();
         }
 
         async function saveGuideline() {
             const section = document.getElementById('f-guideline-section').value;
+            const category = document.getElementById('f-guideline-category').value;
+            const presetName = document.getElementById('f-guideline-preset-name').value;
             const content = document.getElementById('f-guideline-content').value;
-            if (!content) return alert("Conteúdo vazio!");
+            const isActive = document.getElementById('f-guideline-active').checked;
             
-            showLoader("ATUALIZANDO DIRETRIZES...");
+            if (!content || !presetName) return alert("Preencha nome e conteúdo!");
+            
+            showLoader("SALVANDO PRESET...");
             try {
                 await fetch('/api/blog/guidelines', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ section, content })
+                    body: JSON.stringify({ section, category, presetName, content, isActive })
                 });
-                alert("Diretrizes atualizadas no Supabase e CLAUDE.md!");
-                init(); // Refresh brandVoice and preview
+                alert("Preset salvo!");
+                loadLibrary();
+                init(); 
             } catch(e) { alert(e.message); }
             hideLoader();
+        }
+
+        async function loadLibrary() {
+            const res = await fetch('/api/blog/guidelines');
+            const data = await res.json();
+            const list = document.getElementById('library-list');
+            list.innerHTML = "";
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'post-item';
+                div.style.border = item.is_active ? '1px solid var(--accent)' : '1px solid var(--border)';
+                div.style.padding = '10px';
+                div.style.marginBottom = '5px';
+                div.style.cursor = 'default';
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span style="font-size:9px; color:var(--accent); font-family:var(--font-mono);">${item.category.toUpperCase()}</span>
+                            <div class="post-title" style="margin-top:2px;">${item.preset_name}</div>
+                            <div style="font-size:10px; color:#666;">${item.section}</div>
+                        </div>
+                        <button class="btn" style="padding:2px 8px; font-size:9px;" onclick='usePreset(${JSON.stringify(item).replace(/'/g, "&apos;")})'>CARREGAR</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function usePreset(item) {
+            document.getElementById('f-guideline-category').value = item.category;
+            document.getElementById('f-guideline-section').value = item.section;
+            document.getElementById('f-guideline-preset-name').value = item.preset_name;
+            document.getElementById('f-guideline-content').value = item.content;
+            document.getElementById('f-guideline-active').checked = item.is_active;
         }
 
         function updateLivePreview() {
@@ -528,7 +607,6 @@
 
         function checkAuth() {
             const pin = document.getElementById('auth-pin').value;
-            // Simple check for now, can be replaced by real Supabase Auth later
             if (pin === '2026') { 
                 document.getElementById('auth-barrier').style.display = 'none';
                 init();
@@ -537,8 +615,30 @@
             }
         }
 
+        async function triggerGlobalDeploy() {
+            const hook = localStorage.getItem('pelimotion_deploy_hook');
+            if (!hook) return alert("Configure a URL do Deploy Hook na aba AI Settings primeiro!");
+            
+            if (!confirm("Isso iniciará um novo build na Vercel para publicar todos os posts 'published'. Continuar?")) return;
+            
+            showLoader("DISPARANDO DEPLOY...");
+            try {
+                await fetch(hook, { method: 'POST' });
+                alert("Deploy disparado! O site será atualizado em 2-3 minutos.");
+            } catch(e) { alert("Erro ao disparar: " + e.message); }
+            hideLoader();
+        }
+
+        function saveDeployHook() {
+            const val = document.getElementById('f-deploy-hook').value;
+            localStorage.setItem('pelimotion_deploy_hook', val);
+            alert("Hook salvo localmente!");
+        }
+
         async function init() {
-            // Load marked library dynamically
+            // Restore hook from local storage
+            document.getElementById('f-deploy-hook').value = localStorage.getItem('pelimotion_deploy_hook') || '';
+            
             if (typeof marked === 'undefined') {
                 const script = document.createElement('script');
                 script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
@@ -546,11 +646,12 @@
                 document.head.appendChild(script);
             }
 
-            const res = await fetch('/api/blog/brand-voice');
+            const category = document.getElementById('f-category').value;
+            const res = await fetch(`/api/blog/brand-voice?category=${category}`);
             const data = await res.json();
             brandVoice = data.content;
-            document.getElementById('claude-preview').innerText = brandVoice;
             loadPosts();
+            loadLibrary();
         }
 
         // init() is now called from checkAuth
