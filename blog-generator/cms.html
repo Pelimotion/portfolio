@@ -78,9 +78,9 @@
     </div>
 
     <div id="auth-barrier" style="position:fixed; inset:0; background:#000; z-index:5000; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-        <h1 style="font-family:'Barlow Condensed'; font-size:40px; margin-bottom:20px;">ACID TEST</h1>
-        <input type="password" id="auth-pin" placeholder="ENTER ACCESS PIN" style="width:200px; text-align:center; font-family:'DM Mono';">
-        <button class="btn primary" style="margin-top:20px;" onclick="checkAuth()">UNLOCK STUDIO</button>
+        <h1 style="font-family:'Barlow Condensed'; font-size:40px; margin-bottom:20px; letter-spacing:4px;">ACID TEST</h1>
+        <input type="password" id="auth-pin" placeholder="ACCESS PIN" style="width:240px; text-align:center; font-family:'DM Mono'; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:4px;" onkeydown="if(event.key==='Enter') checkAuth()">
+        <button class="btn primary" style="margin-top:20px; width:240px;" onclick="checkAuth()">UNLOCK STUDIO</button>
     </div>
 
     <div id="selection-menu">
@@ -607,7 +607,9 @@
 
         function checkAuth() {
             const pin = document.getElementById('auth-pin').value;
-            if (pin === '2026') { 
+            const validPin = '2026';
+            if (pin === validPin) { 
+                localStorage.setItem('pelimotion_session', Date.now());
                 document.getElementById('auth-barrier').style.display = 'none';
                 init();
             } else {

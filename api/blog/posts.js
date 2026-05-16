@@ -37,7 +37,15 @@ export default async function handler(req, res) {
             // Format to match the old local structure for frontend compatibility
             const formatted = posts.map(p => ({
                 fileName: `${p.slug}.md`,
-                data: { ...p.data, title: p.title, slug: p.slug, status: p.status, category: p.category, metaDescription: p.meta_description, heroPrompt: p.hero_prompt },
+                data: { 
+                    ...p.data, 
+                    title: p.title, 
+                    slug: p.slug, 
+                    status: p.status, // Priority on the column value
+                    category: p.category, 
+                    metaDescription: p.meta_description, 
+                    heroPrompt: p.hero_prompt 
+                },
                 content: p.content
             }));
             return res.status(200).json(formatted);
@@ -53,7 +61,7 @@ export default async function handler(req, res) {
                 category: data.category,
                 meta_description: data.metaDescription,
                 hero_prompt: data.heroPrompt,
-                data: data,
+                data: { ...data, status: data.status || 'draft' }, // Keep data object in sync
                 updated_at: new Date().toISOString()
             };
 
