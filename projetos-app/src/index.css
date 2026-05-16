@@ -19,7 +19,9 @@
 
     --primary-hsl: 210 40% 98%; /* Fallback */
     --primary: var(--brand-color, #3b82f6);
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-foreground: var(--primary-foreground, #FFFFFF);
+    --primary-muted: var(--primary-muted, rgba(59, 130, 246, 0.1));
+    --primary-alpha: var(--primary-alpha, rgba(59, 130, 246, 0.25));
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;

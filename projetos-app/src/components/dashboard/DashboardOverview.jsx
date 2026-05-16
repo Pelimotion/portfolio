@@ -4,7 +4,7 @@ import { Calendar, CheckCircle2, Circle, Clock, ChevronRight } from 'lucide-reac
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardOverview() {
-  const { pages } = usePageStore();
+  const { pages = {} } = usePageStore();
   const navigate = useNavigate();
 
   const stats = useMemo(() => {
@@ -16,7 +16,7 @@ export function DashboardOverview() {
     const stageStats = {};
 
     // pages is a dict: { [pageId]: page }
-    const pageList = pages ? Object.values(pages) : [];
+    const pageList = pages && typeof pages === 'object' ? Object.values(pages) : [];
 
     if (!pageList.length) return { upcoming: [], totalCount: 0, stageStats: {} };
 

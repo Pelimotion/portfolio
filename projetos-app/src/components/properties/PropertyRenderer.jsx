@@ -82,7 +82,7 @@ const NumberProperty = memo(({ property, value, onChange, inline }) => {
 
 // ── Select / Status (DropdownMenu) ──
 const SelectProperty = memo(({ property, value, onChange, inline, isStatus = false }) => {
-  const options = property.config?.options || [];
+  const options = Array.isArray(property.config?.options) ? property.config.options : [];
   const selectedOpt = options.find((o) => o.id === value?.selected);
 
   const colorMap = {
@@ -145,7 +145,8 @@ const PeopleProperty = memo(({ property, value, onChange, inline }) => {
   // 'value.people' agora armazena o ID do usuário para integridade, 
   // mas mantemos compatibilidade com nomes antigos se necessário.
   const selectedIdOrName = value?.people || '';
-  const selectedMember = members.find(m => m.id === selectedIdOrName || m.name === selectedIdOrName);
+  const membersArr = Array.isArray(members) ? members : [];
+  const selectedMember = membersArr.find(m => m.id === selectedIdOrName || m.name === selectedIdOrName);
 
   return (
     <DropdownMenu.Root>

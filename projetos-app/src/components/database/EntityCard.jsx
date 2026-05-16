@@ -40,36 +40,43 @@ export const EntityCard = memo(function EntityCard({
   };
 
   // Extract relevant props
-  const statusProp   = properties.find(p => p.name === 'Status');
-  const priorityProp = properties.find(p => p.name === 'Prioridade');
-  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega');
-  const assigneeProp = properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
-  const descProp     = properties.find(p => p.name === 'Descricao da Cena' || p.name === 'Descrição da Cena' || p.property_type === 'text');
-  const atoProp      = properties.find(p => p.name === 'Ato');
-  const clienteProp  = properties.find(p => p.name === 'Cliente');
-  const tipoProp     = properties.find(p => p.name === 'Tipo');
-  const feitoProp    = properties.find(p => p.name === 'Feito');
+  const propsArr = Array.isArray(properties) ? properties : [];
+  const statusProp   = propsArr.find(p => p.name === 'Status');
+  const priorityProp = propsArr.find(p => p.name === 'Prioridade');
+  const deadlineProp = propsArr.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega');
+  const assigneeProp = propsArr.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
+  const descProp     = propsArr.find(p => p.name === 'Descricao da Cena' || p.name === 'Descrição da Cena' || p.property_type === 'text');
+  const atoProp      = propsArr.find(p => p.name === 'Ato');
+  const clienteProp  = propsArr.find(p => p.name === 'Cliente');
+  const tipoProp     = propsArr.find(p => p.name === 'Tipo');
+  const feitoProp    = propsArr.find(p => p.name === 'Feito');
 
   const statusVal    = statusProp ? values[statusProp.id] : null;
-  const statusOption = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
+  const statusOptions = Array.isArray(statusProp?.config?.options) ? statusProp.config.options : [];
+  const statusOption = statusOptions.find(o => o.id === statusVal?.selected);
   const statusColors = statusOption ? COLOR_MAP[statusOption.color] || COLOR_MAP.gray : null;
 
   const priorityVal    = priorityProp ? values[priorityProp.id] : null;
-  const priorityOption = priorityProp?.config?.options?.find(o => o.id === priorityVal?.selected);
+  const priorityOptions = Array.isArray(priorityProp?.config?.options) ? priorityProp.config.options : [];
+  const priorityOption = priorityOptions.find(o => o.id === priorityVal?.selected);
   const priorityConfig = PRIORITY_MAP[priorityOption?.id] || null;
 
   const tipoVal    = tipoProp ? values[tipoProp.id] : null;
-  const tipoOption = tipoProp?.config?.options?.find(o => o.id === tipoVal?.selected);
+  const tipoOptions = Array.isArray(tipoProp?.config?.options) ? tipoProp.config.options : [];
+  const tipoOption = tipoOptions.find(o => o.id === tipoVal?.selected);
 
   const atoVal    = atoProp ? values[atoProp.id] : null;
-  const atoOption = atoProp?.config?.options?.find(o => o.id === atoVal?.selected);
+  const atoOptions = Array.isArray(atoProp?.config?.options) ? atoProp.config.options : [];
+  const atoOption = atoOptions.find(o => o.id === atoVal?.selected);
 
   const isFeito    = feitoProp ? values[feitoProp.id]?.checked : false;
 
   const deadline   = deadlineProp ? values[deadlineProp.id]?.date : null;
-  const assignee   = assigneeProp ? (values[assigneeProp.id]?.selected
-    ? (assigneeProp.config?.options?.find(o => o.id === values[assigneeProp.id]?.selected)?.label || values[assigneeProp.id]?.selected)
-    : values[assigneeProp.id]?.people) : null;
+  const assigneeVal = assigneeProp ? values[assigneeProp.id] : null;
+  const assigneeOptions = Array.isArray(assigneeProp?.config?.options) ? assigneeProp.config.options : [];
+  const assignee   = assigneeProp ? (assigneeVal?.selected
+    ? (assigneeOptions.find(o => o.id === assigneeVal?.selected)?.label || assigneeVal?.selected)
+    : assigneeVal?.people) : null;
   const descText   = descProp ? values[descProp.id]?.text : null;
   const cliente    = clienteProp ? values[clienteProp.id]?.text : null;
 

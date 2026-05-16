@@ -8,21 +8,26 @@ export function TamagochiAvatar({ seed = 0, accentColor = '#3b82f6', accessories
   const mousePos = useRef({ x: 0, y: 0 });
   const rafRef = useRef(null);
 
-  const draw = useCallback(() => {
-    if (canvasRef.current) {
-      renderAvatar(canvasRef.current, seed, {
-        width: size * 2,
-        height: size * 2,
-        accentColor,
-        mouseX: mousePos.current.x,
-        mouseY: mousePos.current.y,
-        accessories,
-      });
-    }
+  // Continuous animation loop for idle + lerp
+  useEffect(() => {
+    let animationFrameId;
+    const animate = (time) => {
+      if (canvasRef.current) {
+        renderAvatar(canvasRef.current, seed, {
+          width: size * 2,
+          height: size * 2,
+          accentColor,
+          mouseX: mousePos.current.x,
+          mouseY: mousePos.current.y,
+          accessories,
+          time
+        });
+      }
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [seed, accentColor, accessories, size]);
-
-  // Initial render
-  useEffect(() => { draw(); }, [draw]);
 
   // Mouse tracking on the document
   const handleMouseMove = useCallback((e) => {
@@ -34,17 +39,12 @@ export function TamagochiAvatar({ seed = 0, accentColor = '#3b82f6', accessories
       x: Math.max(-1, Math.min(1, x)),
       y: Math.max(-1, Math.min(1, y)),
     };
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(draw);
-  }, [draw]);
+  }, []);
 
   useEffect(() => {
     if (!trackMouse) return;
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(rafRef.current);
-    };
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [handleMouseMove, trackMouse]);
 
   return (

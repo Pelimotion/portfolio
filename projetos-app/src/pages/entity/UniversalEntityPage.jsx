@@ -30,6 +30,7 @@ import { getAccentColorFromId } from '../../lib/artPatternEngine';
 import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
 import { hashString } from '../../lib/avatarEngine';
 import { useAuth } from '../../contexts/AuthContext';
+import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
@@ -49,7 +50,7 @@ export function UniversalEntityPage() {
   const { pageId } = useParams();
   const navigate   = useNavigate();
   const { user, profile } = useAuth();
-  const { pages, fetchPage, updatePage, archivePage } = usePageStore();
+  const { pages = {}, fetchPage, updatePage, archivePage } = usePageStore();
 
   const [activeTab,     setActiveTab]     = useState('notes');
   const [properties,    setProperties]    = useState([]);
@@ -151,14 +152,15 @@ export function UniversalEntityPage() {
   const tabs     = isProject ? PROJECT_TABS : SCENE_TABS;
   const isWide   = ['dashboard', 'pipeline', 'calendar'].includes(activeTab);
 
-  const statusProp   = properties.find(p => p.name === 'Status');
-  const priorityProp = properties.find(p => p.name === 'Prioridade');
-  const deadlineProp = properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega' || p.property_type === 'date');
-  const clienteProp  = properties.find(p => p.name === 'Cliente');
-  const otherProps   = properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Data de Entrega', 'Cliente'].includes(p.name));
+  const statusProp   = Array.isArray(properties) ? properties.find(p => p.name === 'Status') : null;
+  const priorityProp = Array.isArray(properties) ? properties.find(p => p.name === 'Prioridade') : null;
+  const deadlineProp = Array.isArray(properties) ? properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega' || p.property_type === 'date') : null;
+  const clienteProp  = Array.isArray(properties) ? properties.find(p => p.name === 'Cliente') : null;
+  const otherProps   = Array.isArray(properties) ? properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Data de Entrega', 'Cliente'].includes(p.name)) : [];
 
   const statusVal    = statusProp ? propValues[statusProp.id] : null;
-  const statusOption = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
+  const statusOptions = statusProp?.config?.options || [];
+  const statusOption = Array.isArray(statusOptions) ? statusOptions.find(o => o.id === statusVal?.selected) : null;
   const statusColors = statusOption ? COLOR_MAP[statusOption.color] || COLOR_MAP.gray : COLOR_MAP.gray;
 
   return (
@@ -173,7 +175,7 @@ export function UniversalEntityPage() {
         {page?.parent_id && page.parent_id !== ROOT_HUB_ID && (
           <>
             <button onClick={() => navigate(`/page/${page.parent_id}`)} className="hover:text-foreground transition-colors truncate max-w-[150px]">
-              {pages.find(p => p.id === page.parent_id)?.title || 'Projeto Pai'}
+              {pages[page.parent_id]?.title || 'Projeto Pai'}
             </button>
             <ChevronRight className="w-3 h-3 opacity-30" />
           </>
@@ -183,12 +185,9 @@ export function UniversalEntityPage() {
 
       {/* ── PROJECT COVER ── */}
       <div className="h-48 w-full bg-[var(--surface-2)] relative overflow-hidden group/cover shrink-0">
-        <ProjectArtPattern 
-          projectId={pageId} 
-          size="full" 
-          opacity={0.15} 
-          style="geometric"
-          className="absolute inset-0"
+        <GenerativeHeader 
+          accentColor={getAccentColorFromId(pageId)} 
+          opacity={0.35} 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-0)]/80 to-transparent" />
         
@@ -461,11 +460,11 @@ export function UniversalEntityPage() {
 
 
 function ProductionDashboard({ items, properties, allValues, projectTitle, pageId, pageContent, onContentChange, onGoToAssets }) {
-  const statusProp    = properties.find(p => p.property_type === 'status' || p.name === 'Status');
-  const deadlineProp  = properties.find(p => p.property_type === 'date' || p.name === 'Data de Entrega' || p.name === 'Deadline');
-  const assigneeProp  = properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável');
-  const atoProp       = properties.find(p => p.name === 'Ato');
-  const doneProp      = properties.find(p => p.property_type === 'checkbox' && (p.name.toLowerCase().includes('feito') || p.name.toLowerCase().includes('concluí')));
+  const statusProp    = Array.isArray(properties) ? properties.find(p => p.property_type === 'status' || p.name === 'Status') : null;
+  const deadlineProp  = Array.isArray(properties) ? properties.find(p => p.property_type === 'date' || p.name === 'Data de Entrega' || p.name === 'Deadline') : null;
+  const assigneeProp  = Array.isArray(properties) ? properties.find(p => p.name === 'Responsavel' || p.name === 'Responsável') : null;
+  const atoProp       = Array.isArray(properties) ? properties.find(p => p.name === 'Ato') : null;
+  const doneProp      = Array.isArray(properties) ? properties.find(p => p.property_type === 'checkbox' && (p.name.toLowerCase().includes('feito') || p.name.toLowerCase().includes('concluí'))) : null;
   const statusOptions = statusProp?.config?.options || [];
   const today = new Date();
 
@@ -476,6 +475,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
 
   const getStatus = (itemId) => {
     const sel = allValues[itemId]?.[statusProp?.id]?.selected;
+    if (!Array.isArray(statusOptions)) return null;
     return statusOptions.find(o => o.id === sel);
   };
 
@@ -556,10 +556,14 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
       if (isDone) return;
       const sel = allValues[i.id]?.[assigneeProp.id]?.selected;
       if (!sel) return;
-      const label = assigneeProp.config?.options?.find(o => o.id === sel)?.label || sel;
+      const options = assigneeProp.config?.options || [];
+      const label = Array.isArray(options) ? options.find(o => o.id === sel)?.label || sel : sel;
       counts[label] = (counts[label] || 0) + 1;
     });
-    const total = items.filter(i => !DONE_IDS.some(k => getStatus(i.id)?.id?.includes(k))).length || 1;
+    const total = items.filter(i => {
+      const status = getStatus(i.id);
+      return !DONE_IDS.some(k => status?.id?.includes(k));
+    }).length || 1;
     return Object.entries(counts).map(([name, count]) => ({ name, count, pct: Math.round((count / total) * 100) }))
       .sort((a, b) => b.count - a.count);
   }, [items, allValues, assigneeProp, statusProp]);

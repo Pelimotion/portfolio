@@ -37,7 +37,7 @@ export const useDensity = () => useContext(DensityCtx);
 // DATABASE RENDERER v3 — Fixed DnD + Density
 // ============================================
 export function DatabaseRenderer({ databaseId, defaultView }) {
-  const { pages, fetchDatabaseItems, createPage } = usePageStore();
+  const { pages = {}, fetchDatabaseItems, createPage } = usePageStore();
   const [properties, setProperties] = useState([]);
   const [allValues, setAllValues]   = useState({});
   const [localItems, setLocalItems] = useState([]); // local sorted copy for optimistic DnD

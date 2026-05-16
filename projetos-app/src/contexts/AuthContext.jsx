@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { computeLevel, computeBadges, XP_SOURCES } from '../lib/gamification';
+import { setGlobalAccentColor } from '../lib/colorUtils';
 
 const AuthContext = createContext({});
 
@@ -138,6 +139,13 @@ export const AuthProvider = ({ children }) => {
 
     return () => subscription.unsubscribe();
   }, [loadProfile]);
+
+  // Apply accent color globally
+  useEffect(() => {
+    if (profile?.accent_color) {
+      setGlobalAccentColor(profile.accent_color);
+    }
+  }, [profile?.accent_color]);
 
   const value = {
     session,
