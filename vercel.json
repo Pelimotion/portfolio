@@ -16,6 +16,11 @@
     { "source": "/admin/:path*", "destination": "/admin/:path*" },
     { "source": "/projetos/assets/:path*", "destination": "/projetos-app/dist/assets/:path*" },
     { "source": "/projetos", "destination": "/projetos-app/dist/index.html" },
-    { "source": "/projetos/:match*", "destination": "/projetos-app/dist/index.html" }
+    { "source": "/projetos/:match*", "destination": "/projetos-app/dist/index.html" },
+    { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/blog/:slug", "destination": "/blog/:slug.html" },
+    { "source": "/blog/assets/:path*", "destination": "/blog/assets/:path*" },
+    { "source": "/en/blog", "destination": "/en/blog/index.html" },
+    { "source": "/en/blog/:slug", "destination": "/en/blog/:slug.html" }
   ]
 }
