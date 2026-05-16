@@ -19,11 +19,9 @@ export function DashboardOverview() {
     
     // Group by status
     const stageStats = {};
-
-    // Note: pages in usePageStore for Dashboard are usually Projects (root hub)
-    // To get scenes, we might need a broader fetch or just summarize what's available
-    // For now, let's summarize the projects themselves or scenes if they are loaded
     
+    if (!allValues || !properties) return { upcoming: [], totalCount: 0, completedCount: 0, stageStats: {} };
+
     Object.entries(allValues).forEach(([pageId, values]) => {
       const page = pages.find(p => p.id === pageId);
       if (!page) return;
