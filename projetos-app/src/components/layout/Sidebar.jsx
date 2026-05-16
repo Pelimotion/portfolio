@@ -88,7 +88,7 @@ export function Sidebar() {
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
         <button onClick={() => navigate('/profile')} className="mb-2 transition-transform hover:scale-110" title="Perfil">
-          <TamagochiAvatar size={28} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
+          <TamagochiAvatar size={28} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentColor={profile?.accent_color ?? '#3b82f6'} />
         </button>
         <button onClick={signOut} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Sair">
           <LogOut className="w-3.5 h-3.5" />
@@ -212,7 +212,7 @@ export function Sidebar() {
         {/* User section */}
         <div onClick={() => navigate('/profile')} className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[var(--surface-2)] transition-colors cursor-pointer group">
           <div className="flex items-center gap-2 overflow-hidden">
-            <TamagochiAvatar size={20} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
+            <TamagochiAvatar size={20} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentColor={profile?.accent_color ?? '#3b82f6'} />
             <span className="truncate text-[13px] text-muted-foreground group-hover:text-foreground">{profile?.display_name || user?.email?.split('@')[0]}</span>
           </div>
           <button onClick={(e) => { e.stopPropagation(); signOut(); }} className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all shrink-0">

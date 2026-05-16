@@ -10,17 +10,7 @@ import { ArrowLeft, RefreshCw, Palette, Save, Check, User, Mail, Briefcase, Hash
 // PROFILE PAGE — User Settings + 3D Avatar
 // ============================================
 
-const COLOR_PRESETS = [
-  { hue: 0, label: 'Vermelho' },
-  { hue: 30, label: 'Laranja' },
-  { hue: 50, label: 'Âmbar' },
-  { hue: 120, label: 'Verde' },
-  { hue: 180, label: 'Ciano' },
-  { hue: 210, label: 'Azul' },
-  { hue: 260, label: 'Violeta' },
-  { hue: 300, label: 'Rosa' },
-  { hue: 330, label: 'Magenta' },
-];
+// No presets needed anymore, using free color picker
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -32,7 +22,7 @@ export default function ProfilePage() {
     display_name: '',
     nickname: '',
     role: '',
-    accent_hue: 210,
+    accent_color: '#3b82f6',
     avatar_seed: 0,
   });
   const [saving, setSaving] = useState(false);
@@ -54,7 +44,7 @@ export default function ProfilePage() {
           display_name: data.display_name || user.email?.split('@')[0] || '',
           nickname: data.nickname || '',
           role: data.role || '',
-          accent_hue: data.accent_hue ?? 210,
+          accent_color: data.accent_color || '#3b82f6',
           avatar_seed: data.avatar_seed ?? hashString(user.id),
         });
       } else {
@@ -75,11 +65,11 @@ export default function ProfilePage() {
     renderAvatar(canvasRef.current, profile.avatar_seed, {
       width: 280,
       height: 280,
-      accentHue: profile.accent_hue,
+      accentColor: profile.accent_color,
       mouseX: mousePos.x,
       mouseY: mousePos.y,
     });
-  }, [profile.avatar_seed, profile.accent_hue, mousePos]);
+  }, [profile.avatar_seed, profile.accent_color, mousePos]);
 
   const handleMouseMove = useCallback((e) => {
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -105,7 +95,7 @@ export default function ProfilePage() {
           display_name: profile.display_name,
           nickname: profile.nickname,
           role: profile.role,
-          accent_hue: profile.accent_hue,
+          accent_color: profile.accent_color,
           avatar_seed: profile.avatar_seed,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'id' });
@@ -121,7 +111,7 @@ export default function ProfilePage() {
     }
   };
 
-  const colors = seedToColors(profile.avatar_seed, profile.accent_hue);
+  const colors = seedToColors(profile.avatar_seed, profile.accent_color);
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-[var(--surface-0)]">
@@ -141,8 +131,8 @@ export default function ProfilePage() {
           
           {/* Avatar Section */}
           <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6 space-y-5">
-            <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Sparkles className="w-4 h-4 text-primary/60" />
+            <div className="flex items-center gap-2 text-sm font-bold" style={{ color: profile.accent_color }}>
+              <Sparkles className="w-4 h-4" />
               Avatar Generativo
             </div>
             
@@ -188,16 +178,14 @@ export default function ProfilePage() {
                   <label className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2 block flex items-center gap-1.5">
                     <Palette className="w-3 h-3" /> Cor de Preferência
                   </label>
-                  <div className="flex gap-2 flex-wrap">
-                    {COLOR_PRESETS.map(c => (
-                      <button
-                        key={c.hue}
-                        onClick={() => setProfile(prev => ({ ...prev, accent_hue: c.hue }))}
-                        className={`w-8 h-8 rounded-lg transition-all border-2 ${profile.accent_hue === c.hue ? 'border-foreground scale-110 shadow-lg' : 'border-transparent hover:scale-105'}`}
-                        style={{ backgroundColor: `hsl(${c.hue}, 60%, 50%)` }}
-                        title={c.label}
-                      />
-                    ))}
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="color"
+                      value={profile.accent_color}
+                      onChange={e => setProfile(prev => ({ ...prev, accent_color: e.target.value }))}
+                      className="w-12 h-12 rounded-lg cursor-pointer bg-transparent border-none p-0"
+                    />
+                    <span className="text-sm font-mono text-muted-foreground uppercase">{profile.accent_color}</span>
                   </div>
                 </div>
 
@@ -210,8 +198,8 @@ export default function ProfilePage() {
 
           {/* Profile Fields */}
           <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-6 space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <User className="w-4 h-4 text-primary/60" />
+            <div className="flex items-center gap-2 text-sm font-bold" style={{ color: profile.accent_color }}>
+              <User className="w-4 h-4" />
               Informações
             </div>
 
@@ -252,11 +240,8 @@ export default function ProfilePage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
-                saved
-                  ? 'bg-green-500/20 text-green-500 border border-green-500/30'
-                  : 'bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/10'
-              } disabled:opacity-50`}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all text-white disabled:opacity-50`}
+              style={{ backgroundColor: saved ? '#22c55e' : profile.accent_color }}
             >
               {saved ? <><Check className="w-4 h-4" /> Salvo!</> : saving ? 'Salvando...' : <><Save className="w-4 h-4" /> Salvar Perfil</>}
             </button>

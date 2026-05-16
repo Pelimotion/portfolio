@@ -98,7 +98,7 @@ export default function Dashboard() {
           <div className="w-px h-8 bg-border/50 mx-2" />
           
           <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
-            <TamagochiAvatar size={36} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentHue={profile?.accent_hue ?? 210} />
+            <TamagochiAvatar size={36} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentColor={profile?.accent_color ?? '#3b82f6'} />
           </button>
         </div>
       </header>

@@ -6,7 +6,7 @@ import { renderAvatar, hashString } from '../../lib/avatarEngine';
 // the mouse cursor like a virtual pet
 // ============================================
 
-export function TamagochiAvatar({ seed = 0, accentHue = 210, size = 32, className = '' }) {
+export function TamagochiAvatar({ seed = 0, accentColor = '#3b82f6', size = 32, className = '' }) {
   const canvasRef = useRef(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const rafRef = useRef(null);
@@ -36,11 +36,11 @@ export function TamagochiAvatar({ seed = 0, accentHue = 210, size = 32, classNam
     renderAvatar(canvasRef.current, seed, {
       width: size * 2, // 2x for retina
       height: size * 2,
-      accentHue,
+      accentColor,
       mouseX: mousePos.x,
       mouseY: mousePos.y,
     });
-  }, [seed, accentHue, size, mousePos]);
+  }, [seed, accentColor, size, mousePos]);
 
   return (
     <canvas
