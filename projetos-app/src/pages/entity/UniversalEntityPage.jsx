@@ -609,8 +609,8 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
   const loadFiles = useCallback(async (forceAuth = false) => {
     if (linkedDocSlots.length === 0) return;
 
-    let token = sessionStorage.getItem('gdrive_token');
-    const expires = sessionStorage.getItem('gdrive_token_expires');
+    let token = localStorage.getItem('gdrive_token');
+    const expires = localStorage.getItem('gdrive_token_expires');
     
     if (forceAuth || !token || Date.now() > Number(expires)) {
       if (!forceAuth) return; // Silent fail auto-fetch
@@ -639,7 +639,7 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
     } catch (e) {
       console.error(e);
       setDriveError('Sessão expirada ou acesso negado. Reconecte o Drive.');
-      sessionStorage.removeItem('gdrive_token');
+      localStorage.removeItem('gdrive_token');
     } finally {
       setFetchingFiles(false);
     }

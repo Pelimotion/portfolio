@@ -41,9 +41,9 @@ export const googleAuth = {
               reject(new Error(`Erro Google Auth: ${response.error_description || response.error}`));
             }
           } else {
-            // Sucesso: Persiste temporariamente
-            sessionStorage.setItem('gdrive_token', response.access_token);
-            sessionStorage.setItem('gdrive_token_expires', Date.now() + (response.expires_in * 1000));
+            // Sucesso: Persiste
+            localStorage.setItem('gdrive_token', response.access_token);
+            localStorage.setItem('gdrive_token_expires', Date.now() + (response.expires_in * 1000));
             resolve(response.access_token);
           }
         },
@@ -51,18 +51,18 @@ export const googleAuth = {
           reject(new Error(`Falha ao abrir pop-up: ${err.message || 'Verifique se o navegador bloqueou a janela.'}`));
         }
       });
-
+ 
       // Força a abertura do pop-up de login
       client.requestAccessToken({ prompt: 'consent' });
     });
   },
-
+ 
   /**
    * Garante um token válido, disparando login se necessário
    */
   async ensureToken() {
-    const token = sessionStorage.getItem('gdrive_token');
-    const expires = sessionStorage.getItem('gdrive_token_expires');
+    const token = localStorage.getItem('gdrive_token');
+    const expires = localStorage.getItem('gdrive_token_expires');
     
     // Se temos um token válido, retorna ele
     if (token && expires && Date.now() < parseInt(expires)) {
