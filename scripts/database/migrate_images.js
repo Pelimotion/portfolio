@@ -1,8 +1,19 @@
+const fs = require('fs');
+const path = require('path');
 const https = require('https');
-require('dotenv').config({ path: '../../.env' });
+
+// Manual .env parsing
+const envPath = path.join(__dirname, '../../.env');
+if (fs.existsSync(envPath)) {
+    const env = fs.readFileSync(envPath, 'utf8');
+    env.split('\n').forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value) process.env[key.trim()] = value.trim();
+    });
+}
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
 async function supabaseFetch(path, options = {}) {
     const url = `${SUPABASE_URL}/rest/v1/${path}`;
@@ -38,17 +49,27 @@ async function run() {
         console.log(`Found ${posts.length} posts.`);
 
         for (const post of posts) {
-            const images = post.data?.images || [];
-            if (images.length === 0) continue;
+            const data = post.data || {};
+            const imagesToMigrate = [];
+            
+            if (data.images) {
+                imagesToMigrate.push(...data.images);
+            }
+            if (data.heroImage) {
+                imagesToMigrate.push({ id: 'hero', url: data.heroImage, prompt: data.heroPrompt || '', role: 'hero' });
+            }
+            if (data.thumbImage) {
+                imagesToMigrate.push({ id: 'thumb', url: data.thumbImage, prompt: '', role: 'thumb' });
+            }
 
-            console.log(`Migrating ${images.length} images for post ${post.id}...`);
+            if (imagesToMigrate.length === 0) continue;
 
-            for (let i = 0; i < images.length; i++) {
-                const img = images[i];
+            console.log(`Migrating ${imagesToMigrate.length} images for post ${post.id}...`);
+
+            for (let i = 0; i < imagesToMigrate.length; i++) {
+                const img = imagesToMigrate[i];
                 if (!img.url) continue;
 
-                // 1. Insert into blog_images
-                // Using a manual 'upsert' logic since we want to reuse existing images
                 let imageId;
                 try {
                     const existing = await supabaseFetch(`blog_images?url=eq.${encodeURIComponent(img.url)}&select=id`);
@@ -58,7 +79,7 @@ async function run() {
                         const newImg = await supabaseFetch('blog_images', {
                             method: 'POST',
                             body: {
-                                slug: img.id || `img-${Date.now()}`,
+                                slug: img.id || `img-${Date.now()}-${i}`,
                                 url: img.url,
                                 prompt: img.prompt,
                                 alt_text: img.prompt ? img.prompt.substring(0, 100) : ''
@@ -67,13 +88,12 @@ async function run() {
                         imageId = newImg[0].id;
                     }
 
-                    // 2. Insert into post_images
                     await supabaseFetch('post_images', {
                         method: 'POST',
                         body: {
                             post_id: post.id,
                             image_id: imageId,
-                            role: i === 0 ? 'hero' : 'body',
+                            role: img.role || (i === 0 ? 'hero' : 'body'),
                             position: i,
                             placeholder_id: img.id || `img-${i}`
                         },

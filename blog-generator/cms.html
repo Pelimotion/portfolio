@@ -80,6 +80,9 @@
 
         #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 500; }
         .modal-body { background: #000; border: 1px solid var(--border); padding: 30px; width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto; }
+
+        /* Sortable */
+        .sortable-ghost { opacity: 0.3; background: var(--accent); }
     </style>
 </head>
 <body>
@@ -145,6 +148,22 @@
                     <button class="tab" onclick="switchStage(3)">03 CONTENT</button>
                     <button class="tab" onclick="switchStage(4)">04 VISUAL ASSETS</button>
                     <button class="tab" onclick="switchStage(5)">05 CONFIGS</button>
+                    <button class="tab" onclick="switchStage(6)">06 CHECKLIST</button>
+                </div>
+
+                <!-- Stage 6: Checklist -->
+                <div class="stage" id="stage-6">
+                    <div class="card">
+                        <div class="sidebar-title">FINAL VERIFICATION</div>
+                        <div class="checklist" style="font-size:12px; display:flex; flex-direction:column; gap:10px;">
+                            <label><input type="checkbox"> Keyword principal aparece no título H1</label>
+                            <label><input type="checkbox"> Slug está limpo e legível</label>
+                            <label><input type="checkbox"> Meta Description tem entre 120 e 160 caracteres</label>
+                            <label><input type="checkbox"> Todas as imagens têm prompts coesos</label>
+                            <label><input type="checkbox"> Marcadores [img-N] estão posicionados corretamente</label>
+                            <label><input type="checkbox"> O tom de voz condiz com o Preset selecionado</label>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Stage 1: Strategy -->
@@ -253,6 +272,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script>
         // --- ArticleSession Engine ---
         let Session = {
@@ -343,9 +363,10 @@
             Session.images.forEach((img, i) => {
                 const div = document.createElement('div');
                 div.className = 'slot-item';
+                div.dataset.index = i;
                 const imgSrc = img.url ? (img.url.startsWith('http') ? img.url : `${CDN}${img.url}`) : '';
                 div.innerHTML = `
-                    <div class="slot-preview">${imgSrc ? `<img src="${imgSrc}?t=${Date.now()}">` : 'NO IMAGE'}</div>
+                    <div class="slot-preview" style="cursor:grab;">${imgSrc ? `<img src="${imgSrc}?t=${Date.now()}">` : 'NO IMAGE'}</div>
                     <div class="slot-info">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:10px; font-family:var(--font-mono); color:var(--accent);">SLOT: [img-${i+1}]</span>
@@ -359,13 +380,22 @@
                         <div class="slot-controls">
                             <button class="btn small ai" onclick="generateSlot(${i})">GENERATE</button>
                             <button class="btn small" onclick="openGallery(${i})">LIBRARY</button>
-                            <button class="btn small" onclick="moveSlot(${i}, -1)">↑</button>
-                            <button class="btn small" onclick="moveSlot(${i}, 1)">↓</button>
                             <button class="btn small" onclick="removeSlot(${i})">✕</button>
                         </div>
                     </div>
                 `;
                 grid.appendChild(div);
+            });
+
+            new Sortable(grid, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                handle: '.slot-preview',
+                onEnd: function(evt) {
+                    const newOrder = Array.from(grid.children).map(el => Session.images[el.dataset.index]);
+                    Session.images = newOrder;
+                    renderSlots(); // Re-render to update [img-N] labels
+                }
             });
         }
 
