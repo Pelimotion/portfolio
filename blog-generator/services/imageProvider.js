@@ -7,7 +7,7 @@ const { GoogleAuth } = require('google-auth-library');
  * Image Provider Service
  * Using Google Cloud Vertex AI (Imagen) with Service Account
  */
-async function generatePostImages(prompt, slug) {
+async function generatePostImages(prompt, slug, imageName = 'hero') {
     const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID || 'pelimotion-blog';
     const location = 'us-central1';
     
@@ -16,16 +16,16 @@ async function generatePostImages(prompt, slug) {
         fs.mkdirSync(assetsDir, { recursive: true });
     }
 
-    const heroPath = path.join(assetsDir, 'hero.jpg');
+    const imgPath = path.join(assetsDir, `${imageName}.jpg`);
     const thumbPath = path.join(assetsDir, 'thumb.jpg');
 
-    // Skip if images already exist
-    if (fs.existsSync(heroPath) && fs.existsSync(thumbPath)) {
-        console.log(`Images for ${slug} already exist. Skipping API call.`);
+    // Skip if image already exists
+    if (fs.existsSync(imgPath)) {
+        // console.log(`Image ${imageName} for ${slug} already exists. Skipping API call.`);
         return;
     }
 
-    console.log(`Generating images for [${slug}] via Google Vertex AI Service Account...`);
+    console.log(`Generating image [${imageName}] for [${slug}] via Google Vertex AI...`);
 
     try {
         const auth = new GoogleAuth({
@@ -61,8 +61,7 @@ async function generatePostImages(prompt, slug) {
                 res.on('end', () => {
                     if (res.statusCode !== 200) {
                         console.error(`Vertex AI Error (${res.statusCode}):`, body);
-                        createPlaceholder(heroPath, 1200, 630);
-                        createPlaceholder(thumbPath, 600, 400);
+                        createPlaceholder(imgPath, 1200, 630);
                         return resolve();
                     }
 
@@ -71,10 +70,12 @@ async function generatePostImages(prompt, slug) {
                         const base64Image = response.predictions[0].bytesBase64Encoded;
                         const buffer = Buffer.from(base64Image, 'base64');
                         
-                        fs.writeFileSync(heroPath, buffer);
-                        fs.writeFileSync(thumbPath, buffer);
+                        fs.writeFileSync(imgPath, buffer);
+                        if (imageName === 'hero' && !fs.existsSync(thumbPath)) {
+                            fs.writeFileSync(thumbPath, buffer);
+                        }
                         
-                        console.log(`Successfully generated and saved images for ${slug}`);
+                        console.log(`Successfully generated and saved ${imageName} for ${slug}`);
                         resolve();
                     } catch (err) {
                         console.error('Error parsing Vertex AI response:', err);
@@ -93,8 +94,7 @@ async function generatePostImages(prompt, slug) {
         });
     } catch (error) {
         console.error('Auth error:', error);
-        createPlaceholder(heroPath, 1200, 630);
-        createPlaceholder(thumbPath, 600, 400);
+        createPlaceholder(imgPath, 1200, 630);
     }
 }
 
@@ -103,8 +103,8 @@ function createPlaceholder(filePath, width, height) {
         <rect width="100%" height="100%" fill="#1a1a1a"/>
         <text x="50%" y="50%" font-family="Arial" font-size="24" fill="#333" text-anchor="middle">Image Pending</text>
     </svg>`;
-    fs.writeFileSync(filePath.replace('.webp', '.svg'), svg);
-    console.log(`Created placeholder for ${path.basename(filePath)}`);
+    const outPath = filePath.replace('.jpg', '.svg');
+    fs.writeFileSync(outPath, svg);
 }
 
 module.exports = {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelimotion Hub | Motion Branding</title>
+    <title>Pelimotion Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         
@@ -28,7 +28,7 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Mono', 'IBM Plex Sans', monospace, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.75; overflow-x: hidden; }
-    h1, h2, .playfair { font-family: var(--font-editorial); font-weight: 700; color: var(--text-primary); }
+    h1, h2, h3, .playfair { font-family: var(--font-editorial); font-weight: 700; color: var(--text-primary); }
     a { text-decoration: none; color: inherit; }
     .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent-warm); width: 0%; z-index: 1000; transition: width 100ms linear; }
     
@@ -44,7 +44,6 @@
     .page-title { margin: 2rem 0 1.5rem; font-size: 36px; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
     
     .blog-footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-top: 5rem; }
-    .blog-footer a { color: var(--text-primary); }
     
     .fade-in-up { animation: fadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -53,13 +52,8 @@
         :root { --gutter: 20px; } 
         .blog-nav { display: flex; gap: 12px; font-size: 10px; } 
         .blog-logo-sub { display: none; }
-        .blog-wordmark { padding-top: 20px; }
     }
 
-        .blog-filter-bar { display: flex; justify-content: space-between; align-items: center; padding: 24px var(--gutter) 20px; border-bottom: 1px solid var(--border); }
-        .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-        .pill { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; padding: 4px 10px; border: 1px solid var(--border); border-radius: 100px; background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 150ms ease; }
-        .pill:hover, .pill.active { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
         .posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-left: 1px solid var(--border); border-top: 1px solid var(--border); margin-bottom: 4rem; }
         @media (max-width: 1023px) { .posts-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 767px) { .posts-grid { grid-template-columns: 1fr; } }
@@ -90,26 +84,10 @@
     </header>
     
     <div class="blog-wordmark fade-in-up">JOURNAL</div>
-    
     <main class="container">
         <div class="posts-grid">
             
-            <article class="post-card fade-in-up" data-category="" style="animation-delay: 0ms">
-                <div class="card-meta-top">
-                    <time class="card-date"></time>
-                    <span class="card-category-pill" style="border:1px solid var(--border);padding:2px 6px;border-radius:100px">undefined</span>
-                </div>
-                <div class="card-image-wrapper">
-                    <img class="card-image" src="undefined" alt="" loading="lazy">
-                </div>
-                <h2 class="card-title playfair"><a href="/blog/undefined">undefined</a></h2>
-                <p class="card-excerpt">undefined</p>
-                <div class="card-meta-bottom">
-                    <span><strong>TEXTO</strong> · Pelimotion</span>
-                    <span><strong>LEITURA</strong> · 1 min</span>
-                </div>
-            </article>
-            <article class="post-card fade-in-up" data-category="técnica" style="animation-delay: 100ms">
+            <article class="post-card fade-in-up" style="animation-delay: 0ms">
                 <div class="card-meta-top">
                     <time class="card-date">15 de mai. de 2026</time>
                     <span class="card-category-pill" style="border:1px solid var(--border);padding:2px 6px;border-radius:100px">Técnica</span>
@@ -122,6 +100,21 @@
                 <div class="card-meta-bottom">
                     <span><strong>TEXTO</strong> · Pelimotion</span>
                     <span><strong>LEITURA</strong> · 3 min</span>
+                </div>
+            </article>
+            <article class="post-card fade-in-up" style="animation-delay: 100ms">
+                <div class="card-meta-top">
+                    <time class="card-date">15 de mai. de 2026</time>
+                    <span class="card-category-pill" style="border:1px solid var(--border);padding:2px 6px;border-radius:100px">Negócio</span>
+                </div>
+                <div class="card-image-wrapper">
+                    <img class="card-image" src="/blog/assets/quanto-custa-animacao-motion-design/thumb.jpg" alt="" loading="lazy">
+                </div>
+                <h2 class="card-title playfair"><a href="/blog/quanto-custa-animacao-motion-design">Por que 30 segundos de animação não custam só 30 segundos de trabalho</a></h2>
+                <p class="card-excerpt">Entenda por que o preço de uma animação vai muito além do tempo de tela.</p>
+                <div class="card-meta-bottom">
+                    <span><strong>TEXTO</strong> · Pelimotion</span>
+                    <span><strong>LEITURA</strong> · 1 min</span>
                 </div>
             </article>
         </div>

@@ -26,12 +26,16 @@ Enquanto o motion design foca na técnica de animar elementos, o **motion brandi
 
 Imagine que sua marca seja "robusta e confiável". O movimento dela não pode ser elástico e brincalhão. Ele precisa ter peso, inércia e precisão. É aqui que entra a direção de arte em movimento.
 
+![Branding em Movimento](image-1)
+
 ### Exemplos do nosso fluxo:
 Em projetos de identidade visual dinâmica, nós não apenas animamos um logo; nós criamos um sistema de comportamento. Imagine uma marca de produtos digitais que precisa de flexibilidade: as transições de interface precisam ser tão fluidas quanto o deslizar de um dedo no smartphone, criando uma experiência coesa.
 
 ## O que diferencia quem faz bem do resto
 
-O segredo não está no software, mas na consistência. Quem faz bem cria um **Brand Motion Guide**. É um documento que dita se a marca acelera rápido, se ela tem um "bounce" no final, ou se ela desaparece com um fade elegante. Isso garante que, quer o cliente veja um anúncio no Instagram ou uma vinheta em um evento, ele reconheça a marca apenas pelo *ritmo* do movimento.
+O segredo não está no software, mas na consistência. Quem faz bem cria um **Brand Motion Guide**. É um documento que dita se a marca acelera rápido, se ela tem um "bounce" no final, ou se ela desaparece com um fade elegante. Isso garante que o cliente reconheça a marca apenas pelo *ritmo* do movimento.
+
+![Brand Motion Guide](image-2)
 
 ## Como aplicar isso no seu projeto
 
@@ -39,6 +43,8 @@ Se você está começando agora, não peça por um vídeo. Peça por uma **ident
 1. Defina 3 adjetivos para o movimento da sua marca.
 2. Analise se seus vídeos atuais seguem esses adjetivos.
 3. Busque um parceiro que entenda de branding, não apenas de keyframes.
+
+![Processo Estratégico](image-3)
 
 ---
 
