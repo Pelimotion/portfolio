@@ -460,7 +460,13 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
       </SortableContext>
       <DragOverlay dropAnimation={{ duration: 150 }}>
         {activeItem && (
-          <EntityCardOverlay item={activeItem} properties={properties} values={localAllValues[activeItem.id] || {}} />
+          <EntityCardOverlay 
+            item={activeItem} 
+            properties={properties} 
+            values={localAllValues[activeItem.id] || {}} 
+            onPropertyUpdate={onPropertyUpdate}
+            density={density}
+          />
         )}
         {activeCol && (
           <div className={`${colWidth} shrink-0 rounded-xl bg-[var(--surface-2)] border-2 border-primary/30 opacity-80 p-3`}>
@@ -508,7 +514,21 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
         className="flex flex-col gap-1 px-2 py-2 mb-2 group/header cursor-grab active:cursor-grabbing rounded-lg hover:bg-[var(--surface-2)] transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold text-foreground/80 uppercase tracking-[0.08em] flex-1">{col.label}</span>
+          <input 
+            defaultValue={col.label}
+            onBlur={async (e) => {
+              const newLabel = e.target.value;
+              if (newLabel && newLabel !== col.label) {
+                try {
+                  const opts = groupProp.config?.options || [];
+                  const newOpts = opts.map(o => o.id === col.id ? { ...o, label: newLabel } : o);
+                  await propertyService.update(groupProp.id, { config: { ...groupProp.config, options: newOpts } });
+                  window.location.reload();
+                } catch(e) { console.error(e); }
+              }
+            }}
+            className="text-[11px] font-bold text-foreground/80 uppercase tracking-[0.08em] flex-1 bg-transparent border-none focus:outline-none focus:bg-[var(--surface-3)] px-1 rounded transition-colors cursor-text"
+          />
           <span className="text-[10px] text-muted-foreground/40 bg-secondary/30 px-1.5 py-0.5 rounded-md font-mono font-bold">{col.items.length}</span>
           <div className="flex items-center gap-0.5 opacity-0 group-hover/header:opacity-100 transition-all">
             <button onClick={onAdd} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors" title="Nova Cena">
@@ -558,7 +578,12 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
 
       {/* Cards */}
       <SortableContext items={col.items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-2 min-h-[80px]">
+        <div className="space-y-2 min-h-[150px] pb-10 pt-1">
+          {col.items.length === 0 && (
+            <div className="h-24 rounded-xl border border-dashed border-border/20 flex items-center justify-center text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
+              Vazio
+            </div>
+          )}
           {col.items.map(item => (
             <SortableEntityCard
               key={item.id}
@@ -567,6 +592,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
               values={allValues[item.id] || {}}
               onClick={() => navigate(`/page/${item.id}`)}
               onDelete={onDelete}
+              onPropertyUpdate={onPropertyUpdate}
               density={density}
             />
           ))}

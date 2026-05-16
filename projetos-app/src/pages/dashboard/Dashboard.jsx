@@ -3,6 +3,7 @@ import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { AddMemberModal } from '../../components/database/AddMemberModal';
 import { LayoutDashboard, Plus, Search, UserPlus } from 'lucide-react';
+import { DashboardOverview } from '../../components/dashboard/DashboardOverview';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
@@ -102,6 +103,9 @@ export default function Dashboard() {
           </button>
         </div>
       </header>
+
+      {/* ── Summary Overview ── */}
+      <DashboardOverview />
 
       {/* ── Database Content ── */}
       <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">

@@ -21,7 +21,8 @@ import {
   Activity, Clock, ChevronDown, AlertTriangle,
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
   Circle, ArrowRight, Trash2, Home, ChevronRight,
-  LayoutDashboard, Database, Share2
+  LayoutDashboard, Database, Share2, Plus, Settings,
+  Copy, ExternalLink, MessageCircle, Link2
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
@@ -48,7 +49,7 @@ export function UniversalEntityPage() {
   const { pageId } = useParams();
   const navigate   = useNavigate();
   const { user, profile } = useAuth();
-  const { pages, fetchPage, updatePage } = usePageStore();
+  const { pages, fetchPage, updatePage, archivePage } = usePageStore();
 
   const [activeTab,     setActiveTab]     = useState('notes');
   const [properties,    setProperties]    = useState([]);
@@ -59,6 +60,7 @@ export function UniversalEntityPage() {
   const [pipelineProps, setPipelineProps] = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [teamSettingsOpen, setTeamSettingsOpen] = useState(false);
+  const [showHeaderEditor, setShowHeaderEditor] = useState(false);
   const [grandparentPageId, setGrandparentPageId] = useState(null);
 
   const page     = pages[pageId];
@@ -170,8 +172,8 @@ export function UniversalEntityPage() {
         <ChevronRight className="w-3 h-3 opacity-30" />
         {page?.parent_id && page.parent_id !== ROOT_HUB_ID && (
           <>
-            <button onClick={() => navigate(`/project/${page.parent_id}`)} className="hover:text-foreground transition-colors">
-              Projeto Pai
+            <button onClick={() => navigate(`/page/${page.parent_id}`)} className="hover:text-foreground transition-colors truncate max-w-[150px]">
+              {pages.find(p => p.id === page.parent_id)?.title || 'Projeto Pai'}
             </button>
             <ChevronRight className="w-3 h-3 opacity-30" />
           </>
@@ -179,22 +181,25 @@ export function UniversalEntityPage() {
         <span className="text-foreground/80 truncate font-bold">{page?.title}</span>
       </div>
 
-      {/* ── PROJECT HEADER ── */}
-      <div className="relative pt-8 pb-0 px-8 border-b border-[var(--border-subtle)] bg-[var(--surface-1)] overflow-hidden shrink-0">
-        {/* Background Art Pattern */}
+      {/* ── PROJECT COVER ── */}
+      <div className="h-48 w-full bg-[var(--surface-2)] relative overflow-hidden group/cover shrink-0">
         <ProjectArtPattern 
           projectId={pageId} 
-          size="header" 
-          opacity={0.08} 
-          className="mask-header"
+          size="full" 
+          opacity={0.15} 
+          style="geometric"
+          className="absolute inset-0"
         />
-        <style>{`
-          .mask-header {
-            mask-image: linear-gradient(to bottom, black, transparent);
-            -webkit-mask-image: linear-gradient(to bottom, black, transparent);
-          }
-        `}</style>
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-0)]/80 to-transparent" />
+        
+        {/* Change Cover Button (UI only for now) */}
+        <button className="absolute bottom-4 right-8 opacity-0 group-hover/cover:opacity-100 transition-all bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/10 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest">
+          Alterar Capa
+        </button>
+      </div>
 
+      {/* ── PROJECT HEADER ── */}
+      <div className="relative -mt-12 pt-0 pb-0 px-8 border-b border-[var(--border-subtle)] bg-transparent overflow-hidden shrink-0">
         <div className="relative z-10 flex items-end justify-between">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-strong)] flex items-center justify-center text-3xl shadow-2xl">
@@ -220,7 +225,7 @@ export function UniversalEntityPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 bg-[var(--surface-1)]/80 backdrop-blur-md p-1.5 rounded-2xl border border-[var(--border-subtle)]">
             {isProject && (
               <button 
                 onClick={() => setTeamSettingsOpen(true)}
@@ -230,18 +235,144 @@ export function UniversalEntityPage() {
                 <Users className="w-4 h-4" />
               </button>
             )}
-            <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
-              <Share2 className="w-4 h-4" />
-            </button>
-            <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+
+            {/* Share Dropdown */}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
+                  <Share2 className="w-4 h-4" />
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
+                  <DropdownMenu.Item 
+                    onSelect={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('Link copiado!');
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                  >
+                    <Link2 className="w-4 h-4" /> Copiar Link
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item 
+                    onSelect={() => {
+                      const url = encodeURIComponent(window.location.href);
+                      window.open(`https://api.whatsapp.com/send?text=Confira este projeto na Pelimotion: ${url}`, '_blank');
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-green-500/10 rounded-lg cursor-pointer outline-none"
+                  >
+                    <MessageCircle className="w-4 h-4 text-green-500" /> WhatsApp
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            {/* More Actions Dropdown */}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="p-2 hover:bg-[var(--surface-3)] rounded-xl text-muted-foreground transition-all border border-transparent hover:border-[var(--border-subtle)]">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
+                  <DropdownMenu.Item 
+                    onSelect={() => setShowHeaderEditor(!showHeaderEditor)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                  >
+                    <Settings className="w-4 h-4" /> Editar Propriedades
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none">
+                    <Copy className="w-4 h-4" /> Duplicar Projeto
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator className="h-px bg-[var(--border-subtle)] my-1" />
+                  <DropdownMenu.Item 
+                    onSelect={() => {
+                      if (confirm('Excluir este projeto permanentemente? Todos os cards internos serão removidos.')) {
+                        archivePage(pageId).then(() => navigate('/'));
+                      }
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none"
+                  >
+                    <Trash2 className="w-4 h-4" /> Excluir Projeto
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
             <div className="w-px h-8 bg-border/50 mx-2" />
             <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
               <TamagochiAvatar size={36} seed={profile?.avatar_seed ?? hashString(user?.id || '0')} accentColor={profile?.accent_color ?? '#3b82f6'} />
             </button>
           </div>
         </div>
+
+        {/* ── HEADER EDITOR PANEL ── */}
+        {showHeaderEditor && (
+          <div className="relative z-10 mt-6 p-4 bg-[var(--surface-2)] border border-[var(--border-strong)] rounded-2xl animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Configurações do Projeto</h3>
+              <button onClick={() => setShowHeaderEditor(false)} className="p-1 hover:bg-[var(--surface-3)] rounded-lg transition-colors">
+                <ChevronDown className="w-4 h-4 rotate-180" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Informações Básicas</label>
+                <div className="space-y-2">
+                  <input 
+                    defaultValue={page?.title} 
+                    onBlur={(e) => updatePage(pageId, { title: e.target.value })}
+                    className="w-full bg-[var(--surface-3)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors"
+                    placeholder="Título do Projeto"
+                  />
+                  <textarea 
+                    defaultValue={page?.description} 
+                    onBlur={(e) => updatePage(pageId, { description: e.target.value })}
+                    className="w-full bg-[var(--surface-3)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors min-h-[80px]"
+                    placeholder="Descrição breve..."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Propriedades Rápidas</label>
+                <div className="space-y-3">
+                  {statusProp && (
+                    <div className="flex items-center justify-between gap-4 p-2 bg-[var(--surface-3)] rounded-lg border border-[var(--border-subtle)]">
+                      <span className="text-xs font-medium text-muted-foreground">Status Global</span>
+                      <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
+                    </div>
+                  )}
+                  {priorityProp && (
+                    <div className="flex items-center justify-between gap-4 p-2 bg-[var(--surface-3)] rounded-lg border border-[var(--border-subtle)]">
+                      <span className="text-xs font-medium text-muted-foreground">Prioridade</span>
+                      <PropertyRenderer property={priorityProp} value={propValues[priorityProp.id]} onChange={v => handlePropChange(priorityProp.id, v)} inline />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Ações de Risco</label>
+                <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-xl space-y-3">
+                  <p className="text-[10px] text-red-500/80 leading-relaxed font-medium">Estas ações são permanentes e afetam todos os dados vinculados a este projeto.</p>
+                  <button 
+                    onClick={() => {
+                      if (confirm('Tem certeza que deseja arquivar este projeto?')) {
+                        archivePage(pageId).then(() => navigate('/'));
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-red-500 text-white text-xs font-bold hover:bg-red-600 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Arquivar Projeto
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── TAB BAR ── */}
         <div className="relative z-10 flex items-center gap-6 mt-8 overflow-x-auto no-scrollbar">

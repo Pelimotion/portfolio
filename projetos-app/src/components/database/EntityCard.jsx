@@ -26,6 +26,7 @@ export const EntityCard = memo(function EntityCard({
   values = {},
   onClick,
   onDelete,
+  onPropertyUpdate,
   isDragOverlay = false,
   density = 'comfortable',
 }) {
@@ -247,11 +248,25 @@ export const EntityCard = memo(function EntityCard({
         </div>
       </div>
 
-      {/* Title */}
-      <h4 className={`font-semibold text-[13px] leading-tight mb-1.5 line-clamp-2 transition-colors flex items-start gap-1.5 ${isFeito ? 'line-through text-muted-foreground/70' : 'text-foreground group-hover:text-primary'}`}>
-        {isFeito ? <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" /> : item.icon && <span className="mt-0.5 shrink-0">{item.icon}</span>}
-        <span>{item.title || 'Untitled'}</span>
-      </h4>
+      <div className="flex items-start gap-2 mb-1.5 group/title">
+        {feitoProp && (
+          <div 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onPropertyUpdate) {
+                onPropertyUpdate(item.id, feitoProp.id, { checked: !isFeito });
+              }
+            }}
+            className={`mt-1 w-4 h-4 rounded border flex items-center justify-center transition-all shrink-0 ${isFeito ? 'bg-green-500 border-green-500 text-white' : 'border-[var(--border-strong)] bg-[var(--surface-3)] hover:border-primary'}`}
+          >
+            {isFeito && <Check className="w-3 h-3" />}
+          </div>
+        )}
+        {!feitoProp && item.icon && <span className="mt-0.5 shrink-0">{item.icon}</span>}
+        <h4 className={`font-semibold text-[13px] leading-tight line-clamp-2 transition-colors flex-1 ${isFeito ? 'line-through text-muted-foreground/70' : 'text-foreground group-hover:text-primary'}`}>
+          {item.title || 'Untitled'}
+        </h4>
+      </div>
 
       {/* Description snippet */}
       {descText && (
@@ -302,7 +317,7 @@ export const EntityCard = memo(function EntityCard({
 });
 
 // ── Sortable wrapper ──
-export function SortableEntityCard({ item, properties, values, onClick, onDelete, density }) {
+export function SortableEntityCard({ item, properties, values, onClick, onDelete, onPropertyUpdate, density }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
   return (
@@ -318,12 +333,12 @@ export function SortableEntityCard({ item, properties, values, onClick, onDelete
       {...listeners}
       className="group"
     >
-      <EntityCard item={item} properties={properties} values={values} onClick={onClick} onDelete={onDelete} density={density} />
+      <EntityCard item={item} properties={properties} values={values} onClick={onClick} onDelete={onDelete} onPropertyUpdate={onPropertyUpdate} density={density} />
     </div>
   );
 }
 
 // ── Overlay durante o drag ──
-export const EntityCardOverlay = memo(function EntityCardOverlay({ item, properties, values, density }) {
-  return <EntityCard item={item} properties={properties} values={values} isDragOverlay density={density} />;
+export const EntityCardOverlay = memo(function EntityCardOverlay({ item, properties, values, onPropertyUpdate, density }) {
+  return <EntityCard item={item} properties={properties} values={values} isDragOverlay onPropertyUpdate={onPropertyUpdate} density={density} />;
 });
