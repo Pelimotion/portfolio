@@ -149,44 +149,12 @@ function createHtml(post) {
 
     marked.setOptions({ renderer });
 
-    const metaTitle = post.data.metaTitle || `${post.data.title} | Pelimotion`;
-    const canonical = `${DOMAIN}/blog/${post.data.slug}`;
-    const heroImg = (post.data.images || []).find(img => img.role === 'hero')?.url || `${CDN_URL}/blog/assets/${post.data.slug}/hero.jpg`;
-
     return `<!DOCTYPE html>
 <html lang="${post.data.lang || 'pt'}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${metaTitle}</title>
-    <meta name="description" content="${post.data.metaDescription}">
-    <link rel="canonical" href="${canonical}">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="${metaTitle}">
-    <meta property="og:description" content="${post.data.metaDescription}">
-    <meta property="og:image" content="${heroImg}">
-    <meta property="og:url" content="${canonical}">
-    <meta property="og:type" content="article">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${metaTitle}">
-    <meta name="twitter:image" content="${heroImg}">
-
-    <!-- Schema.org -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "${post.data.title}",
-        "description": "${post.data.metaDescription}",
-        "image": "${heroImg}",
-        "datePublished": "${post.data.date}",
-        "author": {"@type": "Organization", "name": "Pelimotion"}
-    }
-    </script>
-
+    <title>${post.data.metaTitle}</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         ${GLOBAL_CSS}
@@ -307,42 +275,16 @@ async function build() {
         const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
         
         const dbPosts = await new Promise((resolve) => {
-            // Join post_images and blog_images via relational select
-            const url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*,post_images(role,position,placeholder_id,blog_images(url,prompt,alt_text))&status=eq.published`;
+            const url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*&status=eq.published`;
             https.get(url, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }, (res) => {
                 let body = '';
                 res.on('data', d => body += d);
-                res.on('end', () => {
-                    try {
-                        if (res.statusCode >= 400) {
-                            console.error(`Supabase Error (${res.statusCode}):`, body);
-                            return resolve([]);
-                        }
-                        const parsed = JSON.parse(body || '[]');
-                        resolve(Array.isArray(parsed) ? parsed : []);
-                    } catch (e) {
-                        console.error('Supabase Parse Error:', e.message);
-                        resolve([]);
-                    }
-                });
-            }).on('error', (e) => {
-                console.error('Supabase Network Error:', e.message);
-                resolve([]);
+                res.on('end', () => resolve(JSON.parse(body || '[]')));
             });
         });
         
         dbPosts.forEach(p => {
-            // Merge relational images into data.images for backward compatibility with templates
-            const relationalImages = (p.post_images || []).map(pi => ({
-                id: pi.placeholder_id,
-                role: pi.role,
-                url: pi.blog_images?.url,
-                prompt: pi.blog_images?.prompt,
-                alt: pi.blog_images?.alt_text
-            })).sort((a, b) => a.position - b.position);
-
             posts.push({
-                id: p.id,
                 data: {
                     ...p.data,
                     slug: p.slug,
@@ -350,9 +292,8 @@ async function build() {
                     status: p.status,
                     category: p.category,
                     metaDescription: p.meta_description,
-                    metaTitle: p.meta_title,
-                    date: p.created_at,
-                    images: relationalImages.length > 0 ? relationalImages : (p.data.images || [])
+                    heroPrompt: p.hero_prompt,
+                    date: p.created_at
                 },
                 content: p.content
             });
@@ -380,30 +321,9 @@ async function build() {
     }
 
     const ptPosts = finalPosts.filter(p => p.data.slug && (p.data.lang || 'pt') === 'pt');
-    if (ptPosts.length > 0) {
-        createIndexHtml(ptPosts, 'pt');
-        generateSitemap(ptPosts);
-    }
+    if (ptPosts.length > 0) createIndexHtml(ptPosts, 'pt');
 
     console.log('Build complete.');
-}
-
-function generateSitemap(posts) {
-    const urls = posts.map(p => `
-    <url>
-        <loc>${DOMAIN}/blog/${p.data.slug}</loc>
-        <lastmod>${new Date(p.data.updatedAt || p.data.date).toISOString().split('T')[0]}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>`).join('');
-    
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url><loc>${DOMAIN}/blog</loc><priority>1.0</priority></url>
-    ${urls}
-</urlset>`;
-    
-    fs.writeFileSync(path.join(BLOG_OUT_DIR, 'sitemap.xml'), sitemap);
 }
 
 build();

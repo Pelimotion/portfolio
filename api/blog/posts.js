@@ -56,18 +56,19 @@ export default async function handler(req, res) {
         }
 
         if (req.method === 'POST') {
-            const { data, content } = req.body;
-            if (!data.slug) throw new Error("Slug é obrigatório para salvar.");
+            const body = req.body;
+            const slug = body.slug || (body.data && body.data.slug);
+            if (!slug) throw new Error("Slug é obrigatório para salvar.");
 
             const postData = {
-                slug: data.slug,
-                title: data.title,
-                content: content,
-                status: data.status || 'draft',
-                category: data.category,
-                meta_description: data.metaDescription,
-                hero_prompt: data.heroPrompt,
-                data: { ...data, status: data.status || 'draft' },
+                slug: slug,
+                title: body.title || (body.data && body.data.title),
+                content: body.content,
+                status: body.status || (body.data && body.data.status) || 'draft',
+                category: body.category || (body.data && body.data.category),
+                meta_description: body.meta_description || (body.data && body.data.metaDescription),
+                meta_title: body.meta_title || (body.data && body.data.metaTitle),
+                data: body.data || {},
                 updated_at: new Date().toISOString()
             };
 
