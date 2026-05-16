@@ -61,8 +61,11 @@ export function DatabaseRenderer({ databaseId, defaultView }) {
 
       let activeViews = dbViews || [];
       if (activeViews.length === 0) {
-        const def = await viewService.create({ databaseId, name: 'Board', viewType: 'kanban' });
-        activeViews = [def];
+        const defK = await viewService.create({ databaseId, name: 'Kanban', viewType: 'kanban' });
+        const defT = await viewService.create({ databaseId, name: 'Tabela', viewType: 'table' });
+        const defL = await viewService.create({ databaseId, name: 'Lista', viewType: 'list' });
+        const defC = await viewService.create({ databaseId, name: 'Calendário', viewType: 'calendar' });
+        activeViews = [defK, defT, defL, defC];
       }
       setViews(activeViews);
 
@@ -336,8 +339,24 @@ function KanbanView({ items, properties, allValues, databaseId, onStatusChange, 
       const oldIndex = columns.findIndex(c => c.id === activeId);
       const newIndex = columns.findIndex(c => c.id === overId);
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-        const reordered = arrayMove(columns.map(c => c.id), oldIndex, newIndex);
-        setColOrder(reordered);
+        const reorderedIds = arrayMove(columns.map(c => c.id), oldIndex, newIndex);
+        setColOrder(reorderedIds);
+        
+        // Persist to DB if it's a configurable property
+        if (groupProp && groupProp.config && groupProp.config.options) {
+          const newOptions = [];
+          for (const id of reorderedIds) {
+            const opt = groupProp.config.options.find(o => o.id === id);
+            if (opt) newOptions.push(opt);
+          }
+          // add back any options that might have been filtered out (unlikely but safe)
+          for (const opt of groupProp.config.options) {
+            if (!newOptions.find(o => o.id === opt.id)) newOptions.push(opt);
+          }
+          propertyService.update(groupProp.id, { 
+            config: { ...groupProp.config, options: newOptions } 
+          }).catch(console.error);
+        }
       }
       return;
     }
@@ -583,20 +602,20 @@ function ListView({ items, properties, allValues }) {
 }
 
 // ============================================
-// CALENDAR VIEW — corrigido para buscar qualquer prop tipo date
+// CALENDAR VIEW — Sophisticated Modern Calendar
 // ============================================
 function CalendarView({ items, properties, allValues }) {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(() => new Date());
 
-  // Busca qualquer propriedade de data (Data de Entrega, Deadline, Entrega, etc)
+  // Search for any date properties
   const deadlineProp = properties.find(p =>
     p.property_type === 'date' ||
     p.name === 'Deadline' ||
     p.name === 'Entrega' ||
     p.name === 'Data de Entrega'
   );
-  const statusProp   = properties.find(p => p.name === 'Status');
+  const statusProp   = properties.find(p => p.property_type === 'status' || p.name === 'Status');
 
   const year  = current.getFullYear();
   const month = current.getMonth();
@@ -604,7 +623,7 @@ function CalendarView({ items, properties, allValues }) {
   const itemsByDay = useMemo(() => {
     const map = {};
     
-    // Process scene deadlines
+    // Process scene/project deadlines
     if (deadlineProp) {
       for (const item of (items || [])) {
         const dateVal = (allValues || {})[item.id]?.[deadlineProp.id]?.date;
@@ -613,7 +632,7 @@ function CalendarView({ items, properties, allValues }) {
         if (d.getFullYear() === year && d.getMonth() === month) {
           const day = d.getDate();
           if (!map[day]) map[day] = [];
-          map[day].push({ type: 'scene', data: item });
+          map[day].push({ type: 'entity', data: item, date: d });
         }
       }
     }
@@ -622,15 +641,13 @@ function CalendarView({ items, properties, allValues }) {
     if (statusProp && statusProp.config?.options) {
       for (const opt of statusProp.config.options) {
         if (!opt.deadline) continue;
-        // The deadline is typically 'YYYY-MM-DD'
-        // Need to parse properly so timezone doesn't shift it
         const [y, m, d_str] = opt.deadline.split('-');
         const d = new Date(Number(y), Number(m) - 1, Number(d_str));
         
         if (d.getFullYear() === year && d.getMonth() === month) {
           const day = d.getDate();
           if (!map[day]) map[day] = [];
-          map[day].push({ type: 'milestone', data: opt });
+          map[day].push({ type: 'milestone', data: opt, date: d });
         }
       }
     }
@@ -652,48 +669,96 @@ function CalendarView({ items, properties, allValues }) {
     if (dayCounter > daysInMonth) break;
   }
 
+  const createGCalLink = (title, description, dateObj, includeMeet = false) => {
+    // Generate ISO without dashes or colons
+    const start = dateObj.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const end = new Date(dateObj.getTime() + 60*60*1000).toISOString().replace(/-|:|\.\d\d\d/g, ''); // 1 hour event
+    let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(description)}`;
+    if (includeMeet) {
+      // Small trick: setting ctz and a meet placeholder (actual auto-meet generation requires GCal API, but this opens the event creation page where user can click "Add Video Conferencing")
+      url += `&add=meet`;
+    }
+    return url;
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground capitalize">
-          {current.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-        </h3>
-        <div className="flex items-center gap-1">
-          <button onClick={() => setCurrent(new Date(year, month - 1, 1))} className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><ChevronLeft className="w-4 h-4" /></button>
-          <button onClick={() => setCurrent(new Date())} className="px-2.5 py-1 text-xs hover:bg-secondary rounded-md text-muted-foreground transition-colors">Hoje</button>
-          <button onClick={() => setCurrent(new Date(year, month + 1, 1))} className="p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"><ChevronRight className="w-4 h-4" /></button>
+    <div className="space-y-6">
+      {/* Calendar Header */}
+      <div className="flex items-center justify-between bg-[var(--surface-1)] border border-border/50 p-4 rounded-2xl shadow-sm">
+        <div className="flex flex-col">
+          <h3 className="text-xl font-black text-foreground capitalize tracking-tight">
+            {current.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+          </h3>
+          <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-wider">
+            Visão Geral de Entregas
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-secondary/30 p-1 rounded-xl border border-border/40">
+          <button onClick={() => setCurrent(new Date(year, month - 1, 1))} className="p-2 hover:bg-background rounded-lg text-muted-foreground hover:text-foreground transition-all shadow-sm">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button onClick={() => setCurrent(new Date())} className="px-4 py-1.5 text-xs font-bold hover:bg-background rounded-lg text-muted-foreground hover:text-foreground transition-all shadow-sm">
+            Hoje
+          </button>
+          <button onClick={() => setCurrent(new Date(year, month + 1, 1))} className="p-2 hover:bg-background rounded-lg text-muted-foreground hover:text-foreground transition-all shadow-sm">
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      <div className="border border-border rounded-xl overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-border bg-card/60">
-          {['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d => (
-            <div key={d} className="py-2 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{d}</div>
+      {/* Calendar Grid */}
+      <div className="border border-border/60 rounded-2xl overflow-hidden shadow-sm bg-[var(--surface-1)]">
+        <div className="grid grid-cols-7 border-b border-border/60 bg-secondary/20">
+          {['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'].map((d, i) => (
+            <div key={d} className={`py-3 text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest ${i === 0 || i === 6 ? 'text-primary/60' : ''}`}>
+              {d.substring(0, 3)}
+            </div>
           ))}
         </div>
+        
         {weeks.map((week, wi) => (
           <div key={wi} className="grid grid-cols-7 divide-x divide-border/40 border-b border-border/40 last:border-b-0">
             {week.map((day, di) => {
               const inMonth  = day >= 1 && day <= daysInMonth;
               const dayItems = inMonth ? (itemsByDay[day] || []) : [];
+              const todayFlag = isToday(day);
+              
               return (
-                <div key={di} className={`min-h-[90px] p-1.5 transition-colors ${inMonth ? 'bg-background hover:bg-secondary/10' : 'bg-card/20'}`}>
+                <div key={di} className={`min-h-[140px] p-2 transition-all relative group/day ${inMonth ? 'bg-[var(--surface-0)] hover:bg-[var(--surface-2)]' : 'bg-[var(--surface-1)] opacity-40'}`}>
                   {inMonth && (
                     <>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-1 text-xs font-medium ml-auto ${isToday(day) ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-3 text-xs font-bold ml-auto transition-colors ${todayFlag ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-110' : 'text-muted-foreground group-hover/day:text-foreground group-hover/day:bg-secondary/50'}`}>
                         {day}
                       </div>
-                      <div className="space-y-0.5">
-                        {dayItems.slice(0, 4).map((itemWrap, i) => {
+                      
+                      <div className="space-y-1.5">
+                        {dayItems.slice(0, 5).map((itemWrap, i) => {
                           if (itemWrap.type === 'milestone') {
                             const opt = itemWrap.data;
                             const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
                             return (
-                              <div key={`ms-${opt.id}-${i}`}
-                                className={`text-[10px] px-1.5 py-0.5 rounded truncate font-bold border border-current ${colors.bg} ${colors.text}`}
-                                title={`Entrega: ${opt.label}`}>
-                                ⭐ {opt.label}
-                              </div>
+                              <DropdownMenu.Root key={`ms-${opt.id}-${i}`}>
+                                <DropdownMenu.Trigger asChild>
+                                  <div className={`text-[10px] px-2 py-1.5 rounded-lg truncate font-bold border ${colors.bg} ${colors.text} border-${opt.color}-500/20 shadow-sm cursor-pointer hover:brightness-110 transition-all flex items-center gap-1.5`}>
+                                    <span>⭐</span> {opt.label}
+                                  </div>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Portal>
+                                  <DropdownMenu.Content align="start" className="z-50 min-w-[200px] bg-card border border-border rounded-xl shadow-2xl p-1.5 animate-in fade-in-0 zoom-in-95">
+                                    <div className="px-2 py-1.5 text-xs font-bold text-muted-foreground border-b border-border/50 mb-1">Milestone: {opt.label}</div>
+                                    <DropdownMenu.Item className="outline-none">
+                                      <a href={createGCalLink(`Milestone: ${opt.label}`, `Entrega da fase de ${opt.label}`, itemWrap.date, false)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer transition-colors">
+                                        <CalendarDays className="w-3.5 h-3.5 text-blue-400" /> Adicionar ao Google Calendar
+                                      </a>
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Item className="outline-none">
+                                      <a href={createGCalLink(`Reunião: ${opt.label}`, `Discussão de entregáveis da fase de ${opt.label}`, itemWrap.date, true)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer transition-colors mt-0.5">
+                                        <span className="w-3.5 h-3.5 flex items-center justify-center bg-green-500/20 text-green-500 rounded text-[8px] font-bold">M</span> Criar Google Meet
+                                      </a>
+                                    </DropdownMenu.Item>
+                                  </DropdownMenu.Content>
+                                </DropdownMenu.Portal>
+                              </DropdownMenu.Root>
                             );
                           } else {
                             const item = itemWrap.data;
@@ -701,14 +766,35 @@ function CalendarView({ items, properties, allValues }) {
                             const opt = statusProp?.config?.options?.find(o => o.id === statusVal?.selected);
                             const colors = opt ? COLOR_MAP[opt.color] || COLOR_MAP.gray : COLOR_MAP.gray;
                             return (
-                              <div key={`sc-${item.id}-${i}`} onClick={() => navigate(`/page/${item.id}`)}
-                                className={`text-[10px] px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity font-medium ${colors.bg} ${colors.text}`}>
-                                {item.title}
-                              </div>
+                              <DropdownMenu.Root key={`sc-${item.id}-${i}`}>
+                                <DropdownMenu.Trigger asChild>
+                                  <div className={`text-[10px] px-2 py-1.5 rounded-lg truncate cursor-pointer shadow-sm hover:scale-[1.02] transition-all font-medium border border-border/20 ${colors.bg} ${colors.text} flex items-center gap-1.5`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${COLOR_DOT[opt?.color] || COLOR_DOT.gray}`} />
+                                    {item.title}
+                                  </div>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Portal>
+                                  <DropdownMenu.Content align="start" className="z-50 min-w-[200px] bg-card border border-border rounded-xl shadow-2xl p-1.5 animate-in fade-in-0 zoom-in-95">
+                                    <div className="px-2 py-1.5 text-xs font-bold text-foreground border-b border-border/50 mb-1 truncate">{item.title}</div>
+                                    <DropdownMenu.Item onSelect={() => navigate(`/page/${item.id}`)} className="flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer transition-colors outline-none">
+                                      <LayoutDashboard className="w-3.5 h-3.5 text-muted-foreground" /> Abrir Detalhes
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Item className="outline-none mt-0.5">
+                                      <a href={createGCalLink(`Entrega: ${item.title}`, `Entrega agendada. Status atual: ${opt?.label || 'Sem status'}`, itemWrap.date, false)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-secondary rounded-lg cursor-pointer transition-colors">
+                                        <CalendarDays className="w-3.5 h-3.5 text-blue-400" /> Agendar no GCal
+                                      </a>
+                                    </DropdownMenu.Item>
+                                  </DropdownMenu.Content>
+                                </DropdownMenu.Portal>
+                              </DropdownMenu.Root>
                             );
                           }
                         })}
-                        {dayItems.length > 4 && <div className="text-[10px] text-muted-foreground/60 px-1">+{dayItems.length - 4}</div>}
+                        {dayItems.length > 5 && (
+                          <div className="text-[10px] text-muted-foreground/60 px-2 py-1 font-bold bg-secondary/30 rounded-lg text-center mt-1">
+                            +{dayItems.length - 5} itens
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -720,9 +806,11 @@ function CalendarView({ items, properties, allValues }) {
       </div>
 
       {(!deadlineProp && !statusProp) && (
-        <p className="text-xs text-muted-foreground/60 text-center">
-          Adicione uma propriedade "Deadline" ou "Entrega" para ver itens no calendário.
-        </p>
+        <div className="flex flex-col items-center justify-center p-8 bg-[var(--surface-1)] border border-dashed border-border/50 rounded-2xl">
+          <CalendarDays className="w-8 h-8 text-muted-foreground/30 mb-3" />
+          <p className="text-xs text-muted-foreground font-medium">O calendário está vazio.</p>
+          <p className="text-[11px] text-muted-foreground/50 mt-1">Adicione propriedades de Data ("Deadline", "Entrega") ou configure datas nos Status.</p>
+        </div>
       )}
     </div>
   );

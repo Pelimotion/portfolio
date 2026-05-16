@@ -200,10 +200,16 @@ export function UniversalEntityPage() {
               {page?.icon || (isProject ? <FolderOpen className="w-8 h-8 text-muted-foreground/30" /> : <Database className="w-8 h-8 text-muted-foreground/30" />)}
             </div>
             <div className="flex flex-col">
-              <h1 className="text-3xl font-black text-foreground tracking-tight mb-1">{page?.title}</h1>
+              <div className="flex items-center gap-3 mb-1">
+                <h1 className="text-3xl font-black text-foreground tracking-tight">{page?.title}</h1>
+                {statusProp && (
+                  <div className="mt-2">
+                    <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-3">
                  <span className="text-xs text-muted-foreground/60 flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                   {/* dot removed */}
                    {isProject ? 'Projeto Motion' : 'Cena / Take'}
                  </span>
                  {page?.description && (
