@@ -49,7 +49,7 @@ export default async function handler(req, res) {
                 slug: data.slug,
                 title: data.title,
                 content: content,
-                status: 'draft', // Always force draft on save/generate
+                status: data.status || 'draft',
                 category: data.category,
                 meta_description: data.metaDescription,
                 hero_prompt: data.heroPrompt,
