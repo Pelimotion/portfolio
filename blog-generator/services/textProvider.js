@@ -34,8 +34,8 @@ async function generateText(prompt, modelType = 'flash') {
     const location = 'us-central1';
     
     // Model Routing Strategy
-    // Using gemini-1.5-flash or flash for speed/cost
-    const modelId = modelType === 'pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+    // Using gemini-2.5-flash or flash for speed/cost
+    const modelId = modelType === 'pro' ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
 
     try {
         const auth = new GoogleAuth({
