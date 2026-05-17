@@ -88,11 +88,13 @@
         }
 
         // Se já está logado, redirecionar pelo role
+        // Se veio com error=unauthorized, ignora nextUrl (causaria loop de redirect)
         const session = await requireAuth('/login');
         if (session) {
             const profile = await getUserProfile();
             const role = profile?.role || 'editor';
-            window.location.href = nextUrl || DEFAULT_REDIRECT[role] || '/blog-generator';
+            const dest = errorParam === 'unauthorized' ? null : nextUrl;
+            window.location.href = dest || DEFAULT_REDIRECT[role] || '/blog-generator';
         }
 
         document.getElementById('login-form').onsubmit = async (e) => {

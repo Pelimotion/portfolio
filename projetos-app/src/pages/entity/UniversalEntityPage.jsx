@@ -795,9 +795,7 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
     }
   }, [linkedDocSlots]);
 
-  useEffect(() => {
-    loadFiles(false);
-  }, [loadFiles]);
+  // Arquivos do Drive carregam apenas via botão explícito (não auto-fetch)
 
   if (loading) return null;
 
