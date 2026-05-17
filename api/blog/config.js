@@ -1,11 +1,8 @@
 import https from 'https';
 
-function supabaseGet(supabaseUrl, path, serviceKey) {
+function httpsGet(url, headers) {
     return new Promise((resolve, reject) => {
-        const url = new URL(path, supabaseUrl);
-        https.get(url.href, {
-            headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': serviceKey }
-        }, (res) => {
+        https.get(url, { headers }, (res) => {
             let body = '';
             res.on('data', chunk => body += chunk);
             res.on('end', () => {
@@ -15,20 +12,32 @@ function supabaseGet(supabaseUrl, path, serviceKey) {
     });
 }
 
+function decodeJwtSub(token) {
+    try {
+        const payload = token.split('.')[1];
+        return JSON.parse(Buffer.from(payload, 'base64').toString('utf8')).sub || null;
+    } catch { return null; }
+}
+
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { token } = req.body || {};
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
         const supabaseUrl = process.env.SUPABASE_URL;
+
         if (!token || !serviceKey || !supabaseUrl) {
             return res.status(200).json({ role: null });
         }
         try {
-            const user = await supabaseGet(supabaseUrl, '/auth/v1/user', token);
-            if (!user?.id) return res.status(200).json({ role: null });
-            const rows = await supabaseGet(supabaseUrl, `/rest/v1/profiles?id=eq.${user.id}&select=role,email`, serviceKey);
-            const role = Array.isArray(rows) ? rows[0]?.role || null : null;
-            return res.status(200).json({ role, email: rows?.[0]?.email || user.email });
+            const userId = decodeJwtSub(token);
+            if (!userId) return res.status(200).json({ role: null });
+
+            const rows = await httpsGet(
+                `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=role,email`,
+                { 'Authorization': `Bearer ${serviceKey}`, 'apikey': serviceKey }
+            );
+            const profile = Array.isArray(rows) ? rows[0] : null;
+            return res.status(200).json({ role: profile?.role || null, email: profile?.email || null });
         } catch (e) {
             console.error('Profile lookup error:', e);
             return res.status(200).json({ role: null });

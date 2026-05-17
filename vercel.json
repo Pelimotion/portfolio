@@ -8,6 +8,7 @@
   ],
   "rewrites": [
     { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/hub", "destination": "/hub/index.html" },
     { "source": "/blog-generator", "destination": "/blog-generator/cms.html" },
     { "source": "/blog-generator/", "destination": "/blog-generator/cms.html" },
     { "source": "/v1/", "destination": "/legacy/V1/portfolio/index.html" },

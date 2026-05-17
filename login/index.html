@@ -75,26 +75,21 @@
     </div>
 
     <script type="module">
-        import { requireAuth, signIn, getUserProfile } from '/shared/auth.js';
-        import { DEFAULT_REDIRECT } from '/shared/roles.js';
+        import { requireAuth, signIn } from '/shared/auth.js';
 
         const params = new URLSearchParams(window.location.search);
         const nextUrl = params.get('next');
         const errorParam = params.get('error');
 
-        // Mostrar erro de autorização se vier de um redirect
         if (errorParam === 'unauthorized') {
-            document.getElementById('error-msg').textContent = 'Acesso negado: seu perfil não tem permissão para esse sistema.';
+            document.getElementById('error-msg').textContent = 'Acesso negado: seu perfil não tem permissão para essa área.';
         }
 
-        // Se já está logado, redirecionar pelo role
-        // Se veio com error=unauthorized, ignora nextUrl (causaria loop de redirect)
+        // Já logado: vai para hub (ignorando nextUrl se veio de erro de permissão)
         const session = await requireAuth('/login');
         if (session) {
-            const profile = await getUserProfile();
-            const role = profile?.role || 'editor';
             const dest = errorParam === 'unauthorized' ? null : nextUrl;
-            window.location.href = dest || DEFAULT_REDIRECT[role] || '/blog-generator';
+            window.location.href = dest || '/hub';
         }
 
         document.getElementById('login-form').onsubmit = async (e) => {
@@ -115,10 +110,7 @@
                 btn.disabled = false;
                 btn.textContent = 'ENTRAR';
             } else {
-                // Redirecionar pelo role do usuário
-                const profile = await getUserProfile();
-                const role = profile?.role || 'editor';
-                window.location.href = nextUrl || DEFAULT_REDIRECT[role] || '/blog-generator';
+                window.location.href = nextUrl || '/hub';
             }
         };
     </script>
