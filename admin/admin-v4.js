@@ -1371,7 +1371,7 @@ async function openMediaScanner() {
     document.querySelectorAll('.ms-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
 
     try {
-        const res = await fetch('/api/bunny/scan');
+        const res = await fetch('/api/blog/gallery?mode=scan');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         _mediaScanData = await res.json();
         renderMediaGrid(_mediaScanTab);
