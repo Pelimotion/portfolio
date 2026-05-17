@@ -123,8 +123,10 @@ function renderPalette(query) {
     
     // Actions
     addGroup('Actions', [
-        {title: 'Publish Site', sub: 'Quick deploy', icon: '⚡', action: softDeploy},
-        {title: 'Full Sync + Deploy', sub: 'Scan Bunny.net', icon: '🔄', action: fullSync},
+        {title: 'Deploy Hub', sub: 'Status + deploy por projeto', icon: '🚀', action: showDeployHub},
+        {title: 'Publicar Site', sub: 'Commit site-content.json', icon: '⚡', action: softDeploy},
+        {title: 'Escanear Mídias', sub: 'Bunny.net CDN scanner', icon: '🔍', action: openMediaScanner},
+        {title: 'Full Sync + Deploy', sub: 'Bunny scan + rebuild', icon: '🔄', action: fullSync},
         {title: 'Export JSON', sub: 'Download backup', icon: '💾', action: exportJSON}
     ]);
     
@@ -217,6 +219,8 @@ function buildSidebarV4(context = 'main') {
             <div class="dot yellow"></div>Curriculum</div>`;
             
         html += `<div class="sb-section" style="margin-top:10px">Tools</div>`;
+        html += `<div class="sb-item ${currentSection==='deployHub'?'active':''}" onclick="showDeployHub()">
+            <div class="dot green"></div>Deploy Hub</div>`;
         html += `<div class="sb-item ${currentSection==='gifConverter'?'active':''}" onclick="showGifConverter()">
             <div class="dot" style="background:var(--blue)"></div>Conversor de GIF</div>`;
             
@@ -858,26 +862,7 @@ async function generateGIF(clientKey, idx) {
     }
 }
 
-// ─── DEPLOY OPERATIONS ───
-async function softDeploy() {
-    autoSave();
-    const log = document.getElementById('deploy-log');
-    if(log) {
-        log.classList.add('visible');
-        log.innerHTML = 'Starting Soft Deploy...<br>Saving JSON...';
-    }
-    
-    if (localStorage.getItem('plm_gh_token')) {
-        await doPublish();
-        if(log) log.innerHTML += '<br><span style="color:#fff">Triggered Vercel build successfully.</span>';
-    } else {
-        openPublishModal();
-    }
-}
-
-function fullSync() {
-    alert("Full Sync requer acesso ao Python local.\nPara executar via painel precisamos de um webhook ou servidor local ativo.\n\nPor enquanto, execute: 'python3 sync_bunny.py' no terminal.");
-}
+// ─── DEPLOY OPERATIONS (see Deploy Hub section below) ───
 
 // Helper to escape HTML to prevent XSS in inputs
 function esc(str) {
@@ -1115,4 +1100,367 @@ async function runGifConvert() {
         gcSetProgress(`Erro: ${err.message}`, 0);
         toast('Erro na conversão. Veja o console.', true);
     }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DEPLOY HUB
+// ═══════════════════════════════════════════════════════════════
+
+const DEPLOY_PROJECTS = [
+    { id: 'landing',   name: 'Landing Page',     icon: '🏠', statusFile: 'STATUS.md',                 url: 'pelimotion.art',               color: 'var(--green)',  note: '' },
+    { id: 'admin',     name: 'Admin Panel',       icon: '⚙️', statusFile: 'STATUS.md',                 url: 'pelimotion.art/admin',         color: 'var(--yellow)', note: '' },
+    { id: 'generator', name: 'Blog Generator',    icon: '✍️', statusFile: 'blog-generator/STATUS.md',  url: 'pelimotion.art/blog-generator', color: 'var(--blue)',   note: '' },
+    { id: 'blog',      name: 'Blog',              icon: '📰', statusFile: 'blog/STATUS.md',            url: 'pelimotion.art/blog',          color: 'var(--blue)',   note: 'Rebuild via build engine no deploy' },
+    { id: 'projetos',  name: 'Projetos App',      icon: '📋', statusFile: 'projetos-app/STATUS.md',    url: 'pelimotion.art/projetos',      color: 'var(--fg2)',    note: 'React — npm run build localmente' },
+    { id: 'shared',    name: 'Shared Modules',    icon: '🔒', statusFile: 'STATUS.md',                 url: null,                           color: 'var(--red)',    note: 'Afeta TODOS os sistemas' },
+];
+
+function showDeployHub() {
+    autoSave(); currentSection = 'deployHub'; currentKey = null;
+    buildSidebarV4('main');
+    updateBreadcrumbs([{label: 'Deploy Hub'}]);
+
+    const token = localStorage.getItem('plm_gh_token');
+
+    document.getElementById('main-content').innerHTML = `
+        <div class="page-header">
+            <div class="page-label">SISTEMA</div>
+            <h1 class="page-title">Deploy Hub</h1>
+        </div>
+
+        ${!token ? `<div style="padding:10px 14px;background:rgba(245,166,35,.1);border:1px solid var(--yellow);margin-bottom:20px;font-size:11px;color:var(--yellow)">
+            ⚠️ GitHub token não configurado. Use Deploy → Publish para definir o token e habilitar deploys completos.
+        </div>` : ''}
+
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-title">
+                <span>🚀 Projetos</span>
+                <span style="font-size:9px;color:var(--fg3);font-weight:400">Cada deploy atualiza o STATUS.md e aciona o Vercel</span>
+            </div>
+            <div id="deploy-projects-grid" style="display:flex;flex-direction:column;gap:8px">
+                <div style="padding:30px;text-align:center;color:var(--fg3);font-size:11px">
+                    ${token ? 'Carregando status dos projetos...' : '⚠ Token necessário para carregar status'}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span>📦 Bunny.net CDN</span>
+                <span style="font-size:9px;color:var(--fg3);font-weight:400">pelimotion-portfolio.b-cdn.net</span>
+            </div>
+            <div class="preview-ref" style="margin-bottom:14px">
+                Storage zone para vídeos do portfólio e imagens do blog.
+                O scanner lista mídias disponíveis vs. referenciadas em site-content.json.
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn green" onclick="softDeploy()">⚡ Publicar site-content.json</button>
+                <button class="btn" style="border-color:var(--blue);color:var(--blue)" onclick="openMediaScanner()">🔍 Escanear Mídias</button>
+                <button class="btn" onclick="fullSync()">🔄 Full Sync + Deploy</button>
+            </div>
+        </div>
+    `;
+
+    if (token) loadDeployStatus(token);
+}
+
+async function loadDeployStatus(token) {
+    const grid = document.getElementById('deploy-projects-grid');
+    if (!grid) return;
+
+    const projects = await Promise.all(DEPLOY_PROJECTS.map(async (p) => {
+        let lastUpdate = '—', lastDeploy = '—', statusLabel = 'stable';
+        try {
+            const res = await fetch(
+                `https://api.github.com/repos/Pelimotion/portfolio/contents/${encodeURIComponent(p.statusFile)}?ref=main&t=${Date.now()}`,
+                { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+            );
+            if (res.ok) {
+                const data = await res.json();
+                const decoded = atob(data.content.replace(/\n/g, ''));
+                const content = new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0)));
+                const dateMatch = content.match(/\*\*Data:\*\*\s*(.+)/);
+                if (dateMatch) lastUpdate = dateMatch[1].trim().slice(0, 10);
+                const deployMatch = content.match(/\|\s*(20\d{2}-\d{2}-\d{2}[^|]+)\|/);
+                if (deployMatch) lastDeploy = deployMatch[1].trim().slice(0, 16);
+                if (content.includes('EM DESENVOLVIMENTO') || content.includes('ATIVO')) statusLabel = 'dev';
+                else if (content.includes('BETA')) statusLabel = 'beta';
+            }
+        } catch (e) { /* network error */ }
+        return { ...p, lastUpdate, lastDeploy, statusLabel };
+    }));
+
+    if (!document.getElementById('deploy-projects-grid')) return;
+
+    grid.innerHTML = projects.map(p => `
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--border)">
+            <span style="font-size:16px;flex-shrink:0">${p.icon}</span>
+            <div style="flex:1;min-width:0">
+                <div style="font-size:12px;font-weight:700">${esc(p.name)}</div>
+                <div style="font-size:9px;color:var(--fg3);margin-top:2px">
+                    ${p.url ? `<a href="https://${p.url}" target="_blank" rel="noopener" style="color:inherit">${p.url}</a> · ` : ''}
+                    Atualizado: ${esc(p.lastUpdate)} · Último deploy: ${esc(p.lastDeploy)}
+                </div>
+                ${p.note ? `<div style="font-size:9px;color:var(--fg3);font-style:italic;margin-top:1px">${esc(p.note)}</div>` : ''}
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span class="status-pill ${p.statusLabel === 'stable' ? 'public' : p.statusLabel === 'beta' ? 'draft' : 'private'}">${p.statusLabel}</span>
+                <button class="btn sm" onclick="deployProject('${p.id}')">Deploy</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function deployProject(projectId) {
+    const token = localStorage.getItem('plm_gh_token');
+    if (!token) { openPublishModal(); return; }
+
+    const project = DEPLOY_PROJECTS.find(p => p.id === projectId);
+    if (!project) return toast('Projeto não encontrado', true);
+
+    const operator = document.getElementById('admin-user-email')?.textContent?.trim() || 'admin';
+
+    toast(`⏳ Deploy: ${project.name}...`);
+    deployLog(`⏳ Deploy iniciado: ${project.name}`);
+
+    try {
+        // For landing: also commit site-content.json
+        if (projectId === 'landing' && D) {
+            autoSave();
+            const jsonContent = JSON.stringify(D, null, 2);
+            const scSha = await getFileSha('site-content.json', token);
+            await commitFile('site-content.json', jsonContent, scSha, `deploy(landing): update site-content.json`, token);
+        }
+
+        // Fetch and update STATUS.md
+        const statusRes = await fetch(
+            `https://api.github.com/repos/Pelimotion/portfolio/contents/${encodeURIComponent(project.statusFile)}?ref=main`,
+            { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+        );
+
+        let currentContent = '', sha = null;
+        if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            sha = statusData.sha;
+            const decoded = atob(statusData.content.replace(/\n/g, ''));
+            currentContent = new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0)));
+        }
+
+        const updatedContent = appendDeployLogEntry(currentContent, operator, project.name);
+        await commitFile(project.statusFile, updatedContent, sha, `deploy(${project.id}): register deploy via admin panel`, token);
+
+        toast(`✓ ${project.name} deployed. Vercel building...`);
+        deployLog(`✅ Deploy registrado: ${project.name}`);
+        hasUnsaved = false;
+        document.getElementById('unsaved-label')?.classList.remove('visible');
+
+        setTimeout(() => {
+            const t = localStorage.getItem('plm_gh_token');
+            if (t && document.getElementById('deploy-projects-grid')) loadDeployStatus(t);
+        }, 2000);
+
+    } catch (e) {
+        console.error('Deploy error:', e);
+        toast(`⚠ Deploy falhou: ${e.message}`, true);
+        deployLog(`❌ Deploy falhou: ${e.message}`);
+    }
+}
+
+function appendDeployLogEntry(content, operator, projectName) {
+    const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    const row = `| ${now} UTC | ${operator} | ${projectName} | ✅ Vercel |`;
+    const MARKER = '## 🚀 DEPLOY LOG';
+    const TABLE_HEAD = '| Data/Hora UTC | Operador | Projeto | Status |\n|---|---|---|---|';
+
+    const idx = content.indexOf(MARKER);
+    if (idx === -1) {
+        return content.trimEnd() + `\n\n${MARKER}\n${TABLE_HEAD}\n${row}\n`;
+    }
+
+    // Extract existing rows and prepend new one (keep last 10)
+    const before = content.slice(0, idx).trimEnd();
+    const section = content.slice(idx);
+    const rows = section.split('\n')
+        .filter(l => l.startsWith('|') && l.includes('✅') && !l.includes('---') && !l.includes('Projeto'));
+    const allRows = [row, ...rows].slice(0, 10);
+    return before + `\n\n${MARKER}\n${TABLE_HEAD}\n${allRows.join('\n')}\n`;
+}
+
+function softDeploy() {
+    deployLog('⚡ Publicando site-content.json...');
+    saveAll();
+}
+
+async function fullSync() {
+    deployLog('🔄 Full sync: escaneando Bunny.net + deploy...');
+    await openMediaScanner();
+    deployLog('🔍 Scanner aberto. Verifique mídias e publique via Deploy Hub.');
+}
+
+function deployLog(msg) {
+    const log = document.getElementById('deploy-log');
+    if (!log) return;
+    log.classList.add('visible');
+    const line = document.createElement('div');
+    line.textContent = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}`;
+    log.insertBefore(line, log.firstChild);
+    // Keep last 20 lines
+    while (log.children.length > 20) log.removeChild(log.lastChild);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MEDIA SCANNER (Bunny.net)
+// ═══════════════════════════════════════════════════════════════
+
+let _mediaScanData = null;
+let _mediaScanTab = 'videos';
+
+async function openMediaScanner() {
+    let modal = document.getElementById('media-scanner-modal');
+
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'media-scanner-modal';
+        modal.className = 'modal-bg';
+        modal.innerHTML = `
+            <div class="modal-card" style="max-width:860px;width:100%;max-height:90vh;display:flex;flex-direction:column">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-shrink:0">
+                    <div>
+                        <div class="auth-badge">BUNNY.NET STORAGE</div>
+                        <div class="modal-title" style="margin-bottom:4px">Media Scanner</div>
+                        <div style="font-size:11px;color:var(--fg2)">Mídias disponíveis no CDN. Amarelo = não referenciado em site-content.json.</div>
+                    </div>
+                    <button onclick="closeMediaScanner()" style="font-size:20px;background:none;border:none;color:var(--fg3);cursor:pointer;line-height:1;padding:4px">✕</button>
+                </div>
+                <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--border);flex-shrink:0" id="media-scanner-tabs">
+                    <button class="ms-tab active" onclick="switchMediaTab('videos',this)">Videos</button>
+                    <button class="ms-tab" onclick="switchMediaTab('images',this)">Images</button>
+                </div>
+                <div id="media-scanner-body" style="flex:1;overflow-y:auto;min-height:200px">
+                    <div style="padding:40px;text-align:center;color:var(--fg3)">⏳ Escaneando Bunny.net...</div>
+                </div>
+                <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:12px;flex-shrink:0;display:flex;justify-content:flex-end;gap:8px">
+                    <button class="btn" onclick="closeMediaScanner()">Fechar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Inject styles once
+        if (!document.getElementById('ms-styles')) {
+            const s = document.createElement('style');
+            s.id = 'ms-styles';
+            s.textContent = `
+                .ms-tab{padding:7px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:none;border:none;border-bottom:2px solid transparent;color:var(--fg3);cursor:pointer;font-family:inherit;margin-bottom:-1px;transition:color .15s}
+                .ms-tab.active,.ms-tab:hover{color:var(--fg);border-bottom-color:var(--fg)}
+                .ms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+                .ms-item{padding:10px;border:1px solid var(--border);background:var(--bg);cursor:default;transition:border-color .15s;position:relative}
+                .ms-item.unreferenced{border-color:rgba(245,166,35,.4);cursor:pointer}
+                .ms-item.unreferenced:hover{border-color:var(--yellow)}
+                .ms-thumb{width:100%;height:90px;object-fit:cover;background:var(--bg2);display:block}
+                .ms-name{font-size:9px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:6px}
+                .ms-meta{font-size:8px;color:var(--fg3);margin-top:2px}
+            `;
+            document.head.appendChild(s);
+        }
+    }
+
+    modal.classList.add('open');
+    _mediaScanData = null;
+    _mediaScanTab = 'videos';
+    document.querySelectorAll('.ms-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+
+    try {
+        const res = await fetch('/api/bunny/scan');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        _mediaScanData = await res.json();
+        renderMediaGrid(_mediaScanTab);
+    } catch (e) {
+        const body = document.getElementById('media-scanner-body');
+        if (body) body.innerHTML = `
+            <div style="padding:40px;text-align:center">
+                <div style="color:var(--red);margin-bottom:8px">⚠ Erro ao escanear Bunny.net</div>
+                <div style="font-size:10px;color:var(--fg3)">${esc(e.message)}<br>Verifique se BUNNY_API_KEY está configurado no Vercel.</div>
+            </div>`;
+    }
+}
+
+function closeMediaScanner() {
+    document.getElementById('media-scanner-modal')?.classList.remove('open');
+}
+
+function switchMediaTab(type, btn) {
+    document.querySelectorAll('.ms-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    _mediaScanTab = type;
+    renderMediaGrid(type);
+}
+
+function renderMediaGrid(type) {
+    const body = document.getElementById('media-scanner-body');
+    if (!body || !_mediaScanData) return;
+
+    const items = _mediaScanData[type] || [];
+    if (items.length === 0) {
+        body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--fg3)">Nenhuma mídia do tipo "${type}" encontrada.</div>`;
+        return;
+    }
+
+    // Mark items already referenced in site-content.json
+    const siteStr = D ? JSON.stringify(D) : '';
+    const referenced = new Set(items.filter(i => siteStr.includes(i.url)).map(i => i.url));
+
+    const unreferenced = items.filter(i => !referenced.has(i.url));
+    const alreadyIn = items.filter(i => referenced.has(i.url));
+
+    let html = `<div style="font-size:10px;color:var(--fg3);margin-bottom:14px">
+        ${items.length} ${type} · <span style="color:var(--green)">${alreadyIn.length} referenciados</span> · <span style="color:var(--yellow)">${unreferenced.length} não referenciados</span>
+    </div>`;
+
+    if (unreferenced.length > 0) {
+        html += `<div style="font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px">NÃO REFERENCIADOS — clique para copiar URL</div>`;
+        html += `<div class="ms-grid" style="margin-bottom:20px">`;
+        unreferenced.forEach(item => { html += buildMediaCard(item, type, false); });
+        html += `</div>`;
+    }
+
+    if (alreadyIn.length > 0) {
+        html += `<div style="font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px">JÁ REFERENCIADOS</div>`;
+        html += `<div class="ms-grid">`;
+        alreadyIn.forEach(item => { html += buildMediaCard(item, type, true); });
+        html += `</div>`;
+    }
+
+    body.innerHTML = html;
+}
+
+function buildMediaCard(item, type, isReferenced) {
+    const sizeLabel = item.size > 0 ? (item.size > 1048576 ? (item.size / 1048576).toFixed(1) + ' MB' : Math.round(item.size / 1024) + ' KB') : '';
+    const thumb = type === 'videos'
+        ? `<video src="${esc(item.url)}#t=1" class="ms-thumb" muted preload="metadata"></video>`
+        : `<img src="${esc(item.url)}" class="ms-thumb" loading="lazy" onerror="this.style.background='var(--bg2)'">`;
+
+    const clickAttr = !isReferenced ? `onclick="copyMediaUrl('${esc(item.url)}')"` : '';
+
+    return `
+        <div class="ms-item ${isReferenced ? '' : 'unreferenced'}" ${clickAttr} title="${esc(item.url)}">
+            ${thumb}
+            <div class="ms-name">${esc(item.name)}</div>
+            <div class="ms-meta">${item.folder ? esc(item.folder) + ' · ' : ''}${sizeLabel}</div>
+            ${!isReferenced ? `<div style="margin-top:6px;font-size:8px;color:var(--yellow);text-align:center">📋 Clique para copiar URL</div>` : ''}
+        </div>
+    `;
+}
+
+function copyMediaUrl(url) {
+    const fallback = () => {
+        const el = document.createElement('textarea');
+        el.value = url; el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el); el.select(); document.execCommand('copy');
+        document.body.removeChild(el);
+        toast('✓ URL copiada para clipboard');
+    };
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => toast('✓ URL copiada para clipboard')).catch(fallback);
+    } else { fallback(); }
 }

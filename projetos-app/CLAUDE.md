@@ -1,5 +1,8 @@
+@../AI_AGENT_BRIEFING.md
+@STATUS.md
+
 # AGENTE: PROJETOS-APP (Gerenciador Interno)
-**Última atualização:** 2026-05-16 | **Status:** BETA / TESTES
+**Última atualização:** 2026-05-17 | **Status:** BETA / TESTES
 
 ---
 

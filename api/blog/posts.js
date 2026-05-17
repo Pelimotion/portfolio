@@ -40,15 +40,17 @@ export default async function handler(req, res) {
             const posts = await supabaseFetch('blog_posts?select=*&order=updated_at.desc');
             // Format to match the old local structure for frontend compatibility
             const formatted = posts.map(p => ({
+                id: p.id,
                 fileName: `${p.slug}.md`,
-                data: { 
-                    ...p.data, 
-                    title: p.title, 
-                    slug: p.slug, 
-                    status: p.status, // Priority on the column value
-                    category: p.category, 
-                    metaDescription: p.meta_description, 
-                    heroPrompt: p.hero_prompt 
+                data: {
+                    ...p.data,
+                    title: p.title,
+                    slug: p.slug,
+                    status: p.status,
+                    category: p.category,
+                    metaDescription: p.meta_description,
+                    metaTitle: p.meta_title,
+                    heroPrompt: p.hero_prompt
                 },
                 content: p.content
             }));

@@ -1,5 +1,8 @@
+@../AI_AGENT_BRIEFING.md
+@STATUS.md
+
 # AGENTE: BLOG / PORTAL PELIMOTION
-**Última atualização:** 2026-05-16 | **Status:** ESTÁVEL — não alterar sem sessão dedicada
+**Última atualização:** 2026-05-17 | **Status:** ESTÁVEL — não alterar sem sessão dedicada
 
 ---
 

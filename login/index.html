@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PELIMOTION — STUDIO ACCESS</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000; --border: #222; --accent: #ff4b2b;
+            --text: #f0f0f0; --text-dim: #555;
+            --font-mono: 'DM Mono', monospace; --font-main: 'Outfit', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg); color: var(--text); font-family: var(--font-main);
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .container { width: 100%; max-width: 420px; padding: 0 20px; }
+        .logo {
+            font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px;
+            color: var(--text-dim); text-transform: uppercase; margin-bottom: 60px;
+        }
+        .logo span { color: var(--accent); }
+        h1 {
+            font-size: 32px; font-weight: 300; letter-spacing: -0.5px;
+            margin-bottom: 8px; line-height: 1.1;
+        }
+        .subtitle { font-size: 12px; color: var(--text-dim); margin-bottom: 40px; font-family: var(--font-mono); }
+        .field { margin-bottom: 16px; }
+        label { display: block; font-size: 9px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; letter-spacing: 1px; }
+        input {
+            width: 100%; background: #000; border: 1px solid var(--border);
+            color: #fff; padding: 14px 16px; font-family: var(--font-main);
+            font-size: 14px; outline: none; transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--accent); }
+        .btn-submit {
+            width: 100%; background: #fff; color: #000; border: none;
+            padding: 14px; font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            margin-top: 8px; font-weight: 500; transition: opacity 0.2s;
+        }
+        .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-submit:hover:not(:disabled) { opacity: 0.85; }
+        .error {
+            font-size: 11px; font-family: var(--font-mono); color: var(--accent);
+            margin-top: 16px; min-height: 16px;
+        }
+        .divider { border: none; border-top: 1px solid var(--border); margin: 50px 0 30px; }
+        .footer { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">PELIMOTION <span>STUDIO</span></div>
+        <h1>Studio<br>Access</h1>
+        <p class="subtitle">CMS // BLOG-GENERATOR // ADMIN</p>
+
+        <form id="login-form">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+                <label>Senha</label>
+                <input type="password" id="password" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn-submit" id="btn">ENTRAR</button>
+            <div class="error" id="error-msg"></div>
+        </form>
+
+        <hr class="divider">
+        <div class="footer">Acesso restrito. Apenas usuários autorizados.</div>
+    </div>
+
+    <script type="module">
+        import { requireAuth, signIn, getUserProfile } from '/shared/auth.js';
+        import { DEFAULT_REDIRECT } from '/shared/roles.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const nextUrl = params.get('next');
+        const errorParam = params.get('error');
+
+        // Mostrar erro de autorização se vier de um redirect
+        if (errorParam === 'unauthorized') {
+            document.getElementById('error-msg').textContent = 'Acesso negado: seu perfil não tem permissão para esse sistema.';
+        }
+
+        // Se já está logado, redirecionar pelo role
+        const session = await requireAuth('/login');
+        if (session) {
+            const profile = await getUserProfile();
+            const role = profile?.role || 'editor';
+            window.location.href = nextUrl || DEFAULT_REDIRECT[role] || '/blog-generator';
+        }
+
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn');
+            const errEl = document.getElementById('error-msg');
+            btn.disabled = true;
+            btn.textContent = 'VERIFICANDO...';
+            errEl.textContent = '';
+
+            const { error } = await signIn(
+                document.getElementById('email').value,
+                document.getElementById('password').value
+            );
+
+            if (error) {
+                errEl.textContent = 'Credenciais inválidas. Tente novamente.';
+                btn.disabled = false;
+                btn.textContent = 'ENTRAR';
+            } else {
+                // Redirecionar pelo role do usuário
+                const profile = await getUserProfile();
+                const role = profile?.role || 'editor';
+                window.location.href = nextUrl || DEFAULT_REDIRECT[role] || '/blog-generator';
+            }
+        };
+    </script>
+</body>
+</html>

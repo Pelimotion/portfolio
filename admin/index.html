@@ -206,15 +206,15 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
 
 <!-- AUTH OVERLAY -->
 <div class="auth-overlay" id="auth-overlay">
-  <div class="auth-card">
-    <div class="auth-badge">PLM Admin · Secured</div>
-    <div class="auth-title">Enter Access PIN</div>
-    <div class="auth-sub">Type your 4-digit admin PIN to access the content editor.</div>
-    <input type="password" inputmode="numeric" maxlength="4" id="auth-pin" class="auth-input" placeholder="••••" autocomplete="off" oninput="onPinInput(this)">
+  <div class="auth-card" style="text-align:center;">
+    <div class="auth-badge">PLM Admin · Supabase Auth</div>
+    <div style="width:28px;height:28px;border:2px solid #1e1e1e;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 20px;"></div>
+    <div class="auth-title" style="font-size:16px;">Verificando acesso...</div>
+    <div class="auth-sub">Validando sessão e permissões.</div>
     <div class="auth-error" id="auth-error"></div>
-    <button class="auth-btn" id="auth-btn" onclick="checkPin()">Unlock →</button>
   </div>
 </div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <!-- PUBLISH MODAL -->
 <div class="modal-bg" id="publish-modal">
@@ -282,6 +282,10 @@ body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif
         </span>
       </button>
       <div class="deploy-log" id="deploy-log"></div>
+      <div style="border-top:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span id="admin-user-email" style="font-size:9px;color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;"></span>
+        <button onclick="lockAdmin()" style="font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--fg3);padding:4px 8px;cursor:pointer;flex-shrink:0;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--fg3)';">SAIR</button>
+      </div>
     </div>
   </aside>
 

@@ -1,5 +1,8 @@
+@../AI_AGENT_BRIEFING.md
+@STATUS.md
+
 # AGENTE: BLOG GENERATOR
-**Última atualização:** 2026-05-16 | **Status:** EM DESENVOLVIMENTO ATIVO
+**Última atualização:** 2026-05-17 | **Status:** EM DESENVOLVIMENTO ATIVO
 
 ---
 
@@ -91,9 +94,29 @@ git add . && git commit -m "feat: ..." && git push origin main
 ---
 
 ## STATUS — Histórico de Sessões
+
+### 2026-05-16 — Reconstrução FASE 0 + FASE 1 (GENERATOR_REBUILD_PLAN.md)
+**Arquivos criados:**
+- `/api/blog/config.js` — endpoint que expõe SUPABASE_URL + SUPABASE_ANON_KEY para o frontend (sem hardcode)
+- `/shared/auth.js` — módulo ES com `requireAuth()`, `signOut()`, `signIn()`, `getClient()` via Supabase Auth
+- `/login/index.html` — página de login dark/editorial com email+senha (Supabase Auth)
+
+**Arquivos modificados:**
+- `cms.html` → v7.0: auth guard Supabase (sem PIN), mapeamento correto p.data.*, toast system, auto-save 30s, word count live, meta char count, Content Score, Stage 00 Research Engine, logout, indicador de save
+- `api/blog/posts.js` → GET response agora inclui `id` no nível raiz
+- `vercel.json` → rotas `/login` e `/blog-generator` adicionadas
+
+**Bugs resolvidos nesta sessão:**
+- PIN "0101" hardcoded removido completamente
+- `loadPosts()` e `openPost()` corrigidos para usar `p.data.*` (era `p.*`)
+- `p.id` agora existe no GET response (era ausente)
+- `alert()` substituído por toast system não-bloqueante
+- Auto-save agora chama Supabase (não apenas localStorage)
+
+**Próxima sessão:** FASE 2 (Research Engine aprofundado — Gemini web search), FASE 3 (Prompt Compiler + Anti-IA Pass), FASE 4 (Visual Engine coeso), FASE 7 (Auto Mode Cron).
+
 ### 2026-05-16 — Governança e Estratégia de Ecossistema
 - Implementada arquitetura de agentes federados (CLAUDE.md por subprojeto)
 - Criado STANDARDS.md e design-tokens.json globais
 - Migração de imagens legadas (JSONB → Relacional) concluída com service_role key
 - Build Engine sincronizado com novos dados relacionais
-- Próxima sessão: Iniciar FASE 4 (Trend Intelligence) e FASE 5 (Automação Cron) — *Nota: esqueletos já criados, falta refinar lógica.*

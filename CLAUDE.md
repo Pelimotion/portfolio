@@ -1,5 +1,8 @@
+@AI_AGENT_BRIEFING.md
+@STATUS.md
+
 # PELIMOTION — Orquestrador Maestro
-**Versão:** 1.0 | **Última atualização:** 2026-05-16
+**Versão:** 1.1 | **Última atualização:** 2026-05-17
 
 ---
 

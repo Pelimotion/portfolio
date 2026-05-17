@@ -6,6 +6,8 @@
     { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/blog-generator", "destination": "/blog-generator/cms.html" },
     { "source": "/v1/", "destination": "/legacy/V1/portfolio/index.html" },
     { "source": "/v1/:path*", "destination": "/legacy/V1/portfolio/:path*" },
     { "source": "/portfolio", "destination": "/legacy/V1/portfolio/index.html" },

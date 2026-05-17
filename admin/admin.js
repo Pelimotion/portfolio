@@ -28,24 +28,8 @@ function insertFormat(id, tag) {
   markUnsaved();
 }
 
-// ─── PIN Auth (SHA-256, runs 100% locally — no external calls) ────────────
-// To change PIN: run this in browser console: sha256('yourpin').then(h=>console.log(h))
-// Then paste the hash below as ADMIN_PIN_HASH.
-const ADMIN_PIN_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // default: 1234
+// ─── Auth — Supabase (unified with projetos-app and blog-generator) ──────────
 const REPO = 'Pelimotion/portfolio';
-const SESSION_KEY = 'plm_admin_unlocked';
-
-async function sha256(str) {
-  if (!window.isSecureContext || !crypto.subtle) {
-    throw new Error('This browser/connection is not secure. Admin PIN requires HTTPS or Localhost.');
-  }
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function isUnlocked() {
-  return sessionStorage.getItem(SESSION_KEY) === '1';
-}
 
 function showAuthOverlay() {
   const el = document.getElementById('auth-overlay');
@@ -57,45 +41,49 @@ function hideAuthOverlay() {
   if (el) el.style.display = 'none';
 }
 
-function onPinInput(input) {
-  // Clear error when typing
-  const err = document.getElementById('auth-error');
-  if (err) err.textContent = '';
-  // Auto-submit when 4 digits entered
-  if (input.value.length >= 4) checkPin();
-}
-
-async function checkPin() {
-  const input = document.getElementById('auth-pin');
-  const btn = document.getElementById('auth-btn');
-  const errEl = document.getElementById('auth-error');
-  if (!input) return;
-  const pin = input.value.trim();
-  if (!pin) { if (errEl) errEl.textContent = 'Enter your PIN'; return; }
-  if (btn) btn.disabled = true;
-
+async function lockAdmin() {
   try {
-    const hash = await sha256(pin);
-    if (hash === ADMIN_PIN_HASH) {
-      sessionStorage.setItem(SESSION_KEY, '1');
-      hideAuthOverlay();
-      await loadData();
-    } else {
-      if (errEl) errEl.textContent = 'Incorrect PIN. Try again.';
-      input.value = '';
-      input.focus();
-      if (btn) btn.disabled = false;
-    }
-  } catch (e) {
-    console.error('Auth error:', e);
-    if (errEl) errEl.textContent = 'Auth system error: ' + e.message;
-    if (btn) btn.disabled = false;
-  }
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    const cfg = await fetch('/api/blog/config').then(r => r.json());
+    const sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+    await sb.auth.signOut();
+  } catch(e) { /* ignore */ }
+  window.location.href = '/login';
 }
 
-function lockAdmin() {
-  sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
+async function checkAdminAccess() {
+  const errEl = document.getElementById('auth-error');
+  try {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    const cfg = await fetch('/api/blog/config').then(r => r.json());
+    const sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = '/login?next=' + encodeURIComponent(window.location.href);
+      return false;
+    }
+
+    const { data: profile } = await sb.from('profiles')
+      .select('role, email')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!profile || profile.role !== 'admin') {
+      window.location.href = '/login?error=unauthorized&next=' + encodeURIComponent(window.location.href);
+      return false;
+    }
+
+    // Exibir email do usuário logado na sidebar
+    const userEl = document.getElementById('admin-user-email');
+    if (userEl) userEl.textContent = profile.email || session.user.email;
+
+    return true;
+  } catch(e) {
+    console.error('Admin auth error:', e);
+    if (errEl) errEl.textContent = 'Erro de autenticação: ' + e.message;
+    return false;
+  }
 }
 
 
@@ -181,9 +169,7 @@ async function getFileSha(path, token) {
   const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + path + '?ref=main&t=' + Date.now(), {
     headers: {
       'Authorization': 'token ' + token,
-      'Accept': 'application/vnd.github.v3+json',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache'
+      'Accept': 'application/vnd.github.v3+json'
     }
   });
   if (res.status === 404) return null;
@@ -358,6 +344,7 @@ async function autoTranslate(fromId, toId, fromLang, toLang) {
 function showLanding() {
   autoSave(); currentSection = 'landing'; currentKey = null; highlightSb(null);
   const L = D.landing || {};
+  const P = D.portfolio || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">LANDING PAGE</div><h1 class="page-title">Index Principal</h1></div>
     
@@ -394,6 +381,14 @@ function showLanding() {
         <div class="field"><label>Contact Subtext — <span style="color:#34d399">PT</span></label><input id="f-contactSub_pt" value="${esc(L.contactSub_pt || '')}" oninput="markUnsaved()"></div>
       </div>
     </div>
+    <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social Links</div>
+      <div class="preview-ref">📍 Aparece na landing page e na página de portfólio.</div>
+      <div class="field"><label>WhatsApp</label><input id="f-pWhatsApp" value="${esc(P.contactWhatsApp || '')}" oninput="markUnsaved()"><div class="hint">Número completo com código do país, sem espaços. Ex: 5547999664274</div></div>
+      <div class="field"><label>Email</label><input id="f-pEmail" value="${esc(P.contactEmail || '')}" oninput="markUnsaved()"></div>
+      <div class="field"><label>Instagram (apenas username)</label><input id="f-pIG" value="${esc(P.socialInstagram || '')}" oninput="markUnsaved()"><div class="hint">Ex: pelimotion</div></div>
+      <div class="field"><label>LinkedIn (apenas username)</label><input id="f-pLI" value="${esc(P.socialLinkedIn || '')}" oninput="markUnsaved()"><div class="hint">Ex: pelife</div></div>
+      <div class="field"><label>Behance (apenas username)</label><input id="f-pBE" value="${esc(P.socialBehance || '')}" oninput="markUnsaved()"><div class="hint">Ex: pelimotion</div></div>
+    </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveLanding()">Apply Changes</button></div>`;
 }
 
@@ -403,14 +398,7 @@ function showPortfolio() {
   const P = D.portfolio || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">PORTFOLIO PAGE</div><h1 class="page-title">Portfolio Settings</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> V1/portfolio/index.html — Hero, social links, footer quotes.</div>
-    <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social</div>
-      <div class="field"><label>WhatsApp</label><input id="f-pWhatsApp" value="${esc(P.contactWhatsApp || '')}" oninput="markUnsaved()"><div class="hint">Número completo com código do país, sem espaços. Ex: 5547999664274</div></div>
-      <div class="field"><label>Email</label><input id="f-pEmail" value="${esc(P.contactEmail || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Instagram (apenas username)</label><input id="f-pIG" value="${esc(P.socialInstagram || '')}" oninput="markUnsaved()"><div class="hint">Ex: pelimotion</div></div>
-      <div class="field"><label>LinkedIn (apenas username)</label><input id="f-pLI" value="${esc(P.socialLinkedIn || '')}" oninput="markUnsaved()"><div class="hint">Ex: pelife</div></div>
-      <div class="field"><label>Behance (apenas username)</label><input id="f-pBE" value="${esc(P.socialBehance || '')}" oninput="markUnsaved()"><div class="hint">Ex: pelimotion</div></div>
-    </div>
+    <div class="preview-ref">📍 <strong>File:</strong> V1/portfolio/index.html — Footer quotes e localização do estúdio. Contatos e redes sociais estão em <strong>Landing Page → Contact & Social Links</strong>.</div>
     <div class="card"><div class="card-title"><span class="icon">💬</span> Footer Quotes</div>
       <div class="field"><label>Quote 1 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-fq1" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1 || 'Visual systems built for those who set the pace, not just follow it.')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-fq1','f-fq1_pt','en','pt')">↕ Auto-Traduzir</button></div>
       <div class="field"><label>Quote 1 — <span style="color:#34d399">PT</span></label><textarea id="f-fq1_pt" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1_pt || 'Sistemas visuais para quem define o ritmo, não apenas o acompanha.')}</textarea></div>
@@ -732,15 +720,19 @@ function saveEntryToMem() {
 
 function saveLandingToMem() {
   const L = D.landing = D.landing || {};
+  const P = D.portfolio = D.portfolio || {};
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
   L.brandName = v('f-brandName'); L.brandSub = v('f-brandSub'); L.brandSub_pt = v('f-brandSub_pt');
   L.aboutTitle = v('f-aboutTitle'); L.aboutTitle_pt = v('f-aboutTitle_pt');
   L.contactTitle = v('f-contactTitle'); L.contactTitle_pt = v('f-contactTitle_pt');
   L.contactSub = v('f-contactSub'); L.contactSub_pt = v('f-contactSub_pt');
+  P.contactWhatsApp = v('f-pWhatsApp'); P.contactEmail = v('f-pEmail');
+  P.socialInstagram = v('f-pIG'); P.socialLinkedIn = v('f-pLI'); P.socialBehance = v('f-pBE');
 }
 
 function saveLanding() {
   const L = D.landing = D.landing || {};
+  const P = D.portfolio = D.portfolio || {};
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
   L.brandName = v('f-brandName');
   L.brandSub = v('f-brandSub'); L.brandSub_pt = v('f-brandSub_pt');
@@ -749,6 +741,8 @@ function saveLanding() {
   L.aboutParagraph2 = v('f-aboutP2'); L.aboutParagraph2_pt = v('f-aboutP2_pt');
   L.contactTitle = v('f-contactTitle'); L.contactTitle_pt = v('f-contactTitle_pt');
   L.contactSub = v('f-contactSub'); L.contactSub_pt = v('f-contactSub_pt');
+  P.contactWhatsApp = v('f-pWhatsApp'); P.contactEmail = v('f-pEmail');
+  P.socialInstagram = v('f-pIG'); P.socialLinkedIn = v('f-pLI'); P.socialBehance = v('f-pBE');
   saveAll();
 }
 
@@ -756,8 +750,6 @@ function saveLanding() {
 function savePortfolioToMem() {
   const P = D.portfolio = D.portfolio || {};
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  P.contactWhatsApp = v('f-pWhatsApp'); P.contactEmail = v('f-pEmail');
-  P.socialInstagram = v('f-pIG'); P.socialLinkedIn = v('f-pLI'); P.socialBehance = v('f-pBE');
   P.footerQuote1 = v('f-fq1'); P.footerQuote1_pt = v('f-fq1_pt');
   P.footerQuote2 = v('f-fq2'); P.footerQuote2_pt = v('f-fq2_pt');
   P.footerStudioLocation = v('f-fLoc');
@@ -1127,6 +1119,12 @@ function handleImport(input) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 function esc(s) { return String(s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function download(content, filename) {
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(content);
+  a.download = filename;
+  a.click();
+}
 function markUnsaved() {
   hasUnsaved = true;
   const el = document.getElementById('unsaved-label');
@@ -1149,22 +1147,17 @@ document.addEventListener('keydown', e => {
 });
 
 
-// ─── Init ───
-try {
-  if (isUnlocked()) {
+// ─── Init — Supabase Auth ───
+showAuthOverlay();
+checkAdminAccess().then(ok => {
+  if (ok) {
     hideAuthOverlay();
     loadData();
-  } else {
-    showAuthOverlay();
-    setTimeout(() => {
-      const p = document.getElementById('auth-pin');
-      if (p) p.focus();
-    }, 500);
   }
-} catch (e) {
+}).catch(e => {
   console.error('Init error:', e);
-  alert('Critical Admin Error: ' + e.message);
-}
+  window.location.href = '/login';
+});
 
 function showReorder() {
   currentSection = 'reorder';
@@ -1253,8 +1246,6 @@ function confirmRename() {
 }
 
 // ─── Global Exports ───
-window.onPinInput = onPinInput;
-window.checkPin = checkPin;
 window.lockAdmin = lockAdmin;
 window.insertFormat = insertFormat;
 window.exportJSON = exportJSON;
