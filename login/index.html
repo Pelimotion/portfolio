@@ -59,11 +59,11 @@
 
         <form id="login-form">
             <div class="field">
-                <label>Email</label>
+                <label for="email">Email</label>
                 <input type="email" id="email" autocomplete="email" required>
             </div>
             <div class="field">
-                <label>Senha</label>
+                <label for="password">Senha</label>
                 <input type="password" id="password" autocomplete="current-password" required>
             </div>
             <button type="submit" class="btn-submit" id="btn">ENTRAR</button>
@@ -75,7 +75,7 @@
     </div>
 
     <script type="module">
-        import { requireAuth, signIn } from '/shared/auth.js';
+        import { getClient, signIn } from '/shared/auth.js';
 
         const params = new URLSearchParams(window.location.search);
         const nextUrl = params.get('next');
@@ -85,8 +85,10 @@
             document.getElementById('error-msg').textContent = 'Acesso negado: seu perfil não tem permissão para essa área.';
         }
 
-        // Já logado: vai para hub (ignorando nextUrl se veio de erro de permissão)
-        const session = await requireAuth('/login');
+        // Verifica sessão diretamente — NÃO usa requireAuth para evitar loop
+        // (requireAuth redireciona para /login?next=... quando sem sessão, criando loop infinito)
+        const sb = await getClient();
+        const { data: { session } } = await sb.auth.getSession();
         if (session) {
             const dest = errorParam === 'unauthorized' ? null : nextUrl;
             window.location.href = dest || '/hub';
