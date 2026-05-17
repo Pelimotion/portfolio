@@ -64,10 +64,22 @@ async function checkAdminAccess() {
       return false;
     }
 
-    const { data: profile } = await sb.from('profiles')
+    let { data: profile } = await sb.from('profiles')
       .select('role, email')
       .eq('id', session.user.id)
       .single();
+
+    // Fallback: RLS pode bloquear o SELECT se a linha do perfil não existir ainda
+    if (!profile || profile.role !== 'admin') {
+      const fallback = await fetch('/api/blog/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: session.access_token })
+      }).then(r => r.json()).catch(() => ({ role: null }));
+      if (fallback.role === 'admin') {
+        profile = { role: 'admin', email: fallback.email || session.user.email };
+      }
+    }
 
     if (!profile || profile.role !== 'admin') {
       window.location.href = '/login?error=unauthorized&next=' + encodeURIComponent(window.location.href);
