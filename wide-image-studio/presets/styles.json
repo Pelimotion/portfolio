@@ -1,0 +1,47 @@
+{
+  "$schema": "./styles.schema.json",
+  "version": "1.0",
+  "presets": {
+    "cinematic_realistic_2k": {
+      "label": "Cinematográfico realista 2K",
+      "soul_style_id": null,
+      "prompt_suffix": "cinematic lighting, professional editorial photography, ultra-detailed, soft volumetric haze, depth of field, 35mm film grain, color graded",
+      "negative_prompt_suffix": "cartoon, illustration, low quality, oversaturated, lens flare, text, logo, watermark",
+      "palette_hint": "balanced contrast, natural tones",
+      "best_for": ["paisagens", "vistas urbanas", "ambientes amplos"]
+    },
+
+    "editorial_branding": {
+      "label": "Editorial / branding Pelimotion",
+      "soul_style_id": null,
+      "prompt_suffix": "editorial composition, brand-friendly negative space, refined typography-ready, sophisticated color palette, minimalist accents",
+      "negative_prompt_suffix": "busy, cluttered, amateur, low contrast, distracting elements",
+      "palette_hint": "Pelimotion brand colors",
+      "best_for": ["headers de campanha", "banners institucionais"]
+    },
+
+    "motion_design_dramatic": {
+      "label": "Motion design dramático",
+      "soul_style_id": null,
+      "prompt_suffix": "dramatic lighting with strong directional light source, high contrast, dynamic composition, motion-friendly negative space for animation, bold geometric forms",
+      "negative_prompt_suffix": "flat, static, washed out, low energy",
+      "palette_hint": "high contrast, accent color",
+      "best_for": ["frames-base para animação", "key visuals"]
+    },
+
+    "documentary_natural": {
+      "label": "Documental natural",
+      "soul_style_id": null,
+      "prompt_suffix": "documentary photography style, natural unmanipulated lighting, candid composition, authentic textures, journalistic framing",
+      "negative_prompt_suffix": "staged, posed, artificial, overprocessed, HDR-look",
+      "palette_hint": "natural daylight, true colors",
+      "best_for": ["contextos reais", "reportagem visual"]
+    }
+  },
+
+  "_notes": {
+    "soul_style_id": "Quando você criar Soul IDs específicos da marca via Higgsfield, preencha esses campos para travar identidade visual. Até lá, ficam null e a Skill custom recomenda criar.",
+    "prompt_suffix": "Anexado ao master_prompt do brief no momento da geração.",
+    "negative_prompt_suffix": "Concatenado com brief.scene.negative."
+  }
+}

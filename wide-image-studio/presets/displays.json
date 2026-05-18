@@ -1,0 +1,92 @@
+{
+  "$schema": "./displays.schema.json",
+  "version": "1.0",
+  "presets": {
+    "pelimotion_wide_10137": {
+      "label": "Display Pelimotion 10137×1320 (padrão)",
+      "width": 10137,
+      "height": 1320,
+      "aspect_ratio": 7.6795,
+      "tile_count": 5,
+      "tile_aspect": "21:9",
+      "tile_width": 3072,
+      "tile_height": 1320,
+      "overlap_pct": 0.35,
+      "overlap_px": 1075,
+      "canvas_total_width": 11060,
+      "crop_x_start": 461,
+      "tile_model": "nano-banana-pro",
+      "tile_generation_resolution": "4096x1755",
+      "master_model": "seedream-5-lite",
+      "master_resolution": "3072x1320",
+      "estimated_cost_usd": 3.0,
+      "estimated_duration_seconds": 150,
+      "positions": [
+        { "tile": 1, "x": -461,  "overlap_left": 0,    "overlap_right": 1075 },
+        { "tile": 2, "x": 1536,  "overlap_left": 1075, "overlap_right": 1075 },
+        { "tile": 3, "x": 3533,  "overlap_left": 1075, "overlap_right": 1075 },
+        { "tile": 4, "x": 5530,  "overlap_left": 1075, "overlap_right": 1075 },
+        { "tile": 5, "x": 7527,  "overlap_left": 1075, "overlap_right": 0    }
+      ]
+    },
+
+    "pelimotion_wide_10137_high_detail": {
+      "label": "Display Pelimotion 10137×1320 (alta densidade)",
+      "width": 10137,
+      "height": 1320,
+      "aspect_ratio": 7.6795,
+      "tile_count": 7,
+      "tile_aspect": "16:9",
+      "tile_width": 2016,
+      "tile_height": 1344,
+      "overlap_pct": 0.40,
+      "overlap_px": 806,
+      "canvas_total_width": 10276,
+      "crop_x_start": 69,
+      "tile_model": "nano-banana-pro",
+      "tile_generation_resolution": "4032x2268",
+      "master_model": "seedream-5-lite",
+      "master_resolution": "2016x1344",
+      "estimated_cost_usd": 4.2,
+      "estimated_duration_seconds": 200,
+      "notes": "Mais detalhe local; 40% mais caro que o padrão. Use quando o conteúdo tiver muitos elementos pequenos.",
+      "positions": [
+        { "tile": 1, "x": -69,   "overlap_left": 0,   "overlap_right": 806 },
+        { "tile": 2, "x": 1210,  "overlap_left": 806, "overlap_right": 806 },
+        { "tile": 3, "x": 2419,  "overlap_left": 806, "overlap_right": 806 },
+        { "tile": 4, "x": 3629,  "overlap_left": 806, "overlap_right": 806 },
+        { "tile": 5, "x": 4838,  "overlap_left": 806, "overlap_right": 806 },
+        { "tile": 6, "x": 6048,  "overlap_left": 806, "overlap_right": 806 },
+        { "tile": 7, "x": 7257,  "overlap_left": 806, "overlap_right": 0   }
+      ]
+    },
+
+    "pelimotion_wide_10137_fast_draft": {
+      "label": "Display Pelimotion 10137×1320 (rascunho rápido)",
+      "width": 10137,
+      "height": 1320,
+      "aspect_ratio": 7.6795,
+      "tile_count": 4,
+      "tile_aspect": "21:9",
+      "tile_width": 3072,
+      "tile_height": 1320,
+      "overlap_pct": 0.30,
+      "overlap_px": 922,
+      "canvas_total_width": 9522,
+      "crop_x_start": -307,
+      "tile_model": "nano-banana-2",
+      "tile_generation_resolution": "3072x1320",
+      "master_model": "seedream-5-lite",
+      "master_resolution": "2048x880",
+      "estimated_cost_usd": 0.4,
+      "estimated_duration_seconds": 60,
+      "notes": "Draft para validar composição antes do render final. Cobertura ligeiramente menor; pode haver crop nos extremos. ~7× mais barato que o padrão.",
+      "positions": [
+        { "tile": 1, "x": -307,  "overlap_left": 0,   "overlap_right": 922 },
+        { "tile": 2, "x": 1843,  "overlap_left": 922, "overlap_right": 922 },
+        { "tile": 3, "x": 3993,  "overlap_left": 922, "overlap_right": 922 },
+        { "tile": 4, "x": 6143,  "overlap_left": 922, "overlap_right": 0   }
+      ]
+    }
+  }
+}
