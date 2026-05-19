@@ -29,7 +29,7 @@ Browser carrega refs via stream passthrough Bunny Edge → Higgsfield gera maste
 
 ## Stack local
 - **Backend:** Bunny Edge Scripting (Deno modificado, 128MB RAM, 30s CPU, bundle ≤1MB)
-- **Frontend:** Vanilla HTML/CSS/JS — `studio.pelimotion.com` (Pull Zone Bunny)
+- **Frontend:** Vanilla HTML/CSS/JS — `studio.pelimotion.art` (Pull Zone Bunny)
 - **DB:** Supabase Postgres + Realtime + pgsodium (criptografa creds HF)
 - **Geração:** Higgsfield REST API v2 (não SDK — REST direto via fetch)
 - **Stitch:** OpenCV.js WASM no browser do cliente
@@ -41,7 +41,7 @@ Browser carrega refs via stream passthrough Bunny Edge → Higgsfield gera maste
 - **Correção:** Soul I2I (strength 0.3 em região de costura, fallback)
 
 ## Endpoints do edge script
-Todos sob `https://pelimotion.com/wide-api/`:
+Todos sob `https://pelimotion.art/wide-api/`:
 - `POST /upload-ref` — proxy stream cliente → HF /v2/files
 - `POST /start` — cria job, chama HF master plate
 - `POST /approve-master` — crop master + dispatch 5 tiles em paralelo
@@ -70,8 +70,8 @@ Todos sob `https://pelimotion.com/wide-api/`:
 - 5 tiles em 21:9 a 3072×1320 com 35% overlap → math em `presets/displays.json`
 - Master plate = Seedream 5 Lite; tiles = Nano Banana Pro
 - Auth = Supabase Auth com role `wide_studio` em `app_metadata`
-- Frontend separado em `studio.pelimotion.com`
-- Edge script sob subpath `pelimotion.com/wide-api/*` via URL rewrite
+- Frontend separado em `studio.pelimotion.art`
+- Edge script sob subpath `pelimotion.art/wide-api/*` via URL rewrite
 
 ## Documentos relacionados
 - `presets/displays.json` — schemas e math exata

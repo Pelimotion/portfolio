@@ -62,9 +62,9 @@ update auth.users
    set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
                             || '{"role": "wide_studio"}'::jsonb
  where email in (
-   'voce@pelimotion.com',
-   'colega1@pelimotion.com',
-   'colega2@pelimotion.com'
+   'voce@pelimotion.art',
+   'colega1@pelimotion.art',
+   'colega2@pelimotion.art'
  );
 
 -- Verificar

@@ -26,7 +26,9 @@ npm run build
 **Passo 3 — Deploy para Bunny:**
 ```bash
 # Via CLI (recomendado):
-bunny edge-scripting deploy --script wide-api dist/index.js
+# (requer bunny login feito uma vez — abre browser para autenticação)
+bunny scripts deploy dist/index.js <SCRIPT_ID>
+# SCRIPT_ID: ver em "bunny scripts list" após criar o script no dashboard
 
 # Via painel (alternativa manual):
 # Bunny Dashboard → Edge Scripting → wide-api → Upload new version
@@ -34,19 +36,20 @@ bunny edge-scripting deploy --script wide-api dist/index.js
 
 **Passo 4 — Verificação pós-deploy:**
 ```bash
-curl https://pelimotion.com/wide-api/health
+curl https://pelimotion.art/wide-api/health
 # Esperado: {"ok":true,"ts":1234567890}
 ```
 
 **Rollback se algo quebrar:**
 ```bash
-bunny edge-scripting rollback --script wide-api --to PREVIOUS_VERSION
-# Ou no painel: Edge Scripting → wide-api → Version history → Activate anterior
+bunny scripts deployments list <SCRIPT_ID>   # ver versões disponíveis
+bunny scripts deployments activate <DEPLOYMENT_ID>  # ativar versão anterior
+# Ou no painel: Edge Scripting → wide-api → Deployments → Activate anterior
 ```
 
 **Edge Rule (configurar 1× no painel Bunny, não precisa re-deploy):**
-Bunny Dashboard → CDN → pelimotion.com Pull Zone → Edge Rules → Add Rule:
+Bunny Dashboard → CDN → pelimotion.art Pull Zone → Edge Rules → Add Rule:
 - Condition: URL Path starts with `/wide-api/`
 - Action: Route to Edge Script → `wide-api`
 
-> Esta regra faz o URL rewrite de `pelimotion.com/wide-api/*` para o edge script sem passar pelo origin (evita o bug de middleware com storage pull zones).
+> Esta regra faz o URL rewrite de `pelimotion.art/wide-api/*` para o edge script sem passar pelo origin (evita o bug de middleware com storage pull zones).

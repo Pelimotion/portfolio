@@ -5,8 +5,8 @@
 Gera imagens muito largas (display 10137×1320 e variantes) a partir de um brief, mantendo consistência e detalhe ao longo da largura inteira. Estratégia: master plate baixo-res → 5 tiles 21:9 high-res com referências cruzadas → multi-band blending no browser do cliente.
 
 ## Stack
-- **Frontend:** Vanilla HTML/CSS/JS, hospedado em `studio.pelimotion.com` (Pull Zone Bunny separada).
-- **Backend:** Bunny Edge Scripting, respondendo em `pelimotion.com/wide-api/*` (Edge Rule de URL rewrite).
+- **Frontend:** Vanilla HTML/CSS/JS, hospedado em `studio.pelimotion.art` (Pull Zone Bunny separada).
+- **Backend:** Bunny Edge Scripting, respondendo em `pelimotion.art/wide-api/*` (Edge Rule de URL rewrite).
 - **State:** Supabase Postgres + Realtime (table `wide_jobs`, RLS por role `wide_studio`).
 - **Geração:** Higgsfield REST API (Soul, Nano Banana Pro, Seedream 5 Lite).
 - **Stitch:** OpenCV.js WASM no browser do cliente (zero storage no Pelimotion).
@@ -35,7 +35,7 @@ supabase db push
 
 # 3. Atribuir role à sua conta (SQL editor):
 #    update auth.users set raw_app_meta_data = raw_app_meta_data || '{"role": "wide_studio"}'::jsonb
-#    where email = 'voce@pelimotion.com';
+#    where email = 'voce@pelimotion.art';
 ```
 
 ## Próximos passos
