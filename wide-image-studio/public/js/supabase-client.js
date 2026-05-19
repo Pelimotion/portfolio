@@ -4,6 +4,21 @@
 const _db = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 let _jobChannel = null;
 
+// Aplica tokens vindos do hash da URL (redirect cross-domain do login).
+// detectSessionInUrl do Supabase nem sempre processa o hash a tempo quando
+// scripts são carregados como <script> simples — chamamos setSession() explicitamente.
+async function _applyHashSession() {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('access_token=')) return;
+    const p = new URLSearchParams(hash.slice(1));
+    const at = p.get('access_token');
+    const rt = p.get('refresh_token');
+    if (at && rt) {
+        await _db.auth.setSession({ access_token: at, refresh_token: rt });
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+}
+
 async function getSession() {
   const { data, error } = await _db.auth.getSession();
   if (error || !data.session) return null;
@@ -18,6 +33,7 @@ async function getUser() {
 
 // Verifica se o usuário tem role wide_studio em app_metadata.
 async function requireWideStudioSession() {
+  await _applyHashSession();
   const session = await getSession();
   if (!session) {
     window.location.href = CONFIG.LOGIN_URL + '?next=' + encodeURIComponent(window.location.href);
