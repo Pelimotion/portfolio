@@ -7,9 +7,9 @@
 
 **Data:** 2026-05-19
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fase A ✅ + Fase B ✅ completas | Próxima: Fase C (refactor DatabaseRenderer)
-**Próxima Ação:** Fase C — quebrar `DatabaseRenderer.jsx` em sub-componentes antes de adicionar features
-**Branch ativa:** `main` (Fases A+B mergeadas)
+**Status:** BETA — Fases A ✅ B ✅ C ✅ D ✅ completas | Próxima: Fase E (integração Drive + toasts)
+**Próxima Ação:** Fase E — substituir `window.prompt` por modal, drag-from-browser, toast progress
+**Branch ativa:** `main`
 **Bloqueadores:** Nenhum
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
 
@@ -23,12 +23,33 @@
 | Detalhe de cenas | ✅ Funcional | 2026-05-16 |
 | Daily log por cena | ✅ Funcional | 2026-05-16 |
 | Dashboard financeiro | ❌ Não iniciado | — |
-| Calendário editorial (integração blog-generator) | ❌ Não iniciado | — |
+| Calendário editorial (4 views: mês/semana/dia/agenda) | ✅ Funcional | 2026-05-19 |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — Fases C+D: Refactor DatabaseRenderer + Full Calendar
+
+**O que foi feito:**
+- [x] `DatabaseRenderer.jsx` refatorado em orquestrador leve (~200 linhas) — exporta `useDensity`
+- [x] `DatabaseToolbar.jsx` extraído (view switcher, density, card config, PropertyManagerModal, add button)
+- [x] `KanbanView.jsx`, `TableView.jsx`, `ListView.jsx` extraídos para `views/`
+- [x] `CalendarView.jsx` reescrito como orquestrador (4 views, keyboard shortcuts, filter mode)
+- [x] `calendarUtils.js` criado: date-fns (ptBR, weekStartsOn:1), `buildEvents`, `groupByDay`, `navigate`, formatadores
+- [x] `CalendarKbd.jsx` criado: T/J/K/←/→/G keyboard handler
+- [x] `CalendarHeader.jsx` criado: 4 view tabs, nav buttons, filtro Todos/Projeto, hint de atalhos
+- [x] `MonthView.jsx`: grade Mon-Sun, drag-to-reschedule HTML5, dropdown com GCal link
+- [x] `WeekView.jsx`: 7 colunas Mon-Sun usando `weekDays()`, event chips clicáveis
+- [x] `DayView.jsx`: lista de eventos do dia com status e ícone
+- [x] `AgendaView.jsx`: próximos 60 dias agrupados por data
+- [x] Build limpo (`npm run build` ✅)
+
+**Arquivos criados:** `src/components/calendar/calendarUtils.js`, `CalendarKbd.jsx`, `CalendarHeader.jsx`, `MonthView.jsx`, `WeekView.jsx`, `DayView.jsx`, `AgendaView.jsx`; `src/components/database/DatabaseToolbar.jsx`; `src/components/database/views/KanbanView.jsx`, `TableView.jsx`, `ListView.jsx`
+**Arquivos modificados:** `src/components/database/DatabaseRenderer.jsx`, `src/components/database/views/CalendarView.jsx`
+
+---
 
 ### 2026-05-19 — Fase B: CommandPalette → cmdk
 **O que foi feito:**
