@@ -54,8 +54,11 @@ export async function handleWebhook(
   }
 
   const isFailed = FAILED_HF_STATUSES.has(hfStatus ?? "");
-  // Primeiro URL de output (array pode ter thumb + full — usamos o índice 0)
-  const outputUrl: string | null = (payload.output ?? payload.outputs ?? [])[0] ?? null;
+  // URL de output — HF pode mandar string ou array; normaliza os dois casos.
+  const rawOutput = payload.output ?? payload.output_url ?? payload.outputs ?? payload.result;
+  const outputUrl: string | null = typeof rawOutput === "string"
+    ? rawOutput
+    : Array.isArray(rawOutput) ? (rawOutput[0] ?? null) : null;
 
   // Tentar pelo master ID primeiro
   const masterMatch = await dbGetJobByMasterHfId(hfJobId);
