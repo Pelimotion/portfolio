@@ -6,9 +6,9 @@
 ## 📊 SNAPSHOT ATUAL
 
 **Data:** 2026-05-19
-**Fase:** Pipeline completo (PRs 1–10 completos)
-**Status:** PRONTO PARA TESTE INTEGRADO
-**Próxima Ação:** Aplicar migrations Supabase + testar pipeline ponta-a-ponta
+**Fase:** Infraestrutura live — pronto para teste do pipeline ponta-a-ponta
+**Status:** FRONTEND ACESSÍVEL EM studio.pelimotion.art ✅
+**Próxima Ação:** Testar pipeline completo (gerar master → aprovar → tiles → stitch)
 **Bloqueadores:** Nenhum
 
 ---
@@ -40,13 +40,31 @@
 | `public/index.html` | ✅ Studio UI completo (form → master → tiles → download) | 2026-05-19 |
 | `public/css/studio.css` | ✅ Dark theme funcional | 2026-05-19 |
 | `public/js/config.js` | ✅ Presets + estilos embutidos, constantes públicas | 2026-05-19 |
-| `public/js/supabase-client.js` | ✅ Auth + Realtime subscribe | 2026-05-19 |
+| `public/js/supabase-client.js` | ✅ Auth + Realtime + cross-domain session fix | 2026-05-19 |
 | `public/js/app.js` | ✅ State machine completa (form→generate→approve→stitch) | 2026-05-19 |
 | `public/js/stitcher.worker.js` | ✅ OpenCV.js MultiBandBlender + gradient masks + crop + PNG | 2026-05-19 |
+| `public/vercel.json` | ✅ Deploy standalone (projeto Vercel separado) | 2026-05-19 |
+| **studio.pelimotion.art** | ✅ LIVE — login e acesso ao Studio funcionando | 2026-05-19 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — Infraestrutura + fixes de autenticação cross-domain
+
+**O que foi feito:**
+- [x] `public/vercel.json` — criado para deploy standalone do frontend como projeto Vercel separado
+- [x] `public/js/config.js` — `LOGIN_URL` corrigida para URL absoluta (`https://pelimotion.art/login`)
+- [x] `login/index.html` — função `redirectTo()` adicionada: passa tokens no hash ao redirecionar para subdomínio externo
+- [x] `public/js/supabase-client.js` — `_applyHashSession()` adicionada: aplica tokens do hash explicitamente (fix do loop de auth cross-domain)
+- [x] `vercel.json` (raiz) — rewrite `/wide-image-studio/public` → `index.html` adicionado
+- [x] `studio.pelimotion.art` configurado: projeto Vercel separado + custom domain + DNS
+- [x] Login e acesso ao Studio **funcionando** ✅
+
+**Commits:** `4e532a4`, `daa4d71`, `241646b`, `2d189a7`, `1f4bc8a`
+**Arquivos modificados:** `vercel.json`, `public/vercel.json`, `public/js/config.js`, `public/js/supabase-client.js`, `login/index.html`
+
+---
 
 ### 2026-05-19 — PRs 8–10: approve-master + frontend + stitcher
 
@@ -115,8 +133,7 @@
 
 ## 🎯 PRÓXIMA SESSÃO — Teste integrado ponta-a-ponta
 
-> **Os pré-requisitos manuais (BLOCOS 1–4 abaixo) devem estar concluídos antes de iniciar.**
-> Quando estiverem prontos, copie o prompt abaixo e cole no Claude Code **dentro da pasta `/wide-image-studio/`**.
+> Infraestrutura 100% pronta. Copie o prompt abaixo e cole no Claude Code **dentro da pasta `/wide-image-studio/`**.
 
 ```
 [AI_AGENT_BRIEFING.md carregado automaticamente]
@@ -124,46 +141,45 @@
 # Context: wide-image-studio-agent
 
 📋 STATUS ANTERIOR
-PRs 1–10 completos e commitados. Pipeline inteiro implementado:
-- Edge script live em https://wide-api-ilgmz.bunny.run (Bunny Edge Script 75395, 17KB)
-  - /health ✅ | /upload-ref ✅ | /start ✅ | /approve-master ✅ | /hf-webhook ✅
-- Frontend Vanilla JS em public/ (index.html + app.js + supabase-client.js + config.js + studio.css)
-- Stitcher: public/js/stitcher.worker.js (OpenCV.js MultiBandBlender 5 bandas)
-- Pré-requisitos manuais concluídos: migrations Supabase aplicadas, env vars Bunny configuradas,
-  usuário pelimotionart@gmail.com com role wide_studio criado.
+PRs 1–10 completos. Infraestrutura live:
+- Edge script: https://wide-api-ilgmz.bunny.run (/health ✅ | /upload-ref ✅ | /start ✅ | /approve-master ✅ | /hf-webhook ✅)
+- Frontend: https://studio.pelimotion.art (projeto Vercel separado, custom domain configurado)
+- Auth cross-domain funcionando: login em pelimotion.art/login → redirect com tokens no hash → Studio detecta e salva sessão
+- Supabase: migrations aplicadas (wide_jobs + RLS), usuário pelimotionart@gmail.com com role wide_studio
+- Env vars Bunny configuradas no script 75395
 
 🎯 TAREFA DESTA SESSÃO
 Teste integrado ponta-a-ponta e correção dos bugs que aparecerem.
 
+📦 FLUXO DE TESTE (executar nesta ordem)
+1. https://wide-api-ilgmz.bunny.run/health → {"ok":true,"ts":...}
+2. https://studio.pelimotion.art → Studio abre sem loop de auth
+3. Preencher form: preset "Rascunho rápido" (~$0.40), prompt simples, sem refs, sem soul_id
+4. Clicar "Gerar master plate" → verificar no Supabase (Table Editor → wide_jobs) se row criada com status master_pending
+5. Aguardar webhook HF → status muda para master_ready, master_url aparece
+6. Aprovar master → N tiles despachados (status tiles_pending, hf_tile_job_ids preenchidos)
+7. Aguardar tiles → status tiles_ready, tile_urls preenchidas
+8. Clicar "Stitch & Download" → PNG gerado e baixado
+
 📦 ARQUIVOS QUE PROVAVELMENTE PRECISARÃO DE AJUSTE
-- edge-script/src/start.ts — payload HF /v2/generations (field names podem diferir da spec)
+- edge-script/src/start.ts — field names do payload HF /v2/generations podem diferir da spec real
 - edge-script/src/hf-webhook.ts — status names do webhook HF ("completed"? "success"? outro?)
 - public/js/stitcher.worker.js — API cv.detail_MultiBandBlender no OpenCV.js 4.8.0
-- public/js/app.js — qualquer ajuste de UX descoberto durante o teste
-
-📦 FLUXO DE TESTE (executar nesta ordem)
-1. Abrir https://wide-api-ilgmz.bunny.run/health → deve retornar {"ok":true,"ts":...}
-2. Abrir o Studio (URL do frontend) → deve carregar sem erros de auth
-3. Fazer login com pelimotionart@gmail.com
-4. Preencher form: preset Padrão, prompt simples, sem refs, sem soul_id
-5. Clicar "Gerar master plate" → verificar no Supabase se wide_jobs row foi criada com status master_pending
-6. Aguardar webhook → verificar se status muda para master_ready e master_url aparece
-7. Aprovar master → verificar se N tiles são despachados (status tiles_pending, hf_tile_job_ids preenchidos)
-8. Aguardar tiles → verificar status tiles_ready e tile_urls preenchidas
-9. Clicar "Stitch & Download" → verificar se o PNG final é gerado e baixado
+- public/js/app.js — ajustes de UX descobertos durante o teste
 
 📦 ONDE OLHAR SE ALGO QUEBRAR
-- Console do browser → erros JS no frontend
-- Dashboard Bunny Edge Scripting → aba Logs do script 75395 → erros no edge
-- Supabase → Table Editor → wide_jobs → inspecionar colunas status/error_log
-- Supabase → Logs → API logs → ver requests com erro
+- Console do browser → erros JS
+- dash.bunny.net → Edge Scripting → script 75395 → aba Logs
+- supabase.com → projeto gfaqnkmmbozmhroicqyc → Table Editor → wide_jobs (colunas status / error_log)
+- supabase.com → Logs → API logs
 
 📦 DECISÕES JÁ FECHADAS (não revisitar)
 - Zero-storage: nenhum byte de mídia em nossos serviços
-- Auth: Supabase JWT + role wide_studio em app_metadata
-- Edge script URL: https://wide-api-ilgmz.bunny.run (DNS pelimotion.art vai para Vercel)
+- Auth: Supabase JWT + role wide_studio em app_metadata + cross-domain via hash
+- Edge script URL: https://wide-api-ilgmz.bunny.run
 - Build: deno run -A build.mjs (esbuild-deno-loader, guard 1MB)
-- Stitch: no browser (OpenCV.js WASM), não no edge
+- Stitch: no browser (OpenCV.js WASM)
+- Frontend: projeto Vercel separado em wide-image-studio/public/ → studio.pelimotion.art
 
 ⏸️  Prosseguir com o teste?
 ```
