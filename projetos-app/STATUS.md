@@ -7,9 +7,9 @@
 
 **Data:** 2026-05-19
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fase A (Design System base) ✅ COMPLETA
-**Próxima Ação:** Fase B — CommandPalette (`cmdk`) + melhorias de UX
-**Branch ativa:** `feat/design-system-fase-a` (4 commits, não mergeado)
+**Status:** BETA — Fase A ✅ + Fase B ✅ completas | Próxima: Fase C (refactor DatabaseRenderer)
+**Próxima Ação:** Fase C — quebrar `DatabaseRenderer.jsx` em sub-componentes antes de adicionar features
+**Branch ativa:** `main` (Fases A+B mergeadas)
 **Bloqueadores:** Nenhum
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
 
@@ -29,6 +29,19 @@
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — Fase B: CommandPalette → cmdk
+**O que foi feito:**
+- [x] Instalado `cmdk`
+- [x] `CommandPalette.jsx` reescrito com `Command` (cmdk) + `Dialog.Root/Overlay/Content` (Radix)
+- [x] `shouldFilter={false}` — busca Supabase mantida, cmdk gerencia teclado e `aria-selected`
+- [x] Grupos (`Command.Group`) substituem o array flat com sentinelas `{type:'section'}`
+- [x] Hotkey ⌘K e store Zustand preservados sem mudança
+- [x] Build limpo; merge em `main`
+
+**Arquivos modificados:** `src/components/ui/CommandPalette.jsx`, `package.json`
+
+---
 
 ### 2026-05-19 — Fase A: Design System base (4 PRs)
 **O que foi feito:**
@@ -66,7 +79,46 @@
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — FASE B: COMMAND PALETTE + UX
+## 🎯 PRÓXIMA SESSÃO — FASE C: REFACTOR DatabaseRenderer
+
+```markdown
+[AI_AGENT_BRIEFING.md carregado automaticamente]
+
+# Context: projetos-app-agent — Fase C (refactor DatabaseRenderer)
+
+📋 STATUS ANTERIOR
+Fase A (design system base) e Fase B (CommandPalette cmdk) completas em 2026-05-19.
+Ambas mergeadas em main. Nenhum bug ativo. Sistema em produção.
+
+🎯 TAREFA DESTA SESSÃO
+Fase C — PR "refactor only": quebrar DatabaseRenderer.jsx em sub-componentes
+ANTES de adicionar qualquer feature nova. Zero mudança funcional.
+
+📦 DECISÃO TRAVADA
+DatabaseRenderer.jsx (Fase C): quebrar ANTES de adicionar features, em PR "refactor only".
+Sem mudança funcional — apenas extração de sub-componentes.
+
+📦 ARQUIVOS RELEVANTES
+- `src/components/database/DatabaseRenderer.jsx` — arquivo monolítico (~1000 linhas)
+- `src/components/database/EntityCard.jsx` — referência de padrão já extraído
+
+📦 ESTRATÉGIA SUGERIDA
+1. Ler DatabaseRenderer.jsx completo e mapear blocos extraíveis
+2. Criar sub-componentes em `src/components/database/`:
+   - `KanbanView.jsx` — renderização do board Kanban
+   - `TableView.jsx` — renderização da tabela
+   - `GalleryView.jsx` — renderização da galeria (se existir)
+   - `DatabaseToolbar.jsx` — barra de ações/filtros
+   - `GroupHeader.jsx` — cabeçalho de grupo/etapa
+3. DatabaseRenderer.jsx vira um orquestrador leve (<200 linhas)
+4. PR único, sem mudança funcional, build verde
+
+⏸️ Prosseguir com Fase C?
+```
+
+---
+
+## 🎯 STATUS ANTERIOR — FASE B (arquivado)
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
