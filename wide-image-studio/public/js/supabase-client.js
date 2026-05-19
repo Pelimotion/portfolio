@@ -20,7 +20,7 @@ async function getUser() {
 async function requireWideStudioSession() {
   const session = await getSession();
   if (!session) {
-    window.location.href = CONFIG.LOGIN_URL + '?redirect=' + encodeURIComponent(window.location.pathname);
+    window.location.href = CONFIG.LOGIN_URL + '?next=' + encodeURIComponent(window.location.href);
     return null;
   }
   const user = await getUser();
