@@ -115,35 +115,57 @@
 
 ## 🎯 PRÓXIMA SESSÃO — Teste integrado ponta-a-ponta
 
-> **Pré-requisitos manuais abaixo precisam ser feitos pelo humano antes de iniciar esta sessão.**
-> Depois de concluídos, iniciar sessão com o prompt abaixo.
+> **Os pré-requisitos manuais (BLOCOS 1–4 abaixo) devem estar concluídos antes de iniciar.**
+> Quando estiverem prontos, copie o prompt abaixo e cole no Claude Code **dentro da pasta `/wide-image-studio/`**.
 
-```markdown
+```
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
 # Context: wide-image-studio-agent
 
 📋 STATUS ANTERIOR
-PRs 1–10 completos. Pipeline inteiro implementado:
-- Edge script live: /health, /upload-ref, /start, /approve-master, /hf-webhook (17KB)
-- Frontend: public/index.html + app.js (form → master → tiles → stitch)
-- Stitcher: OpenCV.js MultiBandBlender no browser
-- Pré-requisitos manuais: migrations aplicadas, env vars configuradas, usuário de teste criado.
+PRs 1–10 completos e commitados. Pipeline inteiro implementado:
+- Edge script live em https://wide-api-ilgmz.bunny.run (Bunny Edge Script 75395, 17KB)
+  - /health ✅ | /upload-ref ✅ | /start ✅ | /approve-master ✅ | /hf-webhook ✅
+- Frontend Vanilla JS em public/ (index.html + app.js + supabase-client.js + config.js + studio.css)
+- Stitcher: public/js/stitcher.worker.js (OpenCV.js MultiBandBlender 5 bandas)
+- Pré-requisitos manuais concluídos: migrations Supabase aplicadas, env vars Bunny configuradas,
+  usuário pelimotionart@gmail.com com role wide_studio criado.
 
 🎯 TAREFA DESTA SESSÃO
-Teste integrado ponta-a-ponta + correções de bugs que aparecerem.
+Teste integrado ponta-a-ponta e correção dos bugs que aparecerem.
 
-📦 VERIFICAR ANTES DE COMEÇAR
-- [ ] https://wide-api-ilgmz.bunny.run/health retorna {"ok":true}
-- [ ] Migrations aplicadas (SELECT count(*) FROM wide_jobs retorna 0 rows sem erro)
-- [ ] Usuário de teste consegue logar em /login e ser redirecionado
-- [ ] Studio abre sem erro de auth em studio.pelimotion.art
+📦 ARQUIVOS QUE PROVAVELMENTE PRECISARÃO DE AJUSTE
+- edge-script/src/start.ts — payload HF /v2/generations (field names podem diferir da spec)
+- edge-script/src/hf-webhook.ts — status names do webhook HF ("completed"? "success"? outro?)
+- public/js/stitcher.worker.js — API cv.detail_MultiBandBlender no OpenCV.js 4.8.0
+- public/js/app.js — qualquer ajuste de UX descoberto durante o teste
 
-📦 POSSÍVEIS AJUSTES PÓS-TESTE
-- Nomes exatos dos campos no payload HF /v2/generations (podem ser snake_case diferente)
-- Nomes dos status no webhook HF ("completed" vs "success" vs outro)
-- CORS nos tiles HF (adicionar proxy em upload-ref se necessário)
-- cv.detail_MultiBandBlender API no OpenCV.js 4.8.0 (sintaxe pode diferir levemente)
+📦 FLUXO DE TESTE (executar nesta ordem)
+1. Abrir https://wide-api-ilgmz.bunny.run/health → deve retornar {"ok":true,"ts":...}
+2. Abrir o Studio (URL do frontend) → deve carregar sem erros de auth
+3. Fazer login com pelimotionart@gmail.com
+4. Preencher form: preset Padrão, prompt simples, sem refs, sem soul_id
+5. Clicar "Gerar master plate" → verificar no Supabase se wide_jobs row foi criada com status master_pending
+6. Aguardar webhook → verificar se status muda para master_ready e master_url aparece
+7. Aprovar master → verificar se N tiles são despachados (status tiles_pending, hf_tile_job_ids preenchidos)
+8. Aguardar tiles → verificar status tiles_ready e tile_urls preenchidas
+9. Clicar "Stitch & Download" → verificar se o PNG final é gerado e baixado
+
+📦 ONDE OLHAR SE ALGO QUEBRAR
+- Console do browser → erros JS no frontend
+- Dashboard Bunny Edge Scripting → aba Logs do script 75395 → erros no edge
+- Supabase → Table Editor → wide_jobs → inspecionar colunas status/error_log
+- Supabase → Logs → API logs → ver requests com erro
+
+📦 DECISÕES JÁ FECHADAS (não revisitar)
+- Zero-storage: nenhum byte de mídia em nossos serviços
+- Auth: Supabase JWT + role wide_studio em app_metadata
+- Edge script URL: https://wide-api-ilgmz.bunny.run (DNS pelimotion.art vai para Vercel)
+- Build: deno run -A build.mjs (esbuild-deno-loader, guard 1MB)
+- Stitch: no browser (OpenCV.js WASM), não no edge
+
+⏸️  Prosseguir com o teste?
 ```
 
 ---

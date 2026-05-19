@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-05-17
+**Data:** 2026-05-19
 **Projeto:** Landing page + Painel Admin Bunny.net
-**Status:** ESTÁVEL — mudanças pontuais apenas
-**Próxima Ação:** Ver seção PRÓXIMA SESSÃO abaixo
+**Status:** ESTÁVEL — sem mudanças pendentes
+**Próxima Ação:** Nenhuma na raiz. Subprojeto ativo: `wide-image-studio` (ver abaixo)
 **Bloqueadores:** Nenhum
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -26,6 +26,14 @@
 | `vercel.json` | ✅ Rotas corretas | 2026-05-16 |
 | **Deploy Hub** (`admin-v4.js`) | ✅ Implementado | 2026-05-17 |
 | **Media Scanner** (`api/bunny/scan.js`) | ✅ Implementado | 2026-05-17 |
+
+## 🚧 SUBPROJETO ATIVO
+
+| Subprojeto | Status | Próxima Ação |
+|-----------|--------|--------------|
+| `/wide-image-studio` | ⚙️ PRs 1–10 completos — aguardando teste | Aplicar migrations + configurar Bunny env vars + teste ponta-a-ponta |
+
+> Trabalhar em wide-image-studio: abrir nova sessão Claude Code **dentro de `/wide-image-studio/`** e usar o prompt em `wide-image-studio/STATUS.md → PRÓXIMA SESSÃO`.
 
 ---
 
@@ -61,25 +69,28 @@
 
 ## 🎯 PRÓXIMA SESSÃO
 
-```markdown
-[AI_AGENT_BRIEFING.md carregado automaticamente]
+> **Este arquivo é para a raiz (landing + admin). Se a sessão for sobre `wide-image-studio`, use o prompt em `wide-image-studio/STATUS.md`.**
 
----
+```
+[AI_AGENT_BRIEFING.md carregado automaticamente]
 
 # Context: landing-page-agent
 
 📋 STATUS ANTERIOR
 Landing e admin estáveis. Auth unificado com Supabase (roles funcionando).
-Não há bugs ativos. PIN removido do admin.
+Não há bugs ativos. PIN removido do admin. Deploy Hub e Media Scanner implementados.
+Subprojeto wide-image-studio em fase de teste (PRs 1–10 completos) — sessão separada.
 
 🎯 TAREFA DESTA SESSÃO
 [DESCREVER AQUI — ex: atualizar seção de portfólio, ajustar design tokens, etc.]
 
 📦 ARQUIVOS RELEVANTES
 - `index.html` — landing page principal
-- `admin/index.html` + `admin/admin.js` — painel admin Bunny.net
+- `admin/index.html` + `admin/admin.js` — painel admin
+- `admin/admin-v4.js` — Deploy Hub + Media Scanner
 - `design-tokens.json` — tokens globais de design
 - `vercel.json` — rotas e configuração de deploy
+- `shared/auth.js` — auth unificado (cuidado: afeta todos os sistemas)
 
 ⏸️  Prosseguir?
 ```
@@ -114,7 +125,7 @@ _Nenhum bloqueador no momento._
 
 ---
 
-**Última atualização:** 2026-05-17
+**Última atualização:** 2026-05-19
 
 ---
 
