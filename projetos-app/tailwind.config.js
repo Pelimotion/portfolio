@@ -72,6 +72,19 @@ export default {
         default: "var(--border-default)",
         strong:  "var(--border-strong)",
       },
+
+      // Pelimotion typographic scale — 2 pesos: font-medium (500) | font-semibold (600)
+      // text-eyebrow: sempre acompanhar com uppercase tracking-wider (único uso permitido)
+      fontSize: {
+        display: ["2.25rem",   { lineHeight: "1.1",  fontWeight: "600" }],
+        h1:      ["1.875rem",  { lineHeight: "1.2",  fontWeight: "600" }],
+        h2:      ["1.5rem",    { lineHeight: "1.25", fontWeight: "600" }],
+        h3:      ["1.25rem",   { lineHeight: "1.3",  fontWeight: "500" }],
+        body:    ["0.9375rem", { lineHeight: "1.6" }],
+        small:   ["0.875rem",  { lineHeight: "1.5" }],
+        caption: ["0.75rem",   { lineHeight: "1.5" }],
+        eyebrow: ["0.6875rem", { lineHeight: "1.4", fontWeight: "500", letterSpacing: "0.08em" }],
+      },
     },
   },
   plugins: [
