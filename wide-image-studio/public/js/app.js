@@ -16,6 +16,7 @@ async function init() {
   buildPresetOptions();
   buildStyleOptions();
   updateCostEstimate();
+  buildRegionInputs();
   document.getElementById('app').classList.remove('hidden');
 }
 
@@ -329,6 +330,4 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCostEstimate();
     buildRegionInputs();
   });
-  // Build region inputs on first load after options are populated
-  setTimeout(buildRegionInputs, 0);
 });
