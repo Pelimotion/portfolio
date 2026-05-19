@@ -6,9 +6,9 @@
 ## 📊 SNAPSHOT ATUAL
 
 **Data:** 2026-05-19
-**Fase:** Edge Handlers (PRs 1–7 completos)
-**Status:** EM DESENVOLVIMENTO ATIVO
-**Próxima Ação:** PR 8 — `approve-master.ts`
+**Fase:** Pipeline completo (PRs 1–10 completos)
+**Status:** PRONTO PARA TESTE INTEGRADO
+**Próxima Ação:** Aplicar migrations Supabase + testar pipeline ponta-a-ponta
 **Bloqueadores:** Nenhum
 
 ---
@@ -36,13 +36,35 @@
 | `edge-script/src/start.ts` | ✅ Valida brief, credit check, cria job, master plate | 2026-05-19 |
 | `edge-script/src/utils/supabase.ts` | ✅ dbCreateJob / dbPatchJob / dbGetJobBy* | 2026-05-19 |
 | `edge-script/src/hf-webhook.ts` | ✅ State machine: master_ready / tiles_partial / tiles_ready / failed | 2026-05-19 |
-| `edge-script/src/approve-master.ts` | ⏳ PR 8 | — |
-| `public/` (frontend Studio) | ⏳ PR 9 | — |
-| `public/js/stitcher.worker.js` | ⏳ PR 10 | — |
+| `edge-script/src/approve-master.ts` | ✅ Valida master_ready, despacha N tiles paralelo | 2026-05-19 |
+| `public/index.html` | ✅ Studio UI completo (form → master → tiles → download) | 2026-05-19 |
+| `public/css/studio.css` | ✅ Dark theme funcional | 2026-05-19 |
+| `public/js/config.js` | ✅ Presets + estilos embutidos, constantes públicas | 2026-05-19 |
+| `public/js/supabase-client.js` | ✅ Auth + Realtime subscribe | 2026-05-19 |
+| `public/js/app.js` | ✅ State machine completa (form→generate→approve→stitch) | 2026-05-19 |
+| `public/js/stitcher.worker.js` | ✅ OpenCV.js MultiBandBlender + gradient masks + crop + PNG | 2026-05-19 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — PRs 8–10: approve-master + frontend + stitcher
+
+**O que foi feito:**
+- [x] `utils/supabase.ts` — `dbGetJobById` adicionado
+- [x] `approve-master.ts` — valida master_ready, despacha N tiles paralelo com `seed+i`, prompts regionais, idempotency-key por tile
+- [x] `public/index.html` — Studio UI: form → approve master → tile grid → stitch
+- [x] `public/css/studio.css` — dark theme
+- [x] `public/js/config.js` — 3 display presets + 4 estilos embutidos, Supabase URL/anon key, edge URL
+- [x] `public/js/supabase-client.js` — getSession, requireWideStudioSession, subscribeToJob, signOut
+- [x] `public/js/app.js` — state machine completa; upload refs, `/start`, `/approve-master`, stitcher worker
+- [x] `public/js/stitcher.worker.js` — OpenCV.js MultiBandBlender 5 bandas, gradient masks por tile, resize tiles HF→stitch, crop_x_start, export PNG
+- [x] Edge script build: 17KB / 1MB
+
+**Arquivos criados:** `approve-master.ts`, `public/index.html`, `public/css/studio.css`, `public/js/{config,supabase-client,app,stitcher.worker}.js`
+**Arquivos modificados:** `utils/supabase.ts`, `index.ts`, `STATUS.md`
+
+---
 
 ### 2026-05-19 — PRs 6+7: handlers edge + webhook
 
@@ -91,7 +113,43 @@
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — PR 5
+## 🎯 PRÓXIMA SESSÃO — Teste integrado
+
+```markdown
+[AI_AGENT_BRIEFING.md carregado automaticamente]
+
+# Context: wide-image-studio-agent
+
+📋 STATUS ANTERIOR
+PRs 1–10 completos. Pipeline inteiro implementado:
+- Edge script: /health, /upload-ref, /start, /approve-master, /hf-webhook (17KB, live)
+- Frontend: public/index.html + app.js (form → master → tiles → stitch)
+- Stitcher: OpenCV.js MultiBandBlender no browser
+
+🎯 TAREFA DESTA SESSÃO
+Teste integrado ponta-a-ponta + correções de bugs que aparecerem.
+
+📦 PRÉ-REQUISITOS ANTES DE TESTAR
+1. Aplicar migrations no Supabase dashboard:
+   - db/migrations/001_wide_jobs.sql
+   - db/policies/wide_jobs_rls.sql
+   - db/seed/wide_studio_role.sql
+2. Configurar env vars no painel Bunny Edge (Script 75395):
+   - HF_API_KEY, HF_SECRET, WEBHOOK_SECRET
+   - SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY
+   - ALLOWED_ORIGIN, PUBLIC_EDGE_URL
+3. Criar usuário de teste com app_metadata.role = "wide_studio" no Supabase
+
+📦 POSSÍVEIS AJUSTES PÓS-TESTE
+- Formato exato do payload HF /v2/generations (field names podem diferir)
+- Formato exato do payload webhook HF (status names)
+- CORS no frontend se tiles HF não aceitarem crossOrigin
+- OpenCV.js MultiBandBlender API no browser (versão 4.8.0)
+```
+
+---
+
+## 🎯 PRÓXIMA SESSÃO (histórico) — PR 5
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
