@@ -207,7 +207,7 @@ export const EntityCard = memo(function EntityCard({
        <div className="flex items-center gap-3">
           {owner ? (
             <div className="flex items-center -space-x-1">
-               <div className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-black border-2 border-[var(--surface-2)] shadow-sm ${
+               <div className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-semibold border-2 border-[var(--surface-2)] shadow-sm ${
                  isOwn ? 'bg-primary text-white ring-1 ring-primary/30' : 'bg-[var(--surface-3)] text-muted-foreground'
                }`}>
                  {owner.charAt(0).toUpperCase()}
@@ -233,12 +233,12 @@ export const EntityCard = memo(function EntityCard({
 
        <div className="flex items-center gap-2">
           {points && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-white/5 border border-white/5 text-muted-foreground/50">
+            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-white/5 border border-white/5 text-muted-foreground/50">
               {points}
             </span>
           )}
           {deadline && (
-            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold uppercase tracking-wider border ${
               isOverdue ? 'bg-red-500/10 border-red-500/30 text-red-500' :
               daysLeft <= 3 ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' :
               'bg-white/5 border-white/5 text-muted-foreground/40'
@@ -267,7 +267,7 @@ export const EntityCard = memo(function EntityCard({
         </h4>
         {priorityConfig?.icon && <div className="shrink-0">{priorityConfig.icon}</div>}
         {deadline && (
-          <span className={`text-[9px] font-black uppercase ${isOverdue ? 'text-red-500' : 'text-muted-foreground/20'}`}>
+          <span className={`text-[9px] font-semibold uppercase ${isOverdue ? 'text-red-500' : 'text-muted-foreground/20'}`}>
             {new Date(deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
           </span>
         )}
@@ -316,7 +316,7 @@ export const EntityCard = memo(function EntityCard({
                 {isDone && <Check className="w-3 h-3 stroke-[3px]" />}
               </button>
             )}
-            <h4 className={`text-[13px] font-black leading-[1.3] transition-colors ${
+            <h4 className={`text-[13px] font-semibold leading-[1.3] transition-colors ${
               isDone ? 'text-muted-foreground/40 line-through' : 'text-foreground group-hover:text-primary'
             }`}>
               {item.title || 'Sem título'}
@@ -330,7 +330,7 @@ export const EntityCard = memo(function EntityCard({
                  <Badge key={idx} color={t.color}>{t.label}</Badge>
                ))}
                {tags.length > 3 && (
-                 <span className="text-[9px] font-black text-muted-foreground/30 px-1">+{tags.length - 3}</span>
+                 <span className="text-[9px] font-semibold text-muted-foreground/30 px-1">+{tags.length - 3}</span>
                )}
             </div>
           )}

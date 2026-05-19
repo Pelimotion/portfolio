@@ -62,7 +62,7 @@ export default function Dashboard() {
             <LayoutDashboard className="w-5 h-5 text-primary" />
           </div>
           <div className="flex flex-col">
-            <h1 className="font-black text-xl tracking-tight text-foreground leading-none">Projects Hub</h1>
+            <h1 className="font-semibold text-xl tracking-tight text-foreground leading-none">Projects Hub</h1>
             <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-wider mt-1">Gerenciador de Produção</span>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-1 bg-[var(--surface-2)] p-1 rounded-xl border border-[var(--border-subtle)]">
             <button
               onClick={() => setAddMemberOpen(true)}
-              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] px-3 py-1.5 rounded-lg transition-all"
+              className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] px-3 py-1.5 rounded-lg transition-all"
             >
               <UserPlus className="w-3.5 h-3.5" />
               Equipe
@@ -90,7 +90,7 @@ export default function Dashboard() {
 
           <button
             onClick={() => setCreateOpen(true)}
-            className="flex items-center gap-2.5 text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] px-6 py-2.5 rounded-xl transition-all shadow-xl shadow-primary/20"
+            className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-widest bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] px-6 py-2.5 rounded-xl transition-all shadow-xl shadow-primary/20"
           >
             <Plus className="w-4 h-4 stroke-[3px]" />
             Novo Projeto

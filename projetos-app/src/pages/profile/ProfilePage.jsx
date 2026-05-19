@@ -71,13 +71,13 @@ export default function ProfilePage() {
         <div className="h-16 flex items-center px-8 border-b border-[var(--border-subtle)]">
           <button onClick={() => navigate(-1)} className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-all group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest">Portal Central</span>
+            <span className="text-xs font-semibold uppercase tracking-widest">Portal Central</span>
           </button>
         </div>
 
         <div className="flex-1 p-6 space-y-8">
           <div>
-            <label className="text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] px-3 mb-4 block">Configurações</label>
+            <label className="text-[10px] font-semibold text-muted-foreground/30 uppercase tracking-[0.2em] px-3 mb-4 block">Configurações</label>
             <nav className="space-y-1">
               {sections.map(s => {
                 const Icon = s.icon;
@@ -113,11 +113,11 @@ export default function ProfilePage() {
 
         <div className="p-8 bg-[var(--surface-2)]/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black uppercase">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold uppercase">
               {user?.email?.[0]}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-[11px] font-black text-foreground truncate">{form.display_name || 'Usuário'}</span>
+              <span className="text-[11px] font-semibold text-foreground truncate">{form.display_name || 'Usuário'}</span>
               <span className="text-[9px] font-bold text-muted-foreground/50 truncate uppercase tracking-wider">Membro Gold</span>
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
           <div className="absolute inset-0 opacity-10 pointer-events-none">
              <GenerativeHeader slug={user?.id} />
           </div>
-          <h2 className="text-xl font-black tracking-tight text-foreground relative z-10">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground relative z-10">
             {sections.find(s => s.id === activeSection)?.label}
           </h2>
           <div className="flex items-center gap-4 relative z-10">
@@ -140,7 +140,7 @@ export default function ProfilePage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-xs font-black text-white transition-all shadow-xl hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-xs font-semibold text-white transition-all shadow-xl hover:scale-[1.02] active:scale-95 disabled:opacity-50"
               style={{ background: saved ? '#22c55e' : ac, boxShadow: `0 8px 24px ${ac}44` }}
             >
               {saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
@@ -156,7 +156,7 @@ export default function ProfilePage() {
               <div className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-6">
-                    <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Informações Gerais</h3>
+                    <h3 className="text-xs font-semibold text-muted-foreground/30 uppercase tracking-[0.2em]">Informações Gerais</h3>
                     <div className="space-y-4">
                       <FormField label="Nome de Exibição" icon={User} ph="Seu nome oficial" 
                         value={form.display_name} onChange={v => setForm({...form, display_name: v})} ac={ac} />
@@ -167,7 +167,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div className="space-y-6">
-                    <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Status e Bio</h3>
+                    <h3 className="text-xs font-semibold text-muted-foreground/30 uppercase tracking-[0.2em]">Status e Bio</h3>
                     <div className="space-y-4">
                       <FormField label="Status Atual" icon={MessageSquare} ph="O que você está fazendo agora?" 
                         value={form.status_text} onChange={v => setForm({...form, status_text: v})} ac={ac} isArea />
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex-1 space-y-8 py-4">
                     <div className="space-y-2">
-                      <h3 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-3">
+                      <h3 className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-3">
                         Pelimotion PS2 Engine <span className="text-[10px] px-2 py-0.5 bg-primary/10 text-primary rounded-full uppercase">Alpha v2.1</span>
                       </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
@@ -203,12 +203,12 @@ export default function ProfilePage() {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-5 bg-[var(--surface-2)] rounded-2xl border border-[var(--border-subtle)]">
-                        <span className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest block mb-1">Polígonos</span>
-                        <span className="text-lg font-black text-foreground font-mono">1.2k Low-Poly</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-widest block mb-1">Polígonos</span>
+                        <span className="text-lg font-semibold text-foreground font-mono">1.2k Low-Poly</span>
                       </div>
                       <div className="p-5 bg-[var(--surface-2)] rounded-2xl border border-[var(--border-subtle)]">
-                        <span className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest block mb-1">Shader</span>
-                        <span className="text-lg font-black text-foreground font-mono">Toon-Outline</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-widest block mb-1">Shader</span>
+                        <span className="text-lg font-semibold text-foreground font-mono">Toon-Outline</span>
                       </div>
                     </div>
 
@@ -226,7 +226,7 @@ export default function ProfilePage() {
               <div className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                    <div className="space-y-6">
-                     <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Tema do Sistema</h3>
+                     <h3 className="text-xs font-semibold text-muted-foreground/30 uppercase tracking-[0.2em]">Tema do Sistema</h3>
                      <div className="grid grid-cols-2 gap-4">
                         <ThemeButton active={theme === 'light'} onClick={() => theme !== 'light' && toggleTheme()} label="Claro" icon={Sun} />
                         <ThemeButton active={theme === 'dark'} onClick={() => theme !== 'dark' && toggleTheme()} label="Escuro" icon={Moon} />
@@ -234,7 +234,7 @@ export default function ProfilePage() {
                    </div>
 
                    <div className="space-y-6">
-                     <h3 className="text-xs font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Cores da Interface</h3>
+                     <h3 className="text-xs font-semibold text-muted-foreground/30 uppercase tracking-[0.2em]">Cores da Interface</h3>
                      <div className="flex flex-wrap gap-3">
                         {['#3b82f6','#a855f7','#22c55e','#f59e0b','#ef4444','#ec4899','#6366f1','#14b8a6'].map(c => (
                           <button key={c} onClick={() => setForm({...form, accent_color: c})}
@@ -258,14 +258,14 @@ export default function ProfilePage() {
                 <div className="p-8 bg-red-500/5 border border-red-500/10 rounded-3xl space-y-4">
                    <div className="flex items-center gap-3 text-red-500">
                      <Shield className="w-5 h-5" />
-                     <h3 className="text-sm font-black uppercase tracking-widest">Zona Crítica</h3>
+                     <h3 className="text-sm font-semibold uppercase tracking-widest">Zona Crítica</h3>
                    </div>
                    <p className="text-sm text-muted-foreground leading-relaxed">
                      As alterações de conta e exclusão de dados são permanentes. 
                      Sua conta está vinculada ao e-mail <strong>{user?.email}</strong>.
                    </p>
                    <div className="pt-4">
-                     <button className="px-6 py-3 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-xl shadow-red-500/20">
+                     <button className="px-6 py-3 rounded-xl bg-red-500 text-white text-xs font-semibold uppercase tracking-widest hover:bg-red-600 transition-all shadow-xl shadow-red-500/20">
                        Excluir Conta Permanentemente
                      </button>
                    </div>
@@ -283,7 +283,7 @@ export default function ProfilePage() {
 function FormField({ label, icon: Icon, ph, value, onChange, ac, isArea }) {
   return (
     <div>
-      <label className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2 mb-2 px-1">
+      <label className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2 mb-2 px-1">
         <Icon className="w-3 h-3" /> {label}
       </label>
       {isArea ? (
@@ -320,7 +320,7 @@ function ThemeButton({ active, onClick, label, icon: Icon }) {
       }`}
     >
       <Icon className={`w-8 h-8 ${active ? 'text-primary' : 'opacity-30'}`} />
-      <span className="text-xs font-black uppercase tracking-widest">{label}</span>
+      <span className="text-xs font-semibold uppercase tracking-widest">{label}</span>
     </button>
   );
 }
