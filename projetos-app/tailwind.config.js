@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        // shadcn/ui base tokens
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         border: "hsl(var(--border))",
@@ -40,6 +41,36 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // Pelimotion OS — superfícies
+        surface: {
+          0: "var(--surface-0)",
+          1: "var(--surface-1)",
+          2: "var(--surface-2)",
+          3: "var(--surface-3)",
+          overlay: "var(--surface-overlay)",
+        },
+
+        // Pelimotion OS — bordas semânticas
+        "border-subtle":  "var(--border-subtle)",
+        "border-default": "var(--border-default)",
+        "border-strong":  "var(--border-strong)",
+
+        // Pelimotion OS — status de produção
+        status: {
+          backlog: "var(--status-backlog)",
+          "ai-gen": "var(--status-ai-gen)",
+          selects: "var(--status-selects)",
+          motion:  "var(--status-motion)",
+          revisao: "var(--status-revisao)",
+          entregue: "var(--status-entregue)",
+        },
+      },
+
+      borderColor: {
+        subtle:  "var(--border-subtle)",
+        default: "var(--border-default)",
+        strong:  "var(--border-strong)",
       },
     },
   },
