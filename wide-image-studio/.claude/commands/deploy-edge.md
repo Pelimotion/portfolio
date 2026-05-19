@@ -1,30 +1,52 @@
 ---
-description: Builda o bundle do edge script e deploya para Bunny (stub — implementado em PR 4).
+description: Builda o bundle do edge script e deploya para Bunny Edge Scripting.
 ---
 
-⚠️ **Stub — implementação real chega no PR 4.** Por enquanto, este comando documenta o fluxo esperado.
+Builda e deploya o edge script para Bunny. Roda os passos abaixo em sequência.
 
-Fluxo de deploy do edge script:
+**Pré-condições:**
+- `wide-image-studio/edge-script/src/index.ts` existe
+- `.env` local preenchido com todas as variáveis de `.env.example`
+- Bunny CLI instalado (`npm i -g @bunny.net/cli`) e autenticado (`bunny login`)
+- Node.js ≥18 instalado (para esbuild)
 
-1. **Verificar pre-condições:**
-   - `wide-image-studio/edge-script/src/index.ts` existe
-   - `.env` local (não commitado) tem todas as variáveis de `.env.example`
-   - Bunny CLI instalado e autenticado (`bunny auth status`)
+**Passo 1 — Instalar dependências (primeira vez ou após atualizar package.json):**
+```bash
+cd wide-image-studio/edge-script
+npm install
+```
 
-2. **Build:**
-   - `cd edge-script && pnpm run build`
-   - Garantir que `dist/index.js` ficou ≤1MB
-   - Falhar se exceder o limite
+**Passo 2 — Build com guard de 1MB:**
+```bash
+npm run build
+# Falha automaticamente se dist/index.js exceder 1MB.
+# Saída esperada: "✓ Build OK — XXX KB usado de 1024KB disponíveis"
+```
 
-3. **Deploy:**
-   - `bunny edge-scripting deploy --script wide-api dist/index.js`
-   - Ou via painel: upload manual com versionamento
+**Passo 3 — Deploy para Bunny:**
+```bash
+# Via CLI (recomendado):
+bunny edge-scripting deploy --script wide-api dist/index.js
 
-4. **Verificação pós-deploy:**
-   - `curl https://pelimotion.com/wide-api/health` retorna 200
-   - Logs no painel Bunny mostram script ativo
+# Via painel (alternativa manual):
+# Bunny Dashboard → Edge Scripting → wide-api → Upload new version
+```
 
-5. **Rollback se algo quebra:**
-   - `bunny edge-scripting rollback --script wide-api --to PREVIOUS_VERSION`
+**Passo 4 — Verificação pós-deploy:**
+```bash
+curl https://pelimotion.com/wide-api/health
+# Esperado: {"ok":true,"ts":1234567890}
+```
 
-Por agora (antes do PR 4), apenas mostre este fluxo ao usuário e diga que será implementado.
+**Rollback se algo quebrar:**
+```bash
+bunny edge-scripting rollback --script wide-api --to PREVIOUS_VERSION
+# Ou no painel: Edge Scripting → wide-api → Version history → Activate anterior
+```
+
+**Edge Rule (configurar 1× no painel Bunny, não precisa re-deploy):**
+Bunny Dashboard → CDN → pelimotion.com Pull Zone → Edge Rules → Add Rule:
+- Condition: URL Path starts with `/wide-api/`
+- Action: Route to Edge Script → `wide-api`
+
+> Esta regra faz o URL rewrite de `pelimotion.com/wide-api/*` para o edge script sem passar pelo origin (evita o bug de middleware com storage pull zones).

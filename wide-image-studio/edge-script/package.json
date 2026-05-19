@@ -1,0 +1,13 @@
+{
+  "name": "wide-image-edge",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "bash build.sh",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.0",
+    "typescript": "^5.4.0"
+  }
+}
