@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Outlet } from 'react-router-dom';
 import { CommandPalette } from '../ui/CommandPalette';
+import { SmartSearchModal } from '../search/SmartSearchModal';
 
 export function AppLayout() {
   return (
@@ -11,6 +12,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <CommandPalette />
+      <SmartSearchModal />
     </div>
   );
 }

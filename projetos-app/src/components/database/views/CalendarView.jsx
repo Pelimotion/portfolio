@@ -7,7 +7,13 @@ import { MonthView } from '../../calendar/MonthView';
 import { WeekView } from '../../calendar/WeekView';
 import { DayView } from '../../calendar/DayView';
 import { AgendaView } from '../../calendar/AgendaView';
-import { buildEvents, navigate as navDate } from '../../calendar/calendarUtils';
+import { StageEditor } from '../../project/StageEditor';
+import { PipelineLegend } from '../../calendar/PipelineLegend';
+import { buildEvents, buildProjectEvents, buildPipelineEvents, navigate as navDate } from '../../calendar/calendarUtils';
+import { supabase } from '../../../lib/supabase';
+import { ROOT_HUB_ID } from '../../../core/schemas';
+import { pageService } from '../../../services/pageService';
+import { propertyService } from '../../../services/propertyService';
 
 export function CalendarView({ items, properties, allValues, databaseId, onValueChange }) {
   const [view, setView] = useState('month');
@@ -17,16 +23,21 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
   const [globalItems,  setGlobalItems]  = useState([]);
   const [globalValues, setGlobalValues] = useState({});
   const [globalProps,  setGlobalProps]  = useState([]);
+  const [hiddenProjects, setHiddenProjects] = useState(new Set());
+
+  // project page data (for stages)
+  const [projectPage, setProjectPage] = useState(null);
+  const isRoot = databaseId === ROOT_HUB_ID;
 
   useEffect(() => {
-    const ROOT_HUB_ID = '00000000-0000-0000-0000-000000000000';
-    if (databaseId === ROOT_HUB_ID) return;
+    if (isRoot) return;
     async function loadGlobal() {
       try {
-        const [projs, props, valsArr] = await Promise.all([
-          import('../../../services/pageService').then(m => m.pageService.fetchDatabaseItems(ROOT_HUB_ID)),
-          import('../../../services/propertyService').then(m => m.propertyService.fetchByDatabase(ROOT_HUB_ID)),
-          import('../../../services/propertyService').then(m => m.propertyService.fetchAllValues(ROOT_HUB_ID)),
+        const [projs, props, valsArr, pageData] = await Promise.all([
+          pageService.fetchDatabaseItems(ROOT_HUB_ID),
+          propertyService.fetchByDatabase(ROOT_HUB_ID),
+          propertyService.fetchAllValues(ROOT_HUB_ID),
+          supabase.from('pages').select('id, title, stages').eq('id', databaseId).single().then(r => r.data),
         ]);
         const vMap = {};
         for (const v of valsArr) {
@@ -36,10 +47,11 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
         setGlobalItems(projs || []);
         setGlobalProps(props || []);
         setGlobalValues(vMap);
+        setProjectPage(pageData);
       } catch (e) { console.error('CalendarView global load error', e); }
     }
     loadGlobal();
-  }, [databaseId]);
+  }, [databaseId, isRoot]);
 
   const deadlineProp       = properties.find(p => p.property_type === 'date' || p.name === 'Deadline' || p.name === 'Entrega');
   const statusProp         = properties.find(p => p.property_type === 'status' || p.name === 'Status');
@@ -55,6 +67,32 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
     filterMode === 'local' ? allEvents.filter(ev => !ev.isGlobal) : allEvents,
     [allEvents, filterMode]);
 
+  // range events for MonthView (stage bars)
+  const rangeEventsRaw = useMemo(() => {
+    if (isRoot) {
+      return buildPipelineEvents({
+        projects: globalItems,
+        allScenes: items,
+        allValues,
+        deadlinePropId: deadlineProp?.id,
+      });
+    }
+    if (!projectPage) return [];
+    return buildProjectEvents({
+      project: projectPage,
+      scenes: items,
+      allValues,
+      deadlinePropId: deadlineProp?.id,
+    });
+  }, [isRoot, projectPage, globalItems, items, allValues, deadlineProp]);
+
+  const rangeEvents = useMemo(() =>
+    hiddenProjects.size === 0
+      ? rangeEventsRaw
+      : rangeEventsRaw.filter(ev => !hiddenProjects.has(ev.projectId)),
+    [rangeEventsRaw, hiddenProjects]
+  );
+
   const handleToday = useCallback(() => setCurrent(new Date()), []);
   const handleNext  = useCallback(() => setCurrent(d => navDate(view, d, +1)), [view]);
   const handlePrev  = useCallback(() => setCurrent(d => navDate(view, d, -1)), [view]);
@@ -68,7 +106,11 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
     onValueChange?.(eventId, deadlineProp.id, { date: newDateStr });
   }, [deadlineProp, onValueChange]);
 
-  const subViewProps = { events, current, onReschedule: handleReschedule };
+  const subViewProps = {
+    events, current, onReschedule: handleReschedule,
+    rangeEvents,
+    mode: isRoot ? 'pipeline' : 'project',
+  };
 
   return (
     <div className="space-y-3">
@@ -79,10 +121,30 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
         filterMode={filterMode} onFilterChange={setFilterMode}
       />
 
-      {view === 'month'  && <MonthView  {...subViewProps} />}
-      {view === 'week'   && <WeekView   {...subViewProps} />}
-      {view === 'day'    && <DayView    {...subViewProps} />}
-      {view === 'agenda' && <AgendaView {...subViewProps} />}
+      {/* Stage editor — só aparece em projetos individuais */}
+      {!isRoot && projectPage && (
+        <StageEditor
+          project={projectPage}
+          onUpdate={(stages) => setProjectPage(p => ({ ...p, stages }))}
+        />
+      )}
+
+      <div className="flex gap-0 rounded-xl overflow-hidden border border-subtle">
+        <div className="flex-1 min-w-0">
+          {view === 'month'  && <MonthView  {...subViewProps} />}
+          {view === 'week'   && <WeekView   {...subViewProps} />}
+          {view === 'day'    && <DayView    {...subViewProps} />}
+          {view === 'agenda' && <AgendaView {...subViewProps} />}
+        </div>
+
+        {/* Pipeline Legend — apenas no modo pipeline (root) */}
+        {isRoot && (
+          <PipelineLegend
+            projects={globalItems}
+            onHiddenChange={setHiddenProjects}
+          />
+        )}
+      </div>
 
       {!deadlineProp && !statusProp && (
         <div className="flex flex-col items-center justify-center p-8 bg-surface-1 border border-dashed border-subtle rounded-xl">

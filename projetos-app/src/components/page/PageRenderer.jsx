@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { RichTextEditor } from '../ui/RichTextEditor';
+import { DriveLink } from '../ui/DriveLink';
 import { Clock, Share, MoreHorizontal, ArrowLeft, Star } from 'lucide-react';
 
 // ============================================
@@ -188,9 +189,7 @@ export function PageRenderer({ pageId }) {
               {page._drive_folder_url && (
                 <div className="flex items-center gap-4 py-1 px-2 -mx-2 hover:bg-secondary/20 rounded transition-colors">
                   <span className="text-xs font-medium text-muted-foreground w-28 shrink-0">Drive</span>
-                  <a href={page._drive_folder_url} target="_blank" rel="noreferrer" className="text-sm text-blue-500 hover:underline truncate">
-                    {page._drive_folder_url}
-                  </a>
+                  <DriveLink projectDriveUrl={page._drive_folder_url} />
                 </div>
               )}
             </div>

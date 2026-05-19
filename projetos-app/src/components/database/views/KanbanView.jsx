@@ -131,7 +131,7 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
         const doneProp = properties.find(p => p.property_type === 'checkbox' && (p.name.toLowerCase() === 'feito' || p.name.toLowerCase() === 'concluído'));
         if (doneProp) {
           itemValues[doneProp.id] = { checked: false };
-          import('../../../services/propertyService').then(m => m.propertyService.upsertValue(activeId, doneProp.id, { checked: false })).catch(console.error);
+          propertyService.upsertValue(activeId, doneProp.id, { checked: false }).catch(console.error);
         }
         return { ...prev, [activeId]: itemValues };
       });
@@ -258,7 +258,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
     const newOpts   = groupProp.config.options.map(o => o.id === col.id ? { ...o, [field]: onlyDate } : o);
     const updatedProp = { ...groupProp, config: { ...groupProp.config, options: newOpts } };
     onPropertyUpdate?.(groupProp.id, updatedProp);
-    import('../../../services/propertyService').then(m => m.propertyService.update(groupProp.id, { config: updatedProp.config })).catch(console.error);
+    propertyService.update(groupProp.id, { config: updatedProp.config }).catch(console.error);
   };
 
   return (
@@ -343,9 +343,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
       <SortableContext items={col.items.map(i => i.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-2 min-h-[150px] pb-10 pt-1">
           {col.items.length === 0 && (
-            <div className="h-24 rounded-xl border border-dashed border-border/20 flex items-center justify-center text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
-              Vazio
-            </div>
+            <p className="text-sm text-muted-foreground/40 px-3 py-2 italic">Sem cards</p>
           )}
           {col.items.map(item => (
             <SortableEntityCard

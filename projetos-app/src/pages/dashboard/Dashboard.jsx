@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { DatabaseRenderer } from '../../components/database/DatabaseRenderer';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { AddMemberModal } from '../../components/database/AddMemberModal';
-import { LayoutDashboard, Plus, Search, UserPlus } from 'lucide-react';
+import { LayoutDashboard, Plus, UserPlus } from 'lucide-react';
 import { DashboardOverview } from '../../components/dashboard/DashboardOverview';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { GenerativePattern } from '../../components/ui/GenerativePattern';
-import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
-import { hashString } from '../../lib/avatarEngine';
-import { useNavigate } from 'react-router-dom';
+import { ensureRootHub } from '../../core/databaseFactory';
 
 // ============================================
 // DASHBOARD — Projects Hub Universal
@@ -17,17 +15,14 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isAddMemberOpen, setAddMemberOpen] = useState(false);
-  const [search, setSearch] = useState('');
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     document.title = 'Projects Hub | Pelimotion';
     async function init() {
       try {
-        const { ensureRootHub } = await import('../../core/databaseFactory');
         await ensureRootHub();
       } catch (e) {
         console.error('Falha ao inicializar Hub:', e);
@@ -78,28 +73,12 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 w-64 text-sm text-muted-foreground focus-within:border-primary/30 focus-within:bg-[var(--surface-3)] transition-all">
-            <Search className="w-4 h-4 shrink-0 opacity-40" />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Pesquisar projetos..."
-              className="bg-transparent focus:outline-none w-full text-[13px] font-medium placeholder:text-muted-foreground/30"
-            />
-          </div>
-
           <button
             onClick={() => setCreateOpen(true)}
             className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-widest bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] px-6 py-2.5 rounded-xl transition-all shadow-xl shadow-primary/20"
           >
             <Plus className="w-4 h-4 stroke-[3px]" />
             Novo Projeto
-          </button>
-          
-          <div className="w-px h-8 bg-border/50 mx-2" />
-          
-          <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
-            <TamagochiAvatar size={36} userId={user?.id} />
           </button>
         </div>
       </header>
@@ -109,7 +88,7 @@ export default function Dashboard() {
 
       {/* ── Database Content ── */}
       <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-        <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" addButtonLabel="Novo Projeto" />
+        <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" addButtonLabel={null} />
       </main>
 
       <CreateProjectModal open={isCreateOpen} onOpenChange={setCreateOpen} />

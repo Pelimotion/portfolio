@@ -4,6 +4,7 @@ import { Command } from 'cmdk';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Search, FileText, FolderOpen, Hash } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
+import { useSmartSearch } from '../../lib/useSmartSearch';
 import { supabase } from '../../lib/supabase';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +22,7 @@ export function CommandPalette() {
   const [projects, setProjects] = useState([]);
   const [items, setItems] = useState([]);
   const [pages, setPages] = useState([]);
+  const { openSmartSearch } = useSmartSearch();
   const navigate = useNavigate();
 
   // ⌘K / Ctrl+K toggle
@@ -119,6 +121,26 @@ export function CommandPalette() {
 
             {/* Results */}
             <Command.List className="max-h-[380px] overflow-y-auto custom-scrollbar">
+              {/* Fixed action: open SmartSearch */}
+              <Command.Group className="[&_[cmdk-group-heading]]:hidden">
+                <Command.Item
+                  value="__smart-search__"
+                  onSelect={() => { closeCommandPalette(); openSmartSearch(); }}
+                  className={cn(
+                    "flex items-center justify-between px-4 py-2.5 text-left cursor-pointer transition-colors",
+                    "text-muted-foreground",
+                    "aria-selected:bg-primary/10 aria-selected:text-foreground",
+                    "hover:bg-surface-2 hover:text-foreground border-b border-subtle"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <Search className="w-4 h-4 opacity-50 shrink-0" />
+                    <span className="text-small">Buscar em documentos</span>
+                  </div>
+                  <kbd className="text-[9px] text-muted-foreground/30 bg-surface-3 border border-subtle px-1.5 py-0.5 rounded font-mono shrink-0">⌘⇧F</kbd>
+                </Command.Item>
+              </Command.Group>
+
               {/* Empty states */}
               {!query && (
                 <div className="px-4 py-8 text-center text-small text-muted-foreground/30">
