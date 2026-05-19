@@ -1,6 +1,5 @@
 // Validação de JWT Supabase e verificação de role wide_studio.
-// Usa o endpoint /auth/v1/user — sem precisar do JWT_SECRET local.
-// O edge script sempre verifica a role; nunca faz bypass.
+// Usa Deno.env.get() — runtime Bunny Edge (Deno modificado).
 
 interface SupabaseUser {
   id: string;
@@ -9,7 +8,7 @@ interface SupabaseUser {
 }
 
 function getEnv(key: string): string {
-  const val = (globalThis as any).process?.env?.[key];
+  const val = Deno.env.get(key);
   if (!val) throw new Error(`Missing env: ${key}`);
   return val;
 }
@@ -69,7 +68,6 @@ export async function verifyHmac(req: Request, body: string): Promise<void> {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-  // Comparação timing-safe via HMAC duplo
   if (expected !== signature) {
     throw Object.assign(new Error("Invalid webhook signature"), { status: 401 });
   }

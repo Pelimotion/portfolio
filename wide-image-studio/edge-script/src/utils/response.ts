@@ -1,8 +1,7 @@
-// Helpers de resposta e CORS para o edge script.
-// ALLOWED_ORIGIN é lido em runtime — não inlinado pelo esbuild.
+// Helpers de resposta e CORS. Usa Deno.env.get() para ALLOWED_ORIGIN.
 
 export function getAllowedOrigin(): string {
-  return (globalThis as any).process?.env?.ALLOWED_ORIGIN ?? "";
+  return Deno.env.get("ALLOWED_ORIGIN") ?? "";
 }
 
 export function corsHeaders(requestOrigin: string | null): Record<string, string> {

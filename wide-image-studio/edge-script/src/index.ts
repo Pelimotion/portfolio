@@ -1,13 +1,13 @@
 // Bunny Edge Script — wide-image-studio router
-// Entry point. Roteia /wide-api/* para os handlers correspondentes.
+// Entry point. Usa BunnySDK.net.http.serve() — padrão Deno modificado do Bunny.
 // Handlers individuais chegam nos PRs 6, 7 e 8; aqui está o scaffold de roteamento.
 
+import * as BunnySDK from "https://esm.sh/@bunny.net/edgescript-sdk@0.12.0";
 import { corsHeaders, handleCors, json, err } from "./utils/response.ts";
 import { requireWideStudioRole, verifyHmac } from "./utils/auth.ts";
 
-// Bunny Edge Scripting usa o padrão addEventListener("fetch")
-addEventListener("fetch", (event: FetchEvent) => {
-  event.respondWith(route(event.request));
+BunnySDK.net.http.serve(async (req: Request): Promise<Response> => {
+  return route(req);
 });
 
 async function route(req: Request): Promise<Response> {
@@ -18,7 +18,7 @@ async function route(req: Request): Promise<Response> {
   if (preflight) return preflight;
 
   const url = new URL(req.url);
-  // Normaliza: /wide-api/start → /start
+  // Normaliza: /wide-api/start → /start (quando chamado via Edge Rule)
   const path = url.pathname.replace(/^\/wide-api/, "") || "/";
 
   try {
@@ -42,7 +42,6 @@ async function route(req: Request): Promise<Response> {
     }
 
     if (path === "/hf-webhook" && req.method === "POST") {
-      // Webhook não usa JWT — usa HMAC do secret compartilhado com HF
       const body = await req.text();
       await verifyHmac(req, body);
       return handleWebhook(req, body);
@@ -58,8 +57,6 @@ async function route(req: Request): Promise<Response> {
 }
 
 // Stubs — implementados nos PRs 6, 7 e 8
-// Retornam 501 Not Implemented para que o router e auth já possam ser testados.
-
 async function handleUploadRef(
   _req: Request,
   _userId: string,

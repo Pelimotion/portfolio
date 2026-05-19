@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "bash build.sh",
-    "typecheck": "tsc --noEmit"
+    "build": "mkdir -p dist && deno run -A build.mjs",
+    "check": "deno check src/index.ts",
+    "dev": "deno run src/index.ts"
   },
   "devDependencies": {
-    "esbuild": "^0.21.0",
-    "typescript": "^5.4.0"
+    "esbuild": "^0.21.0"
   }
 }
