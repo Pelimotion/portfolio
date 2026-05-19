@@ -10,6 +10,7 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import { UniversalEntityPage } from './pages/entity/UniversalEntityPage';
 import ProfilePage from './pages/profile/ProfilePage';
+import TokensPage from './pages/dev/TokensPage';
 
 import { ToastProvider } from './components/ui/Toast';
 
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/project/:pageId" element={<UniversalEntityPage />} />
                 <Route path="/page/:pageId" element={<UniversalEntityPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/dev/tokens" element={<TokensPage />} />
               </Route>
             </Route>
             
