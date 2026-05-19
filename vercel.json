@@ -7,6 +7,7 @@
     { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/wide-image-studio/public", "destination": "/wide-image-studio/public/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/hub", "destination": "/hub/index.html" },
     { "source": "/blog-generator", "destination": "/blog-generator/cms.html" },
