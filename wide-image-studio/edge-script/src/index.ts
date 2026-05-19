@@ -5,6 +5,8 @@
 import * as BunnySDK from "https://esm.sh/@bunny.net/edgescript-sdk@0.12.0";
 import { corsHeaders, handleCors, json, err } from "./utils/response.ts";
 import { requireWideStudioRole, verifyHmac } from "./utils/auth.ts";
+import { handleUploadRef } from "./upload-ref.ts";
+import { handleStart } from "./start.ts";
 
 BunnySDK.net.http.serve(async (req: Request): Promise<Response> => {
   return route(req);
@@ -57,23 +59,7 @@ async function route(req: Request): Promise<Response> {
   }
 }
 
-// Stubs — implementados nos PRs 6, 7 e 8
-async function handleUploadRef(
-  _req: Request,
-  _userId: string,
-  origin: string | null,
-): Promise<Response> {
-  return err("Not implemented — chega no PR 6", 501, corsHeaders(origin));
-}
-
-async function handleStart(
-  _req: Request,
-  _userId: string,
-  origin: string | null,
-): Promise<Response> {
-  return err("Not implemented — chega no PR 6", 501, corsHeaders(origin));
-}
-
+// Stub — implementado no PR 8
 async function handleApproveMaster(
   _req: Request,
   _userId: string,
