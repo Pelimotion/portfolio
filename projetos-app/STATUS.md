@@ -7,10 +7,10 @@
 
 **Data:** 2026-05-19
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A ✅ B ✅ C ✅ D ✅ E ✅ F ✅ G ✅ H ✅ I ✅ completas
-**Próxima Ação:** Fase J — Lazy-loading de rotas (bundle size) ou Dashboard Financeiro
+**Status:** BETA — Fases A ✅ B ✅ C ✅ D ✅ E ✅ F ✅ G ✅ H ✅ I ✅ J ✅ K.1 ✅ K.2 ✅ K.3 ✅ K.4 ✅ K.5 ✅ K.6 ✅ K.7 ✅ K.8 ✅ completas
+**Próxima Ação:** Operacional — deploy, testes manuais, Supabase migrations pendentes
 **Branch ativa:** `main`
-**Bloqueadores:** SQL migration pendente (rodar no Supabase): `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
+**Bloqueadores:** stages migration ainda pendente: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
 
 ---
@@ -31,12 +31,182 @@
 | Smart Search Global (Fuse.js) | ✅ Fase G completa | 2026-05-19 |
 | Drive Sync (DriveLink) | ✅ Fase H completa | 2026-05-19 |
 | Pipeline Legend (Calendário) | ✅ Fase I completa | 2026-05-19 |
+| Lazy-loading de rotas (code-split) | ✅ Fase J completa | 2026-05-19 |
+| Document Intelligence — K.1 Spike | ✅ Fase K.1 completa | 2026-05-19 |
+| Document Intelligence — K.2 Indexador | ✅ Fase K.2 completa | 2026-05-19 |
+| Document Intelligence — K.3 BM25 Search | ✅ Fase K.3 completa | 2026-05-19 |
+| Document Intelligence — K.4 Views (list/grid/compare) | ✅ Fase K.4 completa | 2026-05-19 |
+| Document Intelligence — K.5 Hybrid search scaffold | ✅ Fase K.5 completa | 2026-05-19 |
+| Document Intelligence — K.6 File type badges + URLs | ✅ Fase K.6 completa | 2026-05-19 |
+| Document Intelligence — K.7 Bunny Edge reindex cron | ✅ Fase K.7 completa | 2026-05-19 |
+| Document Intelligence — K.8 Filter chips + export .md | ✅ Fase K.8 completa | 2026-05-19 |
 | Dashboard financeiro | ❌ Não iniciado | — |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — Fases K.4 + K.5 + K.6 + K.7 + K.8: Document Intelligence completo
+
+**O que foi feito:**
+- [x] `src/components/search/DocSearchModal.jsx` — reescrito com:
+  - **K.4**: 3 view modes persistidos em localStorage: `list` (padrão) · `grid` (2 col, cards compactos) · `compare` (2 painéis side-by-side, scroll sync via `scrollTop` ratio + `requestAnimationFrame`, seletor de arquivo por painel)
+  - **K.6**: `getDriveUrl()` detecta extensão e usa URL otimizada (Google Docs → `docs.google.com/document/d/{id}/edit`; PDF/DOC → `drive.google.com/file/d/{id}/view`); `getFileTypeBadge()` retorna label+cor por tipo
+  - **K.8**: filter chips por arquivo (multi-select, aparece quando >1 arquivo nos resultados); botão export `.md` no footer (blob download com highlight desmarcado para `**bold**`)
+- [x] `src/services/searchService.js` — adicionado:
+  - `generateQueryEmbedding(text)` — chama `VITE_BUNNY_EMBED_URL` com fallback null
+  - `searchDocumentsHybrid(query, limit)` — chama RPC `search_documents_hybrid` com vetor; fallback para BM25 puro
+  - SQL de todas as migrations K.5 documentado em comentário (pgvector, embedding column, IVFFlat index, RPC RRF)
+- [x] `bunny-edge/generate-embedding/index.js` — **K.5**: Bunny Edge POST `/generate-embedding`; chama Vertex AI `text-embedding-004`; retorna `{ embedding: float[] }` 768 dims; CORS configurável via env
+- [x] `bunny-edge/reindex-cron/index.js` — **K.7**: Bunny Edge cron GET/POST; OAuth refresh automático; Drive `changes.list` com pageToken persistido em `kv_store` Supabase; re-extrai via `/extract-text`; chunkeiza + upserta; garbled detection (>30% non-ASCII → skip)
+- [x] Build verde ✅
+
+**⚠️ Migrations SQL necessárias (K.5 + K.7 — rodar no Supabase antes de usar esses recursos):**
+```sql
+-- K.5: pgvector + embedding column + IVFFlat index + RPC RRF
+-- (SQL completo documentado em searchService.js)
+CREATE EXTENSION IF NOT EXISTS vector;
+ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS embedding vector(768);
+
+-- K.7: tabela KV para pageToken do Drive changes.list
+CREATE TABLE IF NOT EXISTS kv_store (
+  key TEXT PRIMARY KEY,
+  value TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**Arquivos criados:** `bunny-edge/generate-embedding/index.js`, `bunny-edge/reindex-cron/index.js`
+**Arquivos modificados:** `src/components/search/DocSearchModal.jsx`, `src/services/searchService.js`
+
+---
+
+### 2026-05-19 — Fase K.3: Busca BM25 + DocSearchModal (⌘⇧D)
+
+**O que foi feito:**
+- [x] `src/services/searchService.js` — criado com 2 funções públicas:
+  - `searchDocuments(query, limit=10)`: tenta RPC `search_document_chunks` (com `ts_headline`); fallback para `.textSearch('content', query, { type: 'websearch', config: 'portuguese' })` + snippet client-side
+  - `hasIndexedChunks()`: verifica se há ao menos 1 chunk no banco (para empty state)
+  - Inclui SQL comentado para criar o RPC no Supabase (com `ts_headline` + `ts_rank_cd`)
+- [x] `src/lib/useDocSearch.js` — Zustand store: `docSearchOpen`, `openDocSearch`, `closeDocSearch`
+- [x] `src/components/search/DocSearchModal.jsx` — criado:
+  - Radix Dialog + cmdk, hotkey global ⌘⇧D
+  - Debounce 300ms no input
+  - Skeleton loading, highlight `[[MARK]]` em violeta (distinto do amarelo do SmartSearch)
+  - Empty state "Nenhum documento indexado" vs "Nenhum resultado" (detectado via `hasIndexedChunks`)
+  - Resultados clicáveis abrem o arquivo no Google Drive (`_blank`)
+  - Footer com contagem de trechos
+- [x] `src/components/layout/AppLayout.jsx` — `<DocSearchModal>` adicionado ao lado de `<SmartSearchModal>`
+- [x] `src/components/ui/CommandPalette.jsx` — segundo item fixo "Buscar em trechos indexados ⌘⇧D" que abre `DocSearchModal`; import `useDocSearch` adicionado
+- [x] Build verde ✅
+
+**⚠️ RPC opcional (ts_headline melhor qualidade):**
+```sql
+CREATE OR REPLACE FUNCTION search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
+RETURNS TABLE (file_name TEXT, chunk_index INT, drive_file_id TEXT, project_id UUID, snippet TEXT)
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT file_name, chunk_index, drive_file_id, project_id,
+    ts_headline('portuguese', content, websearch_to_tsquery('portuguese', p_query),
+      'StartSel=[[, StopSel=]], MaxWords=30, MinWords=15') AS snippet
+  FROM document_chunks
+  WHERE content_tsv @@ websearch_to_tsquery('portuguese', p_query)
+  ORDER BY ts_rank_cd(content_tsv, websearch_to_tsquery('portuguese', p_query)) DESC
+  LIMIT p_limit;
+$$;
+```
+Sem o RPC, o fallback `.textSearch()` funciona normalmente (snippet gerado no client).
+
+**Arquivos criados:** `src/services/searchService.js`, `src/lib/useDocSearch.js`, `src/components/search/DocSearchModal.jsx`
+**Arquivos modificados:** `src/components/layout/AppLayout.jsx`, `src/components/ui/CommandPalette.jsx`
+
+---
+
+### 2026-05-19 — Fase K.2: Indexador on-demand
+
+**O que foi feito:**
+- [x] `src/lib/googleAuth.js` — scope atualizado `drive.metadata.readonly` → `drive.readonly`; `ensureToken` verifica `gdrive_scope_version=2` para invalidar tokens antigos; `getAccessToken` persiste `gdrive_scope_version` ao salvar token
+- [x] `src/services/documentService.js` — criado com 4 funções públicas:
+  - `indexFile(projectId, file, accessToken)` — extrai texto (Google Docs via export API, text/plain via download), garbled detection (nonAscii > 30% → skip), chunkeia (800 chars / 100 overlap), delta sync por `modifiedTime`, upserta em `document_chunks`
+  - `indexProject(projectId, rootFolderId, accessToken, onProgress)` — lista Drive recursivamente (com `modifiedTime`), filtra tipos suportados, chama `indexFile`, retorna `{ total, supported, indexed, skipped, notModified, errors }`
+  - `getIndexStatus(projectId)` — conta arquivos e chunks indexados por projeto
+  - `clearIndex(projectId)` — remove todos os chunks do projeto
+- [x] `src/components/storage/AssetsPanel.jsx` — modificado:
+  - Imports: `documentService`, `toast` (sonner), `FileSearch` (lucide)
+  - States: `indexing`, `indexProgress`, `indexResult`
+  - Função `handleIndexDocuments`: obtém token, chama `indexProject`, trata `INSUFFICIENT_SCOPE` (limpa token + orienta re-auth), exibe toast de sucesso/info/erro
+  - `DriveConnectionSection` recebe `onIndexDocuments`, `indexing`, `indexProgress`, `indexResult`
+  - UI: botão "Indexar" (violeta) ao lado de "Sincronizar Estrutura"; chip de nome do arquivo durante indexação; chips de resultado (indexados / sem alteração / pulados) após concluir
+- [x] Build verde ✅ — zero erros, chunks idênticos à Fase J
+
+**Tipos suportados no browser (K.2):** Google Docs, text/plain, text/markdown
+**Tipos adiados (servidor):** PDF, DOCX → Fase K.7 (Bunny Edge)
+
+**Arquivos criados:** `src/services/documentService.js`
+**Arquivos modificados:** `src/lib/googleAuth.js`, `src/components/storage/AssetsPanel.jsx`
+
+---
+
+### 2026-05-19 — Fase K.1: Spike Document Intelligence — GO com ajustes
+
+**O que foi feito:**
+- [x] `scripts/database/k1_document_chunks.sql` — migration criada e rodada no Supabase (RLS com `created_by = auth.uid()::text`)
+- [x] `bunny-edge/extract-text/index.js` — Edge script para extração (Google Docs / PDF / DOCX / txt)
+- [x] `bunny-edge/extract-text/package.json` — setup de build com esbuild
+- [x] `scripts/spike-k1.mjs` — script de ingestão com `createRequire` para CJS interop
+- [x] `.env.spike.example` — template de variáveis com instruções linha a linha
+- [x] `package.json` — `pdf-parse` fixado em `1.1.1` sem `^`
+- [x] `.gitignore` — `.env.spike` adicionado
+- [x] `docs/SPIKE_K1_REPORT.md` — relatório completo com diagnóstico e decisão GO
+- [x] 2 PDFs ingeridos: 6.473 chars, 2 chunks, ~2.9s/arquivo ✅
+- [x] Diagnóstico: PDFs de CAD com fontes não-padrão geram texto garbled → detectar por nonAscii ratio
+
+**Decisão:** GO com ajustes — Google Docs como tipo prioritário em K.2; detectar PDFs garbled (ratio > 0.3 → skip)
+
+**Arquivos criados:** `scripts/database/k1_document_chunks.sql`, `bunny-edge/extract-text/index.js`, `bunny-edge/extract-text/package.json`, `scripts/spike-k1.mjs`, `.env.spike.example`, `docs/SPIKE_K1_REPORT.md`
+**Arquivos modificados:** `package.json`, `.gitignore`
+
+---
+
+### 2026-05-19 — Fase J: Lazy-loading de rotas + Roadmap K definido
+
+**O que foi feito:**
+- [x] `src/App.jsx` — `Dashboard`, `UniversalEntityPage`, `ProfilePage`, `TokensPage` convertidos para `React.lazy()`
+- [x] `Suspense` com fallback `<RouteFallback>` (Loader2 spinner) em cada rota
+- [x] Tratamento de named export (`UniversalEntityPage`) via `.then(m => ({ default: m.UniversalEntityPage }))`
+- [x] `Login` permanece eager (rota crítica, carrega antes do auth resolver)
+- [x] Build verde ✅ — chunks separados confirmados:
+  - `index-*.js`: **825 KB** (era ~1.6 MB)
+  - `Dashboard-*.js`: 27 KB
+  - `UniversalEntityPage-*.js`: 441 KB
+  - `ProfilePage-*.js`: 16 KB
+  - `TokensPage-*.js`: 42 KB
+- [x] Bundle inicial reduzido **~49%**; carregamento por rota agora é incremental
+
+**Arquivos modificados:** `src/App.jsx`
+**Próximo passo:** Spike Fase K.1 (validar viabilidade de Document Intelligence com 10 docs)
+
+---
+
+### 2026-05-19 — Roadmap K: Document Intelligence (multi-doc search no Drive)
+
+**Decisão arquitetural:** stack **Postgres-first** (Supabase + pgvector) + Gemini embeddings (Vertex) + Bunny Edge para extração. Zero impacto nas 12 functions do Vercel.
+
+**Fases planejadas (8 sub-fases incrementais):**
+- **K.1** — Schema `document_chunks` + extrator Bunny Edge (PDF/DOCX/Google Docs) — *próxima sessão (spike)*
+- **K.2** — Indexador on-demand via crawl do Drive já existente + delta sync por `modifiedTime`
+- **K.3** — Busca BM25 (`tsvector` + `ts_headline`) + modal multi-doc (hotkey ⌘⇧D)
+- **K.4** — 3 modos de view: Lista · Grade paralela · Compare side-by-side com scroll sync
+- **K.5** — Hybrid search (RRF entre BM25 + cosseno via `pgvector` + `text-embedding-004`)
+- **K.6** — Highlight contextual + deep-links (`#heading=` p/ Docs, `#page=` p/ PDF)
+- **K.7** — Re-indexação incremental + cron Bunny Edge via `changes.list` do Drive
+- **K.8** — Filtros + saved searches + export markdown + (stretch) resumo Gemini dos top-N trechos
+
+**Benchmarks consultados:** Glean (RAG enterprise), Notion AI Q&A (embeddings por bloco), Coda Pack Drive (delta sync), Sourcegraph (compare-view sincronizada), Hebbia (multi-doc table).
+
+**Caminho escolhido pelo usuário:** Caminho 3 — **validar primeiro** com spike K.1 antes de comprometer todo o roadmap.
+
+---
 
 ### 2026-05-19 — Fases G + H + I: Smart Search, Drive Sync, Pipeline Legend + fix dynamic imports
 
@@ -162,50 +332,46 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — FASE J
+## 🎯 PRÓXIMA SESSÃO — PÓS-FASE K (operacional)
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: projetos-app-agent — Fase J
+# Context: projetos-app-agent — Pós-Fase K (deploy + migrations)
 
 📋 STATUS ANTERIOR
-Fases A→I completas (2026-05-19). Build verde em main. Zero avisos INEFFECTIVE_DYNAMIC_IMPORT.
-Fase G: Smart Search (⌘⇧F) com Fuse.js client-side, SmartSearchModal, item fixo no CommandPalette.
-Fase H: DriveLink (3 estados: linked/inherited/unlinked), driveUtils, integrado em PageRenderer.
-Fase I: PipelineLegend colapsável no CalendarView (modo pipeline), filtro por projeto com localStorage.
-SQL PENDENTE: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
+Todas as fases K completas (2026-05-19):
+  - K.4: DocSearchModal com 3 views (list/grid/compare + scroll sync, localStorage persist)
+  - K.5: searchDocumentsHybrid scaffold + bunny-edge/generate-embedding/index.js (Vertex AI)
+  - K.6: file type badges (GDoc/PDF/DOC/TXT) + URLs otimizadas por tipo
+  - K.7: bunny-edge/reindex-cron/index.js (Drive changes.list + incremental reindex via Supabase)
+  - K.8: filter chips por arquivo + export markdown (.md) no footer do DocSearchModal
+  - Build verde ✅ (841KB index.js, chunks separados por rota)
 
-🎯 TAREFA DESTA SESSÃO
-Escolher entre:
-  (A) Fase J — Lazy-loading de rotas → reduz bundle de 1.6MB → ~400kB por rota
-  (B) Dashboard Financeiro — nova view no hub
+Migrations SQL ainda pendentes (rodar no Supabase SQL Editor):
+  1. ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;  (Fase F)
+  2. CREATE EXTENSION IF NOT EXISTS vector;  (K.5 — só se for ativar hybrid search)
+  3. ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS embedding vector(768);  (K.5)
+  4. CREATE TABLE IF NOT EXISTS kv_store (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT now());  (K.7)
 
-📦 OPÇÃO A — Lazy-loading de rotas (React.lazy + Suspense)
-Arquivos a modificar: `src/App.jsx`
-- `React.lazy(() => import('./pages/dashboard/Dashboard'))`
-- `React.lazy(() => import('./pages/entity/UniversalEntityPage'))`
-- `React.lazy(() => import('./pages/profile/ProfilePage'))`
-- Envolver com `<Suspense fallback={<LoadingSpinner />}>`
-- Build: verificar que chunks separados aparecem no output
+Bunny Edge a deployar:
+  - bunny-edge/generate-embedding/  → configurar VERTEX_PROJECT_ID + VERTEX_API_KEY + VITE_BUNNY_EMBED_URL
+  - bunny-edge/reindex-cron/        → configurar SUPABASE_SERVICE_KEY + DRIVE_REFRESH_TOKEN + agendar cron
 
-📦 OPÇÃO B — Dashboard Financeiro
-- Nova seção no Dashboard com resumo de faturamento por status
-- Campos na tabela `pages`: `budget NUMERIC`, `invoice_status TEXT`
-- SQL: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS budget NUMERIC; ...`
+🎯 PRÓXIMA TAREFA SUGERIDA
+A. Rodar as SQL migrations acima no Supabase.
+B. Deploy dos Bunny Edge scripts (generate-embedding + reindex-cron).
+C. Dashboard financeiro (nova fase, não planejada ainda).
 
-📦 RED FLAGS
-- NÃO rodar migration SQL sem confirmação do usuário
-- `npm install --cache /tmp/npm-cache` em todos os installs
-
-⏸️ Qual opção seguir (A ou B)?
+⏸️ Qual tarefa seguir?
 ```
 
 ---
 
 ## 🚨 BLOQUEADORES ATIVOS
 
-_Nenhum bloqueador no momento._
+1. **Migration Fase F** — `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;` (rodar no Supabase antes de testar Calendário com Etapas)
+2. **Escopo OAuth** — `googleAuth.js` usa `drive.metadata.readonly`; K.2 no browser precisará de `drive.readonly` para exportar conteúdo (avaliar incremental auth vs. novo consent)
 
 ---
 
@@ -219,10 +385,12 @@ _Nenhum bloqueador no momento._
 | DatabaseRenderer | refactor first | Previne débito técnico antes de features |
 | npm install | `--cache /tmp/npm-cache` | Cache root-owned: `~/.npm` inacessível |
 | React isolado | sem compartilhar com Vanilla | Único projeto React do ecossistema |
+| Code-splitting | `React.lazy` por rota (Fase J) | Bundle inicial 1.6MB → 825KB |
+| Document Intelligence (K) | Postgres + pgvector + Gemini + Bunny Edge | Zero impacto nas 12 functions Vercel; reusa Supabase |
 
 ---
 
-**Última atualização:** 2026-05-19
+**Última atualização:** 2026-05-19 (pós-spike K.1)
 
 ---
 
@@ -231,3 +399,4 @@ _Nenhum bloqueador no momento._
 | Data/Hora UTC | Operador | Projeto | Status |
 |---|---|---|---|
 | 2026-05-19 | Claude Sonnet 4.6 | projetos-app (Fase D) | ✅ push main → Vercel deploy |
+| 2026-05-19 | Claude Opus 4.7  | projetos-app (Fase J) | ⏳ build local OK — aguarda commit/push |

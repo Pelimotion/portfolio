@@ -4,7 +4,7 @@
  */
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
 
 export const googleAuth = {
   
@@ -41,9 +41,10 @@ export const googleAuth = {
               reject(new Error(`Erro Google Auth: ${response.error_description || response.error}`));
             }
           } else {
-            // Sucesso: Persiste
+            // Sucesso: Persiste token + versão do escopo
             localStorage.setItem('gdrive_token', response.access_token);
             localStorage.setItem('gdrive_token_expires', Date.now() + (response.expires_in * 1000));
+            localStorage.setItem('gdrive_scope_version', '2');
             resolve(response.access_token);
           }
         },
@@ -58,18 +59,23 @@ export const googleAuth = {
   },
  
   /**
-   * Garante um token válido, disparando login se necessário
+   * Garante um token válido, disparando login se necessário.
+   * Se o token foi emitido com escopo anterior (metadata.readonly),
+   * invalida e solicita novo consentimento com drive.readonly.
    */
   async ensureToken() {
     const token = localStorage.getItem('gdrive_token');
     const expires = localStorage.getItem('gdrive_token_expires');
-    
-    // Se temos um token válido, retorna ele
-    if (token && expires && Date.now() < parseInt(expires)) {
+    const scopeVersion = localStorage.getItem('gdrive_scope_version');
+
+    // Versão 2 = drive.readonly (suficiente para exportar conteúdo)
+    const CURRENT_SCOPE_VERSION = '2';
+
+    if (token && expires && scopeVersion === CURRENT_SCOPE_VERSION && Date.now() < parseInt(expires)) {
       return token;
     }
-    
-    // Caso contrário, força novo login
+
+    // Token expirado, escopo antigo ou ausente — força novo consentimento
     return this.getAccessToken();
   }
 };

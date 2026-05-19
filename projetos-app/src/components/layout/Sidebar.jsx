@@ -13,8 +13,8 @@ import { useUIStore } from '../../stores/useUIStore';
 import { ROOT_HUB_ID } from '../../core/schemas';
 import { TamagochiAvatar } from '../ui/TamagochiAvatar';
 import { GamificationWidget } from '../ui/GamificationWidget';
-import { hashString } from '../../lib/avatarEngine';
 import { GenerativeIcon } from '../ui/GenerativeIcon';
+import { UserMenu } from './UserMenu';
 
 export function Sidebar() {
   const { user, profile, signOut } = useAuth();
@@ -133,7 +133,7 @@ export function Sidebar() {
           className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[13px] text-muted-foreground/60 hover:bg-[var(--surface-2)] hover:text-muted-foreground rounded-md transition-all text-left group"
         >
           <Search className="w-3.5 h-3.5 opacity-40 group-hover:opacity-70" />
-          <span className="flex-1">Buscar...</span>
+          <span className="flex-1">Buscar projetos, cenas e ações</span>
           <span className="text-[9px] text-muted-foreground/30 font-mono">⌘K</span>
         </button>
 
@@ -215,36 +215,7 @@ export function Sidebar() {
         {profile && <GamificationWidget profile={profile} compact />}
 
         {/* User identity card */}
-        <div
-          onClick={() => navigate('/profile')}
-          className="flex items-center justify-between px-2 py-2 rounded-xl hover:bg-[var(--surface-2)] transition-colors cursor-pointer group border border-transparent hover:border-[var(--border-subtle)]"
-        >
-          <div className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0">
-            <div className="shrink-0 rounded-xl overflow-hidden border-2" style={{ borderColor: `${profile?.accent_color || '#3b82f6'}66` }}>
-            <TamagochiAvatar
-                size={28}
-                userId={user?.id}
-              />
-            </div>
-            <div className="overflow-hidden min-w-0">
-              <p className="text-[13px] font-bold truncate" style={{ color: profile?.accent_color || '#3b82f6' }}>
-                {profile?.display_name || profile?.nickname || user?.email?.split('@')[0]}
-              </p>
-              {profile?.status_text ? (
-                <p className="text-[10px] text-muted-foreground/50 truncate italic">{profile.status_text}</p>
-              ) : (
-                <p className="text-[10px] text-muted-foreground/30 truncate">{user?.email}</p>
-              )}
-            </div>
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); signOut(); }}
-            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground/40 transition-all shrink-0"
-            title="Sair"
-          >
-            <LogOut className="w-3 h-3" />
-          </button>
-        </div>
+        <UserMenu user={user} profile={profile} signOut={signOut} />
       </div>
     </aside>
   );

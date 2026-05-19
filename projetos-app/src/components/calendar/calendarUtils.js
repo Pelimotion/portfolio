@@ -127,3 +127,98 @@ export function groupByDay(events) {
 }
 
 export { isToday, isSameDay, startOfDay };
+
+// ── Project calendar (stages + scene dots) ──────────────────
+
+/**
+ * Build range events from project.stages and scene deadline dots.
+ * - Range: { id, type:'stage', title, startStr, endStr, color, projectId }
+ * - Dot:   { id, type:'scene', title, startStr, color, projectId }
+ */
+export function buildProjectEvents({ project, scenes = [], allValues = {}, deadlinePropId }) {
+  const events = [];
+  const stages = project?.stages || [];
+
+  for (const stage of stages) {
+    if (!stage.start_date || !stage.end_date) continue;
+    events.push({
+      id: `stage-${project.id}-${stage.id}`,
+      type: 'stage',
+      title: stage.name || stage.id,
+      startStr: stage.start_date,
+      endStr: stage.end_date,
+      color: stage.color || '#6366f1',
+      projectId: project.id,
+    });
+  }
+
+  if (deadlinePropId) {
+    for (const scene of scenes) {
+      const dateVal = allValues[scene.id]?.[deadlinePropId]?.date;
+      if (!dateVal) continue;
+      events.push({
+        id: scene.id,
+        type: 'scene',
+        title: scene.title || 'Untitled',
+        startStr: dateVal,
+        color: '#6366f1',
+        projectId: project.id,
+      });
+    }
+  }
+  return events;
+}
+
+// ── Pipeline calendar (all projects) ────────────────────────
+
+export const PROJECT_PALETTE = [
+  '#6366f1','#f59e0b','#10b981','#ef4444',
+  '#8b5cf6','#3b82f6','#f97316','#ec4899',
+];
+
+/**
+ * Build compact pipeline events across all projects.
+ * - Stage ranges get assigned the project color
+ * - Scene dots are 5px dots with tooltip info
+ */
+export function buildPipelineEvents({ projects = [], allScenes = [], allValues = {}, deadlinePropId }) {
+  const events = [];
+  projects.forEach((project, idx) => {
+    const color = PROJECT_PALETTE[idx % PROJECT_PALETTE.length];
+    const stages = project?.stages || [];
+
+    for (const stage of stages) {
+      if (!stage.start_date || !stage.end_date) continue;
+      events.push({
+        id: `pl-stage-${project.id}-${stage.id}`,
+        type: 'pipeline-stage',
+        title: `${project.title} — ${stage.name}`,
+        startStr: stage.start_date,
+        endStr: stage.end_date,
+        color,
+        projectId: project.id,
+        projectTitle: project.title,
+        stageName: stage.name,
+      });
+    }
+
+    const scenes = allScenes.filter(s => s.parent_id === project.id);
+    if (deadlinePropId) {
+      for (const scene of scenes) {
+        const dateVal = allValues[scene.id]?.[deadlinePropId]?.date;
+        if (!dateVal) continue;
+        events.push({
+          id: `pl-scene-${scene.id}`,
+          type: 'pipeline-scene',
+          title: scene.title || 'Untitled',
+          startStr: dateVal,
+          color,
+          projectId: project.id,
+          projectTitle: project.title,
+          status: allValues[scene.id]?.[deadlinePropId]?.selected,
+        });
+      }
+    }
+  });
+  return events;
+}

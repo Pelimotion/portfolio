@@ -1,11 +1,9 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { DatePickerDialog } from '../ui/DatePickerDialog';
 
-/**
- * Global keyboard shortcuts for the calendar.
- * T=today  J/→=next  K/←=prev  G=go-to-date
- * Ignored when focus is inside an input/textarea/select.
- */
 export function CalendarKbd({ onToday, onNext, onPrev, onGoToDate }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
@@ -18,8 +16,7 @@ export function CalendarKbd({ onToday, onNext, onPrev, onGoToDate }) {
         case 'k': case 'K': case 'ArrowLeft':  e.preventDefault(); onPrev(); break;
         case 'g': case 'G': {
           e.preventDefault();
-          const input = prompt('Ir para (YYYY-MM-DD):');
-          if (input) onGoToDate(input);
+          setDialogOpen(true);
           break;
         }
         default: break;
@@ -27,7 +24,17 @@ export function CalendarKbd({ onToday, onNext, onPrev, onGoToDate }) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onToday, onNext, onPrev, onGoToDate]);
+  }, [onToday, onNext, onPrev]);
 
-  return null;
+  return (
+    <DatePickerDialog
+      open={dialogOpen}
+      title="Ir para data (G)"
+      onConfirm={(date) => {
+        setDialogOpen(false);
+        if (date) onGoToDate(date);
+      }}
+      onCancel={() => setDialogOpen(false)}
+    />
+  );
 }

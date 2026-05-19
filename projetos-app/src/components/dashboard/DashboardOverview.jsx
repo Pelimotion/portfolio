@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
+import * as Popover from '@radix-ui/react-popover';
 import { usePageStore } from '../../stores/usePageStore';
-import { Calendar, CheckCircle2, Circle, Clock, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardOverview() {
@@ -14,29 +15,28 @@ export function DashboardOverview() {
 
     const upcoming = [];
     const stageStats = {};
+    let doneCount = 0;
 
-    // pages is a dict: { [pageId]: page }
     const pageList = pages && typeof pages === 'object' ? Object.values(pages) : [];
-
-    if (!pageList.length) return { upcoming: [], totalCount: 0, stageStats: {} };
+    if (!pageList.length) return { upcoming: [], totalCount: 0, stageStats: {}, doneCount: 0 };
 
     pageList.forEach(page => {
       if (!page || page.archived) return;
 
-      // Check for deadline-like date in page properties or content
       const deadline = page.deadline || page.due_date || null;
       if (deadline) {
         const d = new Date(deadline);
-        if (d >= today && d <= nextWeek) {
-          upcoming.push({ id: page.id, title: page.title, date: d });
-        }
+        if (d >= today && d <= nextWeek) upcoming.push({ id: page.id, title: page.title, date: d });
       }
 
-      // Group by status if present
       const statusVal = page.status || null;
       if (statusVal) {
         if (!stageStats[statusVal]) stageStats[statusVal] = { total: 0, done: 0 };
         stageStats[statusVal].total++;
+        if (statusVal === 'concluido' || statusVal === 'entregue') {
+          stageStats[statusVal].done++;
+          doneCount++;
+        }
       }
     });
 
@@ -44,71 +44,94 @@ export function DashboardOverview() {
       upcoming: upcoming.sort((a, b) => a.date - b.date),
       totalCount: pageList.length,
       stageStats,
+      doneCount,
     };
   }, [pages]);
 
   if (stats.totalCount === 0) return null;
 
+  const activeStageCount = Object.keys(stats.stageStats).filter(s => s !== 'concluido' && s !== 'entregue').length;
 
   return (
-    <div className="px-8 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-[var(--surface-0)]">
-      {/* Upcoming Dates */}
-      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            <Calendar className="w-3.5 h-3.5 text-primary" />
-            Próximas Datas
-          </div>
-          <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">{stats.upcoming.length}</span>
-        </div>
-        
-        <div className="space-y-3">
-          {stats.upcoming.length > 0 ? stats.upcoming.map(item => (
-            <div 
-              key={item.id} 
-              onClick={() => navigate(`/page/${item.id}`)}
-              className="flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                {item.isFeito ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" /> : <Clock className="w-3.5 h-3.5 text-yellow-500 shrink-0" />}
-                <span className="text-sm font-medium truncate group-hover:text-primary transition-colors">{item.title}</span>
-              </div>
-              <span className="text-[10px] font-mono text-muted-foreground/50 shrink-0">
-                {item.date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-              </span>
-            </div>
-          )) : (
-            <p className="text-xs text-muted-foreground/40 italic">Sem entregas para esta semana.</p>
-          )}
-        </div>
-      </div>
+    <div className="flex items-center gap-1 px-6 py-2 border-b border-[var(--border-subtle)] bg-[var(--surface-0)] shrink-0">
+      {/* Chip: Próximas Datas */}
+      <Popover.Root>
+        <Popover.Trigger asChild>
+          <button className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)] transition-colors">
+            <Calendar className="w-3 h-3 text-primary shrink-0" />
+            <span>{stats.upcoming.length} {stats.upcoming.length === 1 ? 'prazo' : 'prazos'} esta semana</span>
+          </button>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            side="bottom"
+            align="start"
+            sideOffset={4}
+            className="z-50 min-w-[260px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-2 animate-in fade-in-0 zoom-in-95"
+          >
+            <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest px-2 py-1">Próximas Datas</p>
+            {stats.upcoming.length > 0 ? stats.upcoming.map(item => (
+              <button
+                key={item.id}
+                onClick={() => navigate(`/page/${item.id}`)}
+                className="w-full flex items-center justify-between px-2 py-1.5 text-xs rounded-lg hover:bg-[var(--surface-2)] transition-colors group"
+              >
+                <span className="truncate text-foreground group-hover:text-primary transition-colors">{item.title}</span>
+                <span className="text-[10px] font-mono text-muted-foreground/50 shrink-0 ml-2">
+                  {item.date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                </span>
+              </button>
+            )) : (
+              <p className="text-xs text-muted-foreground/40 italic px-2 py-1.5">Sem entregas para esta semana.</p>
+            )}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
 
-      {/* Active Stages Stats */}
-      <div className="col-span-1 md:col-span-2 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6">
-          <Clock className="w-3.5 h-3.5 text-primary" />
-          Etapas Ativas
-        </div>
+      <span className="text-muted-foreground/20 text-xs select-none">•</span>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(stats.stageStats).map(([label, s]) => (
-            <div key={label} className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-bold">
-                <span className="text-foreground truncate pr-2">{label}</span>
-                <span className="text-muted-foreground">{s.done}/{s.total}</span>
-              </div>
-              <div className="h-1.5 w-full bg-[var(--surface-3)] rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary transition-all duration-1000" 
-                  style={{ width: `${(s.done / s.total) * 100}%` }}
-                />
-              </div>
-            </div>
-          ))}
-          {Object.keys(stats.stageStats).length === 0 && (
-            <p className="text-xs text-muted-foreground/40 italic col-span-full">Nenhuma etapa com cards ativos.</p>
-          )}
-        </div>
+      {/* Chip: Etapas Ativas */}
+      <Popover.Root>
+        <Popover.Trigger asChild>
+          <button className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)] transition-colors">
+            <Clock className="w-3 h-3 shrink-0 opacity-60" />
+            <span>{activeStageCount} {activeStageCount === 1 ? 'etapa ativa' : 'etapas ativas'}</span>
+          </button>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            side="bottom"
+            align="start"
+            sideOffset={4}
+            className="z-50 min-w-[240px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-2 animate-in fade-in-0 zoom-in-95"
+          >
+            <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest px-2 py-1">Etapas Ativas</p>
+            {Object.entries(stats.stageStats)
+              .filter(([s]) => s !== 'concluido' && s !== 'entregue')
+              .map(([label, s]) => (
+                <div key={label} className="px-2 py-1.5 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-foreground truncate pr-2">{label}</span>
+                    <span className="text-muted-foreground/60 shrink-0">{s.total}</span>
+                  </div>
+                  <div className="h-1 w-full bg-[var(--surface-2)] rounded-full overflow-hidden">
+                    <div className="h-full bg-primary/50 rounded-full transition-all" style={{ width: `${s.total > 0 ? (s.done / s.total) * 100 : 0}%` }} />
+                  </div>
+                </div>
+              ))}
+            {activeStageCount === 0 && (
+              <p className="text-xs text-muted-foreground/40 italic px-2 py-1.5">Nenhuma etapa ativa.</p>
+            )}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+
+      <span className="text-muted-foreground/20 text-xs select-none">•</span>
+
+      {/* Chip: Concluídos */}
+      <div className="flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium text-muted-foreground/60">
+        <CheckCircle2 className="w-3 h-3 text-green-500/60 shrink-0" />
+        <span>{stats.doneCount} {stats.doneCount === 1 ? 'concluído' : 'concluídos'}</span>
       </div>
     </div>
   );

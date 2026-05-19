@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar';
 import { Outlet } from 'react-router-dom';
 import { CommandPalette } from '../ui/CommandPalette';
 import { SmartSearchModal } from '../search/SmartSearchModal';
+import { DocSearchModal } from '../search/DocSearchModal';
 
 export function AppLayout() {
   return (
@@ -13,6 +14,7 @@ export function AppLayout() {
       </main>
       <CommandPalette />
       <SmartSearchModal />
+      <DocSearchModal />
     </div>
   );
 }

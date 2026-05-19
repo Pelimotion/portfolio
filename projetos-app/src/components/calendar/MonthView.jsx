@@ -2,7 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CalendarDays, LayoutDashboard } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { getDaysInMonth, startOfMonth, getDay, getYear, getMonth } from 'date-fns';
+import { getDaysInMonth, startOfMonth, getDay, getYear, getMonth, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
 import { groupByDay, fmtYMD } from './calendarUtils';
 
 const WEEK_LABELS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
@@ -14,7 +16,7 @@ function gCalLink(title, dateObj) {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${s}/${e}`;
 }
 
-export function MonthView({ events, current, onReschedule }) {
+export function MonthView({ events, current, onReschedule, rangeEvents = [], mode = 'project' }) {
   const navigate = useNavigate();
   const [dragId, setDragId] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
@@ -58,9 +60,32 @@ export function MonthView({ events, current, onReschedule }) {
                 onDragLeave={() => setDropTarget(null)}
                 onDrop={e => {
                   e.preventDefault(); setDropTarget(null);
-                  if (dragId) { onReschedule?.(dragId, dateStr); setDragId(null); }
+                  if (dragId) {
+                    const ev = events.find(x => x.id === dragId);
+                    onReschedule?.(dragId, dateStr);
+                    const label = format(new Date(dateStr + 'T12:00:00'), 'dd/MM', { locale: ptBR });
+                    if (ev) toast.success(`${ev.title} → ${label}`);
+                    setDragId(null);
+                  }
                 }}
               >
+                {/* Range bars (stages / pipeline) */}
+                {rangeEvents
+                  .filter(r => (r.type === 'stage' || r.type === 'pipeline-stage') && dateStr >= r.startStr && dateStr <= r.endStr)
+                  .slice(0, mode === 'pipeline' ? 4 : 2)
+                  .map(r => (
+                    <div
+                      key={r.id}
+                      title={r.title}
+                      className={`-mx-1.5 mb-0.5 ${mode === 'pipeline' ? 'h-1.5' : 'h-1'}`}
+                      style={{
+                        backgroundColor: r.color,
+                        opacity: mode === 'pipeline' ? 0.75 : 0.25,
+                        borderRadius: dateStr === r.startStr ? '0 2px 2px 0' : dateStr === r.endStr ? '2px 0 0 2px' : '0',
+                      }}
+                    />
+                  ))
+                }
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-small font-semibold mb-1.5 ml-auto ${isT ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>
                   {day}
                 </div>

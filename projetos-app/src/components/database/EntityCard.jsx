@@ -278,10 +278,10 @@ export const EntityCard = memo(function EntityCard({
   return (
     <div
       onClick={handleClick}
-      className={`group relative flex flex-col bg-[var(--surface-2)] border rounded-2xl transition-all cursor-pointer select-none overflow-hidden
-        ${isDragOverlay 
-          ? 'border-primary/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] rotate-1 scale-[1.03] z-[100]' 
-          : 'border-[var(--border-subtle)] hover:border-white/20 hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4)] hover:-translate-y-0.5'
+      className={`group relative flex flex-col bg-[var(--surface-1)] rounded-2xl transition-all cursor-pointer select-none overflow-hidden
+        ${isDragOverlay
+          ? 'shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] ring-1 ring-primary/50 rotate-1 scale-[1.03] z-[100]'
+          : 'shadow-sm hover:shadow-md hover:-translate-y-0.5'
         }
         ${isDone ? 'opacity-60 grayscale-[0.5]' : ''}
         ${isBlocked ? 'ring-2 ring-red-500/20' : ''}

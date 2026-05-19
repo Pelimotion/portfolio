@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { storageService } from '../../services/storageService';
+import { documentService } from '../../services/documentService';
 import { useDriveSlots } from '../../hooks/useDriveSlots';
 import { DriveSlotCard } from './DriveSlotCard';
 import { DriveSlotEditModal } from './DriveSlotEditModal';
@@ -7,9 +8,10 @@ import { FolderPickerModal } from './FolderPickerModal';
 import { AddDriveSlotButton } from './AddDriveSlotButton';
 import { googleDriveProvider } from '../../core/storage/storageProvider';
 import { googleAuth } from '../../lib/googleAuth';
+import { toast } from 'sonner';
 import {
   FolderOpen, Link2, CheckCircle2, Plus, ExternalLink,
-  HardDrive, RefreshCw, Unlink, Zap, Loader2
+  HardDrive, RefreshCw, Unlink, Zap, Loader2, FileSearch
 } from 'lucide-react';
 
 const GoogleDriveIcon = () => (
@@ -30,30 +32,32 @@ const PROVIDERS = [
   { id: 'lucidlink',    label: 'LucidLink',     Icon: () => <span className="text-xl">🔗</span>, available: false },
 ];
 
-function DriveConnectionSection({ projectId, connection, setConnection, onSyncStructure, syncing }) {
+function DriveConnectionSection({ projectId, connection, setConnection, onSyncStructure, syncing, onIndexDocuments, indexing, indexProgress, indexResult }) {
   const [connecting, setConnecting] = useState(false);
   const [showProviders, setShowProviders] = useState(false);
+  const [folderUrlInput, setFolderUrlInput] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
 
   const handleConnectDrive = async () => {
+    if (!showUrlInput) { setShowUrlInput(true); return; }
+    if (!folderUrlInput.trim()) { setShowUrlInput(false); return; }
+
     setConnecting(true);
     try {
-      const folderUrl = window.prompt(
-        '📁 Cole a URL da pasta raiz do Google Drive:\n(Ex: https://drive.google.com/drive/folders/FOLDER_ID)'
-      );
-      if (!folderUrl) { setConnecting(false); return; }
-
-      const match = folderUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+      const match = folderUrlInput.match(/\/folders\/([a-zA-Z0-9_-]+)/);
       const folderId   = match?.[1] || 'manual_' + Date.now();
-      const folderName = folderUrl.split('/').pop() || 'Pasta do Projeto';
+      const folderName = folderUrlInput.split('/').pop() || 'Pasta do Projeto';
 
       const conn = await storageService.upsertConnection({
         projectPageId: projectId,
         provider: 'google_drive',
         rootFolderId: folderId,
         rootFolderName: folderName,
-        metadata: { url: folderUrl },
+        metadata: { url: folderUrlInput },
       });
       setConnection(conn);
+      setShowUrlInput(false);
+      setFolderUrlInput('');
     } catch (e) {
       console.error('Connect Drive error:', e);
     } finally {
@@ -80,11 +84,22 @@ function DriveConnectionSection({ projectId, connection, setConnection, onSyncSt
           </div>
         </div>
         {connection && (
-          <div className="flex items-center gap-3">
-            <button 
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={onIndexDocuments}
+              disabled={indexing || syncing}
+              className="text-[10px] font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1 uppercase tracking-widest transition-colors disabled:opacity-50"
+              title="Indexa Google Docs e arquivos de texto para busca inteligente"
+            >
+              {indexing
+                ? <><Loader2 className="w-3 h-3 animate-spin" />{indexProgress.current}/{indexProgress.total}</>
+                : <><FileSearch className="w-3 h-3" />Indexar</>
+              }
+            </button>
+            <button
               onClick={onSyncStructure}
-              disabled={syncing}
-              className="text-[10px] font-bold text-primary hover:text-primary/80 flex items-center gap-1 uppercase tracking-widest transition-colors"
+              disabled={syncing || indexing}
+              className="text-[10px] font-bold text-primary hover:text-primary/80 flex items-center gap-1 uppercase tracking-widest transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
               {syncing ? 'Sincronizando...' : 'Sincronizar Estrutura'}
@@ -107,50 +122,106 @@ function DriveConnectionSection({ projectId, connection, setConnection, onSyncSt
                 <Plus className="w-4 h-4 group-hover:text-primary" />
                 <span className="text-sm font-medium">Conectar Storage</span>
               </button>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                {PROVIDERS.map(p => (
-                  <button
-                    key={p.id}
-                    disabled={!p.available || connecting}
-                    onClick={p.id === 'google_drive' ? handleConnectDrive : undefined}
-                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left
-                      ${p.available
-                        ? 'border-border hover:border-primary/40 hover:bg-primary/5 cursor-pointer'
-                        : 'border-border/30 opacity-40 cursor-not-allowed'
-                      }`}
-                  >
-                    <p.Icon />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{p.label}</p>
-                      {!p.available && <p className="text-[10px] text-muted-foreground">Em breve</p>}
-                    </div>
-                  </button>
-                ))}
-              </div>
+            ) : showUrlInput ? (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">Cole a URL da pasta raiz do Google Drive:</p>
+                  <input
+                    autoFocus
+                    type="url"
+                    value={folderUrlInput}
+                    onChange={e => setFolderUrlInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleConnectDrive(); if (e.key === 'Escape') { setShowUrlInput(false); setFolderUrlInput(''); } }}
+                    placeholder="https://drive.google.com/drive/folders/..."
+                    className="w-full bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary/50"
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={handleConnectDrive} disabled={connecting || !folderUrlInput.trim()} className="text-xs bg-primary text-primary-foreground px-3 py-1.5 rounded-lg disabled:opacity-50 transition-colors">
+                      {connecting ? 'Conectando...' : 'Conectar'}
+                    </button>
+                    <button onClick={() => { setShowUrlInput(false); setFolderUrlInput(''); }} className="text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg transition-colors">
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {PROVIDERS.map(p => (
+                    <button
+                      key={p.id}
+                      disabled={!p.available || connecting}
+                      onClick={p.id === 'google_drive' ? handleConnectDrive : undefined}
+                      className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left
+                        ${p.available
+                          ? 'border-border hover:border-primary/40 hover:bg-primary/5 cursor-pointer'
+                          : 'border-border/30 opacity-40 cursor-not-allowed'
+                        }`}
+                    >
+                      <p.Icon />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{p.label}</p>
+                        {!p.available && <p className="text-[10px] text-muted-foreground">Em breve</p>}
+                      </div>
+                    </button>
+                  ))}
+                </div>
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-green-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Google Drive conectado</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {connection.root_folder_name || connection.root_folder_id}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const url = connection.metadata?.url;
+                  if (url) window.open(url, '_blank');
+                }}
+                className="p-2 hover:bg-secondary rounded-lg text-muted-foreground transition-colors"
+                title="Abrir no Drive"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground">Google Drive conectado</p>
-              <p className="text-xs text-muted-foreground truncate">
-                {connection.root_folder_name || connection.root_folder_id}
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const url = connection.metadata?.url;
-                if (url) window.open(url, '_blank');
-              }}
-              className="p-2 hover:bg-secondary rounded-lg text-muted-foreground transition-colors"
-              title="Abrir no Drive"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </button>
+
+            {/* Chips de progresso da indexação */}
+            {indexing && indexProgress.total > 0 && (
+              <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                <span className="truncate max-w-[200px]">{indexProgress.fileName}</span>
+                <span className="text-muted-foreground/60">({indexProgress.current}/{indexProgress.total})</span>
+              </div>
+            )}
+
+            {/* Resultado da última indexação */}
+            {!indexing && indexResult && (
+              <div className="flex gap-1.5 flex-wrap">
+                {indexResult.indexed > 0 && (
+                  <span className="text-[10px] bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full px-2 py-0.5">
+                    {indexResult.indexed} indexado{indexResult.indexed !== 1 ? 's' : ''}
+                  </span>
+                )}
+                {indexResult.notModified > 0 && (
+                  <span className="text-[10px] bg-secondary text-muted-foreground border border-border/40 rounded-full px-2 py-0.5">
+                    {indexResult.notModified} sem alteração
+                  </span>
+                )}
+                {indexResult.skipped > 0 && (
+                  <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2 py-0.5">
+                    {indexResult.skipped} pulado{indexResult.skipped !== 1 ? 's' : ''}
+                  </span>
+                )}
+                {indexResult.supported === 0 && (
+                  <span className="text-[10px] text-muted-foreground">Nenhum Google Doc encontrado na pasta</span>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -164,6 +235,9 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
 
   const [connection, setConnection] = useState(null);
   const [syncing, setSyncing] = useState(false);
+  const [indexing, setIndexing] = useState(false);
+  const [indexProgress, setIndexProgress] = useState({ current: 0, total: 0, fileName: '' });
+  const [indexResult, setIndexResult] = useState(null);
   
   // Custom hooks and state
   const { slots, loading, updateSlot, addSlot, removeSlot, upsertLink, removeLink } = 
@@ -176,6 +250,50 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
     if (!projectId) return;
     storageService.getConnection(projectId).then(setConnection).catch(console.error);
   }, [projectId]);
+
+  const handleIndexDocuments = async () => {
+    if (!connection) return;
+    setIndexing(true);
+    setIndexResult(null);
+    setIndexProgress({ current: 0, total: 0, fileName: '' });
+    try {
+      let token;
+      try {
+        token = await googleAuth.ensureToken();
+      } catch (e) {
+        toast.error(`Auth Google Drive: ${e.message}`);
+        return;
+      }
+
+      const result = await documentService.indexProject(
+        projectId,
+        connection.root_folder_id,
+        token,
+        (progress) => setIndexProgress(progress)
+      );
+
+      setIndexResult(result);
+      if (result.indexed > 0) {
+        toast.success(`${result.indexed} documento${result.indexed !== 1 ? 's' : ''} indexado${result.indexed !== 1 ? 's' : ''} com sucesso!`);
+      } else if (result.supported === 0) {
+        toast.info('Nenhum Google Doc ou arquivo de texto encontrado na pasta.');
+      } else {
+        toast.info(`Indexação concluída. ${result.notModified} arquivo${result.notModified !== 1 ? 's' : ''} sem alteração.`);
+      }
+    } catch (e) {
+      if (e.message === 'INSUFFICIENT_SCOPE') {
+        // Limpa token antigo (metadata.readonly) para forçar re-auth com drive.readonly
+        localStorage.removeItem('gdrive_token');
+        localStorage.removeItem('gdrive_token_expires');
+        localStorage.removeItem('gdrive_scope_version');
+        toast.error('Permissão insuficiente. Clique em "Indexar" novamente para autorizar o acesso ao conteúdo.');
+      } else {
+        toast.error(`Erro na indexação: ${e.message}`);
+      }
+    } finally {
+      setIndexing(false);
+    }
+  };
 
   const handleSyncStructure = async () => {
     if (!connection) return;
@@ -220,12 +338,16 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
     <div className="space-y-6">
       {/* Seção de conexão do Google Drive (só na view do projeto) */}
       {!isScene && (
-        <DriveConnectionSection 
-          projectId={projectId} 
+        <DriveConnectionSection
+          projectId={projectId}
           connection={connection}
           setConnection={setConnection}
           onSyncStructure={handleSyncStructure}
           syncing={syncing}
+          onIndexDocuments={handleIndexDocuments}
+          indexing={indexing}
+          indexProgress={indexProgress}
+          indexResult={indexResult}
         />
       )}
 
