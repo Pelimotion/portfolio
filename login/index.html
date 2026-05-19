@@ -89,9 +89,27 @@
         // (requireAuth redireciona para /login?next=... quando sem sessão, criando loop infinito)
         const sb = await getClient();
         const { data: { session } } = await sb.auth.getSession();
+
+        // Redireciona para `url`, passando tokens no hash quando o destino é
+        // um subdomínio externo (ex: studio.pelimotion.art) — localStorage não é
+        // compartilhado entre domínios, então o cliente Supabase do destino
+        // lê os tokens do hash e salva a sessão no próprio localStorage.
+        async function redirectTo(url) {
+            const target = url || '/hub';
+            if (target.startsWith('https://studio.pelimotion.art')) {
+                const { data: { session: s } } = await sb.auth.getSession();
+                if (s) {
+                    const hash = `access_token=${s.access_token}&refresh_token=${s.refresh_token}&type=recovery&expires_in=${s.expires_in}`;
+                    window.location.href = target.split('#')[0] + '#' + hash;
+                    return;
+                }
+            }
+            window.location.href = target;
+        }
+
         if (session) {
             const dest = errorParam === 'unauthorized' ? null : nextUrl;
-            window.location.href = dest || '/hub';
+            await redirectTo(dest || '/hub');
         }
 
         document.getElementById('login-form').onsubmit = async (e) => {
@@ -112,7 +130,7 @@
                 btn.disabled = false;
                 btn.textContent = 'ENTRAR';
             } else {
-                window.location.href = nextUrl || '/hub';
+                await redirectTo(nextUrl || '/hub');
             }
         };
     </script>
