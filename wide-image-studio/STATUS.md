@@ -6,9 +6,9 @@
 ## 📊 SNAPSHOT ATUAL
 
 **Data:** 2026-05-19
-**Fase:** Scaffold + Edge Script (PRs 1–4 completos)
+**Fase:** Tiling Math (PRs 1–5 completos)
 **Status:** EM DESENVOLVIMENTO ATIVO
-**Próxima Ação:** PR 5 — `tiling-math.ts`
+**Próxima Ação:** PR 6 — `upload-ref.ts` + `start.ts`
 **Bloqueadores:** Nenhum
 
 ---
@@ -31,7 +31,7 @@
 | `edge-script/src/utils/auth.ts` | ✅ JWT + HMAC | 2026-05-19 |
 | `edge-script/src/utils/response.ts` | ✅ json/err/cors | 2026-05-19 |
 | `edge-script/build.mjs` | ✅ Deno + esbuild-deno-loader + guard 1MB | 2026-05-19 |
-| `edge-script/src/tiling-math.ts` | ⏳ PR 5 — próxima sessão | — |
+| `edge-script/src/tiling-math.ts` | ✅ loadPreset / computeTilePositions / buildOverlapMasks / estimateCost | 2026-05-19 |
 | `edge-script/src/{upload-ref,start}.ts` | ⏳ PR 6 | — |
 | `edge-script/src/hf-webhook.ts` | ⏳ PR 7 | — |
 | `edge-script/src/approve-master.ts` | ⏳ PR 8 | — |
@@ -41,6 +41,22 @@
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — PR 5: tiling-math.ts
+
+**O que foi feito:**
+- [x] `edge-script/src/tiling-math.ts` criado com 4 funções puras
+- [x] `loadPreset(key)` — valida chave, lança 400 se inválida
+- [x] `computeTilePositions(preset)` — calcula `master_crop` por tile via escala master→canvas
+- [x] `buildOverlapMasks(preset)` — regiões de gradiente (esquerda/direita) para o stitcher
+- [x] `estimateCost(preset)` — retorna `estimated_cost_usd`
+- [x] Presets embutidos no TS (sem I/O de filesystem, compatível com Bunny Edge)
+- [x] Build OK: 7KB / 1MB
+
+**Arquivos criados:** `edge-script/src/tiling-math.ts`
+**Arquivos modificados:** `STATUS.md`
+
+---
 
 ### 2026-05-19 — PRs 1–4 + Edge Script no ar
 
