@@ -207,7 +207,7 @@ export function UniversalEntityPage() {
         <div className="absolute bottom-0 left-0 right-0 px-8 py-6 flex items-end justify-between bg-gradient-to-t from-black via-black/40 to-transparent">
           <div className="flex flex-col gap-1 max-w-2xl">
             <div className="flex items-center gap-4">
-               <h1 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">{page?.title}</h1>
+               <h1 className="text-5xl font-semibold text-white tracking-tighter uppercase leading-none">{page?.title}</h1>
                {statusProp && (
                  <div className="mt-1">
                    <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
@@ -215,7 +215,7 @@ export function UniversalEntityPage() {
                )}
             </div>
             
-            <div className="flex items-center gap-4 text-white/50 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
+            <div className="flex items-center gap-4 text-white/50 text-[10px] font-semibold uppercase tracking-[0.2em] mt-2">
                <span className="flex items-center gap-1.5 px-2 py-0.5 bg-white/10 rounded border border-white/5">
                  {isProject ? 'Project Node' : 'Sequence Node'}
                </span>
@@ -612,8 +612,8 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
       <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso Geral</span>
-            <div className="text-2xl font-black text-foreground">{kpis.progress}% <span className="text-xs text-muted-foreground/50 font-normal">completo</span></div>
+            <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso Geral</span>
+            <div className="text-2xl font-semibold text-foreground">{kpis.progress}% <span className="text-xs text-muted-foreground/50 font-normal">completo</span></div>
           </div>
           <span className="text-[10px] font-mono text-muted-foreground/50 bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border-subtle)]">{kpis.done} / {kpis.total} CENAS</span>
         </div>
@@ -629,7 +629,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
 
         {/* Stage deadline table */}
         <div className="lg:col-span-2 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
-          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+          <h3 className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
             <Zap className="w-3.5 h-3.5 text-yellow-500"/> Etapas do Pipeline
           </h3>
           <div className="space-y-1.5">
@@ -668,7 +668,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
 
         {/* Health */}
         <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
-          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+          <h3 className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
             <TrendingUp className="w-3.5 h-3.5 text-blue-500"/> Saúde do Projeto
           </h3>
           <div className="space-y-1">
@@ -680,7 +680,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
       {/* Workload + Ato breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
-          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+          <h3 className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
             <Users className="w-3.5 h-3.5"/> Workload por Responsável
           </h3>
           {workloadDist.length === 0 && <p className="text-xs text-muted-foreground/50 italic">Nenhum responsável atribuído.</p>}
@@ -703,7 +703,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
         </div>
 
         <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
-          <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+          <h3 className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
             <ArrowRight className="w-3.5 h-3.5"/> Progresso por Ato
           </h3>
           {atoDist.length === 0 && <p className="text-xs text-muted-foreground/50 italic">Nenhum Ato definido.</p>}
@@ -729,7 +729,7 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
 
       {/* Notes integradas */}
       <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
-        <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+        <h3 className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
           <FileText className="w-3.5 h-3.5"/> Notas do Projeto
         </h3>
         <RichTextEditor
@@ -802,7 +802,7 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
   return (
     <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
+        <h3 className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em] flex items-center gap-2">
           <FileText className="w-3.5 h-3.5"/> Documentos do Projeto
         </h3>
         {linkedDocSlots.length > 0 && (
@@ -901,10 +901,10 @@ function KpiCard({ icon, label, value, color }) {
   return (
     <div className={`rounded-2xl border p-5 space-y-4 transition-all hover:border-[var(--border-strong)] hover:shadow-lg group ${p.bg}`}>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.15em]">{label}</span>
+        <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em]">{label}</span>
         <div className={`${p.iconCls} group-hover:scale-110 transition-transform`}>{icon}</div>
       </div>
-      <div className={`text-4xl font-black tracking-tight ${p.text}`}>{value}</div>
+      <div className={`text-4xl font-semibold tracking-tight ${p.text}`}>{value}</div>
     </div>
   );
 }

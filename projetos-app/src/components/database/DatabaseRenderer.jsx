@@ -263,7 +263,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
               <DropdownMenu.Portal>
                 <DropdownMenu.Content align="end" className="z-50 min-w-[200px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-2 animate-in fade-in zoom-in-95">
                   <div className="px-2 py-1.5 mb-1">
-                    <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">Exibir no Card</span>
+                    <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-widest">Exibir no Card</span>
                   </div>
                   {properties.map(p => (
                     <DropdownMenu.CheckboxItem
@@ -931,7 +931,7 @@ function CalendarView({ items, properties, allValues, databaseId }) {
       {/* Calendar Header */}
       <div className="flex items-center justify-between bg-[var(--surface-1)] border border-border/50 p-4 rounded-2xl shadow-sm">
         <div className="flex flex-col">
-          <h3 className="text-xl font-black text-foreground capitalize tracking-tight">
+          <h3 className="text-xl font-semibold text-foreground capitalize tracking-tight">
             {current.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
           </h3>
           <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-wider">

@@ -71,7 +71,7 @@ export function GenerativeHeader({ slug, type = 'project', showIcon = true }) {
         <button 
           onClick={handleRandomize}
           disabled={isGenerating}
-          className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-lg text-[10px] font-semibold uppercase tracking-widest hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 disabled:opacity-50"
         >
           {isGenerating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
           Randomize Identity

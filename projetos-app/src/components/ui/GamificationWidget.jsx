@@ -54,7 +54,7 @@ export function GamificationWidget({ profile, compact = false }) {
     return (
       <div className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border-subtle)]">
         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-          <span className="text-[10px] font-black uppercase tracking-widest shrink-0" style={{ color: accentColor }}>
+          <span className="text-[10px] font-semibold uppercase tracking-widest shrink-0" style={{ color: accentColor }}>
             Lv.{lp.level}
           </span>
           <div className="flex-1 min-w-0">
@@ -78,14 +78,14 @@ export function GamificationWidget({ profile, compact = false }) {
       >
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-lg"
+            className="w-10 h-10 rounded-2xl flex items-center justify-center font-semibold text-sm shadow-lg"
             style={{ background: `linear-gradient(135deg, ${accentColor}44, ${accentColor}99)`, color: accentColor, border: `2px solid ${accentColor}44` }}
           >
             {lp.level}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-black text-foreground">{title}</span>
+              <span className="text-sm font-semibold text-foreground">{title}</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: `${accentColor}22`, color: accentColor }}>
                 Lv.{lp.level}
               </span>
@@ -125,7 +125,7 @@ export function GamificationWidget({ profile, compact = false }) {
             ].map(stat => (
               <div key={stat.label} className="bg-[var(--surface-2)] rounded-xl p-3 flex flex-col gap-1">
                 <div className="flex items-center gap-1 text-muted-foreground/50">{stat.icon}</div>
-                <p className="text-base font-black text-foreground">{stat.value}</p>
+                <p className="text-base font-semibold text-foreground">{stat.value}</p>
                 <p className="text-[10px] text-muted-foreground/40 uppercase tracking-wider">{stat.label}</p>
               </div>
             ))}
