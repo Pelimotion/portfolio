@@ -6,9 +6,9 @@
 ## 📊 SNAPSHOT ATUAL
 
 **Data:** 2026-05-19
-**Fase:** Tiling Math (PRs 1–5 completos)
+**Fase:** Edge Handlers (PRs 1–7 completos)
 **Status:** EM DESENVOLVIMENTO ATIVO
-**Próxima Ação:** PR 6 — `upload-ref.ts` + `start.ts`
+**Próxima Ação:** PR 8 — `approve-master.ts`
 **Bloqueadores:** Nenhum
 
 ---
@@ -32,8 +32,10 @@
 | `edge-script/src/utils/response.ts` | ✅ json/err/cors | 2026-05-19 |
 | `edge-script/build.mjs` | ✅ Deno + esbuild-deno-loader + guard 1MB | 2026-05-19 |
 | `edge-script/src/tiling-math.ts` | ✅ loadPreset / computeTilePositions / buildOverlapMasks / estimateCost | 2026-05-19 |
-| `edge-script/src/{upload-ref,start}.ts` | ⏳ PR 6 | — |
-| `edge-script/src/hf-webhook.ts` | ⏳ PR 7 | — |
+| `edge-script/src/upload-ref.ts` | ✅ Proxy stream → HF /v2/files | 2026-05-19 |
+| `edge-script/src/start.ts` | ✅ Valida brief, credit check, cria job, master plate | 2026-05-19 |
+| `edge-script/src/utils/supabase.ts` | ✅ dbCreateJob / dbPatchJob / dbGetJobBy* | 2026-05-19 |
+| `edge-script/src/hf-webhook.ts` | ✅ State machine: master_ready / tiles_partial / tiles_ready / failed | 2026-05-19 |
 | `edge-script/src/approve-master.ts` | ⏳ PR 8 | — |
 | `public/` (frontend Studio) | ⏳ PR 9 | — |
 | `public/js/stitcher.worker.js` | ⏳ PR 10 | — |
@@ -41,6 +43,21 @@
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-19 — PRs 6+7: handlers edge + webhook
+
+**O que foi feito:**
+- [x] `utils/supabase.ts` — dbCreateJob, dbPatchJob, dbGetJobByMasterHfId, dbGetJobByTileHfId
+- [x] `upload-ref.ts` — stream proxy cliente → HF /v2/files (sem buffer RAM, `duplex: "half"`)
+- [x] `start.ts` — valida brief, pre-flight credit check, cria job Supabase, despacha master plate HF com idempotency-key
+- [x] `hf-webhook.ts` — state machine: master_ready, tiles_partial, tiles_ready, failed + idempotência + error_log append
+- [x] `index.ts` atualizado — stubs de upload-ref, start, hf-webhook removidos; handlers reais importados
+- [x] Build OK: 15KB / 1MB
+
+**Arquivos criados:** `utils/supabase.ts`, `upload-ref.ts`, `start.ts`, `hf-webhook.ts`
+**Arquivos modificados:** `index.ts`, `STATUS.md`
+
+---
 
 ### 2026-05-19 — PR 5: tiling-math.ts
 
