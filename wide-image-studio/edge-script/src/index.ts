@@ -7,6 +7,7 @@ import { corsHeaders, handleCors, json, err } from "./utils/response.ts";
 import { requireWideStudioRole, verifyHmac } from "./utils/auth.ts";
 import { handleUploadRef } from "./upload-ref.ts";
 import { handleStart } from "./start.ts";
+import { handleApproveMaster } from "./approve-master.ts";
 import { handleWebhook } from "./hf-webhook.ts";
 
 BunnySDK.net.http.serve(async (req: Request): Promise<Response> => {
@@ -60,12 +61,4 @@ async function route(req: Request): Promise<Response> {
   }
 }
 
-// Stub — implementado no PR 8
-async function handleApproveMaster(
-  _req: Request,
-  _userId: string,
-  origin: string | null,
-): Promise<Response> {
-  return err("Not implemented — chega no PR 8", 501, corsHeaders(origin));
-}
 

@@ -72,6 +72,16 @@ export async function dbPatchJob(
   }
 }
 
+export async function dbGetJobById(jobId: string): Promise<WideJob | null> {
+  const res = await fetch(
+    `${baseUrl()}?id=eq.${encodeURIComponent(jobId)}&select=*`,
+    { headers: headers() },
+  );
+  if (!res.ok) return null;
+  const rows = (await res.json()) as WideJob[];
+  return rows[0] ?? null;
+}
+
 export async function dbGetJobByMasterHfId(
   hfJobId: string,
 ): Promise<WideJob | null> {
