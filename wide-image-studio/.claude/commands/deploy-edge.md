@@ -4,52 +4,35 @@ description: Builda o bundle do edge script e deploya para Bunny Edge Scripting.
 
 Builda e deploya o edge script para Bunny. Roda os passos abaixo em sequência.
 
-**Pré-condições:**
-- `wide-image-studio/edge-script/src/index.ts` existe
-- `.env` local preenchido com todas as variáveis de `.env.example`
-- Bunny CLI instalado (`npm i -g @bunny.net/cli`) e autenticado (`bunny login`)
-- Node.js ≥18 instalado (para esbuild)
+**URL pública:** `https://wide-api-ilgmz.bunny.run`
+> DNS de pelimotion.art aponta direto para Vercel — Edge Rule descartada.
+> O frontend chama a URL do Bunny diretamente.
 
-**Passo 1 — Instalar dependências (primeira vez ou após atualizar package.json):**
+**Pré-condições:**
+- Deno instalado (`curl -fsSL https://deno.land/install.sh | sh`)
+- Bunny CLI instalado (`npm i -g @bunny.net/cli`) e autenticado (`bunny login`)
+
+**Passo 1 — Build com guard de 1MB:**
 ```bash
 cd wide-image-studio/edge-script
-npm install
-```
-
-**Passo 2 — Build com guard de 1MB:**
-```bash
 npm run build
-# Falha automaticamente se dist/index.js exceder 1MB.
-# Saída esperada: "✓ Build OK — XXX KB usado de 1024KB disponíveis"
+# Saída esperada: "✓ Build OK — XKB usado de 1024KB disponíveis"
 ```
 
-**Passo 3 — Deploy para Bunny:**
+**Passo 2 — Deploy para Bunny (Script ID: 75395):**
 ```bash
-# Via CLI (recomendado):
-# (requer bunny login feito uma vez — abre browser para autenticação)
-bunny scripts deploy dist/index.js <SCRIPT_ID>
-# SCRIPT_ID: ver em "bunny scripts list" após criar o script no dashboard
-
-# Via painel (alternativa manual):
-# Bunny Dashboard → Edge Scripting → wide-api → Upload new version
+bunny scripts deploy dist/index.js 75395
+# Saída esperada: "✓ Deployment published. ℹ Live at: https://wide-api-ilgmz.bunny.run"
 ```
 
-**Passo 4 — Verificação pós-deploy:**
+**Passo 3 — Verificação pós-deploy:**
 ```bash
-curl https://pelimotion.art/wide-api/health
+curl https://wide-api-ilgmz.bunny.run/health
 # Esperado: {"ok":true,"ts":1234567890}
 ```
 
 **Rollback se algo quebrar:**
 ```bash
-bunny scripts deployments list <SCRIPT_ID>   # ver versões disponíveis
-bunny scripts deployments activate <DEPLOYMENT_ID>  # ativar versão anterior
-# Ou no painel: Edge Scripting → wide-api → Deployments → Activate anterior
+bunny scripts deployments list 75395       # ver versões disponíveis
+bunny scripts deployments activate <ID>    # ativar versão anterior
 ```
-
-**Edge Rule (configurar 1× no painel Bunny, não precisa re-deploy):**
-Bunny Dashboard → CDN → pelimotion.art Pull Zone → Edge Rules → Add Rule:
-- Condition: URL Path starts with `/wide-api/`
-- Action: Route to Edge Script → `wide-api`
-
-> Esta regra faz o URL rewrite de `pelimotion.art/wide-api/*` para o edge script sem passar pelo origin (evita o bug de middleware com storage pull zones).

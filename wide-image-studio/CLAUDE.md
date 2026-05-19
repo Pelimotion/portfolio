@@ -41,7 +41,7 @@ Browser carrega refs via stream passthrough Bunny Edge → Higgsfield gera maste
 - **Correção:** Soul I2I (strength 0.3 em região de costura, fallback)
 
 ## Endpoints do edge script
-Todos sob `https://pelimotion.art/wide-api/`:
+Todos sob `https://wide-api-ilgmz.bunny.run/` (DNS de pelimotion.art vai direto para Vercel — Edge Rule descartada):
 - `POST /upload-ref` — proxy stream cliente → HF /v2/files
 - `POST /start` — cria job, chama HF master plate
 - `POST /approve-master` — crop master + dispatch 5 tiles em paralelo
@@ -71,7 +71,7 @@ Todos sob `https://pelimotion.art/wide-api/`:
 - Master plate = Seedream 5 Lite; tiles = Nano Banana Pro
 - Auth = Supabase Auth com role `wide_studio` em `app_metadata`
 - Frontend separado em `studio.pelimotion.art`
-- Edge script sob subpath `pelimotion.art/wide-api/*` via URL rewrite
+- Edge script em `wide-api-ilgmz.bunny.run` (URL direta Bunny — sem Edge Rule)
 
 ## Documentos relacionados
 - `presets/displays.json` — schemas e math exata

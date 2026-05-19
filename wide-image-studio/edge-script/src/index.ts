@@ -18,8 +18,9 @@ async function route(req: Request): Promise<Response> {
   if (preflight) return preflight;
 
   const url = new URL(req.url);
-  // Normaliza: /wide-api/start → /start (quando chamado via Edge Rule)
-  const path = url.pathname.replace(/^\/wide-api/, "") || "/";
+  // URL base: https://wide-api-ilgmz.bunny.run — sem prefixo /wide-api
+  // (Edge Rule descartada: DNS de pelimotion.art aponta direto para Vercel)
+  const path = url.pathname || "/";
 
   try {
     if (path === "/health" && req.method === "GET") {
