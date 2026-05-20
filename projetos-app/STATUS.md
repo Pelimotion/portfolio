@@ -7,8 +7,8 @@
 
 **Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→M completas ✅ | Build verde (842KB index.js)
-**Próxima Ação:** Nenhuma pendente na Fase M. Próxima fase: Dashboard financeiro ou N.1 (melhorias de performance).
+**Status:** BETA — Fases A→M completas ✅ | Build verde (842KB index.js) | Último commit: `87547fc`
+**Próxima Ação:** Dashboard financeiro (Fase N) ou testes de produção end-to-end.
 **Branch ativa:** `main`
 **Bloqueadores:** stages migration ainda pendente: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
@@ -545,36 +545,35 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — PÓS-FASE K (operacional)
+## 🎯 PRÓXIMA SESSÃO — PÓS-FASE M
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: projetos-app-agent — Pós-Fase K (deploy + migrations)
+# Context: projetos-app-agent — Pós-Fase M
 
 📋 STATUS ANTERIOR
-Todas as fases K completas (2026-05-19):
-  - K.4: DocSearchModal com 3 views (list/grid/compare + scroll sync, localStorage persist)
-  - K.5: searchDocumentsHybrid scaffold + bunny-edge/generate-embedding/index.js (Vertex AI)
-  - K.6: file type badges (GDoc/PDF/DOC/TXT) + URLs otimizadas por tipo
-  - K.7: bunny-edge/reindex-cron/index.js (Drive changes.list + incremental reindex via Supabase)
-  - K.8: filter chips por arquivo + export markdown (.md) no footer do DocSearchModal
-  - Build verde ✅ (841KB index.js, chunks separados por rota)
+Fase M completa (2026-05-20) — commit 87547fc, build verde (842KB):
+  - M.1: breadcrumb com título real do projeto pai
+  - M.2: pattern-generator v3 (kumiko/yagasuri/hexTessellation/tessen + rotation/scale + cache version)
+  - M.3: PropertyManagerModal — Radix Popover, scroll fix, sticky footer, delete sempre visível
+  - M.4: sort (5 campos) + filterText persistidos no DatabaseToolbar/Renderer
+  - M.5: Dashboard Hub — Board/Grid/Timeline, pipeline bar, quick filters, busca, Gantt
+  - M.6: Calendário "Geral do Mês" — Gantt mensal por projeto (ProjectTimelineView)
+  - M.7: Topbar h-12, shadow on scroll, TamagochiAvatar right
+  - M.8: useFavorites, activity pulse, status color accent, bulk actions, template stages
 
-Migrations SQL ainda pendentes (rodar no Supabase SQL Editor):
-  1. ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;  (Fase F)
-  2. CREATE EXTENSION IF NOT EXISTS vector;  (K.5 — só se for ativar hybrid search)
-  3. ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS embedding vector(768);  (K.5)
-  4. CREATE TABLE IF NOT EXISTS kv_store (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT now());  (K.7)
+Migrations SQL pendentes (rodar no Supabase):
+  1. ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;  ← CRÍTICO para Calendário Etapas
 
-Bunny Edge a deployar:
-  - bunny-edge/generate-embedding/  → configurar VERTEX_PROJECT_ID + VERTEX_API_KEY + VITE_BUNNY_EMBED_URL
-  - bunny-edge/reindex-cron/        → configurar SUPABASE_SERVICE_KEY + DRIVE_REFRESH_TOKEN + agendar cron
+Bunny Edge a deployar (opcional):
+  - bunny-edge/generate-embedding/  → VERTEX_PROJECT_ID + VERTEX_API_KEY + VITE_BUNNY_EMBED_URL
+  - bunny-edge/reindex-cron/        → SUPABASE_SERVICE_KEY + DRIVE_REFRESH_TOKEN + cron agendado
 
 🎯 PRÓXIMA TAREFA SUGERIDA
-A. Rodar as SQL migrations acima no Supabase.
-B. Deploy dos Bunny Edge scripts (generate-embedding + reindex-cron).
-C. Dashboard financeiro (nova fase, não planejada ainda).
+A. Rodar migration `stages` no Supabase (desbloqueador para Fase F + M.5/M.6).
+B. Dashboard financeiro / faturamento (nova fase — não planejada).
+C. Testes de produção end-to-end (Fase M recém-deployada).
 
 ⏸️ Qual tarefa seguir?
 ```
