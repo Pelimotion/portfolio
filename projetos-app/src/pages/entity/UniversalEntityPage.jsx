@@ -25,7 +25,7 @@ import {
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
   Circle, ArrowRight, Trash2, Home, ChevronRight,
   LayoutDashboard, Database, Share2, Plus, Settings,
-  Copy, ExternalLink, MessageCircle, Link2, Sliders, FileSearch, RefreshCw
+  Copy, ExternalLink, MessageCircle, Link2, Sliders, FileSearch, RefreshCw, Sparkles
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
