@@ -46,7 +46,12 @@ function getDriveUrl(driveFileId, fileName) {
 }
 
 // K.6: file type badge (label + color class)
-function getFileTypeBadge(fileName) {
+function getFileTypeBadge(fileName, mimeType) {
+  // mime_type tem precedência quando disponível (evita falsos positivos por extensão)
+  if (mimeType === 'application/vnd.google-apps.spreadsheet')
+    return { label: 'GSheet', cls: 'bg-green-500/10 text-green-400/70' };
+  if (mimeType === 'application/vnd.google-apps.presentation')
+    return { label: 'GSlide', cls: 'bg-yellow-500/10 text-yellow-400/70' };
   const ext = (fileName ?? '').split('.').pop().toLowerCase();
   if (ext === 'pdf') return { label: 'PDF', cls: 'bg-red-500/10 text-red-400/70' };
   if (['doc', 'docx'].includes(ext)) return { label: 'DOC', cls: 'bg-blue-500/10 text-blue-400/70' };
@@ -85,7 +90,7 @@ function exportMarkdown(results, query) {
 
 function DocResultItem({ result, compact = false }) {
   const url = getDriveUrl(result.drive_file_id, result.file_name);
-  const { label: typeLabel, cls: typeCls } = getFileTypeBadge(result.file_name);
+  const { label: typeLabel, cls: typeCls } = getFileTypeBadge(result.file_name, result.mime_type);
 
   const handleOpen = useCallback(() => {
     if (url) window.open(url, '_blank', 'noopener,noreferrer');

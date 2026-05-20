@@ -3,10 +3,13 @@
  * Extrai texto de arquivos do Google Drive e insere chunks no Supabase.
  *
  * Tipos suportados no browser (sem dependências extra):
- *   - Google Docs  → Drive export API (text/plain)
+ *   - Google Docs       → Drive export API (text/plain)
+ *   - Google Sheets     → Drive export API (text/csv)
+ *   - Google Slides     → Drive export API (text/plain)
  *   - text/plain, text/markdown → Drive download direto
+ *   - application/pdf   → pdfjs-dist lazy-loaded no browser
  *
- * PDFs e DOCX: requerem servidor (Bunny Edge — Fase K.7).
+ * DOCX: requer servidor (Bunny Edge — Fase K.7).
  * Garbled detection: nonAscii/total > 0.3 → skip.
  * Delta sync: só re-indexa se modifiedTime do Drive > indexed_at no Supabase.
  */
@@ -21,9 +24,12 @@ const CHUNK_SIZE = 800;   // chars por chunk (conforme spike K.1)
 const CHUNK_OVERLAP = 100; // sobreposição entre chunks
 
 const SUPPORTED_MIME_TYPES = new Set([
-  'application/vnd.google-apps.document', // Google Docs
+  'application/vnd.google-apps.document',     // Google Docs
+  'application/vnd.google-apps.spreadsheet',  // Google Sheets
+  'application/vnd.google-apps.presentation', // Google Slides
   'text/plain',
   'text/markdown',
+  'application/pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
   'application/msword', // .doc legacy
 ]);
@@ -75,12 +81,55 @@ async function extractText(file, accessToken) {
     return await res.text();
   }
 
+  // Google Sheets → exporta como CSV (preserva estrutura tabular)
+  if (mime === 'application/vnd.google-apps.spreadsheet') {
+    const url = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/csv`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (res.status === 403) throw new Error('INSUFFICIENT_SCOPE');
+    if (!res.ok) throw new Error(`Drive export failed: ${res.status}`);
+    return await res.text();
+  }
+
+  // Google Slides → exporta como texto plano (extrai todo o texto dos slides)
+  if (mime === 'application/vnd.google-apps.presentation') {
+    const url = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (res.status === 403) throw new Error('INSUFFICIENT_SCOPE');
+    if (!res.ok) throw new Error(`Drive export failed: ${res.status}`);
+    return await res.text();
+  }
+
   if (mime === 'text/plain' || mime === 'text/markdown') {
     const url = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     if (res.status === 403) throw new Error('INSUFFICIENT_SCOPE');
     if (!res.ok) throw new Error(`Drive download failed: ${res.status}`);
     return await res.text();
+  }
+
+  // PDF → pdfjs-dist lazy-loaded no browser (zero custo de API, ~400KB carregado sob demanda)
+  if (mime === 'application/pdf') {
+    // Baixa o binário do arquivo via Drive
+    const dlUrl = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`;
+    const dlRes = await fetch(dlUrl, { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (dlRes.status === 403) throw new Error('INSUFFICIENT_SCOPE');
+    if (!dlRes.ok) throw new Error(`Drive download failed: ${dlRes.status}`);
+    const arrayBuffer = await dlRes.arrayBuffer();
+
+    // Lazy-load pdfjs-dist (só carrega quando encontra um PDF)
+    const pdfjsLib = await import('pdfjs-dist');
+    // Vite resolve o worker como asset estático via ?url
+    const workerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).href;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    const pages = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      pages.push(content.items.map(item => item.str).join(' '));
+    }
+    return pages.join('\n\n');
   }
 
   // DOCX / DOC via Bunny Edge extract-text (configurar VITE_BUNNY_EXTRACT_URL)
