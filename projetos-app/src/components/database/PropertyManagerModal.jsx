@@ -9,13 +9,14 @@ import { COLOR_MAP } from '../../core/colors';
 // ============================================
 
 export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
+  const [open, setOpen] = useState(false);
   const [editingProps, setEditingProps] = useState(properties || []);
   const [selectedPropId, setSelectedPropId] = useState(null);
-  const [loading, setLoading] = useState(false);
 
+  // Sync only when modal opens (not on every parent re-render while editing)
   useEffect(() => {
-    setEditingProps(properties || []);
-  }, [properties]);
+    if (open) setEditingProps(properties || []);
+  }, [open]);
 
   const selectedProp = (editingProps || []).find(p => p.id === selectedPropId);
 
@@ -29,7 +30,6 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
       });
       setEditingProps(prev => [...(prev || []), newProp]);
       setSelectedPropId(newProp.id);
-      onUpdate();
     } catch (e) { console.error(e); }
   };
 
@@ -39,7 +39,6 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
       await propertyService.destroy(id);
       setEditingProps(prev => (prev || []).filter(p => p.id !== id));
       if (selectedPropId === id) setSelectedPropId(null);
-      onUpdate();
     } catch (e) { console.error(e); }
   };
 
@@ -47,7 +46,6 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
     try {
       const updated = await propertyService.update(id, updates);
       setEditingProps(prev => (prev || []).map(p => p.id === id ? updated : p));
-      onUpdate();
     } catch (e) { console.error(e); }
   };
 
@@ -89,8 +87,13 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
     handleUpdateProp(propId, { config: { ...prop.config, options: options } });
   };
 
+  const handleOpenChange = (isOpen) => {
+    setOpen(isOpen);
+    if (!isOpen) onUpdate();
+  };
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
         <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors">
           <Settings2 className="w-3.5 h-3.5" />
@@ -101,7 +104,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] animate-in fade-in-0" />
         <Dialog.Content 
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-[600px] animate-in zoom-in-95 duration-200"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-[600px] max-h-[90vh] animate-in zoom-in-95 duration-200"
           aria-describedby="prop-manager-description"
         >
           <Dialog.Title className="sr-only">Propriedades do Database</Dialog.Title>

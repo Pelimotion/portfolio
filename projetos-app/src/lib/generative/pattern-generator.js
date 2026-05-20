@@ -1,96 +1,107 @@
 import { getSeed } from './seed-engine';
-import { PATTERN_PALETTE, pickColor, pickFromList } from './palette';
 import { sha256 } from './utils';
 
 /**
- * PATTERN GENERATOR
- * Combina Tapete Persa fractal e Curva de Gosper.
+ * PATTERN GENERATOR — Oriental Motifs P&B
+ * Três motifs: seigaiha (escamas), asanoha (folha de cânhamo), shippo (círculos entrelaçados).
+ * Sempre P&B: stroke="white" em opacidades variadas.
  */
 
-// --- 1. Tapete Persa Fractal ---
-function renderPersianFractal(x, y, w, h, depth, seed, palette) {
-  if (depth <= 0) return '';
-  
-  const color = pickColor(seed[depth % 8], palette);
-  const border = w * 0.1;
-  
-  let svg = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}" opacity="${0.2 + (depth/10)}" rx="${w/20}" />`;
-  
-  // Recursão nos cantos
-  const nextW = (w - border * 2) / 2;
-  const nextH = (h - border * 2) / 2;
-  
-  if (nextW > 5) {
-    svg += renderPersianFractal(x + border, y + border, nextW, nextH, depth - 1, seed, palette);
-    svg += renderPersianFractal(x + w - border - nextW, y + border, nextW, nextH, depth - 1, seed, palette);
-    svg += renderPersianFractal(x + border, y + h - border - nextH, nextW, nextH, depth - 1, seed, palette);
-    svg += renderPersianFractal(x + w - border - nextW, y + h - border - nextH, nextW, nextH, depth - 1, seed, palette);
+// --- 1. Seigaiha (青海波) — escamas de peixe / ondas sobrepostas ---
+function seigaiha(w, h, r, seed) {
+  const stepX = r * 2;
+  const stepY = r * 1.25; // sobreposição vertical
+  const rows  = Math.ceil(h / stepY) + 3;
+  const cols  = Math.ceil(w / stepX) + 3;
+  const sw    = (0.5 + seed[4] * 0.7).toFixed(1);
+  const so    = (0.55 + seed[5] * 0.35).toFixed(2);
+  let g = '';
+  // Renderiza de baixo para cima: camadas superiores cobrem inferiores
+  for (let row = rows; row >= -1; row--) {
+    for (let col = -1; col <= cols; col++) {
+      const cx = col * stepX + (row % 2 === 0 ? 0 : r);
+      const cy = row * stepY;
+      const x1 = (cx - r).toFixed(1), x2 = (cx + r).toFixed(1), cy1 = cy.toFixed(1);
+      g += `<path d="M ${x1},${cy1} A ${r},${r} 0 0,1 ${x2},${cy1} Z" fill="white" fill-opacity="0.04" stroke="white" stroke-width="${sw}" stroke-opacity="${so}" />`;
+    }
   }
-  
-  return svg;
+  return g;
 }
 
-// --- 2. L-System: Gosper Curve ---
-function generateGosperPoints(iterations, size, seed) {
-  let axiom = "A";
-  const rules = {
-    "A": "A-B--B+A++AA+B-",
-    "B": "+A-BB--B-A++A+B"
-  };
-  
-  let current = axiom;
-  for (let i = 0; i < iterations; i++) {
-    let next = "";
-    for (let char of current) next += rules[char] || char;
-    current = next;
+// --- 2. Asanoha (麻の葉) — estrela hexagonal / folha de cânhamo ---
+function asanoha(w, h, r, seed) {
+  const sqrt3  = 1.732;
+  const stepX  = r * sqrt3;
+  const stepY  = r * 1.5;
+  const rows   = Math.ceil(h / stepY) + 3;
+  const cols   = Math.ceil(w / stepX) + 3;
+  const so     = (0.5  + seed[4] * 0.4).toFixed(2);
+  const sw     = (0.5  + seed[5] * 0.6).toFixed(1);
+  const swInner = (parseFloat(sw) * 0.5).toFixed(1);
+  const soInner = (parseFloat(so) * 0.6).toFixed(2);
+  let g = '';
+  for (let row = -1; row < rows; row++) {
+    for (let col = -1; col < cols; col++) {
+      const cx = col * stepX + (row % 2 === 0 ? 0 : stepX * 0.5);
+      const cy = row * stepY;
+      const cxs = cx.toFixed(1), cys = cy.toFixed(1);
+      // 6 linhas irradiantes (estrela)
+      for (let i = 0; i < 6; i++) {
+        const a  = (i * 60 + 30) * Math.PI / 180;
+        const ex = (cx + Math.cos(a) * r).toFixed(1);
+        const ey = (cy + Math.sin(a) * r).toFixed(1);
+        g += `<line x1="${cxs}" y1="${cys}" x2="${ex}" y2="${ey}" stroke="white" stroke-width="${sw}" stroke-opacity="${so}" />`;
+      }
+      // Hexágono interno (detalhe)
+      const ir = r * 0.52;
+      const pts = Array.from({ length: 6 }, (_, i) => {
+        const a = (i * 60 + 30) * Math.PI / 180;
+        return `${(cx + Math.cos(a) * ir).toFixed(1)},${(cy + Math.sin(a) * ir).toFixed(1)}`;
+      }).join(' ');
+      g += `<polygon points="${pts}" fill="none" stroke="white" stroke-width="${swInner}" stroke-opacity="${soInner}" />`;
+    }
   }
-  
-  let x = 0, y = 0, angle = 0;
-  const points = [[0, 0]];
-  const step = size / Math.pow(2.5, iterations);
-  
-  for (let char of current) {
-    if (char === "A" || char === "B") {
-      x += Math.cos(angle) * step;
-      y += Math.sin(angle) * step;
-      points.push([x, y]);
-    } else if (char === "+") angle += Math.PI / 3;
-    else if (char === "-") angle -= Math.PI / 3;
+  return g;
+}
+
+// --- 3. Shippo (七宝) — círculos entrelaçados ---
+function shippo(w, h, r, seed) {
+  const step = r * 1.55;
+  const rows  = Math.ceil(h / step) + 3;
+  const cols  = Math.ceil(w / step) + 3;
+  const so    = (0.5  + seed[4] * 0.4).toFixed(2);
+  const sw    = (0.6  + seed[5] * 0.6).toFixed(1);
+  let g = '';
+  for (let row = -1; row < rows; row++) {
+    for (let col = -1; col < cols; col++) {
+      const cx = (col * step + (row % 2 === 0 ? 0 : step * 0.5)).toFixed(1);
+      const cy = (row * step).toFixed(1);
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="white" fill-opacity="0.03" stroke="white" stroke-width="${sw}" stroke-opacity="${so}" />`;
+    }
   }
-  
-  return points;
+  return g;
 }
 
 export async function generatePattern(slug, salt = '') {
-  const seed = await getSeed(slug, salt);
-  const palette = pickFromList(seed[2], PATTERN_PALETTE);
-  
-  // Camada 1: Tapete Persa (Fundo)
-  const background = renderPersianFractal(0, 0, 800, 400, 4, seed, palette);
-  
-  // Camada 2: Gosper Curve (Médio)
-  const iterations = 3 + Math.floor(seed[3] * 2);
-  const points = generateGosperPoints(iterations, 600, seed);
-  const polyline = points.map(p => `${p[0] + 100},${p[1] + 200}`).join(' ');
-  const gosperColor = pickColor(seed[4], palette);
-  
-  const gosperLayer = `
-    <polyline points="${polyline}" fill="none" stroke="${gosperColor}" stroke-width="2" opacity="0.4" stroke-linecap="round" />
-  `;
+  const seed   = await getSeed(slug, salt);
+  const motifs = [seigaiha, asanoha, shippo];
+
+  // Escala: 16–32px — menor = mais denso = mais interessante
+  const r        = 16 + Math.floor(seed[3] * 17);
+  const motifIdx = Math.floor(seed[0] * 3);
+  const layer1   = motifs[motifIdx](800, 400, r, seed);
+
+  // Segunda camada: motif diferente, escala menor, opacidade reduzida
+  const r2        = Math.floor(r * 0.55);
+  const seed2     = [...seed.slice(3), ...seed.slice(0, 3)];
+  const motifIdx2 = (motifIdx + 1 + Math.floor(seed[1] * 2)) % 3;
+  const layer2    = motifs[motifIdx2](800, 400, r2, seed2);
 
   const svgString = `<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <rect width="800" height="400" fill="${palette[0]}" opacity="0.1" />
-    <g class="pattern-layer-1">${background}</g>
-    <g class="pattern-layer-2" transform="translate(400, 200) rotate(${seed[5]*360}) translate(-400, -200)">
-      ${gosperLayer}
-    </g>
+    <g>${layer1}</g>
+    <g opacity="0.35">${layer2}</g>
   </svg>`;
 
   const hash = await sha256(svgString);
-  const layers_json = {
-    background: { speed: 0.01 },
-    gosper: { speed: 0.03 }
-  };
-
-  return { svgString, hash, layers_json };
+  return { svgString, hash, layers_json: { layer1: { speed: 0.01 }, layer2: { speed: 0.03 } } };
 }

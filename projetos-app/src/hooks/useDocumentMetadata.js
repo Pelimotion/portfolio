@@ -8,9 +8,9 @@ export function useDocumentMetadata(title, slug, type = 'project') {
   useEffect(() => {
     // 1. Atualizar Título do Navegador (Padrão Notion)
     if (title) {
-      document.title = `${title} | Pelimotion`;
+      document.title = `${title} | TOCA HUB`;
     } else {
-      document.title = 'Pelimotion Dashboard';
+      document.title = 'TOCA HUB Dashboard';
     }
 
     // 2. Atualizar Favicon Dinâmico

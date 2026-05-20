@@ -7,8 +7,8 @@
 
 **Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→K completas ✅ + bugs pós-deploy K corrigidos ✅
-**Próxima Ação:** Dashboard financeiro (nova fase, não planejada) ou melhorias operacionais
+**Status:** BETA — Fases A→L.6 completas ✅ | Build verde
+**Próxima Ação:** Nenhuma pendente na Fase L. Próxima fase: Dashboard financeiro ou testes de produção.
 **Branch ativa:** `main`
 **Bloqueadores:** stages migration ainda pendente: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
@@ -40,6 +40,13 @@
 | Document Intelligence — K.6 File type badges + URLs | ✅ Fase K.6 completa | 2026-05-19 |
 | Document Intelligence — K.7 Bunny Edge reindex cron | ✅ Fase K.7 completa | 2026-05-19 |
 | Document Intelligence — K.8 Filter chips + export .md | ✅ Fase K.8 completa | 2026-05-19 |
+| Document Intelligence — K.9 GSheets + GSlides + PDF nativo | ✅ Fase K.9 completa | 2026-05-20 |
+| Revisão Visual + UX — L.1 Rebrand + Padrões P&B | ✅ Fase L.1 completa | 2026-05-20 |
+| Revisão Visual + UX — L.2 Header responsivo + topo redesign | ✅ Fase L.2 completa | 2026-05-20 |
+| Revisão Visual + UX — L.3 Cards + Kanban ordering + Checkbox | ✅ Fase L.3 completa | 2026-05-20 |
+| Revisão Visual + UX — L.4 Persistência de preferências | ✅ Fase L.4 completa | 2026-05-20 |
+| Revisão Visual + UX — L.5 Dashboard + Auditoria | ✅ Fase L.5 completa | 2026-05-20 |
+| Revisão Visual + UX — L.6 Bugfix PropertyManagerModal | ✅ Fase L.6 completa | 2026-05-20 |
 | Dashboard financeiro | ❌ Não iniciado | — |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
@@ -166,6 +173,45 @@ search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-20 — Fase L: Revisão Visual + UX (L.1→L.6 completas)
+
+**O que foi feito:**
+- [x] **L.1** `palette.js` — paletas rebrand P&B (ICON_PALETTE: branco/cinza; PATTERN_PALETTE: preto/cinza escuro)
+- [x] **L.1** `pattern-generator.js` — reescrito com 3 motivos orientais P&B: seigaiha, asanoha, shippo
+- [x] **L.1** `GenerativeHeader.jsx` — botão Randomize removido; opacidade aumentada (0.35→0.45, 0.15→0.20)
+- [x] **L.1** `Sidebar.jsx`, `Login.jsx`, `ProfilePage.jsx`, `Dashboard.jsx`, `gamification.js`, `useDocumentMetadata.js` — rebrand "Pelimotion" → "TOCA HUB"
+- [x] **L.2** `UniversalEntityPage.jsx` — hero h-64→h-28/md:h-52; info bar com ícone 44×44 + título contentEditable + status+contexto; "Randomize Identity" movido para More Actions; `alert()` → `toast.success()`; `uppercase` removido do h1
+- [x] **L.3** `EntityCard.jsx` — checkbox "Feito" funcional via `propertyService.upsertValue` direto (estado local otimista + rollback); ícones falsos MessageSquare/Paperclip removidos
+- [x] **L.3** `KanbanView.jsx` — drop cross-column com posição correta via `onReorderPersist`
+- [x] **L.4** `viewPreferences.js` — criado (`savePreference`, `loadPreference`)
+- [x] **L.4** `DatabaseRenderer.jsx` — density e activeViewType persistidos em localStorage por databaseId
+- [x] **L.5** `UniversalEntityPage.jsx` `ProductionDashboard` — 5 ocorrências `.checkbox === true` → `.checked === true` (bug de contagem de progresso)
+- [x] **L.6** `PropertyManagerModal.jsx` — modal controlado (`open`/`onOpenChange`); `onUpdate()` chamado apenas no fechamento; `useEffect` sincroniza só na abertura; `max-h-[90vh]` para viewports curtos
+
+**Arquivos criados:** `src/lib/viewPreferences.js`
+**Arquivos modificados:** `palette.js`, `pattern-generator.js`, `GenerativeHeader.jsx`, `UniversalEntityPage.jsx`, `EntityCard.jsx`, `KanbanView.jsx`, `DatabaseRenderer.jsx`, `PropertyManagerModal.jsx`, `Sidebar.jsx`, `Login.jsx`, `ProfilePage.jsx`, `Dashboard.jsx`, `gamification.js`, `useDocumentMetadata.js`
+
+---
+
+### 2026-05-20 — Fase K.9: GSheets + GSlides + PDF nativo no browser
+
+**O que foi feito:**
+- [x] `src/services/documentService.js` — adicionados 3 novos tipos ao `SUPPORTED_MIME_TYPES`:
+  - `application/vnd.google-apps.spreadsheet` → export como `text/csv`
+  - `application/vnd.google-apps.presentation` → export como `text/plain`
+  - `application/pdf` → download binário + extração via `pdfjs-dist` lazy-loaded
+- [x] `src/components/search/DocSearchModal.jsx` — `getFileTypeBadge` atualizado para receber `mimeType`:
+  - GSheet → badge verde `GSheet`
+  - GSlide → badge amarelo `GSlide`
+  - call site `DocResultItem` passa `result.mime_type`
+- [x] `pdfjs-dist@5.7.284` instalado (lazy-loaded — só carrega ao encontrar PDF)
+- [x] `STATUS.md` — bloqueador stale #2 removido, data do rodapé e deploy log corrigidos
+- [x] Build verde ✅ — `pdf.worker.min.mjs` extraído como chunk separado
+
+**Arquivos modificados:** `src/services/documentService.js`, `src/components/search/DocSearchModal.jsx`, `STATUS.md`, `package.json` (pdfjs-dist)
+
+---
 
 ### 2026-05-20 — Bugs pós-deploy Fase K: RLS, RPC, Radix, Auth loop
 
@@ -508,7 +554,6 @@ C. Dashboard financeiro (nova fase, não planejada ainda).
 ## 🚨 BLOQUEADORES ATIVOS
 
 1. **Migration Fase F** — `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;` (rodar no Supabase antes de testar Calendário com Etapas)
-2. **Escopo OAuth** — `googleAuth.js` usa `drive.metadata.readonly`; K.2 no browser precisará de `drive.readonly` para exportar conteúdo (avaliar incremental auth vs. novo consent)
 
 ---
 
@@ -527,7 +572,7 @@ C. Dashboard financeiro (nova fase, não planejada ainda).
 
 ---
 
-**Última atualização:** 2026-05-19 (pós-spike K.1)
+**Última atualização:** 2026-05-20 (pós-K.9)
 
 ---
 
@@ -536,4 +581,4 @@ C. Dashboard financeiro (nova fase, não planejada ainda).
 | Data/Hora UTC | Operador | Projeto | Status |
 |---|---|---|---|
 | 2026-05-19 | Claude Sonnet 4.6 | projetos-app (Fase D) | ✅ push main → Vercel deploy |
-| 2026-05-19 | Claude Opus 4.7  | projetos-app (Fase J) | ⏳ build local OK — aguarda commit/push |
+| 2026-05-19 | Claude Opus 4.6  | projetos-app (Fase J) | ⏳ build local OK — aguarda commit/push |

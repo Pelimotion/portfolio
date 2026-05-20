@@ -114,10 +114,10 @@ export function Sidebar() {
       <div className="h-12 flex items-center px-3 border-b border-[var(--border-subtle)] justify-between shrink-0">
         <div className="flex items-center gap-2.5 overflow-hidden">
           <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center font-semibold text-[10px] shrink-0">
-            P
+            T
           </div>
           <div className="flex flex-col overflow-hidden">
-            <span className="font-bold text-[13px] truncate text-foreground leading-none">Pelimotion</span>
+            <span className="font-bold text-[13px] truncate text-foreground leading-none">TOCA HUB</span>
           </div>
         </div>
         <button onClick={toggleSidebar} className="p-1.5 rounded-md hover:bg-[var(--surface-3)] text-muted-foreground/50 hover:text-foreground transition-all" title="Recolher Sidebar (⌘\\)">

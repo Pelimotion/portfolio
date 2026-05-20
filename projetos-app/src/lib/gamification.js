@@ -56,7 +56,7 @@ const LEVEL_TITLES = [
   [10, 'Art Director'],
   [15, 'Creative Director'],
   [20, 'Motion Legend'],
-  [30, 'Pelimotion Master'],
+  [30, 'TOCA HUB Master'],
 ];
 
 export function levelTitle(level) {
@@ -72,7 +72,7 @@ export const BADGE_DEFS = [
   {
     id: 'first_login',
     label: 'Bem-vindo!',
-    desc: 'Fez seu primeiro login no Pelimotion',
+    desc: 'Fez seu primeiro login no TOCA HUB',
     icon: '🌟',
     condition: (p) => (p.days_logged || 0) >= 1,
   },

@@ -3,6 +3,7 @@ import { usePageStore } from '../../stores/usePageStore';
 import { propertyService } from '../../services/propertyService';
 import { pageService } from '../../services/pageService';
 import { viewService } from '../../services/viewService';
+import { savePreference, loadPreference } from '../../lib/viewPreferences';
 import { DatabaseToolbar } from './DatabaseToolbar';
 import { KanbanView }   from './views/KanbanView';
 import { TableView }    from './views/TableView';
@@ -25,7 +26,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
   const [activeViewId, setActiveViewId] = useState(null);
   const [loading,     setLoading]     = useState(true);
   const [creating,    setCreating]    = useState(false);
-  const [density,     setDensity]     = useState('comfortable');
+  const [density,     setDensity]     = useState(() => loadPreference(databaseId, 'density', 'comfortable'));
   const [cardFields,  setCardFields]  = useState(() => {
     const saved = localStorage.getItem(`peli-card-fields-${databaseId}`);
     return saved ? JSON.parse(saved) : {};
@@ -59,7 +60,9 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
       }
       setViews(activeViews);
 
+      const savedViewType = loadPreference(databaseId, 'activeViewType', null);
       const preferred = activeViews.find(v => v.id === activeViewId)
+        || (savedViewType && activeViews.find(v => v.view_type === savedViewType))
         || activeViews.find(v => v.view_type === defaultView)
         || activeViews[0];
       setActiveViewId(preferred?.id);
@@ -118,6 +121,17 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
       return next;
     });
   };
+
+  const handleViewChange = useCallback((viewId) => {
+    setActiveViewId(viewId);
+    const view = views.find(v => v.id === viewId);
+    if (view) savePreference(databaseId, 'activeViewType', view.view_type);
+  }, [views, databaseId]);
+
+  const handleDensityChange = useCallback((d) => {
+    setDensity(d);
+    savePreference(databaseId, 'density', d);
+  }, [databaseId]);
 
   const handleCreate = useCallback(async () => {
     setCreating(true);
@@ -178,9 +192,9 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
           database={database}
           views={views}
           activeViewId={activeViewId}
-          onViewChange={setActiveViewId}
+          onViewChange={handleViewChange}
           density={density}
-          onDensityChange={setDensity}
+          onDensityChange={handleDensityChange}
           properties={properties}
           cardFields={cardFields}
           onToggleCardField={toggleCardField}

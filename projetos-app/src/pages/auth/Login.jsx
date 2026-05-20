@@ -44,9 +44,9 @@ export default function Login() {
     <div className="flex h-screen w-full items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-lg text-card-foreground">
         <div className="flex flex-col items-center mb-8">
-          <img src="/logo.svg" alt="Pelimotion" className="h-12 mb-6" />
+          <img src="/logo.svg" alt="TOCA HUB" className="h-12 mb-6" />
           <h1 className="text-2xl font-bold tracking-tight">Área de Projetos</h1>
-          <p className="text-sm text-muted-foreground mt-2">Acesso restrito à equipe Pelimotion.</p>
+          <p className="text-sm text-muted-foreground mt-2">Acesso restrito à equipe TOCA HUB.</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">

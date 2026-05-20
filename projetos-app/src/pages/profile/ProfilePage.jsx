@@ -193,7 +193,7 @@ export default function ProfilePage() {
                   <div className="flex-1 space-y-8 py-4">
                     <div className="space-y-2">
                       <h3 className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-3">
-                        Pelimotion PS2 Engine <span className="text-[10px] px-2 py-0.5 bg-primary/10 text-primary rounded-full uppercase">Alpha v2.1</span>
+                        TOCA HUB PS2 Engine <span className="text-[10px] px-2 py-0.5 bg-primary/10 text-primary rounded-full uppercase">Alpha v2.1</span>
                       </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
                         Sua identidade visual é gerada de forma procedural baseada em sementes criptográficas. 

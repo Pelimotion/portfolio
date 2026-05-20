@@ -1,14 +1,14 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { propertyService } from '../../services/propertyService';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { hashString } from '../../lib/avatarEngine';
 import { GenerativeIcon } from '../ui/GenerativeIcon';
-import { 
-  Clock, User, AlertTriangle, Flame, ArrowUp, Minus, 
-  MoreHorizontal, Trash2, Layout, Check, 
-  MessageSquare, Paperclip, CheckSquare, Lock,
-  ShieldCheck, AlertCircle, Bookmark, Tag,
+import {
+  Clock, User, Flame, ArrowUp, Minus,
+  MoreHorizontal, Trash2, Layout, Check,
+  CheckSquare, Lock, ShieldCheck, AlertCircle, Bookmark,
   ChevronRight, ExternalLink
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
@@ -136,6 +136,19 @@ export const EntityCard = memo(function EntityCard({
   const typeIcon = TYPE_ICONS[type?.id?.toLowerCase()] || TYPE_ICONS.task;
   const statusColors = status ? COLOR_MAP[status.color] || COLOR_MAP.gray : null;
 
+  // ── Done checkbox (optimistic local state) ──
+  const [localDone, setLocalDone] = useState(isDone);
+  useEffect(() => { setLocalDone(isDone); }, [isDone]);
+
+  const handleDoneToggle = async (e) => {
+    e.stopPropagation();
+    if (!donePropId) return;
+    const next = !localDone;
+    setLocalDone(next);
+    try { await propertyService.upsertValue(item.id, donePropId, { checked: next }); }
+    catch (err) { setLocalDone(!next); console.error(err); }
+  };
+
   // ── Render Helpers ──
   const Badge = ({ children, color = 'gray', icon: Icon }) => {
     const c = COLOR_MAP[color] || COLOR_MAP.gray;
@@ -154,10 +167,18 @@ export const EntityCard = memo(function EntityCard({
   const CardHeader = () => (
     <div className="flex items-start justify-between gap-2 mb-2.5">
        <div className="flex items-center gap-2">
-          {isDone ? (
-            <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
-               <Check className="w-2.5 h-2.5 stroke-[4px]" />
-            </div>
+          {donePropId ? (
+            <button
+              onClick={handleDoneToggle}
+              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                localDone
+                  ? 'bg-emerald-500 border-emerald-500 text-white'
+                  : 'border-muted-foreground/25 text-transparent hover:border-emerald-500/60 hover:text-emerald-500/40'
+              }`}
+              title={localDone ? 'Desmarcar feito' : 'Marcar como feito'}
+            >
+              <Check className="w-2 h-2 stroke-[4px]" />
+            </button>
           ) : (
             <GenerativeIcon slug={item.id} size={16} className="shrink-0 rounded-md" type={entityType} />
           )}
@@ -219,16 +240,6 @@ export const EntityCard = memo(function EntityCard({
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-muted-foreground/40">
-             <div className="flex items-center gap-1 hover:text-muted-foreground transition-colors cursor-help">
-                <MessageSquare className="w-3 h-3" />
-                <span className="text-[9px] font-bold">2</span>
-             </div>
-             <div className="flex items-center gap-1 hover:text-muted-foreground transition-colors cursor-help">
-                <Paperclip className="w-3 h-3" />
-                <span className="text-[9px] font-bold">1</span>
-             </div>
-          </div>
        </div>
 
        <div className="flex items-center gap-2">
@@ -255,14 +266,27 @@ export const EntityCard = memo(function EntityCard({
 
   if (density === 'compact') {
     return (
-      <div 
+      <div
         onClick={handleClick}
         className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all cursor-pointer select-none
           ${isDragOverlay ? 'bg-[var(--surface-3)] border-primary shadow-2xl scale-105 rotate-1' : 'bg-[var(--surface-1)] border-transparent hover:border-white/10 hover:bg-[var(--surface-2)] shadow-sm'}
         `}
       >
-        <div className="shrink-0">{typeIcon}</div>
-        <h4 className={`text-[12px] font-bold truncate flex-1 ${isDone ? 'line-through text-muted-foreground/40' : 'text-foreground/90'}`}>
+        {donePropId ? (
+          <button
+            onClick={handleDoneToggle}
+            className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+              localDone
+                ? 'bg-emerald-500 border-emerald-500 text-white'
+                : 'border-muted-foreground/25 text-transparent hover:border-emerald-500/60'
+            }`}
+          >
+            <Check className="w-1.5 h-1.5 stroke-[4px]" />
+          </button>
+        ) : (
+          <div className="shrink-0">{typeIcon}</div>
+        )}
+        <h4 className={`text-[12px] font-bold truncate flex-1 ${localDone ? 'line-through text-muted-foreground/40' : 'text-foreground/90'}`}>
           {item.title}
         </h4>
         {priorityConfig?.icon && <div className="shrink-0">{priorityConfig.icon}</div>}
@@ -283,7 +307,7 @@ export const EntityCard = memo(function EntityCard({
           ? 'shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] ring-1 ring-primary/50 rotate-1 scale-[1.03] z-[100]'
           : 'shadow-sm hover:shadow-md hover:-translate-y-0.5'
         }
-        ${isDone ? 'opacity-60 grayscale-[0.5]' : ''}
+        ${localDone ? 'opacity-60 grayscale-[0.5]' : ''}
         ${isBlocked ? 'ring-2 ring-red-500/20' : ''}
       `}
     >
@@ -307,17 +331,18 @@ export const EntityCard = memo(function EntityCard({
         <div className="space-y-1.5">
           <div className="flex items-start gap-2">
             {donePropId && (
-              <button 
-                onClick={e => { e.stopPropagation(); onPropertyUpdate?.(item.id, donePropId, { checked: !isDone }); }}
-                className={`mt-1 shrink-0 w-4 h-4 rounded border transition-all flex items-center justify-center ${
-                  isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/10 bg-black/10 hover:border-primary/50'
+              <button
+                onClick={handleDoneToggle}
+                className={`mt-0.5 shrink-0 w-4 h-4 rounded border-2 transition-all flex items-center justify-center ${
+                  localDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-muted-foreground/25 text-transparent hover:border-emerald-500/60 hover:text-emerald-500/40'
                 }`}
+                title={localDone ? 'Desmarcar feito' : 'Marcar como feito'}
               >
-                {isDone && <Check className="w-3 h-3 stroke-[3px]" />}
+                <Check className="w-2 h-2 stroke-[4px]" />
               </button>
             )}
             <h4 className={`text-[13px] font-semibold leading-[1.3] transition-colors ${
-              isDone ? 'text-muted-foreground/40 line-through' : 'text-foreground group-hover:text-primary'
+              localDone ? 'text-muted-foreground/40 line-through' : 'text-foreground group-hover:text-primary'
             }`}>
               {item.title || 'Sem título'}
             </h4>

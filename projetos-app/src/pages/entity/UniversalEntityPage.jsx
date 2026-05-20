@@ -32,6 +32,8 @@ import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
 import { getAccentColorFromId } from '../../lib/artPatternEngine';
 import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
 import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
+import { GenerativeIcon } from '../../components/ui/GenerativeIcon';
+import { generativeService } from '../../lib/generative/generativeService';
 import { PropertyManagerModal } from '../../components/database/PropertyManagerModal';
 import { hashString } from '../../lib/avatarEngine';
 import { useAuth } from '../../contexts/AuthContext';
@@ -67,6 +69,8 @@ export function UniversalEntityPage() {
   const [teamSettingsOpen, setTeamSettingsOpen] = useState(false);
   const [showHeaderEditor, setShowHeaderEditor] = useState(false);
   const [grandparentPageId, setGrandparentPageId] = useState(null);
+  const [headerRefreshKey,  setHeaderRefreshKey]  = useState(0);
+  const [isRandomizing,     setIsRandomizing]     = useState(false);
 
   const page     = pages[pageId];
   const isProject = page?.parent_id === ROOT_HUB_ID;
@@ -154,6 +158,18 @@ export function UniversalEntityPage() {
     await updatePage(pageId, { content: html });
   }, [pageId, updatePage]);
 
+  const handleRandomize = useCallback(async () => {
+    setIsRandomizing(true);
+    try {
+      await generativeService.randomize(pageId, isProject ? 'project' : 'scene');
+      setHeaderRefreshKey(k => k + 1);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsRandomizing(false);
+    }
+  }, [pageId, isProject]);
+
   if (loading && !page) return <PageSkeleton />;
   if (!page) return null;
 
@@ -170,6 +186,12 @@ export function UniversalEntityPage() {
   const statusOptions = statusProp?.config?.options || [];
   const statusOption = Array.isArray(statusOptions) ? statusOptions.find(o => o.id === statusVal?.selected) : null;
   const statusColors = statusOption ? COLOR_MAP[statusOption.color] || COLOR_MAP.gray : COLOR_MAP.gray;
+
+  const clientRawVal = clienteProp ? propValues[clienteProp.id] : null;
+  const clientLabel  = clientRawVal
+    ? (typeof clientRawVal === 'string' ? clientRawVal : clientRawVal?.text || null)
+    : null;
+  const contextLabel = clientLabel ? `Cliente: ${clientLabel}` : (isProject ? 'Projeto' : 'Cena');
 
   return (
     <div className="flex flex-col h-full bg-[var(--surface-0)] relative overflow-hidden">
@@ -191,39 +213,44 @@ export function UniversalEntityPage() {
         <span className="text-foreground/80 truncate font-bold">{page?.title}</span>
       </div>
 
-      {/* ── MINIMALIST BRUTALIST HEADER ── */}
+      {/* ── HEADER ── */}
       <div className="relative group/header shrink-0">
-        {/* HERO AREA (Cover + Identity) */}
-        <div className="h-64 w-full bg-[#050505] relative overflow-hidden">
-          <GenerativeHeader 
-            slug={pageId} 
+        {/* HERO AREA — responsive height */}
+        <div className="h-28 md:h-52 w-full bg-[#050505] relative overflow-hidden">
+          <GenerativeHeader
+            slug={pageId}
             type={isProject ? 'project' : 'scene'}
-            showIcon={true}
+            showIcon={false}
+            refreshKey={headerRefreshKey}
           />
-          
-          {/* Brutalist Vignette */}
-          <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.8)]" />
+          <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.9)]" />
         </div>
 
-        {/* INFO BAR (Integrated) */}
-        <div className="absolute bottom-0 left-0 right-0 px-8 py-6 flex items-end justify-between bg-gradient-to-t from-black via-black/40 to-transparent">
-          <div className="flex flex-col gap-1 max-w-2xl">
-            <div className="flex items-center gap-4">
-               <h1 className="text-5xl font-semibold text-white tracking-tighter uppercase leading-none">{page?.title}</h1>
-               {statusProp && (
-                 <div className="mt-1">
-                   <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
-                 </div>
-               )}
+        {/* INFO BAR */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-8 py-4 md:py-5 flex items-end justify-between bg-gradient-to-t from-black via-black/60 to-transparent">
+          {/* Left: icon + title + meta */}
+          <div className="flex items-end gap-3 min-w-0 flex-1">
+            {/* Identicon */}
+            <div className="w-11 h-11 shrink-0 p-1.5 bg-black/70 backdrop-blur-xl border border-white/15 rounded-xl shadow-xl">
+              <GenerativeIcon slug={pageId} size={32} type={isProject ? 'project' : 'scene'} />
             </div>
-            
-            <div className="flex items-center gap-4 text-white/50 text-[10px] font-semibold uppercase tracking-[0.2em] mt-2">
-               <span className="flex items-center gap-1.5 px-2 py-0.5 bg-white/10 rounded border border-white/5">
-                 {isProject ? 'Project Node' : 'Sequence Node'}
-               </span>
-               {page?.description && (
-                 <span className="opacity-60">• {page.description}</span>
-               )}
+
+            <div className="flex flex-col gap-1 min-w-0">
+              <h1
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={handleTitleBlur}
+                className="text-2xl md:text-4xl font-semibold text-white tracking-tighter leading-none focus:outline-none cursor-text hover:opacity-90 transition-opacity"
+              >{page?.title}</h1>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {statusProp && (
+                  <PropertyRenderer property={statusProp} value={statusVal} onChange={v => handlePropChange(statusProp.id, v)} inline />
+                )}
+                <span className="text-[10px] font-semibold text-white/35 uppercase tracking-widest">
+                  {contextLabel}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -256,10 +283,10 @@ export function UniversalEntityPage() {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Portal>
                     <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
-                      <DropdownMenu.Item 
+                      <DropdownMenu.Item
                         onSelect={() => {
                           navigator.clipboard.writeText(window.location.href);
-                          alert('Link copiado!');
+                          toast.success('Link copiado!');
                         }}
                         className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
                       >
@@ -268,7 +295,7 @@ export function UniversalEntityPage() {
                       <DropdownMenu.Item 
                         onSelect={() => {
                           const url = encodeURIComponent(window.location.href);
-                          window.open(`https://api.whatsapp.com/send?text=Confira este projeto na Pelimotion: ${url}`, '_blank');
+                          window.open(`https://api.whatsapp.com/send?text=Confira este projeto no TOCA HUB: ${url}`, '_blank');
                         }}
                         className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-green-500/10 rounded-lg cursor-pointer outline-none"
                       >
@@ -287,7 +314,14 @@ export function UniversalEntityPage() {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Portal>
                     <DropdownMenu.Content align="end" className="z-50 min-w-[180px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95">
-                      <DropdownMenu.Item 
+                      <DropdownMenu.Item
+                        onSelect={handleRandomize}
+                        disabled={isRandomizing}
+                        className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none disabled:opacity-50"
+                      >
+                        {isRandomizing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Randomizar Identidade
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
                         onSelect={() => setShowHeaderEditor(!showHeaderEditor)}
                         className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
                       >
@@ -494,21 +528,21 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
   const kpis = useMemo(() => {
     const total      = items.length;
     const done       = items.filter(i => {
-      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checked === true;
       if (isChecked) return true;
       const st = getStatus(i.id);
       return st && DONE_IDS.some(k => st.id.includes(k) || st.label.toLowerCase().includes(k));
     }).length;
 
     const active     = items.filter(i => {
-      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checked === true;
       if (isChecked) return false;
       const st = getStatus(i.id);
       return st && ACTIVE_IDS.some(k => st.id.includes(k));
     }).length;
 
     const standby    = items.filter(i => {
-      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checked === true;
       if (isChecked) return false;
       const st = getStatus(i.id);
       return st && STANDBY_IDS.some(k => st.id.includes(k));
@@ -517,13 +551,13 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
     const overdue    = deadlineProp ? items.filter(i => {
       const d = allValues[i.id]?.[deadlineProp.id]?.date;
       const st = getStatus(i.id);
-      const isDone = (doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true) || (st && DONE_IDS.some(k => st.id.includes(k)));
+      const isDone = (doneProp && allValues[i.id]?.[doneProp.id]?.checked === true) || (st && DONE_IDS.some(k => st.id.includes(k)));
       return d && !isDone && new Date(d) < today;
     }).length : 0;
 
     let totalProgressSum = 0;
     items.forEach(i => {
-      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checkbox === true;
+      const isChecked = doneProp && allValues[i.id]?.[doneProp.id]?.checked === true;
       if (isChecked) {
         totalProgressSum += 100;
         return;

@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    document.title = 'Projects Hub | Pelimotion';
+    document.title = 'Projects Hub | TOCA HUB';
     async function init() {
       try {
         await ensureRootHub();

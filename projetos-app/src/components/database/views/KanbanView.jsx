@@ -136,6 +136,16 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
         return { ...prev, [activeId]: itemValues };
       });
       onStatusChange(activeId, groupProp.id, newStatusId);
+
+      // Se solto sobre um card específico (não coluna), preservar posição de drop
+      if (!isColumn) {
+        const targetItemIds = targetCol.items.filter(i => i.id !== activeId).map(i => i.id);
+        const overIndex = targetItemIds.indexOf(overId);
+        if (overIndex !== -1) {
+          targetItemIds.splice(overIndex, 0, activeId);
+          onReorderPersist(targetItemIds);
+        }
+      }
       return;
     }
 
