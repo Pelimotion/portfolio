@@ -48,7 +48,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
       let props = rawProps || [];
       // O.7: Auto-create "Feito" checkbox for non-project databases (scenes, tasks, etc.)
       if (entityType !== 'project') {
-        const hasDone = props.some(p => p.property_type === 'checkbox' && ['feito', 'concluído', 'concluido'].includes(p.name.toLowerCase()));
+        const hasDone = props.some(p => p.property_type === 'checkbox' && ['feito', 'concluído', 'concluido'].includes(p.name?.toLowerCase()));
         if (!hasDone) {
           try {
             const newProp = await propertyService.create({ databaseId, name: 'Feito', property_type: 'checkbox', config: {}, position: 999 });

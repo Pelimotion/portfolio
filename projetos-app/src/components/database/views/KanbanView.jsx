@@ -164,7 +164,7 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
     if (!sourceCol || sourceCol.id !== targetCol.id) {
       setLocalAllValues(prev => {
         const itemValues = { ...(prev[activeId] || {}), [groupProp.id]: { selected: newStatusId } };
-        const doneProp = properties.find(p => p.property_type === 'checkbox' && (p.name.toLowerCase() === 'feito' || p.name.toLowerCase() === 'concluído'));
+        const doneProp = properties.find(p => p.property_type === 'checkbox' && (p.name?.toLowerCase() === 'feito' || p.name?.toLowerCase() === 'concluído'));
         if (doneProp) {
           itemValues[doneProp.id] = { checked: false };
           propertyService.upsertValue(activeId, doneProp.id, { checked: false }).catch(console.error);
@@ -286,13 +286,12 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
           {groupProp && (
             <button
               onClick={async () => {
-                const newLabel = prompt("Nome da nova etapa:");
-                if (!newLabel) return;
                 try {
                   const opts    = groupProp.config?.options || [];
-                  const newOpts = [...opts, { id: `opt_${Date.now()}`, label: newLabel, color: 'gray' }];
-                  await propertyService.update(groupProp.id, { config: { ...groupProp.config, options: newOpts } });
-                  window.location.reload();
+                  const newOpts = [...opts, { id: `opt_${Date.now()}`, label: 'Nova etapa', color: 'gray' }];
+                  const updatedProp = { ...groupProp, config: { ...groupProp.config, options: newOpts } };
+                  onPropertyUpdate?.(groupProp.id, updatedProp);
+                  await propertyService.update(groupProp.id, { config: updatedProp.config });
                 } catch (e) { console.error(e); }
               }}
               className={`${colWidth} shrink-0 rounded-xl border-2 border-dashed border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all h-[42px] mt-0`}
