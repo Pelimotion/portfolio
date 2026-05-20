@@ -1,6 +1,6 @@
 import { supabase as db } from '../supabase';
 import { generateIcon } from './icon-generator';
-import { generatePattern } from './pattern-generator';
+import { generatePattern, PATTERN_VERSION } from './pattern-generator';
 
 /**
  * GENERATIVE SERVICE
@@ -15,7 +15,7 @@ export const generativeService = {
         .eq('slug', slug)
         .maybeSingle();
 
-      if (project) {
+      if (project && project.metadata?.patternVersion === PATTERN_VERSION) {
         return project.metadata;
       }
 
@@ -29,13 +29,14 @@ export const generativeService = {
   async regenerateIdentity(slug, type = 'project', salt = '') {
     const icon = await generateIcon(slug, type, salt);
     const pattern = await generatePattern(slug, salt);
-    
+
     const metadata = {
       icon: icon.svgString,
       pattern: pattern.svgString,
       layers: pattern.layers_json,
       type,
       salt,
+      patternVersion: PATTERN_VERSION,
       generated_at: new Date().toISOString()
     };
 

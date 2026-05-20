@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import * as Popover from '@radix-ui/react-popover';
 import { X, Plus, Trash2, Settings2, GripVertical, Check, Palette, ChevronDown } from 'lucide-react';
 import { propertyService } from '../../services/propertyService';
 import { COLOR_MAP } from '../../core/colors';
@@ -12,6 +13,10 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
   const [open, setOpen] = useState(false);
   const [editingProps, setEditingProps] = useState(properties || []);
   const [selectedPropId, setSelectedPropId] = useState(null);
+  // id of the property whose delete popover is open; null = none
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  // when true, closing the dialog will NOT call onUpdate (Cancelar path)
+  const skipUpdateOnClose = useRef(false);
 
   // Sync only when modal opens (not on every parent re-render while editing)
   useEffect(() => {
@@ -34,12 +39,12 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
   };
 
   const handleDeleteProperty = async (id) => {
-    if (!window.confirm('Excluir esta propriedade removerá todos os dados salvos nela. Deseja continuar?')) return;
     try {
       await propertyService.destroy(id);
       setEditingProps(prev => (prev || []).filter(p => p.id !== id));
       if (selectedPropId === id) setSelectedPropId(null);
     } catch (e) { console.error(e); }
+    setDeleteConfirmId(null);
   };
 
   const handleUpdateProp = async (id, updates) => {
@@ -82,14 +87,22 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
     if (idx === -1) return;
     const newIdx = idx + direction;
     if (newIdx < 0 || newIdx >= options.length) return;
-    
+
     [options[idx], options[newIdx]] = [options[newIdx], options[idx]];
     handleUpdateProp(propId, { config: { ...prop.config, options: options } });
   };
 
   const handleOpenChange = (isOpen) => {
     setOpen(isOpen);
-    if (!isOpen) onUpdate();
+    if (!isOpen) {
+      if (!skipUpdateOnClose.current) onUpdate();
+      skipUpdateOnClose.current = false;
+    }
+  };
+
+  const handleCancel = () => {
+    skipUpdateOnClose.current = true;
+    setOpen(false);
   };
 
   return (
@@ -103,32 +116,32 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] animate-in fade-in-0" />
-        <Dialog.Content 
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-[600px] max-h-[90vh] animate-in zoom-in-95 duration-200"
+        <Dialog.Content
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl z-[101] overflow-hidden flex h-auto max-h-[85vh] animate-in zoom-in-95 duration-200"
           aria-describedby="prop-manager-description"
         >
           <Dialog.Title className="sr-only">Propriedades do Database</Dialog.Title>
           <Dialog.Description id="prop-manager-description" className="sr-only">
             Gerencie as propriedades e campos deste banco de dados.
           </Dialog.Description>
-          
+
           {/* Sidebar: Prop List */}
-          <div className="w-64 border-r border-border bg-secondary/10 flex flex-col">
-            <div className="p-4 border-b border-border">
+          <div className="w-64 min-w-[200px] border-r border-border bg-secondary/10 flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-border shrink-0">
               <div className="text-sm font-semibold text-foreground">Propriedades</div>
               <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">
                 Configurações do Database
               </div>
             </div>
-            
-            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+
+            <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0">
               {(editingProps || []).map(prop => (
                 <button
                   key={prop.id}
                   onClick={() => setSelectedPropId(prop.id)}
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs group transition-colors ${
-                    selectedPropId === prop.id 
-                    ? 'bg-primary/10 text-primary font-medium' 
+                    selectedPropId === prop.id
+                    ? 'bg-primary/10 text-primary font-medium'
                     : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
                   }`}
                 >
@@ -139,8 +152,8 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
               ))}
             </div>
 
-            <div className="p-3 border-t border-border">
-              <button 
+            <div className="p-3 border-t border-border shrink-0">
+              <button
                 onClick={handleAddProperty}
                 className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-all uppercase tracking-wider"
               >
@@ -150,27 +163,61 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
           </div>
 
           {/* Main: Prop Editor */}
-          <div className="flex-1 flex flex-col bg-card">
-            <div className="p-4 border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-2">
+          <div className="flex-1 flex flex-col bg-card overflow-hidden min-w-0">
+            {/* Header — sticky, never scrolls */}
+            <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
                 {selectedProp ? (
-                  <div className="flex items-center gap-3">
-                    <h4 className="text-sm font-semibold text-foreground">Editar: {selectedProp.name}</h4>
-                    <span className="px-2 py-0.5 bg-secondary rounded text-[10px] uppercase font-bold text-muted-foreground">{selectedProp.property_type}</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <h4 className="text-sm font-semibold text-foreground truncate">Editar: {selectedProp.name}</h4>
+                    <span className="px-2 py-0.5 bg-secondary rounded text-[10px] uppercase font-bold text-muted-foreground shrink-0">{selectedProp.property_type}</span>
                   </div>
                 ) : (
                   <h4 className="text-sm font-semibold text-muted-foreground">Selecione uma propriedade</h4>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 {selectedProp && (
-                  <button 
-                    onClick={() => handleDeleteProperty(selectedProp.id)}
-                    className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                    title="Excluir Propriedade"
+                  /* Radix Popover for delete confirmation — no window.confirm */
+                  <Popover.Root
+                    open={deleteConfirmId === selectedProp.id}
+                    onOpenChange={(isOpen) => setDeleteConfirmId(isOpen ? selectedProp.id : null)}
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    <Popover.Trigger asChild>
+                      <button
+                        className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Excluir Propriedade"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                      <Popover.Content
+                        side="bottom"
+                        align="end"
+                        sideOffset={6}
+                        className="z-[200] w-64 bg-popover border border-border rounded-xl shadow-xl p-4 space-y-3 animate-in fade-in-0 zoom-in-95"
+                      >
+                        <p className="text-xs text-foreground leading-relaxed">
+                          Esta ação removerá todos os dados. Confirmar?
+                        </p>
+                        <div className="flex gap-2 justify-end">
+                          <Popover.Close asChild>
+                            <button className="px-3 py-1.5 text-xs rounded-lg bg-secondary text-foreground hover:bg-secondary/80 transition-colors font-medium">
+                              Cancelar
+                            </button>
+                          </Popover.Close>
+                          <button
+                            onClick={() => handleDeleteProperty(selectedProp.id)}
+                            className="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-bold"
+                          >
+                            Excluir
+                          </button>
+                        </div>
+                        <Popover.Arrow className="fill-border" />
+                      </Popover.Content>
+                    </Popover.Portal>
+                  </Popover.Root>
                 )}
                 <Dialog.Close asChild>
                   <button className="p-1.5 hover:bg-secondary rounded-full text-muted-foreground transition-colors"><X className="w-4 h-4" /></button>
@@ -178,14 +225,15 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {/* Scrollable body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
               {selectedProp ? (
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Nome</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={selectedProp.name}
                         onChange={(e) => handleUpdateProp(selectedProp.id, { name: e.target.value })}
                         className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -193,7 +241,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Tipo</label>
-                      <select 
+                      <select
                         value={selectedProp.property_type}
                         onChange={(e) => handleUpdateProp(selectedProp.id, { property_type: e.target.value })}
                         className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
@@ -211,37 +259,30 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                   </div>
 
                   {(selectedProp.property_type === 'select' || selectedProp.property_type === 'status') && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Opções (Labels & Cores)</label>
-                        <button 
-                          onClick={() => handleAddOption(selectedProp.id)}
-                          className="flex items-center gap-1 text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-md hover:bg-primary/20 transition-colors font-bold uppercase tracking-wider"
-                        >
-                          <Plus className="w-3 h-3" /> Adicionar Opção
-                        </button>
-                      </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Opções (Labels & Cores)</label>
 
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {selectedProp.config?.options?.map((opt, idx, arr) => (
-                          <div key={opt.id} className="flex items-center gap-2 group p-2 rounded-xl border border-transparent hover:border-border hover:bg-secondary/10 transition-all">
-                            <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button onClick={() => handleMoveOption(selectedProp.id, opt.id, -1)} disabled={idx === 0} className="p-0.5 hover:bg-secondary rounded disabled:opacity-20"><ChevronDown className="w-3 h-3 rotate-180" /></button>
-                              <button onClick={() => handleMoveOption(selectedProp.id, opt.id, 1)} disabled={idx === arr.length - 1} className="p-0.5 hover:bg-secondary rounded disabled:opacity-20"><ChevronDown className="w-3 h-3" /></button>
+                          <div key={opt.id} className="flex items-center gap-2 p-2 rounded-xl border border-transparent hover:border-border hover:bg-secondary/10 transition-all">
+                            {/* Reorder arrows — always visible */}
+                            <div className="flex flex-col gap-0.5">
+                              <button onClick={() => handleMoveOption(selectedProp.id, opt.id, -1)} disabled={idx === 0} className="p-0.5 hover:bg-secondary rounded disabled:opacity-20 opacity-60"><ChevronDown className="w-3 h-3 rotate-180" /></button>
+                              <button onClick={() => handleMoveOption(selectedProp.id, opt.id, 1)} disabled={idx === arr.length - 1} className="p-0.5 hover:bg-secondary rounded disabled:opacity-20 opacity-60"><ChevronDown className="w-3 h-3" /></button>
                             </div>
-                            
+
                             <div className={`w-3.5 h-3.5 rounded-sm shrink-0 ${COLOR_MAP[opt.color]?.dot || 'bg-gray-500'}`} />
-                            
-                            <input 
-                              type="text" 
+
+                            <input
+                              type="text"
                               value={opt.label}
                               onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { label: e.target.value })}
-                              className="flex-1 bg-transparent border-none py-1 text-sm focus:ring-0 outline-none transition-colors font-medium"
+                              className="flex-1 bg-transparent border-none py-1 text-sm focus:ring-0 outline-none transition-colors font-medium min-w-0"
                             />
-                            
+
                             {selectedProp.property_type === 'status' && (
-                              <div className="flex items-center gap-1">
-                                <input 
+                              <div className="flex items-center gap-1 shrink-0">
+                                <input
                                   type="date"
                                   value={opt.startDate || ''}
                                   onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { startDate: e.target.value })}
@@ -249,7 +290,7 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                                   title="Data de Início"
                                 />
                                 <span className="text-muted-foreground/40 text-xs">-</span>
-                                <input 
+                                <input
                                   type="date"
                                   value={opt.deadline || ''}
                                   onChange={(e) => handleUpdateOption(selectedProp.id, opt.id, { deadline: e.target.value })}
@@ -258,9 +299,9 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                                 />
                               </div>
                             )}
-                            
-                            {/* Color Selector */}
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mx-2">
+
+                            {/* Color Selector — always visible */}
+                            <div className="flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity mx-1 shrink-0">
                               {Object.keys(COLOR_MAP).map(color => (
                                 <button
                                   key={color}
@@ -270,15 +311,25 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
                               ))}
                             </div>
 
-                            <button 
+                            {/* Delete option button — always visible at opacity-60 */}
+                            <button
                               onClick={() => handleDeleteOption(selectedProp.id, opt.id)}
-                              className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                              className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg opacity-60 hover:opacity-100 transition-all shrink-0"
+                              title="Remover opção"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ))}
                       </div>
+
+                      {/* "Adicionar opção" — below the list, always visible, small inline style */}
+                      <button
+                        onClick={() => handleAddOption(selectedProp.id)}
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors py-1 px-2"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Adicionar opção
+                      </button>
                     </div>
                   )}
 
@@ -303,12 +354,22 @@ export function PropertyManagerModal({ databaseId, properties, onUpdate }) {
               )}
             </div>
 
-            <div className="p-4 bg-secondary/10 border-t border-border flex justify-end">
-               <Dialog.Close asChild>
-                 <button className="bg-primary text-primary-foreground px-6 py-2 rounded-xl text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 transition-all">
-                   Salvar Alterações
-                 </button>
-               </Dialog.Close>
+            {/* Sticky footer — Cancelar (close only, no onUpdate) + Salvar (close + onUpdate) */}
+            <div className="p-4 bg-secondary/10 border-t border-border flex justify-end gap-2 shrink-0">
+              {/* Cancelar: sets skipUpdateOnClose flag before Dialog.Close fires onOpenChange */}
+              <button
+                onClick={handleCancel}
+                className="px-5 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+              >
+                Cancelar
+              </button>
+              <Dialog.Close asChild>
+                <button
+                  className="bg-primary text-primary-foreground px-6 py-2 rounded-xl text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 transition-all"
+                >
+                  Salvar Alterações
+                </button>
+              </Dialog.Close>
             </div>
           </div>
         </Dialog.Content>

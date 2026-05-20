@@ -69,8 +69,19 @@ export function UniversalEntityPage() {
   const [teamSettingsOpen, setTeamSettingsOpen] = useState(false);
   const [showHeaderEditor, setShowHeaderEditor] = useState(false);
   const [grandparentPageId, setGrandparentPageId] = useState(null);
+  const [parentPageTitle,   setParentPageTitle]   = useState(null);
   const [headerRefreshKey,  setHeaderRefreshKey]  = useState(0);
   const [isRandomizing,     setIsRandomizing]     = useState(false);
+  const [topbarScrolled,    setTopbarScrolled]    = useState(false);
+  const mainScrollRef = React.useRef(null);
+
+  useEffect(() => {
+    const el = mainScrollRef.current;
+    if (!el) return;
+    const onScroll = () => setTopbarScrolled(el.scrollTop > 4);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
 
   const page     = pages[pageId];
   const isProject = page?.parent_id === ROOT_HUB_ID;
@@ -82,6 +93,7 @@ export function UniversalEntityPage() {
     if (!isProject && page?.parent_id) {
       pageService.fetchById(page.parent_id)
         .then(dbPage => {
+          if (dbPage?.title) setParentPageTitle(dbPage.title);
           if (dbPage?.parent_id) setGrandparentPageId(dbPage.parent_id);
         })
         .catch(console.error);
@@ -196,21 +208,29 @@ export function UniversalEntityPage() {
   return (
     <div className="flex flex-col h-full bg-[var(--surface-0)] relative overflow-hidden">
       
-      {/* ── BREADCRUMBS ── */}
-      <div className="h-10 flex items-center px-6 gap-2 text-[11px] font-medium text-muted-foreground/60 border-b border-[var(--border-subtle)] bg-[var(--surface-1)]">
-        <button onClick={() => navigate('/')} className="hover:text-foreground transition-colors flex items-center gap-1">
-          <Home className="w-3 h-3" /> Hub
+      {/* ── TOPBAR / BREADCRUMBS ── */}
+      <div className={`h-12 flex items-center px-6 gap-2 text-[11px] font-medium text-muted-foreground/60 border-b border-[var(--border-subtle)] bg-[var(--surface-1)] transition-shadow duration-200 ${topbarScrolled ? 'shadow-sm' : ''}`}>
+        {/* Left: breadcrumb */}
+        <button onClick={() => navigate('/')} className="hover:text-foreground transition-colors flex items-center gap-1 shrink-0">
+          <Home className="w-3 h-3" />
+          <span className="hidden sm:inline">Hub</span>
         </button>
-        <ChevronRight className="w-3 h-3 opacity-30" />
+        <ChevronRight className="w-3 h-3 opacity-30 shrink-0" />
         {page?.parent_id && page.parent_id !== ROOT_HUB_ID && (
           <>
-            <button onClick={() => navigate(`/page/${page.parent_id}`)} className="hover:text-foreground transition-colors truncate max-w-[150px]">
-              {pages[page.parent_id]?.title || 'Projeto Pai'}
+            <button onClick={() => navigate(`/page/${page.parent_id}`)} className="hover:text-foreground transition-colors truncate max-w-[140px]">
+              {pages[page.parent_id]?.title || parentPageTitle || '…'}
             </button>
-            <ChevronRight className="w-3 h-3 opacity-30" />
+            <ChevronRight className="w-3 h-3 opacity-30 shrink-0" />
           </>
         )}
-        <span className="text-foreground/80 truncate font-bold">{page?.title}</span>
+        <span className="text-foreground/80 truncate font-semibold">{page?.title}</span>
+        {/* Right: avatar */}
+        <div className="ml-auto shrink-0">
+          <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110">
+            <TamagochiAvatar size={28} userId={user?.id} />
+          </button>
+        </div>
       </div>
 
       {/* ── HEADER ── */}
@@ -341,10 +361,6 @@ export function UniversalEntityPage() {
                   </DropdownMenu.Portal>
                 </DropdownMenu.Root>
 
-                <div className="w-px h-8 bg-white/10 mx-1" />
-                <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110 shrink-0">
-                  <TamagochiAvatar size={32} userId={user?.id} />
-                </button>
              </div>
           </div>
         </div>
@@ -447,7 +463,7 @@ export function UniversalEntityPage() {
         </div>
       
       {/* ── MAIN CONTENT AREA ── */}
-      <div className="flex-1 overflow-y-auto bg-[var(--surface-0)]">
+      <div ref={mainScrollRef} className="flex-1 overflow-y-auto bg-[var(--surface-0)]">
         <div className="px-8 py-6">
           <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-8 py-4 px-6 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl">
             {priorityProp && (

@@ -7,8 +7,8 @@
 
 **Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→L.6 completas ✅ | Build verde
-**Próxima Ação:** Nenhuma pendente na Fase L. Próxima fase: Dashboard financeiro ou testes de produção.
+**Status:** BETA — Fases A→M completas ✅ | Build verde (842KB index.js)
+**Próxima Ação:** Nenhuma pendente na Fase M. Próxima fase: Dashboard financeiro ou N.1 (melhorias de performance).
 **Branch ativa:** `main`
 **Bloqueadores:** stages migration ainda pendente: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
@@ -47,6 +47,14 @@
 | Revisão Visual + UX — L.4 Persistência de preferências | ✅ Fase L.4 completa | 2026-05-20 |
 | Revisão Visual + UX — L.5 Dashboard + Auditoria | ✅ Fase L.5 completa | 2026-05-20 |
 | Revisão Visual + UX — L.6 Bugfix PropertyManagerModal | ✅ Fase L.6 completa | 2026-05-20 |
+| Fase M — M.1 Breadcrumb fix (parent title real) | ✅ completo | 2026-05-20 |
+| Fase M — M.2 Pattern v3 (4 motivos novos + rotation/scale + cache) | ✅ completo | 2026-05-20 |
+| Fase M — M.3 PropertyManagerModal (Radix Popover + scroll fix) | ✅ completo | 2026-05-20 |
+| Fase M — M.4 ViewPreferences completo (sort/filter/density persistidos) | ✅ completo | 2026-05-20 |
+| Fase M — M.5 Dashboard Hub (Board/Grid/Timeline + pipeline bar + filtros) | ✅ completo | 2026-05-20 |
+| Fase M — M.6 Calendar "Geral do Mês" (Gantt por projeto) | ✅ completo | 2026-05-20 |
+| Fase M — M.7 Topbar redesign (h-12, breadcrumb, shadow on scroll, avatar) | ✅ completo | 2026-05-20 |
+| Fase M — M.8 Features competitivas (Favoritos, ActivityPulse, BulkActions, Templates, StatusAccent) | ✅ completo | 2026-05-20 |
 | Dashboard financeiro | ❌ Não iniciado | — |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
@@ -173,6 +181,28 @@ search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-20 — Fase M: 8 blocos de melhoria (M.1→M.8 completos)
+
+**O que foi feito:**
+- [x] **M.1** `UniversalEntityPage.jsx` — breadcrumb exibe título real do projeto pai (fetchById fallback + `parentPageTitle` state)
+- [x] **M.2** `pattern-generator.js` — PATTERN_VERSION=3, 4 motivos novos (kumiko, yagasuri, hexTessellation, tessen), rotation/scale por seed; `generativeService.js` — version check no cache
+- [x] **M.3** `PropertyManagerModal.jsx` — Radix Popover substitui `window.confirm`, `max-h-[85vh]` + `overflow-y-auto` no body, botões de delete sempre visíveis, footer sticky
+- [x] **M.4** `DatabaseRenderer.jsx` + `DatabaseToolbar.jsx` — sort (5 campos) e filterText persistidos em viewPreferences; UI de sort com RadioGroup Radix; input de filtro inline com clear
+- [x] **M.5** `Dashboard.jsx` — reescrito: 3 views (Board/Grid/Timeline), pipeline summary bar, quick filters (Atrasados/Em andamento/Entregues/Sem deadline), busca inline, Gantt por projeto
+- [x] **M.6** `CalendarHeader.jsx` — tab "Geral do Mês"; `CalendarView.jsx` — integra ProjectTimelineView; `ProjectTimelineView.jsx` — criado (Gantt mensal com etapas por projeto)
+- [x] **M.7** `UniversalEntityPage.jsx` — topbar h-12, shadow-sm ao rolar, TamagochiAvatar no canto direito, breadcrumb limpo
+- [x] **M.8** Features competitivas:
+  - `src/lib/useFavorites.js` — criado (hook localStorage `toca-favorites`)
+  - `EntityCard.jsx` — estrela favorito (amarelo quando ativo), activity pulse (tempo relativo atualizado_em), status color accent fallback, bulk checkbox
+  - `KanbanView.jsx` — modo seleção múltipla + floating action bar (Mover/Excluir) com Radix DropdownMenu
+  - `CreateProjectModal.jsx` — template stages: Motion/CGI/Branding/Social criam 5 etapas automáticas via `pageService.update`
+
+**Arquivos criados:** `src/lib/useFavorites.js`, `src/components/calendar/ProjectTimelineView.jsx`
+**Arquivos modificados:** `UniversalEntityPage.jsx`, `pattern-generator.js`, `generativeService.js`, `PropertyManagerModal.jsx`, `DatabaseRenderer.jsx`, `DatabaseToolbar.jsx`, `Dashboard.jsx`, `CalendarHeader.jsx`, `CalendarView.jsx`, `EntityCard.jsx`, `KanbanView.jsx`, `CreateProjectModal.jsx`, `STATUS.md`
+**Build:** ✅ verde (842KB index.js, zero erros)
+
+---
 
 ### 2026-05-20 — Fase L: Revisão Visual + UX (L.1→L.6 completas)
 

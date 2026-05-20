@@ -9,8 +9,9 @@ import {
   Clock, User, Flame, ArrowUp, Minus,
   MoreHorizontal, Trash2, Layout, Check,
   CheckSquare, Lock, ShieldCheck, AlertCircle, Bookmark,
-  ChevronRight, ExternalLink
+  ChevronRight, ExternalLink, Star,
 } from 'lucide-react';
+import { useFavorites } from '../../lib/useFavorites';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { COLOR_MAP } from '../../core/colors';
 import { useAuth } from '../../contexts/AuthContext';
@@ -19,6 +20,19 @@ import { useAuth } from '../../contexts/AuthContext';
 // ENTITY CARD v3 — GLOBAL EXCELLENCE STANDARD
 // Inspired by Linear, Jira, and Notion
 // ============================================
+
+function relativeTime(dateStr) {
+  if (!dateStr) return null;
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 2) return 'agora';
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d`;
+  return null;
+}
 
 const PRIORITY_CONFIG = {
   urgent: { icon: <Flame className="w-3.5 h-3.5 text-red-500" />,    label: 'Urgente', color: 'red' },
@@ -46,12 +60,20 @@ export const EntityCard = memo(function EntityCard({
   density = 'comfortable',
   cardFields = {},
   entityType = 'project',
+  bulkMode = false,
+  isSelected = false,
+  onToggleSelect,
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const starred = isFavorite(item.id);
+  const pulse = relativeTime(item.updated_at);
+
   const handleClick = (e) => {
     e.stopPropagation();
+    if (bulkMode) { onToggleSelect?.(item.id); return; }
     if (onClick) onClick(item);
     else navigate(`/page/${item.id}`);
   };
@@ -167,7 +189,16 @@ export const EntityCard = memo(function EntityCard({
   const CardHeader = () => (
     <div className="flex items-start justify-between gap-2 mb-2.5">
        <div className="flex items-center gap-2">
-          {donePropId ? (
+          {bulkMode ? (
+            <button
+              onClick={e => { e.stopPropagation(); onToggleSelect?.(item.id); }}
+              className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                isSelected ? 'bg-primary border-primary text-white' : 'border-muted-foreground/40 hover:border-primary/60'
+              }`}
+            >
+              {isSelected && <Check className="w-2 h-2 stroke-[4px]" />}
+            </button>
+          ) : donePropId ? (
             <button
               onClick={handleDoneToggle}
               className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -191,7 +222,14 @@ export const EntityCard = memo(function EntityCard({
             </span>
           )}
        </div>
-       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+       <div className="flex items-center gap-1 transition-opacity" style={{ opacity: (starred || isSelected) ? 1 : undefined }} >
+          <button
+            onClick={e => { e.stopPropagation(); toggleFavorite(item.id); }}
+            className={`p-1 rounded transition-all focus:outline-none ${starred ? 'text-yellow-400' : 'text-muted-foreground/30 opacity-0 group-hover:opacity-100'}`}
+            title={starred ? 'Remover favorito' : 'Favoritar'}
+          >
+            <Star className="w-3.5 h-3.5" fill={starred ? 'currentColor' : 'none'} />
+          </button>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <button 
@@ -225,7 +263,7 @@ export const EntityCard = memo(function EntityCard({
 
   const CardFooter = () => (
     <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
-       <div className="flex items-center gap-3">
+       <div className="flex items-center gap-2">
           {owner ? (
             <div className="flex items-center -space-x-1">
                <div className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-semibold border-2 border-[var(--surface-2)] shadow-sm ${
@@ -239,7 +277,9 @@ export const EntityCard = memo(function EntityCard({
                <User className="w-2.5 h-2.5 text-muted-foreground/20" />
             </div>
           )}
-
+          {pulse && (
+            <span className="text-[9px] text-muted-foreground/25 font-medium">{pulse}</span>
+          )}
        </div>
 
        <div className="flex items-center gap-2">
@@ -309,12 +349,15 @@ export const EntityCard = memo(function EntityCard({
         }
         ${localDone ? 'opacity-60 grayscale-[0.5]' : ''}
         ${isBlocked ? 'ring-2 ring-red-500/20' : ''}
+        ${isSelected ? 'ring-2 ring-primary/50 bg-primary/5' : ''}
       `}
     >
-      {/* Priority accent side bar */}
-      {priorityConfig && (
-        <div className={`absolute left-0 top-0 bottom-0 w-1 opacity-60 transition-opacity group-hover:opacity-100`} 
-             style={{ backgroundColor: `var(--${priorityConfig.color}-500)` }} />
+      {/* Priority accent — falls back to status color */}
+      {(priorityConfig || (status && status.color && status.color !== 'gray')) && (
+        <div
+          className={`absolute left-0 top-0 bottom-0 w-1 transition-opacity ${priorityConfig ? 'opacity-60 group-hover:opacity-100' : 'opacity-25 group-hover:opacity-45'}`}
+          style={{ backgroundColor: priorityConfig ? `var(--${priorityConfig.color}-500)` : `var(--${status.color}-500)` }}
+        />
       )}
 
       {/* Card Cover */}

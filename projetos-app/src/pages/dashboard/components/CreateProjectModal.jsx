@@ -4,6 +4,7 @@ import { X, Briefcase, Wand2, UserMinus } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { usePageStore } from '../../../stores/usePageStore';
 import { bootstrapProjectPipeline } from '../../../core/databaseFactory';
+import { pageService } from '../../../services/pageService';
 import { propertyService } from '../../../services/propertyService';
 import { userService } from '../../../services/userService';
 import { useTeamStore } from '../../../stores/useTeamStore';
@@ -23,6 +24,15 @@ const QUICK_TEMPLATES = [
   { id: 'social',    label: 'Social Media',        icon: null },
   { id: 'blank',     label: 'Em branco',           icon: null },
 ];
+
+const TEMPLATE_STAGE_NAMES = {
+  motion:   ['Briefing', 'Storyboard', 'Motion', 'Revisão', 'Entrega'],
+  cgi:      ['Conceito', 'Modelagem', 'Render', 'Compositing', 'Entrega'],
+  branding: ['Pesquisa', 'Conceito', 'Identidade Visual', 'Manual', 'Entrega'],
+  social:   ['Briefing', 'Criativo', 'Conteúdo', 'Aprovação', 'Publicação'],
+};
+
+const STAGE_COLORS = ['#6366f1', '#8b5cf6', '#3b82f6', '#f59e0b', '#10b981'];
 
 export function CreateProjectModal({ open, onOpenChange }) {
   const navigate = useNavigate();
@@ -66,6 +76,18 @@ export function CreateProjectModal({ open, onOpenChange }) {
 
       // 2. Bootstrap do pipeline de cenas (em background)
       bootstrapProjectPipeline(page.id).catch(console.error);
+
+      // 2b. Criar etapas baseadas no template (em background)
+      if (template !== 'blank' && TEMPLATE_STAGE_NAMES[template]) {
+        const stages = TEMPLATE_STAGE_NAMES[template].map((name, i) => ({
+          id: `s${i + 1}_${page.id.slice(0, 8)}`,
+          name,
+          start_date: null,
+          end_date: null,
+          color: STAGE_COLORS[i] || '#6b7280',
+        }));
+        pageService.update(page.id, { stages }).catch(console.error);
+      }
 
       // 3. Salvar cliente se preenchido
       if (client.trim()) {

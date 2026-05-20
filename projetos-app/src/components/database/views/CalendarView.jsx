@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { parseISO, isValid } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import { CalendarDays } from 'lucide-react';
 import { CalendarHeader } from '../../calendar/CalendarHeader';
 import { CalendarKbd } from '../../calendar/CalendarKbd';
@@ -7,6 +8,7 @@ import { MonthView } from '../../calendar/MonthView';
 import { WeekView } from '../../calendar/WeekView';
 import { DayView } from '../../calendar/DayView';
 import { AgendaView } from '../../calendar/AgendaView';
+import { ProjectTimelineView } from '../../calendar/ProjectTimelineView';
 import { StageEditor } from '../../project/StageEditor';
 import { PipelineLegend } from '../../calendar/PipelineLegend';
 import { buildEvents, buildProjectEvents, buildPipelineEvents, navigate as navDate } from '../../calendar/calendarUtils';
@@ -16,6 +18,7 @@ import { pageService } from '../../../services/pageService';
 import { propertyService } from '../../../services/propertyService';
 
 export function CalendarView({ items, properties, allValues, databaseId, onValueChange }) {
+  const navigate = useNavigate();
   const [view, setView] = useState('month');
   const [current, setCurrent] = useState(() => new Date());
   const [filterMode, setFilterMode] = useState('all');
@@ -94,8 +97,9 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
   );
 
   const handleToday = useCallback(() => setCurrent(new Date()), []);
-  const handleNext  = useCallback(() => setCurrent(d => navDate(view, d, +1)), [view]);
-  const handlePrev  = useCallback(() => setCurrent(d => navDate(view, d, -1)), [view]);
+  // timeline navigates by month (same as month view)
+  const handleNext  = useCallback(() => setCurrent(d => navDate(view === 'timeline' ? 'month' : view, d, +1)), [view]);
+  const handlePrev  = useCallback(() => setCurrent(d => navDate(view === 'timeline' ? 'month' : view, d, -1)), [view]);
   const handleGoTo  = useCallback((str) => {
     const d = parseISO(str);
     if (isValid(d)) setCurrent(d);
@@ -129,22 +133,30 @@ export function CalendarView({ items, properties, allValues, databaseId, onValue
         />
       )}
 
-      <div className="flex gap-0 rounded-xl overflow-hidden border border-subtle">
-        <div className="flex-1 min-w-0">
-          {view === 'month'  && <MonthView  {...subViewProps} />}
-          {view === 'week'   && <WeekView   {...subViewProps} />}
-          {view === 'day'    && <DayView    {...subViewProps} />}
-          {view === 'agenda' && <AgendaView {...subViewProps} />}
-        </div>
+      {view === 'timeline' ? (
+        <ProjectTimelineView
+          projects={isRoot ? globalItems : [projectPage].filter(Boolean)}
+          current={current}
+          onProjectClick={(id) => navigate(`/page/${id}`)}
+        />
+      ) : (
+        <div className="flex gap-0 rounded-xl overflow-hidden border border-subtle">
+          <div className="flex-1 min-w-0">
+            {view === 'month'  && <MonthView  {...subViewProps} />}
+            {view === 'week'   && <WeekView   {...subViewProps} />}
+            {view === 'day'    && <DayView    {...subViewProps} />}
+            {view === 'agenda' && <AgendaView {...subViewProps} />}
+          </div>
 
-        {/* Pipeline Legend — apenas no modo pipeline (root) */}
-        {isRoot && (
-          <PipelineLegend
-            projects={globalItems}
-            onHiddenChange={setHiddenProjects}
-          />
-        )}
-      </div>
+          {/* Pipeline Legend — apenas no modo pipeline (root) */}
+          {isRoot && (
+            <PipelineLegend
+              projects={globalItems}
+              onHiddenChange={setHiddenProjects}
+            />
+          )}
+        </div>
+      )}
 
       {!deadlineProp && !statusProp && (
         <div className="flex flex-col items-center justify-center p-8 bg-surface-1 border border-dashed border-subtle rounded-xl">

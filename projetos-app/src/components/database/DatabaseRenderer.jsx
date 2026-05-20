@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, createContext, useContext } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, createContext, useContext } from 'react';
 import { usePageStore } from '../../stores/usePageStore';
 import { propertyService } from '../../services/propertyService';
 import { pageService } from '../../services/pageService';
@@ -27,6 +27,9 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
   const [loading,     setLoading]     = useState(true);
   const [creating,    setCreating]    = useState(false);
   const [density,     setDensity]     = useState(() => loadPreference(databaseId, 'density', 'comfortable'));
+  const [sortField,   setSortField]   = useState(() => loadPreference(databaseId, 'sortField', 'created_at'));
+  const [sortDir,     setSortDir]     = useState(() => loadPreference(databaseId, 'sortDir', 'desc'));
+  const [filterText,  setFilterText]  = useState(() => loadPreference(databaseId, 'filterText', ''));
   const [cardFields,  setCardFields]  = useState(() => {
     const saved = localStorage.getItem(`peli-card-fields-${databaseId}`);
     return saved ? JSON.parse(saved) : {};
@@ -133,6 +136,18 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
     savePreference(databaseId, 'density', d);
   }, [databaseId]);
 
+  const handleSortChange = useCallback((field, dir) => {
+    setSortField(field);
+    setSortDir(dir);
+    savePreference(databaseId, 'sortField', field);
+    savePreference(databaseId, 'sortDir', dir);
+  }, [databaseId]);
+
+  const handleFilterChange = useCallback((text) => {
+    setFilterText(text);
+    savePreference(databaseId, 'filterText', text);
+  }, [databaseId]);
+
   const handleCreate = useCallback(async () => {
     setCreating(true);
     try {
@@ -159,6 +174,44 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
     finally { setCreating(false); }
   }, [createPage, databaseId]);
 
+  // ── Sort + Filter ─────────────────────────────────────────────────────────
+  const sortedFilteredItems = useMemo(() => {
+    const q = filterText.trim().toLowerCase();
+    let list = q
+      ? localItems.filter(i => (i.title || '').toLowerCase().includes(q))
+      : [...localItems];
+
+    const deadlineProp = properties.find(p => p.property_type === 'date' || ['deadline', 'entrega'].includes(p.name.toLowerCase()));
+    const statusProp   = properties.find(p => p.property_type === 'status' || p.name === 'Status');
+
+    list.sort((a, b) => {
+      let va, vb;
+      if (sortField === 'title') {
+        va = (a.title || '').toLowerCase();
+        vb = (b.title || '').toLowerCase();
+      } else if (sortField === 'deadline' && deadlineProp) {
+        va = allValues[a.id]?.[deadlineProp.id]?.date || '9999-99-99';
+        vb = allValues[b.id]?.[deadlineProp.id]?.date || '9999-99-99';
+      } else if (sortField === 'status' && statusProp) {
+        const opts = statusProp.config?.options || [];
+        va = opts.findIndex(o => o.id === allValues[a.id]?.[statusProp.id]?.selected);
+        vb = opts.findIndex(o => o.id === allValues[b.id]?.[statusProp.id]?.selected);
+        if (va === -1) va = 999; if (vb === -1) vb = 999;
+      } else if (sortField === 'updated_at') {
+        va = a.updated_at || '';
+        vb = b.updated_at || '';
+      } else {
+        // default: created_at
+        va = a.created_at || '';
+        vb = b.created_at || '';
+      }
+      if (va < vb) return sortDir === 'asc' ? -1 : 1;
+      if (va > vb) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [localItems, filterText, sortField, sortDir, properties, allValues]);
+
   const activeView = views.find(v => v.id === activeViewId);
 
   if (loading) return (
@@ -169,7 +222,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
   );
 
   const sharedProps = {
-    items: localItems,
+    items: sortedFilteredItems,
     properties,
     allValues,
     databaseId,
@@ -203,6 +256,11 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
           onAdd={handleCreate}
           adding={creating}
           addButtonLabel={addButtonLabel}
+          sortField={sortField}
+          sortDir={sortDir}
+          onSortChange={handleSortChange}
+          filterText={filterText}
+          onFilterChange={handleFilterChange}
         />
         {activeView?.view_type === 'kanban'   && <KanbanView   {...sharedProps} activeView={activeView} />}
         {activeView?.view_type === 'table'    && <TableView    {...sharedProps} />}

@@ -8,7 +8,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useNavigate } from 'react-router-dom';
-import { CalendarDays, Plus } from 'lucide-react';
+import { CalendarDays, Plus, CheckSquare, Trash2, X, Check, ChevronDown } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SortableEntityCard, EntityCardOverlay } from '../EntityCard';
 import { propertyService } from '../../../services/propertyService';
 import { ProCalendarPicker } from '../../ui/calendar/ProCalendarPicker';
@@ -28,6 +29,40 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
 
   const [localAllValues, setLocalAllValues] = useState(allValues);
   useEffect(() => { setLocalAllValues(allValues); }, [allValues]);
+
+  const [selectedCards, setSelectedCards] = useState(() => new Set());
+  const [bulkMode, setBulkMode] = useState(false);
+
+  const toggleSelect = useCallback((id) => {
+    setSelectedCards(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const handleBulkMove = useCallback((statusOptionId) => {
+    const ids = [...selectedCards];
+    if (!groupProp) return;
+    const newStatusId = (statusOptionId === '__none' || !statusOptionId) ? '' : statusOptionId;
+    setLocalAllValues(prev => {
+      const next = { ...prev };
+      for (const id of ids) {
+        next[id] = { ...(next[id] || {}), [groupProp.id]: { selected: newStatusId } };
+      }
+      return next;
+    });
+    for (const id of ids) onStatusChange(id, groupProp.id, newStatusId);
+    setSelectedCards(new Set());
+    setBulkMode(false);
+  }, [selectedCards, groupProp, onStatusChange]);
+
+  const handleBulkDelete = useCallback(() => {
+    for (const id of selectedCards) onDelete?.(id);
+    setSelectedCards(new Set());
+    setBulkMode(false);
+  }, [selectedCards, onDelete]);
 
   const [colOrder, setColOrder] = useState(null);
 
@@ -163,6 +198,7 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
   const activeCol = activeColId ? columns.find(c => c.id === activeColId) : null;
 
   return (
+    <>
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
@@ -183,6 +219,17 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
             ))}
           </select>
         </div>
+        <button
+          onClick={() => { setBulkMode(prev => !prev); setSelectedCards(new Set()); }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all shrink-0 ${
+            bulkMode
+              ? 'text-primary border-primary/40 bg-primary/10'
+              : 'text-muted-foreground border-border/40 bg-secondary/30 hover:text-foreground'
+          }`}
+        >
+          <CheckSquare className="w-3.5 h-3.5" />
+          Selecionar
+        </button>
       </div>
 
       <SortableContext items={columns.map(c => c.id)} strategy={horizontalListSortingStrategy}>
@@ -203,6 +250,9 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
               onDelete={onDelete}
               cardFields={cardFields}
               entityType={entityType}
+              bulkMode={bulkMode}
+              selectedCards={selectedCards}
+              toggleSelect={toggleSelect}
             />
           ))}
           {groupProp && (
@@ -245,10 +295,53 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
         )}
       </DragOverlay>
     </DndContext>
+
+    {/* Bulk action floating bar */}
+    {selectedCards.size > 0 && (
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2.5 bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-2xl shadow-2xl animate-in fade-in-0 slide-in-from-bottom-4">
+        <span className="text-xs font-semibold text-foreground px-1">
+          {selectedCards.size} card{selectedCards.size !== 1 ? 's' : ''} selecionado{selectedCards.size !== 1 ? 's' : ''}
+        </span>
+        <div className="w-px h-4 bg-border/50" />
+        {groupProp && (
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button className="flex items-center gap-1.5 text-xs font-medium text-foreground bg-secondary/50 hover:bg-secondary/80 px-3 py-1.5 rounded-lg transition-colors">
+                Mover para <ChevronDown className="w-3 h-3 opacity-50" />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content align="center" sideOffset={8} className="z-[60] min-w-[150px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in-0 zoom-in-95">
+                {(groupProp.config?.options || []).map(opt => (
+                  <DropdownMenu.Item key={opt.id} onSelect={() => handleBulkMove(opt.id)}
+                    className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none">
+                    <span className={`w-2 h-2 rounded-full ${COLOR_DOT[opt.color] || 'bg-muted-foreground/50'}`} />
+                    {opt.label}
+                  </DropdownMenu.Item>
+                ))}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+        )}
+        <button
+          onClick={handleBulkDelete}
+          className="flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <Trash2 className="w-3.5 h-3.5" /> Excluir
+        </button>
+        <button
+          onClick={() => { setSelectedCards(new Set()); setBulkMode(false); }}
+          className="p-1.5 rounded-lg hover:bg-secondary/50 text-muted-foreground transition-colors"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    )}
+    </>
   );
 }
 
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields, entityType }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields, entityType, bulkMode, selectedCards, toggleSelect }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
 
@@ -367,6 +460,9 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
               density={density}
               cardFields={cardFields}
               entityType={entityType}
+              bulkMode={bulkMode}
+              isSelected={selectedCards?.has(item.id) ?? false}
+              onToggleSelect={toggleSelect}
             />
           ))}
         </div>

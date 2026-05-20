@@ -3,17 +3,19 @@ import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { fmtMonth, fmtWeekRange, fmtDay } from './calendarUtils';
 
 const VIEWS = [
-  { id: 'month',  label: 'Mês' },
-  { id: 'week',   label: 'Semana' },
-  { id: 'day',    label: 'Dia' },
-  { id: 'agenda', label: 'Agenda' },
+  { id: 'month',    label: 'Mês' },
+  { id: 'week',     label: 'Semana' },
+  { id: 'day',      label: 'Dia' },
+  { id: 'agenda',   label: 'Agenda' },
+  { id: 'timeline', label: 'Geral do Mês' },
 ];
 
 export function CalendarHeader({ view, current, onViewChange, onToday, onNext, onPrev, filterMode, onFilterChange }) {
   const title =
-    view === 'month'  ? fmtMonth(current) :
-    view === 'week'   ? fmtWeekRange(current) :
-    view === 'day'    ? fmtDay(current) :
+    view === 'month'    ? fmtMonth(current) :
+    view === 'week'     ? fmtWeekRange(current) :
+    view === 'day'      ? fmtDay(current) :
+    view === 'timeline' ? fmtMonth(current) :
     'Agenda';
 
   return (
