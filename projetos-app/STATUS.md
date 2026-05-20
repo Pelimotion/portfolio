@@ -7,8 +7,8 @@
 
 **Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→M completas ✅ | Build verde (842KB index.js) | Último commit: `87547fc`
-**Próxima Ação:** Dashboard financeiro (Fase N) ou testes de produção end-to-end.
+**Status:** BETA — Fases A→N completas ✅ | Build verde (844KB index.js) | Último commit: `b2edd1d`
+**Próxima Ação:** Dashboard financeiro (Fase O) ou testes de produção end-to-end.
 **Branch ativa:** `main`
 **Bloqueadores:** stages migration ainda pendente: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
@@ -55,13 +55,13 @@
 | Fase M — M.6 Calendar "Geral do Mês" (Gantt por projeto) | ✅ completo | 2026-05-20 |
 | Fase M — M.7 Topbar redesign (h-12, breadcrumb, shadow on scroll, avatar) | ✅ completo | 2026-05-20 |
 | Fase M — M.8 Features competitivas (Favoritos, ActivityPulse, BulkActions, Templates, StatusAccent) | ✅ completo | 2026-05-20 |
-| **Fase N — N.2 Fix busca (Cena 07a/07b)** | ⏳ Planejado | 2026-05-20 |
-| **Fase N — N.3 Fix breadcrumb (Pipeline → Projeto)** | ⏳ Planejado | 2026-05-20 |
-| **Fase N — N.5 DocSearch GSheets/GSlides/PDF** | ⏳ Planejado | 2026-05-20 |
-| **Fase N — N.4 Página de cena (3 abas ricas)** | ⏳ Planejado | 2026-05-20 |
-| **Fase N — N.1 Collapsing header** | ⏳ Planejado | 2026-05-20 |
-| **Fase N — N.6 Avatares 3D realistas + trending** | ⏳ Planejado | 2026-05-20 |
-| **Fase N — N.7 Dashboard Pipeline Hub redesign** | ⏳ Planejado | 2026-05-20 |
+| Fase N — N.2 Fix busca (Cena 07a/07b) | ✅ completo | 2026-05-20 |
+| Fase N — N.3 Fix breadcrumb (Pipeline → Projeto) | ✅ completo | 2026-05-20 |
+| Fase N — N.5 DocSearch GSheets/GSlides/PDF | ✅ completo | 2026-05-20 |
+| Fase N — N.4 Página de cena (3 abas: Overview + Notes + Assets) | ✅ completo | 2026-05-20 |
+| Fase N — N.1 Collapsing header (isCollapsed + max-h transition) | ✅ completo | 2026-05-20 |
+| Fase N — N.6 Avatares 3D (skin 15 tons, hair 18 estilos, facial hair, ProfilePage hero) | ✅ completo | 2026-05-20 |
+| Fase N — N.7 Dashboard redesign (topbar consolidado, pipeline+filtros colapsáveis) | ✅ completo | 2026-05-20 |
 | Dashboard financeiro | ❌ Não iniciado | — |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
@@ -188,6 +188,39 @@ search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-20 — Fase N: 7 blocos de fixes e melhorias (N.1→N.7 completos)
+
+**O que foi feito:**
+- [x] **N.2** `searchUtils.js` — `minMatchCharLength: 2→1` + `useExtendedSearch: true`; guard `query.length < 1` — fix busca "Cena 07a/07b"
+- [x] **N.3** `UniversalEntityPage.jsx` — useEffect de parent resolution: se `parent.page_type === 'database'`, sobe mais um nível e usa título/id do projeto avô no breadcrumb
+- [x] **N.5** `searchService.js` — fallback select inclui `mime_type`; `DocSearchModal.jsx` — `getDriveUrl` recebe `mimeType` e gera URLs corretas para GSheets/GSlides/GDocs/Drive
+- [x] **N.4** `UniversalEntityPage.jsx` — `SCENE_TABS` += `overview` (default); scene default tab usa localStorage; handlers para `overview` e `notes` adicionados; `SceneOverview.jsx` criado (Detalhes + Atividade + back-to-project)
+- [x] **N.1** `UniversalEntityPage.jsx` — `isCollapsed` state com hysteresis (collapse >60px, expand <10px); hero com `max-h` CSS transition; topbar exibe título em destaque quando colapsado
+- [x] **N.6** `FaceGenerator.js` — skin tones 9→15, hair styles 12→18, `facialHair` params + `buildFacialHair()`; `OutfitGenerator.js` — tops/outer/headwear expandidos; `ProfilePage.jsx` — AvatarWidget 160×200 hero no topo da aba Perfil
+- [x] **N.7** `Dashboard.jsx` — topbar consolidado h-14 (busca central expandível, view toggle + Novo à direita); pipeline bar inline + filter chips em linha colapsável; `DashboardOverview` removida da stack vertical
+
+**Arquivos criados:** `src/components/scene/SceneOverview.jsx`
+**Arquivos modificados:** `searchUtils.js`, `UniversalEntityPage.jsx`, `searchService.js`, `DocSearchModal.jsx`, `FaceGenerator.js`, `OutfitGenerator.js`, `ProfilePage.jsx`, `Dashboard.jsx`, `STATUS.md`
+**Build:** ✅ verde (844KB index.js, zero erros) — commit `b2edd1d`
+
+**SQL migration ainda necessária (N.5 RPC — opcional mas melhora qualidade do snippet):**
+```sql
+-- Atualizar RPC para retornar mime_type (rodar no Supabase SQL Editor):
+CREATE OR REPLACE FUNCTION search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
+RETURNS TABLE (file_name TEXT, chunk_index INT, drive_file_id TEXT, project_id UUID, snippet TEXT, mime_type TEXT)
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT file_name, chunk_index, drive_file_id, project_id, mime_type,
+    ts_headline('portuguese', content, websearch_to_tsquery('portuguese', p_query),
+      'StartSel=[[, StopSel=]], MaxWords=30, MinWords=15') AS snippet
+  FROM document_chunks
+  WHERE content_tsv @@ websearch_to_tsquery('portuguese', p_query)
+  ORDER BY ts_rank_cd(content_tsv, websearch_to_tsquery('portuguese', p_query)) DESC
+  LIMIT p_limit;
+$$;
+```
+
+---
 
 ### 2026-05-20 — Fase M: 8 blocos de melhoria (M.1→M.8 completos)
 
@@ -552,63 +585,33 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — FASE N (7 blocos planejados)
+## 🎯 PRÓXIMA SESSÃO — FASE O
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: projetos-app-agent — Fase N
+# Context: projetos-app-agent — Fase O
 
 📋 STATUS ANTERIOR
-Fase M completa (2026-05-20) — commit 87547fc, build verde (842KB).
-Fase N PLANEJADA (2026-05-20) — plano completo em ~/.claude/plans/mighty-conjuring-hippo.md.
-7 sub-fases mapeadas com causa raiz diagnosticada por 6 agentes de pesquisa.
+Fase N completa (2026-05-20) — commit b2edd1d, build verde (844KB).
+7 sub-fases entregues: busca fix (Fuse.js), breadcrumb fix, DocSearch mime_type,
+SceneOverview (3 abas), collapsing hero, avatares expandidos, Dashboard redesign.
 
 🎯 TAREFA DESTA SESSÃO
-Implementar Fase N na ordem: N.2 → N.3 → N.5 → N.4 → N.1 → N.6 → N.7
+[DESCREVER AQUI — ex: Dashboard financeiro, testes de produção, nova feature]
 
-📦 PLANO DE EXECUÇÃO — FASE N
+📦 OPÇÕES PARA FASE O
+1. Dashboard financeiro — tabela de faturamento por projeto, gráfico mensal
+2. Testes ponta-a-ponta — verificar Fase N em produção (busca, breadcrumb, DocSearch)
+3. SQL migration pendente — rodar ALTER TABLE pages ADD COLUMN stages + testar Calendário
 
-PASSO N.2 (5 linhas): Fix busca global "Cena 07a/07b/07c" não encontrada
-  Causa raiz: Fuse.js `minMatchCharLength: 2` descarta token "a" (1 char)
-  Fix: `minMatchCharLength: 1` + `useExtendedSearch: true`
-  Arquivo: `src/lib/searchUtils.js` (linhas 3-10)
+SQL migration N.5 RPC (opcional, melhora DocSearch com mime_type):
+  Ver SQL completo na seção de histórico da Fase N no STATUS.md
 
-PASSO N.3 (~20 linhas): Fix breadcrumb — mostra "Pipeline" em vez do projeto
-  Causa raiz: `parent_id` da cena aponta pro database intermediário (page_type='database')
-  Fix: se parent.page_type === 'database', subir mais um nível para o projeto avô
-  Arquivo: `src/pages/entity/UniversalEntityPage.jsx` (linhas 71-72, 92-101, 212-234)
-
-PASSO N.5 (debug + fix): DocSearchModal — GSheets/GSlides/PDF não funcional
-  MIME types já no código (K.9), mas extração pode falhar silenciosamente
-  Fix: verificar extractText() para cada tipo, corrigir chamadas de export do Drive
-  Arquivos: `src/services/documentService.js`, `src/components/search/DocSearchModal.jsx`
-
-PASSO N.4 (novo component): Redesign página de cena (3 abas ricas)
-  Bug crítico: tab "Notes" não renderiza nada (gap nas linhas 488-509)
-  Novo: aba Overview (descrição + metadados + atividade), fix Notes, Assets existente
-  Arquivos: `UniversalEntityPage.jsx`, NOVO `src/components/scene/SceneOverview.jsx`
-
-PASSO N.1 (IntersectionObserver): Header colapsa ao rolar
-  Padrão Linear/Notion: hero some → barra sticky 48px com breadcrumb + ações
-  Implementação: sentinel div + IntersectionObserver + sticky bar condicional
-  Arquivo: `src/pages/entity/UniversalEntityPage.jsx`
-
-PASSO N.6 (generative art): Avatares 3D mais realistas e trending
-  +6 hair styles (mullet, wolf cut, braids, locs), facial hair (6 estilos)
-  Outfits 2026: oversized, puffer vest, varsity jacket, AirPods, durag
-  Avatar visível no topo do ProfilePage (não só na aba "Identidade 3D")
-  Arquivos: `FaceGenerator.js`, `OutfitGenerator.js`, `ProfilePage.jsx`
-
-PASSO N.7 (layout rewrite): Dashboard Pipeline Hub redesign
-  5 rows → 2 rows compactas. Topbar (busca central + view toggle) + Filter row colapsável
-  Content area maximizada. Grid cards menores.
-  Arquivos: `Dashboard.jsx`, `DashboardOverview.jsx`
-
-Migrations SQL ainda pendentes (bloqueador para Calendário Etapas):
+Migrations SQL ainda pendentes:
   1. ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
-⏸️ Prosseguir com N.2?
+⏸️ Prosseguir?
 ```
 
 ---
