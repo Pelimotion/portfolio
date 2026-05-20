@@ -7,9 +7,8 @@ import {
   LayoutDashboard, Plus, UserPlus, LayoutGrid,
   List, Rows3, Search, X, ChevronRight,
   AlertTriangle, Clock, CheckCircle2, CalendarOff,
-  BarChart2, TrendingUp,
+  BarChart2, TrendingUp, ChevronDown,
 } from 'lucide-react';
-import { DashboardOverview } from '../../components/dashboard/DashboardOverview';
 import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
 import { GenerativeIcon } from '../../components/ui/GenerativeIcon';
 import { useAuth } from '../../contexts/AuthContext';
@@ -52,9 +51,10 @@ export default function Dashboard() {
   const [initializing, setInitializing]   = useState(true);
 
   // Hub-level state (persisted)
-  const [hubView,     setHubView]     = useState(() => loadPreference(ROOT_HUB_ID, 'hubView', 'board'));
-  const [quickFilter, setQuickFilter] = useState('all');
-  const [searchText,  setSearchText]  = useState('');
+  const [hubView,            setHubView]            = useState(() => loadPreference(ROOT_HUB_ID, 'hubView', 'board'));
+  const [quickFilter,        setQuickFilter]        = useState('all');
+  const [searchText,         setSearchText]         = useState('');
+  const [filterRowCollapsed, setFilterRowCollapsed] = useState(false);
 
   // Data for grid/timeline/summary (loaded separately from DatabaseRenderer)
   const [projects,    setProjects]    = useState([]);
@@ -211,137 +211,132 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col h-full overflow-hidden bg-[var(--surface-0)] relative">
 
-      {/* ── Topbar ── */}
-      <header className="h-12 flex items-center justify-between px-6 border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-1)]">
-        <div className="flex items-center gap-3">
-          <LayoutDashboard className="w-4 h-4 text-primary shrink-0" />
-          <h1 className="font-semibold text-sm tracking-tight text-foreground leading-none">Projects Hub</h1>
-          <span className="text-[10px] text-muted-foreground/40 font-medium uppercase tracking-widest hidden md:block">Gerenciador de Produção</span>
+      {/* ── Topbar consolidado (h-14) ── */}
+      <header className="h-14 flex items-center gap-3 px-5 border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-1)]">
+        {/* Esquerda: ícone + título */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <LayoutDashboard className="w-4 h-4 text-primary" />
+          <h1 className="font-semibold text-sm tracking-tight leading-none">Projects Hub</h1>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Centro: busca expandível */}
+        <div className="flex-1 flex justify-center">
+          <div className="relative flex items-center w-48 focus-within:w-80 transition-all duration-200">
+            <Search className="absolute left-2.5 w-3.5 h-3.5 text-muted-foreground/40 pointer-events-none" />
+            <input
+              type="text"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              placeholder="Buscar projeto…"
+              className="w-full pl-8 pr-6 py-1.5 text-xs bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/30"
+            />
+            {searchText && (
+              <button onClick={() => setSearchText('')} className="absolute right-2 text-muted-foreground/40 hover:text-foreground">
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Direita: view toggle + equipe + novo projeto */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-0.5 bg-[var(--surface-2)] p-0.5 rounded-lg border border-[var(--border-subtle)]">
+            {HUB_VIEWS.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                onClick={() => handleHubViewChange(id)}
+                title={label}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
+                  hubView === id ? 'bg-[var(--surface-0)] shadow-sm text-foreground' : 'text-muted-foreground/50 hover:text-foreground'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">{label}</span>
+              </button>
+            ))}
+          </div>
           <button onClick={() => setAddMemberOpen(true)}
             className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)] px-2.5 py-1.5 rounded-lg transition-all">
-            <UserPlus className="w-3.5 h-3.5" /> Equipe
+            <UserPlus className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Equipe</span>
           </button>
           <button onClick={() => setCreateOpen(true)}
-            className="flex items-center gap-2 text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-1.5 rounded-lg transition-all">
-            <Plus className="w-3.5 h-3.5 stroke-[2.5px]" /> Novo Projeto
+            className="flex items-center gap-1.5 text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 px-3.5 py-1.5 rounded-lg transition-all">
+            <Plus className="w-3.5 h-3.5 stroke-[2.5px]" /> Novo
           </button>
         </div>
       </header>
 
-      {/* ── Summary Overview ── */}
-      <DashboardOverview />
-
-      {/* ── Pipeline Summary Bar ── */}
-      {!dataLoading && pipelineCounts.opts.length > 0 && (
-        <div className="px-6 pt-4 pb-2 space-y-2 shrink-0">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-widest flex items-center gap-1.5">
-              <BarChart2 className="w-3 h-3" /> Pipeline — {projects.length} projetos
-            </span>
-            {quickFilter !== 'all' && (
-              <button onClick={() => setQuickFilter('all')} className="text-[10px] text-primary hover:underline flex items-center gap-1">
-                <X className="w-3 h-3" /> Limpar filtro
-              </button>
-            )}
-          </div>
-          <div className="flex h-2 rounded-full overflow-hidden gap-px">
-            {pipelineCounts.opts.filter(o => o.count > 0).map(opt => {
-              const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
-              const pct = Math.round((opt.count / pipelineCounts.total) * 100);
-              return (
-                <button
-                  key={opt.id}
-                  title={`${opt.label}: ${opt.count}`}
-                  onClick={() => setQuickFilter(quickFilter === opt.id ? 'all' : opt.id)}
-                  className={`h-full ${colors.bg} transition-all hover:opacity-80 ${quickFilter === opt.id ? 'ring-2 ring-white/40 ring-offset-1 ring-offset-black' : ''}`}
-                  style={{ width: `${pct}%` }}
-                />
-              );
-            })}
-          </div>
-          <div className="flex items-center gap-4 flex-wrap">
-            {pipelineCounts.opts.filter(o => o.count > 0).map(opt => {
-              const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
-              return (
-                <button
-                  key={opt.id}
-                  onClick={() => setQuickFilter(quickFilter === opt.id ? 'all' : opt.id)}
-                  className={`flex items-center gap-1.5 transition-opacity ${quickFilter !== 'all' && quickFilter !== opt.id ? 'opacity-30' : ''}`}
-                >
-                  <div className={`w-2 h-2 rounded-sm ${colors.bg}`} />
-                  <span className="text-[10px] font-medium text-muted-foreground/70">{opt.label}</span>
-                  <span className="text-[10px] font-bold text-foreground/80">{opt.count}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Toolbar: Quick filters + Search + View toggle ── */}
-      <div className="px-6 py-2 flex items-center gap-2 flex-wrap border-b border-[var(--border-subtle)] shrink-0 bg-[var(--surface-0)]">
-        {/* Quick filters */}
-        <div className="flex items-center gap-1 flex-wrap">
-          {QUICK_FILTERS.map(({ id, label, count, Icon }) => (
-            <button
-              key={id}
-              onClick={() => setQuickFilter(id)}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
-                quickFilter === id
-                  ? 'bg-primary/10 text-primary border border-primary/20'
-                  : 'text-muted-foreground/60 hover:text-foreground hover:bg-[var(--surface-2)] border border-transparent'
-              }`}
-            >
-              <Icon className="w-3 h-3" />
-              {label}
-              {count > 0 && <span className={`text-[9px] font-bold px-1 py-0.5 rounded ${quickFilter === id ? 'bg-primary/20 text-primary' : 'bg-[var(--surface-3)] text-muted-foreground/60'}`}>{count}</span>}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex-1" />
-
-        {/* Search */}
-        <div className="relative flex items-center">
-          <Search className="absolute left-2 w-3 h-3 text-muted-foreground/40 pointer-events-none" />
-          <input
-            type="text"
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            placeholder="Buscar projeto…"
-            className="pl-6 pr-6 py-1.5 text-xs bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 w-32 focus:w-48 transition-all placeholder:text-muted-foreground/30"
-          />
-          {searchText && (
-            <button onClick={() => setSearchText('')} className="absolute right-1.5 text-muted-foreground/40 hover:text-foreground transition-colors">
-              <X className="w-3 h-3" />
-            </button>
+      {/* ── Pipeline + Filtros (colapsável, h-10 quando visível) ── */}
+      <div className={`shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-0)] overflow-hidden transition-all duration-200 ${filterRowCollapsed ? 'max-h-0 border-b-0' : 'max-h-24'}`}>
+        <div className="px-5 py-2 flex items-center gap-3">
+          {/* Pipeline bar inline */}
+          {!dataLoading && pipelineCounts.opts.length > 0 && (
+            <div className="flex items-center gap-2 shrink-0">
+              <BarChart2 className="w-3 h-3 text-muted-foreground/30 shrink-0" />
+              <div className="flex h-1.5 w-24 rounded-full overflow-hidden gap-px">
+                {pipelineCounts.opts.filter(o => o.count > 0).map(opt => {
+                  const colors = COLOR_MAP[opt.color] || COLOR_MAP.gray;
+                  const pct = Math.round((opt.count / pipelineCounts.total) * 100);
+                  return (
+                    <div key={opt.id} title={`${opt.label}: ${opt.count}`}
+                      className={`h-full ${colors.bg}`} style={{ width: `${pct}%` }} />
+                  );
+                })}
+              </div>
+              <span className="text-[10px] text-muted-foreground/40">{projects.length}p</span>
+            </div>
           )}
-        </div>
 
-        {/* View toggle */}
-        <div className="flex items-center gap-0.5 bg-[var(--surface-2)] p-0.5 rounded-lg border border-[var(--border-subtle)]">
-          {HUB_VIEWS.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              onClick={() => handleHubViewChange(id)}
-              title={label}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
-                hubView === id ? 'bg-[var(--surface-1)] shadow-sm text-foreground' : 'text-muted-foreground/50 hover:text-foreground'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{label}</span>
-            </button>
-          ))}
+          {/* Divider */}
+          {!dataLoading && <div className="w-px h-4 bg-[var(--border-subtle)] shrink-0" />}
+
+          {/* Quick filter chips — scrollable */}
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
+            {QUICK_FILTERS.map(({ id, label, count, Icon }) => (
+              <button
+                key={id}
+                onClick={() => setQuickFilter(id)}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all shrink-0 ${
+                  quickFilter === id
+                    ? 'bg-primary/10 text-primary border border-primary/20'
+                    : 'text-muted-foreground/50 hover:text-foreground hover:bg-[var(--surface-2)] border border-transparent'
+                }`}
+              >
+                <Icon className="w-3 h-3" />
+                {label}
+                {count > 0 && (
+                  <span className={`text-[9px] font-bold px-1 rounded ${quickFilter === id ? 'text-primary' : 'text-muted-foreground/40'}`}>{count}</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Collapse toggle */}
+          <button
+            onClick={() => setFilterRowCollapsed(c => !c)}
+            className="shrink-0 p-1 rounded-md text-muted-foreground/30 hover:text-muted-foreground hover:bg-[var(--surface-2)] transition-all"
+            title="Ocultar barra de filtros"
+          >
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
+
+      {/* Expand button when collapsed */}
+      {filterRowCollapsed && (
+        <button
+          onClick={() => setFilterRowCollapsed(false)}
+          className="shrink-0 flex items-center justify-center gap-1 h-5 text-[10px] text-muted-foreground/30 hover:text-muted-foreground hover:bg-[var(--surface-2)] transition-all border-b border-[var(--border-subtle)]"
+        >
+          <ChevronDown className="w-3 h-3 rotate-180" /> Filtros
+        </button>
+      )}
 
       {/* ── Content Area ── */}
       <main className="flex-1 overflow-y-auto custom-scrollbar">
         {hubView === 'board' && (
-          <div className="p-6">
+          <div className="p-5">
             <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" addButtonLabel={null} />
           </div>
         )}

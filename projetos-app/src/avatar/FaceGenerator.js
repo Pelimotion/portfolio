@@ -18,9 +18,14 @@ export function generateFaceParams(seed) {
     },
     skin: {
       tone: rng.pick([
-        '#FDDBB4', '#F5C89A', '#E8A87C',
-        '#C68642', '#A0522D', '#8B3A0F',
-        '#6B3A2A', '#4A2010', '#3B1A0A'
+        // light tones (cool/warm undertones)
+        '#FCEBD8', '#FDDBB4', '#F7C9A0', '#F5C89A',
+        // medium tones
+        '#E8A87C', '#D4956A', '#C68642', '#B8763A',
+        // warm medium-dark
+        '#A0522D', '#8B4513', '#8B3A0F',
+        // deep tones
+        '#6B3A2A', '#5A2D1A', '#4A2010', '#3B1A0A'
       ]),
       saturation: rng.range(0.8, 1.3),
       roughness:  rng.range(0.3, 0.7)
@@ -66,11 +71,23 @@ export function generateFaceParams(seed) {
       protrusion: rng.range(0.0, 0.5),
       position:   rng.range(-0.1, 0.1)
     },
+    facialHair: {
+      style: rng.pick(['clean', 'stubble', 'goatee', 'mustache', 'full-beard', 'soul-patch']),
+      // 70% chance of clean shave; rest have facial hair
+      present: rng.chance(0.30),
+      color: rng.pick(['#1A0A00', '#3D1F00', '#6B3A1F', '#8B7355', '#808080', '#FFFFFF'])
+    },
+    faceDetails: {
+      freckles: rng.chance(0.15),
+      beautyMark: rng.chance(0.10),
+    },
     hair: {
       style: rng.pick([
         'buzz-cut', 'spiky', 'shaggy', 'mohawk', 'curtains',
         'fauxhawk', 'cornrows', 'afro', 'dreadlocks', 'bald',
-        'undercut', 'beanie-covered'
+        'undercut', 'beanie-covered',
+        // N.6 additions — trending 2026
+        'mullet', 'wolf-cut', 'curtain-bangs', 'buzz-fade', 'braids', 'locs'
       ]),
       color: rng.pick([
         '#1A0A00', '#3D1F00', '#8B4513',
@@ -132,6 +149,13 @@ export function buildFaceMesh(params) {
   const hairGroup = buildHair(params.hair)
   hairGroup.position.set(0, 0.7 * params.headShape.height, 0)
   group.add(hairGroup)
+
+  // ── BARBA / FACIAL HAIR ──────────────────────────────────
+  if (params.facialHair?.present) {
+    const facialHairGroup = buildFacialHair(params.facialHair, params.skin.tone)
+    facialHairGroup.position.set(0, -0.28, 0.88)
+    group.add(facialHairGroup)
+  }
 
   // ── PESCOÇO + BUSTO ──────────────────────────────────
   const bustGroup = buildBust(params.skin.tone)
@@ -296,6 +320,31 @@ function buildHair(params) {
         group.add(cap)
     }
     
+    return group
+}
+
+function buildFacialHair(params, skinTone) {
+    const group = new THREE.Group()
+    const mat = createToonMaterial(params.color)
+    const style = params.style
+
+    if (style === 'stubble') {
+        const stubble = new THREE.Mesh(new THREE.SphereGeometry(0.42, 8, 8, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.25), mat)
+        stubble.scale.set(1, 0.3, 0.8)
+        group.add(stubble)
+    } else if (style === 'mustache') {
+        const mustache = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.05, 0.04), mat)
+        group.add(mustache)
+    } else if (style === 'goatee') {
+        const goatee = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.25, 6), mat)
+        goatee.rotation.x = Math.PI
+        goatee.position.y = -0.1
+        group.add(goatee)
+    } else if (style === 'full-beard' || style === 'soul-patch') {
+        const beard = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.55), mat)
+        beard.scale.set(1, style === 'soul-patch' ? 0.4 : 0.8, 0.7)
+        group.add(beard)
+    }
     return group
 }
 

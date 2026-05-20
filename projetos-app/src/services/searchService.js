@@ -16,7 +16,8 @@
  *     chunk_index    INT,
  *     drive_file_id  TEXT,
  *     project_id     UUID,
- *     snippet        TEXT
+ *     snippet        TEXT,
+ *     mime_type      TEXT
  *   )
  *   LANGUAGE sql STABLE SECURITY DEFINER
  *   AS $$
@@ -25,6 +26,7 @@
  *       chunk_index,
  *       drive_file_id,
  *       project_id,
+ *       mime_type,
  *       ts_headline(
  *         'portuguese', content,
  *         websearch_to_tsquery('portuguese', p_query),
@@ -94,7 +96,7 @@ export async function searchDocuments(query, limit = 10) {
   // Fallback: textSearch via Supabase JS + snippet client-side
   const { data, error } = await supabase
     .from('document_chunks')
-    .select('file_name, chunk_index, content, drive_file_id, project_id')
+    .select('file_name, chunk_index, content, drive_file_id, project_id, mime_type')
     .textSearch('content', query, { type: 'websearch', config: 'portuguese' })
     .limit(limit);
 
@@ -105,6 +107,7 @@ export async function searchDocuments(query, limit = 10) {
     chunk_index: row.chunk_index,
     drive_file_id: row.drive_file_id,
     project_id: row.project_id,
+    mime_type: row.mime_type,
     snippet: extractSnippet(row.content, query),
   }));
 }

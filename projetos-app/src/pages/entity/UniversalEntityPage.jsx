@@ -37,6 +37,7 @@ import { generativeService } from '../../lib/generative/generativeService';
 import { PropertyManagerModal } from '../../components/database/PropertyManagerModal';
 import { hashString } from '../../lib/avatarEngine';
 import { useAuth } from '../../contexts/AuthContext';
+import { SceneOverview } from '../../components/scene/SceneOverview';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
@@ -46,8 +47,9 @@ const PROJECT_TABS = [
 ];
 
 const SCENE_TABS = [
+  { id: 'overview', label: 'Overview', Icon: LayoutDashboard },
   { id: 'notes',    label: 'Notes',    Icon: FileText },
-  { id: 'assets',  label: 'Assets',   Icon: FolderOpen },
+  { id: 'assets',   label: 'Assets',   Icon: FolderOpen },
 ];
 
 const ROOT_HUB_ID = '00000000-0000-0000-0000-000000000000';
@@ -73,12 +75,18 @@ export function UniversalEntityPage() {
   const [headerRefreshKey,  setHeaderRefreshKey]  = useState(0);
   const [isRandomizing,     setIsRandomizing]     = useState(false);
   const [topbarScrolled,    setTopbarScrolled]    = useState(false);
+  const [isCollapsed,       setIsCollapsed]       = useState(false);
   const mainScrollRef = React.useRef(null);
 
   useEffect(() => {
     const el = mainScrollRef.current;
     if (!el) return;
-    const onScroll = () => setTopbarScrolled(el.scrollTop > 4);
+    const onScroll = () => {
+      const top = el.scrollTop;
+      setTopbarScrolled(top > 4);
+      // hysteresis: collapse at 60px, re-expand at 10px
+      setIsCollapsed(prev => top > 60 ? true : top < 10 ? false : prev);
+    };
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, []);
@@ -92,9 +100,19 @@ export function UniversalEntityPage() {
   useEffect(() => {
     if (!isProject && page?.parent_id) {
       pageService.fetchById(page.parent_id)
-        .then(dbPage => {
-          if (dbPage?.title) setParentPageTitle(dbPage.title);
-          if (dbPage?.parent_id) setGrandparentPageId(dbPage.parent_id);
+        .then(async dbPage => {
+          if (!dbPage) return;
+          if (dbPage.page_type === 'database' && dbPage.parent_id) {
+            // parent is an intermediary database (e.g. Pipeline) — go up to the real project
+            setGrandparentPageId(dbPage.parent_id);
+            try {
+              const projectPage = await pageService.fetchById(dbPage.parent_id);
+              if (projectPage?.title) setParentPageTitle(projectPage.title);
+            } catch (_) {}
+          } else {
+            if (dbPage.title) setParentPageTitle(dbPage.title);
+            if (dbPage.parent_id) setGrandparentPageId(dbPage.parent_id);
+          }
         })
         .catch(console.error);
     }
@@ -143,7 +161,8 @@ export function UniversalEntityPage() {
               }
           }
         } else {
-          if (isMounted) setActiveTab('notes');
+          const savedSceneTab = localStorage.getItem(`peli-tab-${pageId}`);
+          if (isMounted) setActiveTab(savedSceneTab || 'overview');
         }
       } catch (e) {
         console.error('UniversalEntityPage load error:', e);
@@ -218,13 +237,20 @@ export function UniversalEntityPage() {
         <ChevronRight className="w-3 h-3 opacity-30 shrink-0" />
         {page?.parent_id && page.parent_id !== ROOT_HUB_ID && (
           <>
-            <button onClick={() => navigate(`/page/${page.parent_id}`)} className="hover:text-foreground transition-colors truncate max-w-[140px]">
-              {pages[page.parent_id]?.title || parentPageTitle || '…'}
+            <button
+              onClick={() => navigate(`/page/${grandparentPageId || page.parent_id}`)}
+              className="hover:text-foreground transition-colors truncate max-w-[140px]"
+            >
+              {parentPageTitle || pages[grandparentPageId || page.parent_id]?.title || '…'}
             </button>
             <ChevronRight className="w-3 h-3 opacity-30 shrink-0" />
           </>
         )}
-        <span className="text-foreground/80 truncate font-semibold">{page?.title}</span>
+        {isCollapsed ? (
+          <span className="text-foreground truncate font-semibold text-sm">{page?.title}</span>
+        ) : (
+          <span className="text-foreground/80 truncate font-semibold">{page?.title}</span>
+        )}
         {/* Right: avatar */}
         <div className="ml-auto shrink-0">
           <button onClick={() => navigate('/profile')} className="transition-transform hover:scale-110">
@@ -234,7 +260,7 @@ export function UniversalEntityPage() {
       </div>
 
       {/* ── HEADER ── */}
-      <div className="relative group/header shrink-0">
+      <div className={`relative group/header shrink-0 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[260px]'}`}>
         {/* HERO AREA — responsive height */}
         <div className="h-28 md:h-52 w-full bg-[#050505] relative overflow-hidden">
           <GenerativeHeader
@@ -500,10 +526,27 @@ export function UniversalEntityPage() {
           {activeTab === 'pipeline' && childDatabase && (
             <DatabaseRenderer key="pipeline" databaseId={childDatabase.id} defaultView="kanban" entityType="scene" />
           )}
+          {activeTab === 'overview' && !isProject && (
+            <SceneOverview
+              page={page}
+              properties={properties}
+              propValues={propValues}
+              onPropChange={handlePropChange}
+              ancestorProjectId={grandparentPageId}
+              ancestorProjectTitle={parentPageTitle}
+            />
+          )}
+          {activeTab === 'notes' && !isProject && (
+            <RichTextEditor
+              content={page?.content || ''}
+              onSave={handleContentChange}
+              placeholder="Escreva suas notas aqui…"
+            />
+          )}
           {activeTab === 'assets' && (
-            <AssetsPanel 
-              pageId={pageId} 
-              isProject={isProject} 
+            <AssetsPanel
+              pageId={pageId}
+              isProject={isProject}
               parentProjectId={!isProject ? grandparentPageId : null}
             />
           )}

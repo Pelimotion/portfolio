@@ -10,7 +10,7 @@ export function generateOutfitParams(seed) {
 
   return {
     top: {
-      style: rng.pick(['tshirt-graphic', 'tshirt-plain', 'longsleeve', 'polo', 'sleeveless', 'jersey']),
+      style: rng.pick(['tshirt-graphic', 'tshirt-plain', 'longsleeve', 'polo', 'sleeveless', 'jersey', 'oversized-tee', 'crop-hoodie', 'mesh-top', 'jersey-vintage']),
       primaryColor: palette.primary,
       secondaryColor: palette.secondary,
       graphic: rng.pick(['brand-logo', 'skull', 'flame', 'checker', 'stripe', 'abstract', 'number', 'none']),
@@ -18,7 +18,7 @@ export function generateOutfitParams(seed) {
     },
     outerLayer: {
       present: rng.chance(0.70),
-      style: rng.pick(['hoodie-pullover', 'hoodie-zip', 'flannel-open', 'denim-jacket', 'bomber', 'windbreaker', 'vest-denim']),
+      style: rng.pick(['hoodie-pullover', 'hoodie-zip', 'flannel-open', 'denim-jacket', 'bomber', 'windbreaker', 'vest-denim', 'puffer-vest', 'varsity-jacket', 'kimono-layer', 'denim-trucker']),
       primaryColor: rng.pick([palette.dark, palette.primary, '#1A1A1A', '#2C2C2C']),
       open: rng.chance(0.5)
     },
@@ -29,7 +29,7 @@ export function generateOutfitParams(seed) {
     },
     headwear: {
       present: rng.chance(0.55),
-      style: rng.pick(['snapback-forward', 'snapback-backward', 'beanie-rolled', 'beanie-slouchy', 'fitted-flat', 'trucker', 'bandana-head', 'none']),
+      style: rng.pick(['snapback-forward', 'snapback-backward', 'beanie-rolled', 'beanie-slouchy', 'fitted-flat', 'trucker', 'bandana-head', 'bucket-hat', 'durag', 'none']),
       primaryColor: rng.pick([palette.primary, palette.dark, '#000000', '#FFFFFF', '#CC0000', '#003087', '#FF4500']),
       logo: rng.chance(0.7),
       logoStyle: rng.pick(['brand', 'skull', 'star', 'number', 'checker'])

@@ -35,14 +35,18 @@ function renderHighlight(snippet) {
 }
 
 // K.6: detect file type and return best Drive URL
-function getDriveUrl(driveFileId, fileName) {
+function getDriveUrl(driveFileId, fileName, mimeType) {
   if (!driveFileId) return null;
-  const ext = (fileName ?? '').split('.').pop().toLowerCase();
-  // No extension = Google Doc → use Docs editor URL (more direct)
-  if (!['pdf', 'doc', 'docx', 'txt', 'md'].includes(ext)) {
+  if (mimeType === 'application/vnd.google-apps.spreadsheet')
+    return `https://docs.google.com/spreadsheets/d/${driveFileId}/edit`;
+  if (mimeType === 'application/vnd.google-apps.presentation')
+    return `https://docs.google.com/presentation/d/${driveFileId}/edit`;
+  if (mimeType === 'application/vnd.google-apps.document')
     return `https://docs.google.com/document/d/${driveFileId}/edit`;
-  }
-  return `https://drive.google.com/file/d/${driveFileId}/view`;
+  const ext = (fileName ?? '').split('.').pop().toLowerCase();
+  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(ext))
+    return `https://drive.google.com/file/d/${driveFileId}/view`;
+  return `https://docs.google.com/document/d/${driveFileId}/edit`;
 }
 
 // K.6: file type badge (label + color class)
@@ -89,7 +93,7 @@ function exportMarkdown(results, query) {
 // ── DocResultItem ─────────────────────────────────────────────
 
 function DocResultItem({ result, compact = false }) {
-  const url = getDriveUrl(result.drive_file_id, result.file_name);
+  const url = getDriveUrl(result.drive_file_id, result.file_name, result.mime_type);
   const { label: typeLabel, cls: typeCls } = getFileTypeBadge(result.file_name, result.mime_type);
 
   const handleOpen = useCallback(() => {

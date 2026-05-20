@@ -3,14 +3,15 @@ import Fuse from 'fuse.js';
 export function buildSearchIndex(items) {
   return new Fuse(items, {
     includeMatches: true,
-    minMatchCharLength: 2,
+    minMatchCharLength: 1,
     threshold: 0.3,
+    useExtendedSearch: true,
     keys: ['title', 'description', 'note', 'projectTitle'],
   });
 }
 
 export function searchAll(query, fuse) {
-  if (!query || query.length < 2) return [];
+  if (!query || query.length < 1) return [];
   return fuse.search(query, { limit: 20 });
 }
 

@@ -55,6 +55,13 @@
 | Fase M — M.6 Calendar "Geral do Mês" (Gantt por projeto) | ✅ completo | 2026-05-20 |
 | Fase M — M.7 Topbar redesign (h-12, breadcrumb, shadow on scroll, avatar) | ✅ completo | 2026-05-20 |
 | Fase M — M.8 Features competitivas (Favoritos, ActivityPulse, BulkActions, Templates, StatusAccent) | ✅ completo | 2026-05-20 |
+| **Fase N — N.2 Fix busca (Cena 07a/07b)** | ⏳ Planejado | 2026-05-20 |
+| **Fase N — N.3 Fix breadcrumb (Pipeline → Projeto)** | ⏳ Planejado | 2026-05-20 |
+| **Fase N — N.5 DocSearch GSheets/GSlides/PDF** | ⏳ Planejado | 2026-05-20 |
+| **Fase N — N.4 Página de cena (3 abas ricas)** | ⏳ Planejado | 2026-05-20 |
+| **Fase N — N.1 Collapsing header** | ⏳ Planejado | 2026-05-20 |
+| **Fase N — N.6 Avatares 3D realistas + trending** | ⏳ Planejado | 2026-05-20 |
+| **Fase N — N.7 Dashboard Pipeline Hub redesign** | ⏳ Planejado | 2026-05-20 |
 | Dashboard financeiro | ❌ Não iniciado | — |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
@@ -545,37 +552,63 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — PÓS-FASE M
+## 🎯 PRÓXIMA SESSÃO — FASE N (7 blocos planejados)
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: projetos-app-agent — Pós-Fase M
+# Context: projetos-app-agent — Fase N
 
 📋 STATUS ANTERIOR
-Fase M completa (2026-05-20) — commit 87547fc, build verde (842KB):
-  - M.1: breadcrumb com título real do projeto pai
-  - M.2: pattern-generator v3 (kumiko/yagasuri/hexTessellation/tessen + rotation/scale + cache version)
-  - M.3: PropertyManagerModal — Radix Popover, scroll fix, sticky footer, delete sempre visível
-  - M.4: sort (5 campos) + filterText persistidos no DatabaseToolbar/Renderer
-  - M.5: Dashboard Hub — Board/Grid/Timeline, pipeline bar, quick filters, busca, Gantt
-  - M.6: Calendário "Geral do Mês" — Gantt mensal por projeto (ProjectTimelineView)
-  - M.7: Topbar h-12, shadow on scroll, TamagochiAvatar right
-  - M.8: useFavorites, activity pulse, status color accent, bulk actions, template stages
+Fase M completa (2026-05-20) — commit 87547fc, build verde (842KB).
+Fase N PLANEJADA (2026-05-20) — plano completo em ~/.claude/plans/mighty-conjuring-hippo.md.
+7 sub-fases mapeadas com causa raiz diagnosticada por 6 agentes de pesquisa.
 
-Migrations SQL pendentes (rodar no Supabase):
-  1. ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;  ← CRÍTICO para Calendário Etapas
+🎯 TAREFA DESTA SESSÃO
+Implementar Fase N na ordem: N.2 → N.3 → N.5 → N.4 → N.1 → N.6 → N.7
 
-Bunny Edge a deployar (opcional):
-  - bunny-edge/generate-embedding/  → VERTEX_PROJECT_ID + VERTEX_API_KEY + VITE_BUNNY_EMBED_URL
-  - bunny-edge/reindex-cron/        → SUPABASE_SERVICE_KEY + DRIVE_REFRESH_TOKEN + cron agendado
+📦 PLANO DE EXECUÇÃO — FASE N
 
-🎯 PRÓXIMA TAREFA SUGERIDA
-A. Rodar migration `stages` no Supabase (desbloqueador para Fase F + M.5/M.6).
-B. Dashboard financeiro / faturamento (nova fase — não planejada).
-C. Testes de produção end-to-end (Fase M recém-deployada).
+PASSO N.2 (5 linhas): Fix busca global "Cena 07a/07b/07c" não encontrada
+  Causa raiz: Fuse.js `minMatchCharLength: 2` descarta token "a" (1 char)
+  Fix: `minMatchCharLength: 1` + `useExtendedSearch: true`
+  Arquivo: `src/lib/searchUtils.js` (linhas 3-10)
 
-⏸️ Qual tarefa seguir?
+PASSO N.3 (~20 linhas): Fix breadcrumb — mostra "Pipeline" em vez do projeto
+  Causa raiz: `parent_id` da cena aponta pro database intermediário (page_type='database')
+  Fix: se parent.page_type === 'database', subir mais um nível para o projeto avô
+  Arquivo: `src/pages/entity/UniversalEntityPage.jsx` (linhas 71-72, 92-101, 212-234)
+
+PASSO N.5 (debug + fix): DocSearchModal — GSheets/GSlides/PDF não funcional
+  MIME types já no código (K.9), mas extração pode falhar silenciosamente
+  Fix: verificar extractText() para cada tipo, corrigir chamadas de export do Drive
+  Arquivos: `src/services/documentService.js`, `src/components/search/DocSearchModal.jsx`
+
+PASSO N.4 (novo component): Redesign página de cena (3 abas ricas)
+  Bug crítico: tab "Notes" não renderiza nada (gap nas linhas 488-509)
+  Novo: aba Overview (descrição + metadados + atividade), fix Notes, Assets existente
+  Arquivos: `UniversalEntityPage.jsx`, NOVO `src/components/scene/SceneOverview.jsx`
+
+PASSO N.1 (IntersectionObserver): Header colapsa ao rolar
+  Padrão Linear/Notion: hero some → barra sticky 48px com breadcrumb + ações
+  Implementação: sentinel div + IntersectionObserver + sticky bar condicional
+  Arquivo: `src/pages/entity/UniversalEntityPage.jsx`
+
+PASSO N.6 (generative art): Avatares 3D mais realistas e trending
+  +6 hair styles (mullet, wolf cut, braids, locs), facial hair (6 estilos)
+  Outfits 2026: oversized, puffer vest, varsity jacket, AirPods, durag
+  Avatar visível no topo do ProfilePage (não só na aba "Identidade 3D")
+  Arquivos: `FaceGenerator.js`, `OutfitGenerator.js`, `ProfilePage.jsx`
+
+PASSO N.7 (layout rewrite): Dashboard Pipeline Hub redesign
+  5 rows → 2 rows compactas. Topbar (busca central + view toggle) + Filter row colapsável
+  Content area maximizada. Grid cards menores.
+  Arquivos: `Dashboard.jsx`, `DashboardOverview.jsx`
+
+Migrations SQL ainda pendentes (bloqueador para Calendário Etapas):
+  1. ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
+
+⏸️ Prosseguir com N.2?
 ```
 
 ---
@@ -601,7 +634,7 @@ C. Testes de produção end-to-end (Fase M recém-deployada).
 
 ---
 
-**Última atualização:** 2026-05-20 (pós-K.9)
+**Última atualização:** 2026-05-20 (Fase N planejada)
 
 ---
 
