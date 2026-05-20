@@ -3,9 +3,13 @@ import { Folder, File as FileIcon, ExternalLink, MoreHorizontal, Link2, Trash2, 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { resolveSlotLink } from '../../lib/driveSlotUtils';
 
+// Slots de sistema: fixos, padrão e inalteráveis pelos usuários
+const SYSTEM_SLOT_KEYS = new Set(['docs', 'projeto', 'render']);
+
 export function DriveSlotCard({ slot, isProjectView, onEditSlot, onLinkSlot, onRemoveLink, onRemoveSlot }) {
   const { link: effectiveLink, source } = resolveSlotLink(slot);
   const Icon = slot.slot_type === 'folder' ? Folder : FileIcon;
+  const isSystem = SYSTEM_SLOT_KEYS.has(slot.slot_key);
 
   return (
     <div className="flex items-center gap-3 p-3 bg-secondary/40 border border-border/50 rounded-lg cursor-pointer hover:bg-secondary/60 hover:border-border transition-all relative group">
@@ -59,7 +63,7 @@ export function DriveSlotCard({ slot, isProjectView, onEditSlot, onLinkSlot, onR
             <DropdownMenu.Content className="z-50 min-w-[160px] bg-card border border-border rounded-lg shadow-xl p-1 animate-in fade-in-0 zoom-in-95">
               {isProjectView ? (
                 <>
-                  {slot.slot_key !== 'docs' && (
+                  {!isSystem && (
                     <DropdownMenu.Item onClick={onEditSlot} className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground hover:bg-secondary rounded cursor-pointer outline-none">
                       <Edit2 className="w-3.5 h-3.5" /> Editar Slot
                     </DropdownMenu.Item>
@@ -67,7 +71,7 @@ export function DriveSlotCard({ slot, isProjectView, onEditSlot, onLinkSlot, onR
                   <DropdownMenu.Item onClick={onLinkSlot} className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground hover:bg-secondary rounded cursor-pointer outline-none">
                     <Link2 className="w-3.5 h-3.5" /> Vincular Arquivo/Pasta
                   </DropdownMenu.Item>
-                  {slot.slot_key !== 'docs' && (
+                  {!isSystem && (
                     <>
                       <DropdownMenu.Separator className="h-px bg-border my-1" />
                       <DropdownMenu.Item onClick={() => {

@@ -345,6 +345,7 @@ export function DocSearchModal() {
       setQuery('');
       setResults([]);
       setSelectedFiles(new Set());
+      setHasChunks(null); // reset so next open re-checks the DB
       return;
     }
     if (hasChunks === null) {

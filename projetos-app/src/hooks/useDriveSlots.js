@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { seedDefaultDriveSlots } from '../core/databaseFactory';
 
+// Nomes canônicos dos slots de sistema (aplicados em memória, sem alterar o banco)
+const SYSTEM_SLOT_NAMES = {
+  docs:    'DOCS',
+  projeto: 'PROJETO',
+  render:  'OUT/RENDER',
+};
+
 export function useDriveSlots({ projectId, pageId, isScene = false }) {
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,8 +62,10 @@ export function useDriveSlots({ projectId, pageId, isScene = false }) {
     }
 
     // 4. Combina: slot + link próprio + link herdado
+    //    Normaliza display_name dos slots de sistema (sem alterar o banco)
     const merged = slotsData.map(slot => ({
       ...slot,
+      display_name: SYSTEM_SLOT_NAMES[slot.slot_key] ?? slot.display_name,
       link: pageLinks?.find(l => l.slot_id === slot.id) ?? null,
       inherited_link: isScene
         ? (projectLinks.find(l => l.slot_id === slot.id) ?? null)

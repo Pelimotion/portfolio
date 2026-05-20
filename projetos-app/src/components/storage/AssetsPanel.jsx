@@ -253,6 +253,15 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
 
   const handleIndexDocuments = async () => {
     if (!connection) return;
+
+    // Indexação restrita à pasta DOCS vinculada no slot correspondente
+    const docsSlot = slots.find(s => s.slot_key === 'docs');
+    const docsFolderId = docsSlot?.link?.drive_file_id;
+    if (!docsFolderId) {
+      toast.error('Vincule a pasta DOCS ao Google Drive antes de indexar. Clique em "+ Link" no card DOCS.');
+      return;
+    }
+
     setIndexing(true);
     setIndexResult(null);
     setIndexProgress({ current: 0, total: 0, fileName: '' });
@@ -267,7 +276,7 @@ export function AssetsPanel({ pageId, isProject, parentProjectId }) {
 
       const result = await documentService.indexProject(
         projectId,
-        connection.root_folder_id,
+        docsFolderId,   // ← só a pasta DOCS, não a raiz do projeto
         token,
         (progress) => setIndexProgress(progress)
       );
