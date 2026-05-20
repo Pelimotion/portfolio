@@ -408,7 +408,6 @@ export function DocSearchModal() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-150" />
         <Dialog.Content
-          aria-label="Buscar em documentos"
           className={cn(
             "fixed left-1/2 top-[10vh] z-[101] w-full max-w-2xl -translate-x-1/2",
             "bg-surface-1 border border-strong rounded-xl shadow-2xl overflow-hidden",
@@ -417,6 +416,8 @@ export function DocSearchModal() {
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-150"
           )}
         >
+          <Dialog.Title className="sr-only">Buscar em documentos</Dialog.Title>
+          <Dialog.Description className="sr-only">Busca full-text em documentos indexados do Google Drive</Dialog.Description>
           <Command shouldFilter={false} loop>
             {/* ── Input + view toggle ───────────────────────── */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-subtle">
