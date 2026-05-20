@@ -13,6 +13,8 @@
 
 import { supabase } from '../lib/supabase';
 
+const BUNNY_EXTRACT_URL = import.meta.env.VITE_BUNNY_EXTRACT_URL ?? null;
+
 // ── Configuração ──────────────────────────────────────────────
 
 const CHUNK_SIZE = 800;   // chars por chunk (conforme spike K.1)
@@ -22,6 +24,8 @@ const SUPPORTED_MIME_TYPES = new Set([
   'application/vnd.google-apps.document', // Google Docs
   'text/plain',
   'text/markdown',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+  'application/msword', // .doc legacy
 ]);
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -79,45 +83,79 @@ async function extractText(file, accessToken) {
     return await res.text();
   }
 
+  // DOCX / DOC via Bunny Edge extract-text (configurar VITE_BUNNY_EXTRACT_URL)
+  if (
+    mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    mime === 'application/msword'
+  ) {
+    if (!BUNNY_EXTRACT_URL) throw new Error('UNSUPPORTED_TYPE');
+    const res = await fetch(BUNNY_EXTRACT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ driveFileId: file.id, mimeType: mime, accessToken }),
+    });
+    if (res.status === 403) throw new Error('INSUFFICIENT_SCOPE');
+    if (!res.ok) throw new Error('UNSUPPORTED_TYPE');
+    const data = await res.json();
+    if (!data.text) throw new Error('UNSUPPORTED_TYPE');
+    return data.text;
+  }
+
   throw new Error('UNSUPPORTED_TYPE');
 }
 
 /**
  * Lista recursivamente todos os arquivos de uma pasta do Drive.
  * Retorna apenas arquivos (não subpastas), com campo `path` e `modifiedTime`.
+ * Suporta paginação e resolve shortcuts do Drive.
  */
 async function listDriveFiles(folderId, accessToken, basePath = '') {
   const allFiles = [];
-  const q = `'${folderId}' in parents and trashed = false`;
-  const fields = 'files(id,name,mimeType,modifiedTime)';
+  let pageToken = null;
 
-  const url = new URL('https://www.googleapis.com/drive/v3/files');
-  url.searchParams.set('q', q);
-  url.searchParams.set('fields', fields);
-  url.searchParams.set('pageSize', '1000');
-  url.searchParams.set('supportsAllDrives', 'true');
-  url.searchParams.set('includeItemsFromAllDrives', 'true');
+  do {
+    const url = new URL('https://www.googleapis.com/drive/v3/files');
+    url.searchParams.set('q', `'${folderId}' in parents and trashed = false`);
+    url.searchParams.set('fields', 'nextPageToken,files(id,name,mimeType,modifiedTime,shortcutDetails)');
+    url.searchParams.set('pageSize', '1000');
+    url.searchParams.set('supportsAllDrives', 'true');
+    url.searchParams.set('includeItemsFromAllDrives', 'true');
+    if (pageToken) url.searchParams.set('pageToken', pageToken);
 
-  const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(`Drive list error: ${err.error?.message || res.statusText}`);
-  }
-
-  const data = await res.json();
-
-  for (const item of (data.files || [])) {
-    const itemPath = basePath ? `${basePath}/${item.name}` : item.name;
-    if (item.mimeType === 'application/vnd.google-apps.folder') {
-      const sub = await listDriveFiles(item.id, accessToken, itemPath);
-      allFiles.push(...sub);
-    } else {
-      allFiles.push({ ...item, path: itemPath });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(`Drive list error: ${err.error?.message || res.statusText}`);
     }
-  }
+
+    const data = await res.json();
+    pageToken = data.nextPageToken ?? null;
+
+    for (const item of (data.files || [])) {
+      const itemPath = basePath ? `${basePath}/${item.name}` : item.name;
+
+      if (item.mimeType === 'application/vnd.google-apps.folder') {
+        const sub = await listDriveFiles(item.id, accessToken, itemPath);
+        allFiles.push(...sub);
+      } else if (item.mimeType === 'application/vnd.google-apps.shortcut') {
+        const targetId = item.shortcutDetails?.targetId;
+        const targetMime = item.shortcutDetails?.targetMimeType;
+        if (targetId && targetMime) {
+          if (targetMime === 'application/vnd.google-apps.folder') {
+            const sub = await listDriveFiles(targetId, accessToken, itemPath);
+            allFiles.push(...sub);
+          } else {
+            allFiles.push({ ...item, id: targetId, mimeType: targetMime, path: itemPath });
+          }
+        }
+      } else {
+        allFiles.push({ ...item, path: itemPath });
+      }
+    }
+  } while (pageToken);
 
   return allFiles;
 }

@@ -14,6 +14,8 @@ import { AssetsPanel } from '../../components/storage/AssetsPanel';
 import { ProjectTeamSettings } from '../../components/database/ProjectTeamSettings';
 import { googleDriveProvider } from '../../core/storage/storageProvider';
 import { googleAuth } from '../../lib/googleAuth';
+import { documentService } from '../../services/documentService';
+import { toast } from 'sonner';
 import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 import { COLOR_MAP } from '../../core/colors';
 import {
@@ -23,7 +25,7 @@ import {
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
   Circle, ArrowRight, Trash2, Home, ChevronRight,
   LayoutDashboard, Database, Share2, Plus, Settings,
-  Copy, ExternalLink, MessageCircle, Link2, Sliders
+  Copy, ExternalLink, MessageCircle, Link2, Sliders, FileSearch, RefreshCw
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
@@ -751,29 +753,38 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
   const [files, setFiles] = useState([]);
   const [fetchingFiles, setFetchingFiles] = useState(false);
   const [driveError, setDriveError] = useState(null);
+  const [indexing, setIndexing] = useState(false);
+  const [indexProgress, setIndexProgress] = useState({ current: 0, total: 0, fileName: '' });
+  const [indexResult, setIndexResult] = useState(null);
 
   // Apenas slots de documento que têm link
-  const docSlots    = useMemo(() => slots.filter(s => s.slot_key?.includes('doc') || s.display_name?.toLowerCase().includes('doc')), [slots]);
+  const docSlots       = useMemo(() => slots.filter(s => s.slot_key?.includes('doc') || s.display_name?.toLowerCase().includes('doc')), [slots]);
   const linkedDocSlots = useMemo(() => docSlots.filter(s => s.link?.drive_url), [docSlots]);
+  const docsSlotLinked = useMemo(() => slots.find(s => s.slot_key === 'docs' && s.link?.drive_file_id), [slots]);
+
+  // ── Auth helper: usa token em cache se válido, popup só se expirado ─────
+  const getToken = useCallback(async (showPopupIfExpired = true) => {
+    const stored = localStorage.getItem('gdrive_token');
+    const expires = localStorage.getItem('gdrive_token_expires');
+    const scopeOk = localStorage.getItem('gdrive_scope_version') === '2';
+    const isValid = stored && scopeOk && Date.now() < Number(expires);
+    if (isValid) return stored;
+    if (!showPopupIfExpired) return null;
+    return googleAuth.ensureToken(); // popup só se token realmente expirou
+  }, []);
 
   const loadFiles = useCallback(async (forceAuth = false) => {
     if (linkedDocSlots.length === 0) return;
 
-    let token = localStorage.getItem('gdrive_token');
-    const expires = localStorage.getItem('gdrive_token_expires');
-    
-    if (forceAuth || !token || Date.now() > Number(expires)) {
-      if (!forceAuth) return; // Silent fail auto-fetch
-      try {
-        token = await googleAuth.getAccessToken();
-      } catch (e) {
-        setDriveError(e.message);
-        return;
-      }
+    let token;
+    try {
+      token = await getToken(forceAuth);
+    } catch (e) {
+      setDriveError(e.message);
+      return;
     }
-    
     if (!token) return;
-    
+
     setFetchingFiles(true);
     setDriveError(null);
     try {
@@ -793,9 +804,54 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
     } finally {
       setFetchingFiles(false);
     }
-  }, [linkedDocSlots]);
+  }, [linkedDocSlots, getToken]);
 
-  // Arquivos do Drive carregam apenas via botão explícito (não auto-fetch)
+  // Auto-carrega arquivos sem popup se já houver token válido (ex: vindo de Assets)
+  const hasLinkedSlots = linkedDocSlots.length > 0;
+  useEffect(() => {
+    if (hasLinkedSlots) loadFiles(false);
+  }, [hasLinkedSlots]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Indexação de documentos ──────────────────────────────────────────────
+  const handleIndexDocuments = useCallback(async () => {
+    if (!docsSlotLinked) {
+      toast.info('Vincule a pasta DOCS na aba Assets antes de indexar.');
+      return;
+    }
+    setIndexing(true);
+    setIndexResult(null);
+    setIndexProgress({ current: 0, total: 0, fileName: '' });
+    try {
+      const token = await getToken(true);
+      if (!token) { setIndexing(false); return; }
+
+      const result = await documentService.indexProject(
+        projectId,
+        docsSlotLinked.link.drive_file_id,
+        token,
+        (p) => setIndexProgress(p)
+      );
+      setIndexResult(result);
+      if (result.indexed > 0) {
+        toast.success(`${result.indexed} documento${result.indexed !== 1 ? 's' : ''} indexado${result.indexed !== 1 ? 's' : ''}!`);
+      } else if (result.supported === 0) {
+        toast.info('Nenhum Google Doc ou .docx encontrado na pasta DOCS.');
+      } else {
+        toast.info(`Indexação concluída — ${result.notModified} sem alteração, ${result.skipped} pulado${result.skipped !== 1 ? 's' : ''}.`);
+      }
+    } catch (e) {
+      if (e.message === 'INSUFFICIENT_SCOPE') {
+        localStorage.removeItem('gdrive_token');
+        localStorage.removeItem('gdrive_token_expires');
+        localStorage.removeItem('gdrive_scope_version');
+        toast.error('Permissão insuficiente. Clique em "Indexar" novamente para autorizar.');
+      } else {
+        toast.error(`Erro na indexação: ${e.message}`);
+      }
+    } finally {
+      setIndexing(false);
+    }
+  }, [docsSlotLinked, projectId, getToken]);
 
   if (loading) return null;
 
@@ -806,16 +862,39 @@ function DocsSectionDashboard({ projectId, onGoToAssets }) {
           <FileText className="w-3.5 h-3.5"/> Documentos do Projeto
         </h3>
         {linkedDocSlots.length > 0 && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {indexing && indexProgress.total > 0 && (
+              <span className="text-[9px] text-violet-400/70 flex items-center gap-1">
+                <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                {indexProgress.current}/{indexProgress.total}
+              </span>
+            )}
+            {!indexing && indexResult && indexResult.indexed > 0 && (
+              <span className="text-[9px] bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full px-2 py-0.5">
+                {indexResult.indexed} indexado{indexResult.indexed !== 1 ? 's' : ''}
+              </span>
+            )}
             <span className="text-[10px] text-muted-foreground/40">
               {files.length} arquivo{files.length !== 1 ? 's' : ''}
             </span>
-            <button 
-              onClick={() => loadFiles(true)} 
-              disabled={fetchingFiles}
-              className="text-[10px] font-medium text-primary hover:bg-primary/10 px-2 py-1 rounded transition-colors disabled:opacity-50"
+            <button
+              onClick={handleIndexDocuments}
+              disabled={indexing || fetchingFiles}
+              title="Indexar documentos da pasta DOCS para busca inteligente (⌘⇧D)"
+              className="text-[10px] font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1 uppercase tracking-widest transition-colors disabled:opacity-40"
             >
-              Sincronizar Drive
+              {indexing
+                ? <><Loader2 className="w-3 h-3 animate-spin" />Indexando…</>
+                : <><FileSearch className="w-3 h-3" />Indexar</>
+              }
+            </button>
+            <button
+              onClick={() => loadFiles(true)}
+              disabled={fetchingFiles || indexing}
+              className="text-[10px] font-medium text-primary hover:bg-primary/10 px-2 py-1 rounded transition-colors disabled:opacity-50 flex items-center gap-1"
+            >
+              <RefreshCw className={`w-3 h-3 ${fetchingFiles ? 'animate-spin' : ''}`} />
+              Sincronizar
             </button>
           </div>
         )}
