@@ -17,7 +17,7 @@ export const useDensity = () => useContext(DensityCtx);
 // ============================================
 // DATABASE RENDERER v4 — Orchestrator
 // ============================================
-export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'Nova Cena', entityType = 'project' }) {
+export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'Nova Cena', entityType = 'project', filterParams = null }) {
   const { pages = {}, fetchDatabaseItems, createPage } = usePageStore();
   const [properties,  setProperties]  = useState([]);
   const [allValues,   setAllValues]   = useState({});
@@ -40,11 +40,22 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [items, props, dbViews] = await Promise.all([
+      const [items, rawProps, dbViews] = await Promise.all([
         fetchDatabaseItems(databaseId),
         propertyService.fetchByDatabase(databaseId),
         viewService.fetchByDatabase(databaseId),
       ]);
+      let props = rawProps || [];
+      // O.7: Auto-create "Feito" checkbox for non-project databases (scenes, tasks, etc.)
+      if (entityType !== 'project') {
+        const hasDone = props.some(p => p.property_type === 'checkbox' && ['feito', 'concluído', 'concluido'].includes(p.name.toLowerCase()));
+        if (!hasDone) {
+          try {
+            const newProp = await propertyService.create({ databaseId, name: 'Feito', property_type: 'checkbox', config: {}, position: 999 });
+            if (newProp) props = [...props, newProp];
+          } catch (e) { console.error('Auto-create Feito prop error:', e); }
+        }
+      }
       setProperties(props);
       setLocalItems(items);
 
@@ -181,8 +192,42 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
       ? localItems.filter(i => (i.title || '').toLowerCase().includes(q))
       : [...localItems];
 
-    const deadlineProp = properties.find(p => p.property_type === 'date' || ['deadline', 'entrega'].includes(p.name.toLowerCase()));
+    const deadlineProp = properties.find(p => p.property_type === 'date' || ['deadline', 'entrega'].includes((p.name || '').toLowerCase()));
     const statusProp   = properties.find(p => p.property_type === 'status' || p.name === 'Status');
+
+    // O.4: Apply external filterParams (used by Dashboard Board view)
+    if (filterParams) {
+      const { quickFilter, searchText: extSearch, today: todayParam } = filterParams;
+      if (extSearch?.trim()) {
+        const sq = extSearch.toLowerCase();
+        list = list.filter(i => (i.title || '').toLowerCase().includes(sq));
+      }
+      if (quickFilter === 'overdue') {
+        list = list.filter(item => {
+          const d = deadlineProp ? allValues[item.id]?.[deadlineProp.id]?.date : null;
+          const s = statusProp   ? allValues[item.id]?.[statusProp.id]?.selected : null;
+          return d && new Date(d) < todayParam && s !== 'entregue';
+        });
+      } else if (quickFilter === 'active') {
+        list = list.filter(item => {
+          const s = statusProp ? allValues[item.id]?.[statusProp.id]?.selected : null;
+          return s && !['entregue', 'briefing'].includes(s);
+        });
+      } else if (quickFilter === 'delivered') {
+        list = list.filter(item => {
+          const s = statusProp ? allValues[item.id]?.[statusProp.id]?.selected : null;
+          const d = item.updated_at ? new Date(item.updated_at) : null;
+          const start = new Date(todayParam.getFullYear(), todayParam.getMonth(), 1);
+          const end   = new Date(todayParam.getFullYear(), todayParam.getMonth() + 1, 0);
+          return s === 'entregue' && d && d >= start && d <= end;
+        });
+      } else if (quickFilter === 'nodeadline') {
+        list = list.filter(item => {
+          const d = deadlineProp ? allValues[item.id]?.[deadlineProp.id]?.date : null;
+          return !d;
+        });
+      }
+    }
 
     list.sort((a, b) => {
       let va, vb;
@@ -210,7 +255,7 @@ export function DatabaseRenderer({ databaseId, defaultView, addButtonLabel = 'No
       return 0;
     });
     return list;
-  }, [localItems, filterText, sortField, sortDir, properties, allValues]);
+  }, [localItems, filterText, sortField, sortDir, properties, allValues, filterParams]);
 
   const activeView = views.find(v => v.id === activeViewId);
 

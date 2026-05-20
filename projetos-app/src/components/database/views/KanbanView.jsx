@@ -8,11 +8,12 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useNavigate } from 'react-router-dom';
-import { CalendarDays, Plus, CheckSquare, Trash2, X, Check, ChevronDown } from 'lucide-react';
+import { CalendarDays, Plus, CheckSquare, Trash2, X, Check, ChevronDown, MoreHorizontal } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SortableEntityCard, EntityCardOverlay } from '../EntityCard';
 import { propertyService } from '../../../services/propertyService';
 import { ProCalendarPicker } from '../../ui/calendar/ProCalendarPicker';
+import { toast } from 'sonner';
 
 const COLOR_DOT = { gray:'bg-muted-foreground/50',blue:'bg-blue-500',green:'bg-green-500',yellow:'bg-yellow-500',red:'bg-red-500',purple:'bg-purple-500',orange:'bg-orange-500',pink:'bg-pink-500',cyan:'bg-cyan-500' };
 
@@ -178,8 +179,10 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
         const overIndex = targetItemIds.indexOf(overId);
         if (overIndex !== -1) {
           targetItemIds.splice(overIndex, 0, activeId);
-          onReorderPersist(targetItemIds);
+        } else {
+          targetItemIds.push(activeId);
         }
+        onReorderPersist(targetItemIds);
       }
       return;
     }
@@ -193,6 +196,29 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
       }
     }
   }, [columns, groupProp, findColumnOfItem, onStatusChange, onReorderPersist, isDraggingCol, properties]);
+
+  const handleDeleteColumn = useCallback(async (colId) => {
+    const realCols = columns.filter(c => c.id !== '__all' && c.id !== '__none');
+    if (realCols.length <= 1) { toast.error('Precisa ter pelo menos 2 colunas.'); return; }
+    const colIndex = realCols.findIndex(c => c.id === colId);
+    const destCol  = colIndex < realCols.length - 1 ? realCols[colIndex + 1] : realCols[colIndex - 1];
+    const col      = columns.find(c => c.id === colId);
+    const cards    = col?.items || [];
+    const newStatusId = (destCol.id === '__none' || destCol.id === '__all') ? '' : destCol.id;
+    setLocalAllValues(prev => {
+      const next = { ...prev };
+      for (const card of cards) {
+        next[card.id] = { ...(next[card.id] || {}), [groupProp.id]: { selected: newStatusId } };
+      }
+      return next;
+    });
+    for (const card of cards) onStatusChange(card.id, groupProp.id, newStatusId);
+    const newOpts     = (groupProp.config?.options || []).filter(o => o.id !== colId);
+    const updatedProp = { ...groupProp, config: { ...groupProp.config, options: newOpts } };
+    onPropertyUpdate?.(groupProp.id, updatedProp);
+    await propertyService.update(groupProp.id, { config: updatedProp.config }).catch(console.error);
+    if (cards.length > 0) toast.success(`${cards.length} card${cards.length !== 1 ? 's' : ''} movido${cards.length !== 1 ? 's' : ''} para "${destCol.label}"`);
+  }, [columns, groupProp, onStatusChange, onPropertyUpdate]);
 
   const colWidth  = density === 'compact' ? 'w-60' : density === 'detailed' ? 'w-96' : 'w-72';
   const activeCol = activeColId ? columns.find(c => c.id === activeColId) : null;
@@ -253,6 +279,8 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
               bulkMode={bulkMode}
               selectedCards={selectedCards}
               toggleSelect={toggleSelect}
+              columns={columns}
+              onDeleteColumn={handleDeleteColumn}
             />
           ))}
           {groupProp && (
@@ -341,12 +369,14 @@ export function KanbanView({ items, properties, allValues, databaseId, onStatusC
   );
 }
 
-function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields, entityType, bulkMode, selectedCards, toggleSelect }) {
+function KanbanColumn({ col, colWidth, properties, allValues, navigate, density, isOver, onAdd, groupProp, onPropertyUpdate, onDelete, cardFields, entityType, bulkMode, selectedCards, toggleSelect, columns, onDeleteColumn }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({ id: col.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
 
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const containerRef = useRef(null);
+  const containerRef  = useRef(null);
+  const labelInputRef = useRef(null);
+  const [editingLabel, setEditingLabel] = useState({});
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -378,11 +408,17 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
       >
         <div className="flex items-center gap-2">
           <input
-            defaultValue={col.label}
-            onKeyDown={async (e) => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }}
-            onBlur={async (e) => {
-              const newLabel = e.target.value;
-              if (newLabel && newLabel !== col.label) {
+            ref={labelInputRef}
+            value={editingLabel[col.id] ?? col.label}
+            onFocus={() => setEditingLabel(prev => ({ ...prev, [col.id]: col.label }))}
+            onChange={e => setEditingLabel(prev => ({ ...prev, [col.id]: e.target.value }))}
+            onKeyDown={async (e) => {
+              if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+              if (e.key === 'Escape') { setEditingLabel(prev => ({ ...prev, [col.id]: col.label })); e.target.blur(); }
+            }}
+            onBlur={async () => {
+              const newLabel = editingLabel[col.id];
+              if (newLabel !== undefined && newLabel.trim() && newLabel !== col.label) {
                 try {
                   const opts    = groupProp.config?.options || [];
                   const newOpts = opts.map(o => o.id === col.id ? { ...o, label: newLabel } : o);
@@ -391,6 +427,7 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
                   await propertyService.update(groupProp.id, { config: updatedProp.config });
                 } catch (e) { console.error(e); }
               }
+              setEditingLabel(prev => { const n = { ...prev }; delete n[col.id]; return n; });
             }}
             className="text-[11px] font-bold text-foreground/80 uppercase tracking-[0.08em] flex-1 bg-transparent border-none focus:outline-none focus:bg-[var(--surface-3)] px-1 rounded transition-colors cursor-text"
           />
@@ -401,10 +438,40 @@ function KanbanColumn({ col, colWidth, properties, allValues, navigate, density,
             <button onClick={onAdd} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors" title="Nova Cena">
               <Plus className="w-3.5 h-3.5" />
             </button>
+            {col.id !== '__all' && col.id !== '__none' && groupProp && (
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <button
+                    onClick={e => e.stopPropagation()}
+                    className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors"
+                    title="Opções da coluna"
+                  >
+                    <MoreHorizontal className="w-3.5 h-3.5" />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content align="end" sideOffset={4} className="z-[60] min-w-[140px] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-1.5 animate-in fade-in-0 zoom-in-95">
+                    <DropdownMenu.Item
+                      onSelect={() => setTimeout(() => labelInputRef.current?.focus(), 50)}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                    >
+                      Renomear
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator className="h-px bg-border/50 my-1" />
+                    <DropdownMenu.Item
+                      onSelect={() => onDeleteColumn?.(col.id)}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-red-400 hover:bg-red-500/10 rounded-lg cursor-pointer outline-none"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Excluir coluna
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
+            )}
           </div>
         </div>
 
-        {col.id !== '__all' && col.id !== '__none' && (
+        {col.id !== '__all' && col.id !== '__none' && entityType !== 'project' && (
           <div className="relative" ref={containerRef}>
             <div
               onClick={(e) => { e.stopPropagation(); setDatePickerOpen(!datePickerOpen); }}

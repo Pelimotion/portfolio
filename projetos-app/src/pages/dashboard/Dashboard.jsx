@@ -181,6 +181,9 @@ export default function Dashboard() {
     return { opts: result, total };
   }, [projects, statusProp, getStatusId]);
 
+  // O.4: filterParams for Board view (memoized to avoid creating new object on every render)
+  const boardFilterParams = useMemo(() => ({ quickFilter, searchText, today }), [quickFilter, searchText, today]);
+
   // Quick filter counts
   const qfCounts = useMemo(() => {
     const overdue  = projects.filter(p => { const d = getDeadline(p.id); const s = getStatusId(p.id); return d && new Date(d) < today && s !== 'entregue'; }).length;
@@ -337,7 +340,7 @@ export default function Dashboard() {
       <main className="flex-1 overflow-y-auto custom-scrollbar">
         {hubView === 'board' && (
           <div className="p-5">
-            <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" addButtonLabel={null} />
+            <DatabaseRenderer databaseId={ROOT_HUB_ID} defaultView="kanban" addButtonLabel={null} filterParams={boardFilterParams} />
           </div>
         )}
 
