@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-05-19
+**Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A ✅ B ✅ C ✅ D ✅ E ✅ F ✅ G ✅ H ✅ I ✅ J ✅ K.1 ✅ K.2 ✅ K.3 ✅ K.4 ✅ K.5 ✅ K.6 ✅ K.7 ✅ K.8 ✅ completas
-**Próxima Ação:** Operacional — deploy, testes manuais, Supabase migrations pendentes
+**Status:** BETA — Fases A→K completas ✅ + bugs pós-deploy K corrigidos ✅
+**Próxima Ação:** Dashboard financeiro (nova fase, não planejada) ou melhorias operacionais
 **Branch ativa:** `main`
 **Bloqueadores:** stages migration ainda pendente: `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;`
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
@@ -45,7 +45,144 @@
 
 ---
 
+## 🧠 DOCUMENT INTELLIGENCE — ARQUITETURA COMPLETA (Fase K)
+
+Sistema de busca full-text em documentos do Google Drive, integrado ao gerenciador de projetos.
+**Status:** ✅ Funcionando em produção (testado 2026-05-20)
+
+### Fluxo de Indexação
+
+```
+Usuário clica "Indexar" (botão violeta na Dashboard do projeto)
+    ↓
+AssetsPanel.jsx → pega slot DOCS (slot_key = 'docs') → obtém drive_file_id da pasta
+    ↓
+googleAuth.ensureToken() → verifica localStorage (gdrive_token + gdrive_scope_version=2)
+    → se expirado/ausente: abre popup Google OAuth (drive.readonly)
+    → se válido: reutiliza token sem popup
+    ↓
+documentService.indexProject(projectId, docsFolderId, accessToken, onProgress)
+    ↓
+listDriveFiles(folderId) — recursivo, paginado (nextPageToken), resolve shortcuts
+    → tipos suportados no browser: Google Docs, text/plain, text/markdown, .docx*, .doc*
+    (* requer VITE_BUNNY_EXTRACT_URL configurado — Bunny Edge K.7)
+    ↓
+Para cada arquivo → documentService.indexFile():
+    1. Delta sync: compara file.modifiedTime vs indexed_at no Supabase → skip se não mudou
+    2. extractText(): Google Docs via /export?mimeType=text/plain; text/plain via ?alt=media
+    3. isGarbled(): ratio nonAscii > 30% → skip (PDFs de CAD com fontes não-padrão)
+    4. chunkText(): blocos de 800 chars com 100 de overlap
+    5. DELETE chunks antigos → INSERT novos em document_chunks
+    ↓
+Toast de resultado: "X indexados · Y sem alteração · Z pulados"
+```
+
+### Fluxo de Busca
+
+```
+Usuário pressiona ⌘⇧D (hotkey global)
+    ↓
+DocSearchModal abre (Radix Dialog + cmdk Command)
+    ↓
+Usuário digita → debounce 300ms
+    ↓
+searchService.searchDocuments(query, limit=10)
+    → tenta RPC search_document_chunks (BM25 com ts_headline — highlight server-side)
+    → fallback: .textSearch('content', query, { type: 'websearch', config: 'portuguese' })
+      + snippet gerado client-side (primeiros 200 chars)
+    ↓
+Resultados exibidos em 3 modos (toggle, persistido em localStorage 'docSearchView'):
+    - list (padrão): arquivo + snippet com [[MARK]] destacado em violeta
+    - grid: 2 colunas, cards compactos
+    - compare: 2 painéis side-by-side com seletor de arquivo + scroll sincronizado
+    ↓
+Filter chips por arquivo (aparece quando >1 arquivo nos resultados)
+Clicar no resultado: abre Google Drive (Google Docs → /edit; outros → /view)
+Footer: contagem de trechos + botão export .md (MARK → **bold**)
+```
+
+### Schema Supabase — `document_chunks`
+
+```sql
+id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+project_id      UUID NOT NULL REFERENCES pages(id) ON DELETE CASCADE
+drive_file_id   TEXT NOT NULL
+file_name       TEXT NOT NULL
+mime_type       TEXT
+chunk_index     INT NOT NULL
+content         TEXT NOT NULL
+content_tsv     tsvector GENERATED ALWAYS AS (to_tsvector('portuguese', content)) STORED
+char_offset     INT DEFAULT 0
+modified_time   TIMESTAMPTZ
+indexed_at      TIMESTAMPTZ DEFAULT now()
+UNIQUE (drive_file_id, chunk_index)
+```
+
+### RLS — Política ativa (simplificada para app interno)
+
+```sql
+-- Qualquer usuário autenticado pode ler/escrever
+-- (projetos legados têm created_by = null → subquery por owner falha)
+dc_authenticated_read   FOR SELECT  USING (auth.uid() IS NOT NULL)
+dc_authenticated_write  FOR INSERT  WITH CHECK (auth.uid() IS NOT NULL)
+dc_authenticated_update FOR UPDATE  USING/WITH CHECK (auth.uid() IS NOT NULL)
+dc_authenticated_delete FOR DELETE  USING (auth.uid() IS NOT NULL)
+```
+
+> **Decisão:** políticas por `pages.created_by` foram tentadas mas falham porque projetos
+> criados via seed têm `created_by = null`. Para app interno de equipe, `auth.uid() IS NOT NULL` é suficiente.
+
+### RPC ativa
+
+```sql
+search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
+-- Retorna: file_name, chunk_index, drive_file_id, project_id, snippet (com [[/]] markers)
+-- Usa: websearch_to_tsquery('portuguese', ...) + ts_rank_cd + ts_headline
+-- GRANT EXECUTE TO authenticated
+```
+
+### Arquivos do sistema (Fase K)
+
+| Arquivo | Responsabilidade |
+|---------|-----------------|
+| `src/services/documentService.js` | Indexação: listDriveFiles, extractText, chunkText, indexFile, indexProject |
+| `src/services/searchService.js` | Busca: searchDocuments (BM25 + fallback), searchDocumentsHybrid (RRF scaffold K.5) |
+| `src/components/search/DocSearchModal.jsx` | Modal de busca: 3 views, filter chips, export .md, highlight |
+| `src/lib/googleAuth.js` | OAuth Google Drive: token cache em localStorage, scope version, ensureToken |
+| `src/lib/useDocSearch.js` | Zustand store: docSearchOpen, openDocSearch, closeDocSearch |
+| `scripts/database/k1_document_chunks.sql` | Migration original da tabela (schema + índices) |
+| `bunny-edge/generate-embedding/index.js` | K.5: Vertex AI text-embedding-004 (scaffold, não ativo) |
+| `bunny-edge/reindex-cron/index.js` | K.7: cron incremental via Drive changes.list (scaffold, não ativo) |
+
+### Variáveis de ambiente relevantes
+
+| Var | Uso | Status |
+|-----|-----|--------|
+| `VITE_BUNNY_EXTRACT_URL` | Extração de DOCX/PDF via Bunny Edge | ⚠️ Não configurada (DOCX pulado) |
+| `VITE_BUNNY_EMBED_URL` | Geração de embeddings para hybrid search | ⚠️ Não configurada (K.5 inativo) |
+| `VITE_SUPABASE_URL` | URL do projeto Supabase | ✅ Configurada |
+| `VITE_SUPABASE_ANON_KEY` | Chave pública Supabase | ✅ Configurada |
+
+---
+
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-20 — Bugs pós-deploy Fase K: RLS, RPC, Radix, Auth loop
+
+**O que foi feito:**
+- [x] `DocSearchModal.jsx` — adicionados `<Dialog.Title>` e `<Dialog.Description>` com `sr-only` → elimina warnings Radix UI sobre acessibilidade
+- [x] **SQL K-fix-1** — drop policies `FOR ALL` sem `WITH CHECK`; recria `dc_select/dc_insert/dc_update/dc_delete` com `TO authenticated` e `WITH CHECK` explícito (tentativa correta mas ainda falhou por `created_by = null`)
+- [x] **SQL K-fix-2** — `CREATE FUNCTION search_document_chunks` com `ts_headline + ts_rank_cd` + `GRANT authenticated` → resolve 404 no RPC
+- [x] **SQL K-fix-3** — diagnóstico: projetos legados têm `created_by = null` → subquery por owner sempre retorna vazio → 403 permanente. Fix: substituir por `auth.uid() IS NOT NULL` (app interno de equipe, sem multi-tenancy por usuário)
+- [x] Build verde ✅ — commit `df19fc5`, push para `main`
+- [x] Indexação e busca testadas em produção ✅
+
+**Causa raiz do 403:** `pageService.create()` aceita `createdBy = null` como default. O Projects Hub seed (ROOT_HUB_ID) passa `createdBy = null` explicitamente. Todos os projetos filhos criados a partir do hub herdam `created_by = null` na tabela `pages`.
+
+**Arquivos modificados:** `src/components/search/DocSearchModal.jsx`
+**SQLs executados no Supabase:** K-fix-1, K-fix-2, K-fix-3
+
+---
 
 ### 2026-05-19 — Fases K.4 + K.5 + K.6 + K.7 + K.8: Document Intelligence completo
 
