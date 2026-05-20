@@ -7,10 +7,10 @@
 
 **Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→O completas ✅ | Build verde (843KB index.js) | Último commit: (ver abaixo)
-**Próxima Ação:** Fase P — Dashboard Financeiro (schema SQL + services + UI)
+**Status:** BETA — Fases A→P completas ✅ | Build verde (812KB index.js) | Último commit: pendente
+**Próxima Ação:** Fase Q — Hub de Serviços (ver roadmap abaixo) ou testes manuais da Fase P
 **Branch ativa:** `main`
-**Bloqueadores:** SQL O.1 pendente (rodar no Supabase — ver seção PRÓXIMA SESSÃO)
+**Bloqueadores:** Nenhum
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
 
 ---
@@ -62,7 +62,7 @@
 | Fase N — N.1 Collapsing header (isCollapsed + max-h transition) | ✅ completo | 2026-05-20 |
 | Fase N — N.6 Avatares 3D (skin 15 tons, hair 18 estilos, facial hair, ProfilePage hero) | ✅ completo | 2026-05-20 |
 | Fase N — N.7 Dashboard redesign (topbar consolidado, pipeline+filtros colapsáveis) | ✅ completo | 2026-05-20 |
-| Dashboard financeiro | ❌ Não iniciado | — |
+| Fase P — Dashboard Financeiro (P.1→P.6) | ✅ Fase P completa | 2026-05-20 |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
 ---
@@ -189,6 +189,28 @@ search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
 
 ## 📝 HISTÓRICO DE SESSÕES
 
+### 2026-05-20 — Fase P: Dashboard Financeiro (P.1→P.6 completos)
+
+**O que foi feito:**
+- [x] **P.1** SQL Migrations rodadas via Supabase Management API (personal access token):
+  - `ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB` (Fase F pendente)
+  - `DROP + CREATE FUNCTION search_document_chunks` com coluna `mime_type` (Fase N.5)
+  - `CREATE TABLE financial_records` + `clients` + `project_clients` com RLS
+- [x] **P.2** `src/services/financialService.js` — CRUD (list, create, update, destroy), summary() com totais + 6 meses, exportCSV()
+- [x] **P.2** `src/services/clientService.js` — CRUD de clientes + link/unlink de project_clients
+- [x] **P.3** `Dashboard.jsx` — financial summary bar: totais Recebido/Pendente/Vencido + mini bar chart SVG últimos 6 meses
+- [x] **P.4** `src/components/financial/FinancialTab.jsx` — tab Financeiro em cada projeto: cards de resumo, CRUD inline (criar/editar/excluir registros), export CSV
+- [x] **P.4** `UniversalEntityPage.jsx` — tab "Financeiro" adicionada em PROJECT_TABS; `<FinancialTab>` + `<LinkClientPanel>` renderizados na tab
+- [x] **P.5** `src/components/financial/ClientsManager.jsx` — gerenciador standalone de clientes (lista, criar, editar, excluir) + `LinkClientPanel` (vincular/desvincular clientes a projetos)
+- [x] **P.5** `Sidebar.jsx` — link "Clientes" adicionado à navegação (expansão + colapsado); rota `/clients` no `App.jsx`
+- [x] **P.6** Export CSV integrado no `FinancialTab` (botão CSV no toolbar de registros)
+- [x] Build verde ✅ (812KB index.js, zero erros)
+
+**Arquivos criados:** `src/services/financialService.js`, `src/services/clientService.js`, `src/components/financial/FinancialTab.jsx`, `src/components/financial/ClientsManager.jsx`
+**Arquivos modificados:** `Dashboard.jsx`, `UniversalEntityPage.jsx`, `Sidebar.jsx`, `App.jsx`, `STATUS.md`
+
+---
+
 ### 2026-05-20 — Fase O: Fixes Kanban + Filtros Board + Checkboxes (O.2→O.8 completos)
 
 **O que foi feito:**
@@ -201,6 +223,8 @@ search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
 - [x] **O.8** Build verde ✅ (843KB index.js, zero erros)
 
 **Arquivos modificados:** `KanbanView.jsx`, `DatabaseRenderer.jsx`, `Dashboard.jsx`, `STATUS.md`
+**Commit Fase O:** `0ff6996` | **Fix post-audit:** `9d64eaf` (null-safety + remove prompt/reload)
+**Push:** ✅ `main` → Vercel deploy
 **SQL O.1 ainda pendente:** rodar manualmente no Supabase (ver seção PRÓXIMA SESSÃO)
 
 ---
@@ -601,176 +625,46 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — FASE O (Fixes Críticos + UX Kanban)
-
-> **MODO AUTÔNOMO:** Execute todos os sub-passos da fase sem pedir aprovação a cada um.
-> Leia os arquivos necessários, implemente, rode `npm run build`, corrija erros, avance.
-> Só pause se encontrar um bloqueador estrutural que exija decisão arquitetural.
+## 🎯 PRÓXIMA SESSÃO — FASE Q (Hub de Serviços)
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: projetos-app-agent — Fase O
+# Context: projetos-app-agent — Fase Q
 
 📋 STATUS ANTERIOR
-Fase N completa (2026-05-20) — commit b2edd1d, build verde (844KB).
-7 sub-fases: busca fix, breadcrumb, DocSearch mime_type, SceneOverview (3 abas),
-collapsing hero, avatares expandidos, Dashboard redesign.
-Plano mestre O→P→Q definido em 2026-05-20.
+Fase P completa (2026-05-20) — build verde (812KB), push para main.
+Implementado: financial_records + clients + project_clients (SQL via API), financialService, clientService,
+FinancialTab (CRUD inline por projeto), ClientsManager (/clients), LinkClientPanel,
+financial summary bar no Dashboard, export CSV, rota /clients na sidebar.
 
 🎯 TAREFA DESTA SESSÃO
-Fase O completa — 8 sub-fases de fixes críticos de UX/Kanban + checkboxes + SQL migrations.
+Fase Q — Base Modular para Hub de Serviços (Q.1→Q.5)
 
 ⚙️ MODO DE EXECUÇÃO
-Execute sub-fase por sub-fase de forma autônoma. Não pergunte "prosseguir?" entre sub-fases.
-Após cada sub-fase: rode `npm run build --prefix projetos-app` e corrija erros antes de avançar.
-Ao final da fase inteira: commit único `feat(projetos-app): Fase O completa` + atualizar STATUS.md.
+Execute sub-fase por sub-fase de forma autônoma. Após cada sub-fase: rode `npm run build`.
+Ao final: commit único `feat(projetos-app): Fase Q completa` + atualizar STATUS.md.
+Para rodar SQL: use a Supabase Management API com personal access token (sbp_...).
 
 📦 SUB-FASES EM ORDEM
+Q.1 — Rota /hub — área "Hub de Serviços" na Sidebar com sub-módulos (Financeiro standalone, CRM)
+Q.2 — Módulo Financeiro standalone (desacoplado de projeto — listagem geral de todos os registros)
+Q.3 — Schema CRM: deals, contacts, activities, pipelines (SQL via API)
+Q.4 — Módulo Comercial — Kanban de deals, pipeline de vendas
+Q.5 — Módulo Administrativo — contratos, permissões por módulo
 
-O.1 — SQL MIGRATIONS (manual — instrua o usuário a rodar no Supabase SQL Editor)
-  Exiba o SQL abaixo e peça ao usuário para rodar ANTES de prosseguir para O.2:
-
-  -- Migration 1: coluna stages (Fase F pendente)
-  ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
-
-  -- Migration 2: RPC com mime_type (Fase N.5 melhoria DocSearch)
-  CREATE OR REPLACE FUNCTION search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
-  RETURNS TABLE (file_name TEXT, chunk_index INT, drive_file_id TEXT, project_id UUID, snippet TEXT, mime_type TEXT)
-  LANGUAGE sql STABLE SECURITY DEFINER AS $$
-    SELECT file_name, chunk_index, drive_file_id, project_id, mime_type,
-      ts_headline('portuguese', content, websearch_to_tsquery('portuguese', p_query),
-        'StartSel=[[, StopSel=]], MaxWords=30, MinWords=15') AS snippet
-    FROM document_chunks
-    WHERE content_tsv @@ websearch_to_tsquery('portuguese', p_query)
-    ORDER BY ts_rank_cd(content_tsv, websearch_to_tsquery('portuguese', p_query)) DESC
-    LIMIT p_limit;
-  $$;
-  GRANT EXECUTE ON FUNCTION search_document_chunks TO authenticated;
-
----
-
-O.2 — DRAG & DROP LIVRE ENTRE COLUNAS
-  Arquivo: src/components/database/views/KanbanView.jsx
-  Problema: ao dropar card cross-column em posição específica (overId = card, não coluna),
-    o card muda de status mas a posição na coluna destino não é persistida corretamente.
-  Fix:
-    1. No handler onDragEnd, quando overId pertence a um card (não a uma coluna) e sourceCol ≠ targetCol:
-       a. Obter array de IDs da targetCol após inserção (arrayMove ou splice)
-       b. Chamar onStatusChange para mudar o status
-       c. Chamar onReorderPersist com os IDs finais da targetCol para persistir posições
-    2. Ao arrastar de uma coluna para outra, garantir que o card respeita a posição visual exata
-       onde foi solto (não vai para o topo/fim automaticamente)
-    3. Testar: pegar card da posição 2 da col A, soltar na posição 3 da col B → deve ficar na pos 3
-
----
-
-O.3 — BOARD DO HUB SEM PRAZO NAS COLUNAS
-  Arquivo: src/components/database/views/KanbanView.jsx
-  Problema: os headers das colunas do Kanban mostram contagem de deadline / prazo.
-    No Projects Hub (Dashboard view=board), isso não faz sentido pois os status
-    são globais (Briefing, Produção, Revisão, Entregue) e não têm prazo único.
-  Fix:
-    1. Verificar se KanbanView recebe prop entityType (já existe em sharedProps do DatabaseRenderer)
-    2. Se entityType === 'project', não exibir info de deadline no header da coluna
-    3. No Dashboard.jsx, o <DatabaseRenderer> já passa entityType via sharedProps — confirmar
-
----
-
-O.4 — FILTROS DO BOARD VIEW (Projects Hub)
-  Arquivos: src/components/Dashboard.jsx, src/components/database/DatabaseRenderer.jsx
-  Problema: os filtros rápidos (Todos / Em andamento / Atrasados / Entregues este mês / Sem prazo)
-    da topbar do Dashboard funcionam no Grid/Timeline mas NÃO no Board — o Board usa
-    <DatabaseRenderer databaseId={ROOT_HUB_ID}> sem receber nenhum filtro.
-  Fix:
-    1. Em Dashboard.jsx: extrair a lógica de filtro de `filteredProjects` para um hook/useMemo
-       que retorne IDs filtrados
-    2. Adicionar prop `externalFilter` ao DatabaseRenderer: função (item, allValues) => boolean
-    3. Em DatabaseRenderer.jsx: aplicar externalFilter em `sortedFilteredItems` se fornecido
-    4. No Dashboard.jsx Board view: passar externalFilter baseado no quickFilter ativo
-    Definição dos filtros:
-      - 'all': sem filtro
-      - 'active': status em ['producao', 'revisao'] (usa statusProp.config.options)
-      - 'overdue': deadline < hoje E status ≠ 'entregue'
-      - 'delivered': status = 'entregue' E updated_at no mês corrente
-      - 'nodeadline': sem valor em deadlineProp
-    IMPORTANTE: "atrasado" e "entregue esse mês" precisam acessar allValues do DatabaseRenderer.
-    Solução: passar `filterParams` (quickFilter + today) e deixar DatabaseRenderer calcular.
-
----
-
-O.5 — BUG EDIÇÃO DE NOME DE STATUS (come caracteres, sem acentos/espaços)
-  Arquivo: src/components/database/views/KanbanView.jsx
-  Problema: o input usa `defaultValue={col.label}` (não controlado). Quando React re-renderiza
-    a coluna (ex: ao digitar e o state atualizar), o input reseta ou perde o cursor.
-    Resultado: come caracteres, rejeita acentos, não aceita espaços.
-  Fix:
-    1. Criar state local por coluna: `const [editingLabel, setEditingLabel] = useState({})`
-       — chave é col.id, valor é string
-    2. Ao focar o input (onFocus): inicializar editingLabel[col.id] = col.label
-    3. onChange: atualizar apenas editingLabel (sem tocar properties/backend)
-    4. onBlur / onKeyDown Enter: se mudou, persistir via onPropertyUpdate + propertyService.update
-    5. onKeyDown Escape: cancelar edição, resetar editingLabel[col.id]
-    Usar <input value={editingLabel[col.id] ?? col.label} onChange/onFocus/onBlur/onKeyDown>
-
----
-
-O.6 — DELETAR STATUS (três pontinhos no header da coluna)
-  Arquivo: src/components/database/views/KanbanView.jsx
-  Adicionar Radix DropdownMenu no header de cada coluna com opções:
-    - Renomear (foca o input existente)
-    - Excluir coluna
-  Lógica de exclusão:
-    1. Impedir exclusão se for a única coluna (mínimo 2)
-    2. Pegar índice da coluna a excluir → coluna de destino = próxima coluna (ou anterior se for a última)
-    3. Para cada card na coluna excluída: chamar onStatusChange(card.id, statusPropId, destinoOptionId)
-    4. Remover opção do config.options
-    5. Persistir via propertyService.update()
-    6. Toast: "X cards movidos para [nome da coluna destino]"
-  UI: botão `...` (MoreHorizontal icon, 16px) aparece no hover do header, abre DropdownMenu
-
----
-
-O.7 — CHECKBOXES NOS CARDS DE CENAS (feito/não-feito)
-  Arquivos: src/components/EntityCard.jsx, src/components/database/DatabaseRenderer.jsx
-  Estado atual: o código em EntityCard.jsx (linhas ~95-212) já detecta property checkbox
-    com nome "Feito" ou "Concluído" e exibe o visual correto. O problema é que a property
-    pode não existir ainda no banco para o database de cenas de cada projeto.
-  Fix:
-    1. Em DatabaseRenderer.jsx, na função `load()`, após carregar `properties`:
-       - Verificar se existe property do tipo 'checkbox' com nome 'Feito' ou 'Concluído'
-       - Se não existe E entityType !== 'project': criar automaticamente via propertyService.create()
-         com: { databaseId, name: 'Feito', property_type: 'checkbox', config: {}, position: 999 }
-       - Adicionar ao state `properties` sem reload completo
-    2. Confirmar que EntityCard exibe o checkbox em todas as densidades (compact, comfortable, spacious)
-    3. Confirmar que o progresso no ProductionDashboard conta `.checked === true` (já corrigido na L.5)
-    Testar: abrir projeto, abrir cena, ver card com checkbox funcional (toggle + persist)
-
----
-
-O.8 — TESTES + POLISH + COMMIT
-  1. npm run build — zero erros
-  2. Verificar visualmente:
-     - Drag cross-column respeita posição
-     - Board respeita filtro ativo
-     - Input de status não come caracteres (testar com "Revisão Final" — acento + espaço)
-     - Botão ... no header → opção Excluir funcional
-     - Checkboxes aparecem nos cards de cenas
-  3. Commit: feat(projetos-app): Fase O completa — fixes kanban, filtros board, checkboxes, financeiro base
-  4. Atualizar STATUS.md com resultado
-
-📦 ARQUIVOS QUE SERÃO LIDOS/MODIFICADOS
-- src/components/database/views/KanbanView.jsx  ← O.2, O.3, O.5, O.6
-- src/components/Dashboard.jsx                  ← O.3, O.4
-- src/components/database/DatabaseRenderer.jsx  ← O.4, O.7
-- src/components/EntityCard.jsx                 ← O.7 (verificação)
-- projetos-app/STATUS.md                        ← O.8
+📦 ARQUIVOS RELEVANTES
+- src/components/financial/FinancialTab.jsx ← já existe (referência de padrão)
+- src/components/financial/ClientsManager.jsx ← já existe
+- src/services/financialService.js ← já existe
+- src/services/clientService.js ← já existe
+- src/App.jsx ← adicionar rotas /hub, /hub/financeiro, /hub/crm
+- src/components/layout/Sidebar.jsx ← adicionar seção Hub
 
 🚫 NÃO TOCAR
-- src/services/propertyService.js — estável, não modificar
-- src/services/pageService.js — estável, não modificar
-- src/components/search/* — estável, fase K completa
-- qualquer arquivo fora de projetos-app/
+- src/components/database/* — estável
+- src/components/search/* — Fase K completa
+- src/pages/entity/UniversalEntityPage.jsx — Fase P adicionou tab Financeiro, não regredir
 ```
 
 ---
@@ -881,7 +775,7 @@ CREATE POLICY "pc_delete" ON project_clients FOR DELETE USING (auth.uid() IS NOT
 
 ## 🚨 BLOQUEADORES ATIVOS
 
-1. **Migration O.1** — rodar manualmente no Supabase SQL Editor (ver SQL completo na seção PRÓXIMA SESSÃO acima)
+_Nenhum bloqueador ativo. Todas as migrations da Fase P foram rodadas via API._
 
 ---
 

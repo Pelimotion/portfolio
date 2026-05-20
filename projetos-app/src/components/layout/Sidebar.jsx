@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FolderOpen, Search,
   Plus, LogOut, MoreHorizontal, Trash2,
-  PanelLeftClose, PanelLeft, Sun, Moon,
+  PanelLeftClose, PanelLeft, Sun, Moon, Users,
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../../contexts/AuthContext';
@@ -83,6 +83,9 @@ export function Sidebar() {
         <NavLink to="/" end className={({isActive}) => `p-2 rounded-lg mb-1 transition-colors ${isActive ? 'bg-[var(--surface-3)] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)]'}`} title="Projects Hub">
           <LayoutDashboard className="w-4 h-4" />
         </NavLink>
+        <NavLink to="/clients" className={({isActive}) => `p-2 rounded-lg mb-1 transition-colors ${isActive ? 'bg-[var(--surface-3)] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)]'}`} title="Clientes">
+          <Users className="w-4 h-4" />
+        </NavLink>
 
         <div className="flex-1" />
 
@@ -141,11 +144,18 @@ export function Sidebar() {
         <div>
           <nav className="space-y-0.5">
             <NavLink to="/" end className={({isActive}) =>
-              `flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] rounded-md transition-all ${isActive 
-                ? 'bg-[var(--surface-3)] text-foreground font-semibold' 
+              `flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] rounded-md transition-all ${isActive
+                ? 'bg-[var(--surface-3)] text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}>
               <LayoutDashboard className="w-4 h-4 opacity-70" />
               <span>Projects Hub</span>
+            </NavLink>
+            <NavLink to="/clients" className={({isActive}) =>
+              `flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] rounded-md transition-all ${isActive
+                ? 'bg-[var(--surface-3)] text-foreground font-semibold'
+                : 'text-muted-foreground hover:bg-[var(--surface-2)] hover:text-foreground'}`}>
+              <Users className="w-4 h-4 opacity-70" />
+              <span>Clientes</span>
             </NavLink>
           </nav>
         </div>

@@ -18,6 +18,7 @@ import { pageService } from '../../services/pageService';
 import { propertyService } from '../../services/propertyService';
 import { loadPreference, savePreference } from '../../lib/viewPreferences';
 import { COLOR_MAP } from '../../core/colors';
+import { financialService } from '../../services/financialService';
 
 // Status order for default sort
 const STATUS_ORDER = ['briefing', 'producao', 'revisao', 'entregue'];
@@ -62,6 +63,10 @@ export default function Dashboard() {
   const [allValues,   setAllValues]   = useState({});
   const [dataLoading, setDataLoading] = useState(true);
 
+  // Financial summary
+  const [finSummary,      setFinSummary]      = useState(null);
+  const [finSummaryLoading, setFinSummaryLoading] = useState(true);
+
   useEffect(() => {
     document.title = 'Projects Hub | TOCA HUB';
     async function init() {
@@ -71,6 +76,16 @@ export default function Dashboard() {
     }
     init();
   }, []);
+
+  // Load financial summary
+  useEffect(() => {
+    if (initializing) return;
+    setFinSummaryLoading(true);
+    financialService.summary()
+      .then(s => setFinSummary(s))
+      .catch(e => console.error('Financial summary error:', e))
+      .finally(() => setFinSummaryLoading(false));
+  }, [initializing]);
 
   // Load data for grid/timeline/summary
   useEffect(() => {
@@ -269,6 +284,40 @@ export default function Dashboard() {
           </button>
         </div>
       </header>
+
+      {/* ── Financial Summary Bar ── */}
+      {!finSummaryLoading && finSummary && (
+        <div className="shrink-0 px-5 py-2 flex items-center gap-4 border-b border-[var(--border-subtle)] bg-[var(--surface-0)]">
+          <span className="text-[10px] text-muted-foreground/30 uppercase tracking-wider shrink-0">Financeiro</span>
+          {[
+            { label: 'Recebido',  value: finSummary.totals.paid,    color: 'text-emerald-400' },
+            { label: 'Pendente',  value: finSummary.totals.pending, color: 'text-blue-400' },
+            { label: 'Vencido',   value: finSummary.totals.overdue, color: 'text-red-400' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[10px] text-muted-foreground/40">{label}</span>
+              <span className={`text-[11px] font-bold font-mono ${color}`}>
+                {value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </span>
+            </div>
+          ))}
+          <div className="flex-1" />
+          {/* Mini SVG bar chart (last 6 months) */}
+          {finSummary.months && (() => {
+            const max = Math.max(...finSummary.months.map(m => m.total), 1);
+            return (
+              <div className="flex items-end gap-0.5 h-6 shrink-0">
+                {finSummary.months.map((m, i) => (
+                  <div key={i} title={`${m.label}: ${m.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`}
+                    className="w-3 bg-primary/30 hover:bg-primary/60 transition-colors rounded-t-sm"
+                    style={{ height: `${Math.max(2, Math.round((m.total / max) * 24))}px` }}
+                  />
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
       {/* ── Pipeline + Filtros (colapsável, h-10 quando visível) ── */}
       <div className={`shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-0)] overflow-hidden transition-all duration-200 ${filterRowCollapsed ? 'max-h-0 border-b-0' : 'max-h-24'}`}>

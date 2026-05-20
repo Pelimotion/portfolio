@@ -38,12 +38,15 @@ import { PropertyManagerModal } from '../../components/database/PropertyManagerM
 import { hashString } from '../../lib/avatarEngine';
 import { useAuth } from '../../contexts/AuthContext';
 import { SceneOverview } from '../../components/scene/SceneOverview';
+import { FinancialTab } from '../../components/financial/FinancialTab';
+import { LinkClientPanel } from '../../components/financial/ClientsManager';
 
 // ── Tabs ────────────────────────────────────────
 const PROJECT_TABS = [
-  { id: 'dashboard', label: 'Dashboard',  Icon: BarChart2 },
-  { id: 'pipeline',  label: 'Pipeline',   Icon: Zap },
-  { id: 'assets',    label: 'Assets',     Icon: FolderOpen },
+  { id: 'dashboard',  label: 'Dashboard',  Icon: BarChart2 },
+  { id: 'pipeline',   label: 'Pipeline',   Icon: Zap },
+  { id: 'assets',     label: 'Assets',     Icon: FolderOpen },
+  { id: 'financeiro', label: 'Financeiro', Icon: TrendingUp },
 ];
 
 const SCENE_TABS = [
@@ -549,6 +552,12 @@ export function UniversalEntityPage() {
               isProject={isProject}
               parentProjectId={!isProject ? grandparentPageId : null}
             />
+          )}
+          {activeTab === 'financeiro' && isProject && (
+            <div className="space-y-6">
+              <FinancialTab projectId={pageId} />
+              <LinkClientPanel projectId={pageId} />
+            </div>
           )}
         </div>
       </div>

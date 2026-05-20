@@ -14,6 +14,9 @@ const UniversalEntityPage = lazy(() =>
 );
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
 const TokensPage = lazy(() => import('./pages/dev/TokensPage'));
+const ClientsPage = lazy(() =>
+  import('./components/financial/ClientsManager').then(m => ({ default: m.ClientsManager }))
+);
 
 import { ToastProvider } from './components/ui/Toast';
 
@@ -66,6 +69,14 @@ function App() {
                   element={
                     <Suspense fallback={<RouteFallback />}>
                       <ProfilePage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/clients"
+                  element={
+                    <Suspense fallback={<RouteFallback />}>
+                      <ClientsPage />
                     </Suspense>
                   }
                 />
