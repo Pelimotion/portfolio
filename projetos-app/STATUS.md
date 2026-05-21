@@ -5,12 +5,12 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-05-20
+**Data:** 2026-05-21
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→O completas ✅ | Build verde (843KB index.js) | Último commit: `9d64eaf`
-**Próxima Ação:** Fase Q — Cover Images + Scene Checkboxes + Pinned Doc (ver PRÓXIMA SESSÃO abaixo)
+**Status:** BETA — Fases A→Q completas ✅ | Build verde | Último commit: `131ad60`
+**Próxima Ação:** Verificar se ReferenceError `ct` persiste no novo deploy; se persistir → investigar com sourcemaps habilitados
 **Branch ativa:** `main`
-**Bloqueadores:** Migration O.1 pendente (rodar manualmente no Supabase — ver seção BLOQUEADORES)
+**Bloqueadores:** Nenhum bloqueador ativo
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
 
 ---
@@ -62,8 +62,11 @@
 | Fase N — N.1 Collapsing header (isCollapsed + max-h transition) | ✅ completo | 2026-05-20 |
 | Fase N — N.6 Avatares 3D (skin 15 tons, hair 18 estilos, facial hair, ProfilePage hero) | ✅ completo | 2026-05-20 |
 | Fase N — N.7 Dashboard redesign (topbar consolidado, pipeline+filtros colapsáveis) | ✅ completo | 2026-05-20 |
-| Fase P — Dashboard Financeiro | ❌ Não iniciado | — |
-| Fase Q — Cover Images + Scene Checkboxes + Pinned Doc | 🔜 PRÓXIMA SESSÃO | — |
+| Fase P — Dashboard Financeiro | ✅ Funcional (FinancialTab + ClientsManager) | 2026-05-21 |
+| Fase Q — Cover Images + Scene Checkboxes + Pinned Doc | ✅ Completo e deployado | 2026-05-21 |
+| Fix: 409 Conflict (projects_identity upsert) | ✅ Corrigido — `onConflict: 'slug'` | 2026-05-21 |
+| Fix: ReferenceError `ct` (UniversalEntityPage) | 🔍 Investigado — sem circular deps; novo bundle deployado | 2026-05-21 |
+| Sourcemaps habilitados em prod | ✅ `build: { sourcemap: true }` no vite.config.js | 2026-05-21 |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
 ---
@@ -1029,7 +1032,15 @@ CREATE POLICY "pc_delete" ON project_clients FOR DELETE USING (auth.uid() IS NOT
 
 ## 🚨 BLOQUEADORES ATIVOS
 
-_Nenhum bloqueador ativo. Todas as migrations da Fase P foram rodadas via API._
+_Nenhum bloqueador ativo._
+
+### ⚠️ Monitorar após deploy `131ad60`
+- **ReferenceError `ct` antes da inicialização** — Foi investigado nesta sessão:
+  - `madge --circular` confirmou: **zero dependências circulares** em 112 módulos
+  - O erro apontava para o bundle antigo (`CP-_ZmBt`); o novo bundle gerado tem hash diferente
+  - **Sourcemaps habilitados** (`build: { sourcemap: true }`) para facilitar debug se o erro reaparecer
+  - Ação: abrir `/projetos/page/<qualquer-projeto>` e verificar se o erro ainda ocorre no console
+  - Se persistir: o sourcemap agora mostrará o arquivo/linha exatos em vez da variável minificada `ct`
 
 ---
 
@@ -1051,7 +1062,7 @@ _Nenhum bloqueador ativo. Todas as migrations da Fase P foram rodadas via API._
 
 ---
 
-**Última atualização:** 2026-05-20 (Plano O→P→Q definido)
+**Última atualização:** 2026-05-21 — Sessão de debug: fix 409, investigação ReferenceError, sourcemaps, deploy `131ad60`
 
 ---
 
@@ -1060,4 +1071,5 @@ _Nenhum bloqueador ativo. Todas as migrations da Fase P foram rodadas via API._
 | Data/Hora UTC | Operador | Projeto | Status |
 |---|---|---|---|
 | 2026-05-19 | Claude Sonnet 4.6 | projetos-app (Fase D) | ✅ push main → Vercel deploy |
-| 2026-05-19 | Claude Opus 4.6  | projetos-app (Fase J) | ⏳ build local OK — aguarda commit/push |
+| 2026-05-19 | Claude Opus 4.6  | projetos-app (Fase J) | ✅ push main → Vercel deploy |
+| 2026-05-21 02:52 UTC | Claude Sonnet 4.6 | projetos-app (fix 409 + debug ReferenceError + sourcemaps) | ✅ commit `131ad60` → push main → Vercel deploy |
