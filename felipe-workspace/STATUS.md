@@ -1,7 +1,7 @@
 # PELIMOTION OS — Status
 **Ultima atualizacao:** 2026-05-21
-**Fase atual:** 4 — Shell + Auth ✅ COMPLETA
-**Progresso geral:** ~44% (Fases 1–4 concluidas)
+**Fase atual:** 4 — Shell + Auth ✅ COMPLETA + Deploy ✅
+**Progresso geral:** ~44% (Fases 1–4 concluidas) — app em producao
 
 ---
 
@@ -76,6 +76,30 @@
 - `components/pelimotion/sidebar.tsx` — dropdown avatar
 - `components/personal/sidebar.tsx` — dropdown avatar
 - `app/login/page.tsx` — polish
+- `next.config.ts` — basePath '/workspace' + remocao de turbopack.root
+- `proxy.ts` — redirect e matcher corrigidos para /workspace/login
+- `vercel.json` (criado) — outputDirectory '.next' (sobrescreve o da raiz do repo)
+
+**Deploy:**
+- Vercel projeto separado conectado a `Pelimotion/portfolio`, Root Directory: `felipe-workspace/app`
+- Deploy feito com sucesso ✅
+- Pendente: rewrite no `vercel.json` da raiz para expor em `pelimotion.art/workspace`
+
+---
+
+## ⚠️ PENDENTE — Rewrite para pelimotion.art/workspace
+
+O app esta deployado no Vercel mas ainda **nao esta acessivel em pelimotion.art/workspace**.
+Falta adicionar o rewrite no `vercel.json` da raiz do Portfolio.
+
+**Para fazer na proxima sessao (ou agora):**
+1. Pegar a URL do projeto workspace no Vercel (ex: `pelimotion-workspace-xxx.vercel.app`)
+2. Adicionar em `Portfolio/vercel.json`:
+   ```json
+   { "source": "/workspace", "destination": "https://[URL-DO-VERCEL]/workspace" },
+   { "source": "/workspace/:path*", "destination": "https://[URL-DO-VERCEL]/workspace/:path*" }
+   ```
+3. Commit + push → deploy automatico do projeto principal
 
 ---
 
