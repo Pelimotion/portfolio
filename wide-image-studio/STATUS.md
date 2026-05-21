@@ -50,6 +50,23 @@
 
 ## 📝 HISTÓRICO DE SESSÕES
 
+### 2026-05-19 — Pré-test: fix outputUrl HF + substituição do stitcher OpenCV → Canvas 2D
+
+**O que foi feito:**
+- [x] `edge-script/src/hf-webhook.ts` — outputUrl normalizado para string e array (HF pode mandar os dois; `"string"[0]` retornava primeiro char)
+- [x] `public/js/stitcher.worker.js` — `cv.detail_MultiBandBlender` removido (módulo stitching ausente no build padrão OpenCV.js 4.8.0); substituído por Canvas 2D `destination-in` + gradiente linear — resultado visual equivalente para overlap de 30–40%
+- [x] Edge script rebuilt (18KB) e redeployado para Bunny script 75395 ✅
+- [x] Push para main → Vercel auto-deploying frontend ✅
+
+**Arquivos modificados:** `edge-script/src/hf-webhook.ts`, `public/js/stitcher.worker.js`
+**Commit:** `bdd9e00`
+
+**Riscos pendentes (descobrir no teste):**
+- Campo do webhook HF pode usar nome diferente (testando ao vivo)
+- CORS nas tile URLs do HF CDN (testando ao vivo)
+
+---
+
 ### 2026-05-19 — Infraestrutura + fixes de autenticação cross-domain
 
 **O que foi feito:**

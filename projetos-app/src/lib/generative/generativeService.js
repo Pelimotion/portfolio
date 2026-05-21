@@ -43,7 +43,7 @@ export const generativeService = {
     await db.from('projects_identity').upsert({
       slug,
       metadata
-    });
+    }, { onConflict: 'slug' });
 
     return metadata;
   },

@@ -39,6 +39,7 @@
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.0",
     "sonner": "^2.0.7",
+    "source-map": "^0.7.6",
     "tailwind-merge": "^3.6.0",
     "three": "^0.170.0",
     "zustand": "^5.0.13"

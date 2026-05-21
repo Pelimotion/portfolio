@@ -48,16 +48,6 @@ Composto por 5 subprojetos ativos num único repositório.
 - Abrir `/projetos-app/` nesta sessão — tem seu próprio agente
 - Abrir `/wide-image-studio/` nesta sessão — tem seu próprio agente
 
-## Tom e Clareza nas Respostas
-
-Toda instrução, explicação ou resposta a comandos deve seguir estas regras:
-
-- **Linguagem simples:** escreva como se o leitor nunca tivesse visto o código antes
-- **Passo a passo numerado:** cada ação em um item separado (1. faça X → 2. faça Y)
-- **Definições curtas:** ao usar um termo técnico, explique em uma linha o que ele faz
-- **Sem jargão desnecessário:** evite siglas ou nomes de ferramentas sem contexto
-- **Máximo 5 passos por bloco:** se precisar de mais, quebre em sub-tarefas
-
 ## Limites operacionais conhecidos
 - Vercel Hobby: 12 serverless functions (no limite). Features novas usam Bunny Edge Scripting.
 - Bunny Edge Scripting: 128MB RAM, 30s CPU, 50 subrequests, bundle ≤1MB. Suficiente para orquestração; computação pesada vai pro cliente (WASM) ou container.
