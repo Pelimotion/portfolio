@@ -17,6 +17,7 @@ import { ensureRootHub } from '../../core/databaseFactory';
 import { pageService } from '../../services/pageService';
 import { propertyService } from '../../services/propertyService';
 import { loadPreference, savePreference } from '../../lib/viewPreferences';
+import { supabase } from '../../lib/supabase';
 import { COLOR_MAP } from '../../core/colors';
 import { financialService } from '../../services/financialService';
 
@@ -63,6 +64,10 @@ export default function Dashboard() {
   const [allValues,   setAllValues]   = useState({});
   const [dataLoading, setDataLoading] = useState(true);
 
+  // Scene stats for Dashboard Hub
+  const [totalScenes, setTotalScenes] = useState(0);
+  const [doneScenes, setDoneScenes] = useState(0);
+
   // Financial summary
   const [finSummary,      setFinSummary]      = useState(null);
   const [finSummaryLoading, setFinSummaryLoading] = useState(true);
@@ -103,9 +108,35 @@ export default function Dashboard() {
           combined[item.id] = {};
           (valMaps[idx] || []).forEach(v => { combined[item.id][v.property_id] = v.value; });
         });
+
+        // Load scene statistics for the pipeline bar
+        const { data: doneProps } = await supabase.from('properties').select('id').eq('property_type', 'checkbox').ilike('name', '%feito%');
+        const donePropIds = doneProps?.map(p => p.id) || [];
+        
+        let doneScenesCount = 0;
+        let totalScenesCount = 0;
+        
+        // Count total scenes (database_items that belong to our projects)
+        const projectIds = (items || []).map(p => p.id);
+        if (projectIds.length > 0) {
+          const { data: scenes } = await supabase.from('pages').select('id').eq('page_type', 'database_item').in('parent_id', projectIds);
+          totalScenesCount = scenes?.length || 0;
+          
+          if (donePropIds.length > 0 && totalScenesCount > 0) {
+            const sceneIds = scenes.map(s => s.id);
+            const { data: doneValues } = await supabase.from('page_property_values')
+              .select('page_id, value')
+              .in('property_id', donePropIds)
+              .in('page_id', sceneIds);
+            doneScenesCount = doneValues?.filter(v => v.value?.checked === true).length || 0;
+          }
+        }
+
         setProjects(items || []);
         setProperties(props || []);
         setAllValues(combined);
+        setTotalScenes(totalScenesCount);
+        setDoneScenes(doneScenesCount);
       } catch (e) {
         console.error('Dashboard data load error:', e);
       } finally {
@@ -335,6 +366,13 @@ export default function Dashboard() {
                       className={`h-full ${colors.bg}`} style={{ width: `${pct}%` }} />
                   );
                 })}
+                {doneScenes > 0 && (
+                  <div 
+                    title={`${doneScenes} cenas marcadas como feitas`} 
+                    className="h-full bg-emerald-500" 
+                    style={{ width: `${Math.min(100, (doneScenes / (totalScenes || 1)) * 100)}%` }} 
+                  />
+                )}
               </div>
               <span className="text-[10px] text-muted-foreground/40">{projects.length}p</span>
             </div>
@@ -458,8 +496,21 @@ function ProjectGrid({ projects, properties, allValues, statusProp, loading, onN
           >
             {/* Generative Cover */}
             <div className="h-28 w-full relative overflow-hidden bg-[#050505]">
-              <GenerativeHeader slug={project.id} type="project" showIcon={false} />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-1)] via-transparent to-transparent opacity-80" />
+              {project.cover && (
+                <img 
+                  src={project.cover} 
+                  alt="" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out"
+                />
+              )}
+              <div className={`absolute inset-0 ${project.cover ? 'mix-blend-overlay opacity-[0.12]' : ''}`}>
+                <GenerativeHeader slug={project.id} type="project" showIcon={false} />
+              </div>
+              {project.cover ? (
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-1)] via-[var(--surface-1)]/60 to-transparent pointer-events-none" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-1)] via-transparent to-transparent opacity-80" />
+              )}
               {statusOpt && (
                 <div className={`absolute top-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${colors.bg} ${colors.text}`}>
                   {statusOpt.label}

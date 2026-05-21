@@ -7,10 +7,10 @@
 
 **Data:** 2026-05-20
 **Projeto:** Gerenciador interno — React + Vite + Supabase
-**Status:** BETA — Fases A→P completas ✅ | Build verde (812KB index.js) | Último commit: pendente
-**Próxima Ação:** Fase Q — Hub de Serviços (ver roadmap abaixo) ou testes manuais da Fase P
+**Status:** BETA — Fases A→O completas ✅ | Build verde (843KB index.js) | Último commit: `9d64eaf`
+**Próxima Ação:** Fase Q — Cover Images + Scene Checkboxes + Pinned Doc (ver PRÓXIMA SESSÃO abaixo)
 **Branch ativa:** `main`
-**Bloqueadores:** Nenhum
+**Bloqueadores:** Migration O.1 pendente (rodar manualmente no Supabase — ver seção BLOQUEADORES)
 **Auth:** ✅ Supabase Auth (email+senha), roles via `profiles.role`
 
 ---
@@ -62,7 +62,8 @@
 | Fase N — N.1 Collapsing header (isCollapsed + max-h transition) | ✅ completo | 2026-05-20 |
 | Fase N — N.6 Avatares 3D (skin 15 tons, hair 18 estilos, facial hair, ProfilePage hero) | ✅ completo | 2026-05-20 |
 | Fase N — N.7 Dashboard redesign (topbar consolidado, pipeline+filtros colapsáveis) | ✅ completo | 2026-05-20 |
-| Fase P — Dashboard Financeiro (P.1→P.6) | ✅ Fase P completa | 2026-05-20 |
+| Fase P — Dashboard Financeiro | ❌ Não iniciado | — |
+| Fase Q — Cover Images + Scene Checkboxes + Pinned Doc | 🔜 PRÓXIMA SESSÃO | — |
 | Aprovação de conteúdo (vagas, editais) | ❌ Planejado | — |
 
 ---
@@ -625,7 +626,28 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 
 ---
 
-## 🎯 PRÓXIMA SESSÃO — FASE Q (Hub de Serviços)
+## 🎯 PRÓXIMA SESSÃO — FASE Q (Cover Images + Scene Checkboxes + Pinned Doc)
+
+> **ANTES DE COMEÇAR:** Rodar as migrations pendentes no Supabase SQL Editor:
+>
+> ```sql
+> -- Migration O.1-A: coluna stages (Fase F pendente)
+> ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
+>
+> -- Migration O.1-B: RPC com mime_type (Fase N.5)
+> CREATE OR REPLACE FUNCTION search_document_chunks(p_query TEXT, p_limit INT DEFAULT 10)
+> RETURNS TABLE (file_name TEXT, chunk_index INT, drive_file_id TEXT, project_id UUID, snippet TEXT, mime_type TEXT)
+> LANGUAGE sql STABLE SECURITY DEFINER AS $$
+>   SELECT file_name, chunk_index, drive_file_id, project_id, mime_type,
+>     ts_headline('portuguese', content, websearch_to_tsquery('portuguese', p_query),
+>       'StartSel=[[, StopSel=]], MaxWords=30, MinWords=15') AS snippet
+>   FROM document_chunks
+>   WHERE content_tsv @@ websearch_to_tsquery('portuguese', p_query)
+>   ORDER BY ts_rank_cd(content_tsv, websearch_to_tsquery('portuguese', p_query)) DESC
+>   LIMIT p_limit;
+> $$;
+> GRANT EXECUTE ON FUNCTION search_document_chunks TO authenticated;
+> ```
 
 ```markdown
 [AI_AGENT_BRIEFING.md carregado automaticamente]
@@ -633,38 +655,270 @@ ALTER TABLE pages ADD COLUMN IF NOT EXISTS stages JSONB DEFAULT '[]'::jsonb;
 # Context: projetos-app-agent — Fase Q
 
 📋 STATUS ANTERIOR
-Fase P completa (2026-05-20) — build verde (812KB), push para main.
-Implementado: financial_records + clients + project_clients (SQL via API), financialService, clientService,
-FinancialTab (CRUD inline por projeto), ClientsManager (/clients), LinkClientPanel,
-financial summary bar no Dashboard, export CSV, rota /clients na sidebar.
+Fase O completa (2026-05-20) — commits 0ff6996 + 9d64eaf, build verde (843KB), push para main.
+Implementado: drag cross-column, filtros board, input controlado status, menu coluna, auto-checkbox "Feito".
+Sessão 2026-05-20 (planejamento): pesquisa de mercado profunda (Notion, Linear, Monday, Asana, ClickUp,
+Jira, ftrack/ShotGrid VFX) + análise completa do código atual → plano detalhado Fase Q gerado.
+Deploy Vercel ativo. Fase P (financeiro) postergada — Fase Q priorizada pelo usuário.
 
 🎯 TAREFA DESTA SESSÃO
-Fase Q — Base Modular para Hub de Serviços (Q.1→Q.5)
+Fase Q — Cover Images elegantes + Checkboxes em Cenas com propagação de progresso + Documento Pinado no Dashboard.
+ZERO SQL MIGRATIONS — tudo usa campos já existentes (pages.cover, pages.properties JSONB) ou properties existentes.
 
 ⚙️ MODO DE EXECUÇÃO
-Execute sub-fase por sub-fase de forma autônoma. Após cada sub-fase: rode `npm run build`.
-Ao final: commit único `feat(projetos-app): Fase Q completa` + atualizar STATUS.md.
-Para rodar SQL: use a Supabase Management API com personal access token (sbp_...).
+Execute sub-fase por sub-fase de forma autônoma. Não pergunte "prosseguir?" entre sub-fases.
+Após cada sub-fase: rode `npm run build --prefix projetos-app` e corrija erros antes de avançar.
+Ao final da fase inteira: commit único `feat(projetos-app): Fase Q completa` + atualizar STATUS.md.
 
 📦 SUB-FASES EM ORDEM
-Q.1 — Rota /hub — área "Hub de Serviços" na Sidebar com sub-módulos (Financeiro standalone, CRM)
-Q.2 — Módulo Financeiro standalone (desacoplado de projeto — listagem geral de todos os registros)
-Q.3 — Schema CRM: deals, contacts, activities, pipelines (SQL via API)
-Q.4 — Módulo Comercial — Kanban de deals, pipeline de vendas
-Q.5 — Módulo Administrativo — contratos, permissões por módulo
 
-📦 ARQUIVOS RELEVANTES
-- src/components/financial/FinancialTab.jsx ← já existe (referência de padrão)
-- src/components/financial/ClientsManager.jsx ← já existe
-- src/services/financialService.js ← já existe
-- src/services/clientService.js ← já existe
-- src/App.jsx ← adicionar rotas /hub, /hub/financeiro, /hub/crm
-- src/components/layout/Sidebar.jsx ← adicionar seção Hub
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Q.1 — COVER IMAGES (projetos e cenas)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONTEXTO TÉCNICO:
+- pages.cover já existe no schema Supabase (coluna TEXT, sempre null — nunca foi usada)
+- pageService.js já aceita cover no create() e update() — só não é chamado
+- EntityCard.jsx já renderiza cover via property text (busca prop nomeada 'capa'/'cover')
+- GenerativeHeader.jsx renderiza SVG procedural P&B — deve ser o FALLBACK quando sem cover
+- GenerativeCover.jsx existe mas pouco usado — mesh gradients coloridos
+
+Q.1.1 — Hero híbrido na UniversalEntityPage
+  Arquivo: src/pages/entity/UniversalEntityPage.jsx (linhas ~263-393, hero section)
+  Mudança: Se page.cover existir → exibir <img> como background da hero area
+           + pattern GenerativeHeader em opacity 0.12 por cima (blend sutil, identidade mantida)
+           Se page.cover null → manter GenerativeHeader puro (comportamento atual)
+  CSS: img: object-cover, opacity-80, transition-opacity 500ms
+       Gradient overlay: bg-gradient-to-t from-[var(--surface-0)] via-[var(--surface-0)]/60 to-transparent
+       Pattern blend: mix-blend-overlay opacity-[0.12]
+
+Q.1.2 — CoverImageUploader component
+  Criar: src/components/ui/CoverImageUploader.jsx
+  Comportamento:
+    - Input file oculto + área de drop (drag & drop)
+    - Preview da imagem selecionada com crop simulado (aspect-ratio 5:2, object-cover)
+    - Upload: PUT para Bunny Storage API → URL final pelimotion-portfolio.b-cdn.net/covers/{pageId}.webp
+    - Variável de ambiente necessária: VITE_BUNNY_STORAGE_API_KEY (já deve existir no .env)
+    - Fallback se Bunny não configurado: aceitar URL manual via input texto
+    - Após upload: pageService.update(pageId, { cover: url })
+    - Botão "Remover capa" → pageService.update(pageId, { cover: null })
+  Onde aparece: botão "Alterar capa" no More Actions dropdown (UniversalEntityPage.jsx, hero section)
+  Visual do botão: ImageIcon 16px + "Alterar capa" (texto discreto, abre popover com uploader)
+
+Q.1.3 — EntityCard: priorizar pages.cover
+  Arquivo: src/components/database/EntityCard.jsx (linha ~93-114)
+  Mudança: coverUrl = item.cover || (coverP ? values[coverP.id]?.text : null)
+  item.cover vem do pageService (já retorna o campo cover do Supabase select('*'))
+  Sem mudança visual — o render existente (linhas 364-369) já funciona
+
+Q.1.4 — Dashboard Grid: cover nos project cards
+  Arquivo: src/pages/dashboard/Dashboard.jsx (ProjectGrid component, linhas ~378-441)
+  Mudança: cada card no grid usa project.cover como background da hero (h-28)
+           Se cover null → mantém GenerativeHeader atual
+  Visual: mesma lógica do Q.1.1 — img + pattern blend sutil + gradient
+
+Q.1.5 — Polish visual (referência de mercado)
+  - Hover em card com cover: group-hover:scale-105 duration-700 (suave, não abrupto)
+  - Sem border no cover area — luminance hierarchy (padrão Linear 2026)
+  - Cover com opacity 0.75 em estado normal → opacity-90 no hover (cards ficam mais vivos)
+  - Cards SEM cover: mantêm borda sutil border-[var(--border-subtle)] (distinção clara)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Q.2 — CHECKBOXES EM CENAS (toggle + propagação)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONTEXTO TÉCNICO:
+- Property "Feito" (checkbox) já é auto-criada pelo DatabaseRenderer para entityType !== 'project'
+- EntityCard.jsx já tem toggle funcional com estado otimista + rollback
+- ProductionDashboard já conta cenas "feitas" (linha 587-641) — progress bar já existe
+- SceneOverview.jsx é simples — só mostra metadata e atividade, SEM toggle visível
+- UniversalEntityPage: hero da cena não exibe badge de "Feita"
+- SceneOverview não carrega as properties da cena (recebe propValues mas não o doneProp)
+
+SEMÂNTICA IMPORTANTE (não confundir):
+  Checkbox "Feita" = produção interna finalizada (pronta para revisão interna)
+                   ≠ Status Kanban "Entregue" (entrega ao cliente)
+  São dimensões independentes — padrão Linear/Jira. Checkbox NÃO move o card no Kanban.
+
+Q.2.1 — SceneCompletionToggle component
+  Criar: src/components/scene/SceneCompletionToggle.jsx
+  Props: { pageId, donePropId, checked, onChange, showLabel? }
+  Visual:
+    - Círculo 20px: border-2 cinza → preenchido emerald com checkmark quando checked
+    - Transição: scale(1.15) + fill em 150ms cubic-bezier(0.4, 0, 0.2, 1)
+    - Label: "Marcar como feita" / "✓ Feita" (toggle de texto)
+    - Quando feita: label muda para verde + timestamp "Marcada hoje" ou "Marcada há Xd"
+  Lógica: propertyService.upsertValue(pageId, donePropId, { checked: next }) — igual ao EntityCard
+
+Q.2.2 — SceneOverview: toggle no topo
+  Arquivo: src/components/scene/SceneOverview.jsx
+  Mudança:
+    - Receber props adicionais: donePropId, doneChecked, onDoneChange
+    - Adicionar barra horizontal no TOPO (acima do card "Detalhes"):
+      <div className="flex items-center gap-3 p-4 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl">
+        <SceneCompletionToggle ... />
+        <div className="text-xs text-muted-foreground">
+          {checked ? 'Cena finalizada — pronta para próxima fase' : 'Marcar quando a produção estiver concluída'}
+        </div>
+      </div>
+
+Q.2.3 — UniversalEntityPage: passar doneProp para SceneOverview
+  Arquivo: src/pages/entity/UniversalEntityPage.jsx
+  Mudança:
+    - Buscar doneProp nas properties: properties.find(p => p.property_type === 'checkbox' && p.name.toLowerCase().includes('feito'))
+    - Passar donePropId e doneChecked para SceneOverview via props
+    - No hero da cena (!isProject): se isDone → adicionar badge emerald "Concluída" ao lado do título
+      <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 rounded-full">
+        ✓ Concluída
+      </span>
+    - Hero com cover + isDone: adicionar ring emerald sutil: ring-1 ring-emerald-500/20
+
+Q.2.4 — Atalho de teclado Shift+D
+  Arquivo: src/pages/entity/UniversalEntityPage.jsx
+  Mudança: useEffect com keydown listener — quando Shift+D pressionado e !isProject e donePropId:
+    toggle doneProp → chama propertyService.upsertValue → toast.success('✓ Cena marcada como feita')
+    Ignorar se foco em input/textarea/contenteditable
+
+Q.2.5 — Ring chart SVG no ProductionDashboard
+  Arquivo: src/pages/entity/UniversalEntityPage.jsx (ProductionDashboard, linhas ~567-840)
+  Mudança: ao lado da progress bar existente, adicionar SVG ring chart (donut):
+    - SVG 64×64, viewBox 0 0 64 64
+    - Círculo de fundo: cx=32 cy=32 r=24 stroke=var(--border-subtle) strokeWidth=6 fill=none
+    - Arco de progresso: stroke-dasharray calculado de circumference (2π×24 ≈ 150.8)
+      stroke-dashoffset = circumference × (1 - progress/100)
+      Cor: hsl(142 71% 45%) (emerald) → hsl(45 93% 47%) (amber) quando < 50%
+    - Texto central: "{progress}%" em font-bold text-[11px]
+    - Animação: transition stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1)
+    - Posição: flexbox ao lado do texto "Progresso Geral X%"
+
+Q.2.6 — Pipeline bar: segmento "Feitas" no Dashboard Hub
+  Arquivo: src/pages/dashboard/Dashboard.jsx (pipeline stacked bar)
+  Mudança: calcular doneByCkeckbox = cenas do projeto com property "Feito" checked === true
+    Adicionar segmento emerald na stacked bar proporcional a doneByCkeckbox/total
+    Tooltip: "X cenas marcadas como feitas"
+    NOTA: requer carregar allValues das cenas — verificar se já está disponível no Dashboard
+
+Q.2.7 — Toast + micro-animation na conclusão
+  Arquivo: src/components/scene/SceneCompletionToggle.jsx
+  Mudança: ao marcar feita → dispara partícula CSS (3 pontos emerald expandindo e desvanecendo)
+    Implementação pura CSS: ::after pseudo-element com keyframe scale + opacity
+    Sem biblioteca externa. Duração: 600ms, não bloqueia interação
+    toast.success com action "Desfazer" (5s timeout):
+      toast.success('Cena marcada como feita', { action: { label: 'Desfazer', onClick: () => toggle(false) }, duration: 5000 })
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Q.3 — DOCUMENTO PINADO NO DASHBOARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONTEXTO TÉCNICO:
+- DocsSectionDashboard já existe (UniversalEntityPage.jsx linhas 843-1059)
+- Atualmente: grid de arquivos com links externos — lista flat sem destaque
+- pages.properties é JSONB — aceita qualquer key sem migration
+- pageService.update(pageId, { properties: { ...props, pinned_doc: {...} } }) → funciona
+- Google Docs publica URL: docs.google.com/document/d/{id}/pub?embedded=true (permite iframe)
+- Google Sheets: docs.google.com/spreadsheets/d/{id}/pubhtml?widget=true&headers=false
+- Google Slides: docs.google.com/presentation/d/{id}/embed?start=false&loop=false
+- PDFs: usar Google Drive viewer: drive.google.com/file/d/{id}/preview
+
+Q.3.1 — DocTypeDetector utility
+  Criar: src/components/docs/DocTypeDetector.js
+  Função: detectDocType(url, mimeType) → { type, embedUrl, icon, label, orientation }
+  Tipos:
+    'gdoc'   → icon: FileText (azul), orientation: 'portrait'
+               embedUrl: url.replace('/edit', '/pub?embedded=true')
+                           .replace('/view', '/pub?embedded=true')
+    'gsheet' → icon: Table (verde), orientation: 'landscape'
+               embedUrl: url.replace('/edit', '/pubhtml?widget=true&headers=false')
+    'gslide' → icon: PresentationIcon (amarelo), orientation: 'landscape'
+               embedUrl: url.replace('/edit', '/embed?start=false&loop=false')
+    'pdf'    → icon: FileIcon (vermelho), orientation: 'portrait'
+               embedUrl: 'https://drive.google.com/file/d/{id}/preview' (extrair id da URL)
+    'unknown'→ icon: ExternalLink (cinza), embedUrl: url (abre externo)
+  Detecção: mimeType first, then URL pattern matching
+
+Q.3.2 — PinnedDocViewer component
+  Criar: src/components/docs/PinnedDocViewer.jsx
+  Props: { doc: { url, name, mimeType, driveFileId }, onUnpin, onExpand }
+  Estados internos: 'collapsed' | 'expanded' | 'fullscreen'
+  
+  Estado COLLAPSED (padrão ao carregar):
+    - Card horizontal h-16: ícone tipo (24px) + nome do doc + tipo badge + botões
+    - Botões: "Expandir" (ChevronDown) + "Abrir original" (ExternalLink) + "Desafixar" (Pin off)
+    - Fundo: var(--surface-1), borda var(--border-subtle), rounded-2xl
+    
+  Estado EXPANDED (inline no dashboard):
+    - Container: w-full, altura adaptive por orientação:
+        landscape (gsheet/gslide): aspect-ratio 16/9 → max-h 60vh
+        portrait (gdoc/pdf): aspect-ratio 3/4 → max-w 640px mx-auto, max-h 75vh
+    - Topbar sticky h-10: ícone + nome (truncate) + [Landscape/Portrait toggle] + [Fullscreen] + [Colapsar] + [Abrir]
+    - iframe: src=embedUrl, width=100%, height=100%, border=none, allow="autoplay"
+    - Loading state: Skeleton pulse + "Carregando documento..."
+    - Erro iframe (onerror): mensagem "Este documento requer acesso público" + link "Abrir no Drive"
+    
+  Estado FULLSCREEN (portal sobre tudo):
+    - ReactDOM.createPortal → fixed inset-0 z-[9999] bg-[var(--surface-0)]
+    - Topbar 48px translúcida: backdrop-blur-xl bg-black/60 — ícone + nome + [Exit Fullscreen]
+    - iframe ocupa 100vw × calc(100vh - 48px)
+    - Hotkey Esc → volta para expanded
+    
+  Transição entre estados: max-height com duration-300 ease-in-out
+
+Q.3.3 — Pinning UX na DocsSectionDashboard
+  Arquivo: src/pages/entity/UniversalEntityPage.jsx (DocsSectionDashboard, linhas 843-1059)
+  Mudanças:
+    1. Carregar pinned_doc do page.properties ao montar: const pinnedDoc = page?.properties?.pinned_doc
+    2. Cada arquivo no grid ganha ícone pin (Pin 12px) no hover:
+       - Se arquivo === pinnedDoc: ícone pin preenchido (violeta)
+       - Se outro arquivo: ícone pin vazio no hover → click pina este
+    3. handlePin(file): await pageService.update(pageId, { properties: { ...page.properties, pinned_doc: { url: file.webViewLink, name: file.name, mimeType: file.mimeType, driveFileId: file.id } } })
+    4. handleUnpin(): await pageService.update(pageId, { properties: { ...page.properties, pinned_doc: null } })
+    5. Texto helper: badge "📌 Fixado" no arquivo pinado dentro do grid
+
+Q.3.4 — Integração no layout do Dashboard do projeto
+  Arquivo: src/pages/entity/UniversalEntityPage.jsx (aba 'dashboard', linhas ~491-562)
+  Posição do PinnedDocViewer: ENTRE o bloco de propriedades e o ProductionDashboard
+  
+  Layout quando expandido: CSS Grid com transição suave:
+    - Estado collapsed/sem doc: layout normal (ProductionDashboard full width)
+    - Estado expanded (landscape): grid-cols-[1fr] — doc ocupa toda largura, KPIs abaixo
+    - Estado expanded (portrait): grid-cols-[1fr_340px] — doc à esquerda, KPIs à direita sidebar
+  
+  Código de inserção (dentro do bloco activeTab === 'dashboard'):
+    {pinnedDoc && (
+      <div className="mb-6">
+        <PinnedDocViewer
+          doc={pinnedDoc}
+          onUnpin={handleUnpin}
+        />
+      </div>
+    )}
+
+Q.3.5 — Orientação adaptativa e fullscreen
+  PinnedDocViewer.jsx — detectar orientação e ajustar:
+    - useEffect: observar resize do container via ResizeObserver
+    - Se container width > height * 1.4 → forçar landscape layout
+    - Toggle manual: botão Landscape/Portrait no topbar (overrides auto-detect)
+    - Fullscreen: hotkey F quando mouse está sobre o viewer (onMouseEnter adiciona listener)
+
+📦 ARQUIVOS QUE SERÃO LIDOS ANTES DE EDITAR
+- src/pages/entity/UniversalEntityPage.jsx  ← Q.1.1, Q.1.2, Q.2.3, Q.2.4, Q.3.3, Q.3.4
+- src/pages/dashboard/Dashboard.jsx         ← Q.1.4, Q.2.6
+- src/components/database/EntityCard.jsx    ← Q.1.3
+- src/components/scene/SceneOverview.jsx    ← Q.2.2
+- src/services/pageService.js               ← confirmar campo cover + update
+
+📦 ARQUIVOS QUE SERÃO CRIADOS
+- src/components/ui/CoverImageUploader.jsx         ← Q.1.2
+- src/components/scene/SceneCompletionToggle.jsx   ← Q.2.1
+- src/components/docs/DocTypeDetector.js           ← Q.3.1
+- src/components/docs/PinnedDocViewer.jsx          ← Q.3.2
 
 🚫 NÃO TOCAR
-- src/components/database/* — estável
+- src/components/database/views/KanbanView.jsx — Fase O completa
 - src/components/search/* — Fase K completa
-- src/pages/entity/UniversalEntityPage.jsx — Fase P adicionou tab Financeiro, não regredir
+- src/lib/generative/* — Fase M completa (patterns v3)
+- src/services/propertyService.js — estável
+- src/services/documentService.js — estável
 ```
 
 ---

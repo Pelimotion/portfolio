@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Calendar, User } from 'lucide-react';
 import { PropertyRenderer } from '../properties/PropertyRenderer';
+import { SceneCompletionToggle } from './SceneCompletionToggle';
 
 function timeAgo(dateStr) {
   if (!dateStr) return null;
@@ -16,12 +17,12 @@ function timeAgo(dateStr) {
   return new Date(dateStr).toLocaleDateString('pt-BR');
 }
 
-export function SceneOverview({ page, properties, propValues, onPropChange, ancestorProjectId, ancestorProjectTitle }) {
+export function SceneOverview({ page, properties, propValues, onPropChange, ancestorProjectId, ancestorProjectTitle, donePropId, doneChecked, onDoneChange }) {
   const navigate = useNavigate();
 
   const statusProp   = properties?.find(p => p.property_type === 'status' || p.name === 'Status');
   const deadlineProp = properties?.find(p => p.property_type === 'date' || p.name?.toLowerCase().includes('deadline') || p.name?.toLowerCase().includes('entrega'));
-  const otherProps   = properties?.filter(p => p !== statusProp && p !== deadlineProp) ?? [];
+  const otherProps   = properties?.filter(p => p !== statusProp && p !== deadlineProp && p.id !== donePropId) ?? [];
 
   return (
     <div className="space-y-4">
@@ -34,6 +35,21 @@ export function SceneOverview({ page, properties, propValues, onPropChange, ance
           <ArrowLeft className="w-3 h-3" />
           {ancestorProjectTitle || 'Projeto'}
         </button>
+      )}
+
+      {/* Completion Toggle */}
+      {donePropId && (
+        <div className="flex items-center gap-3 p-4 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl">
+          <SceneCompletionToggle 
+            pageId={page?.id} 
+            donePropId={donePropId} 
+            checked={doneChecked} 
+            onChange={onDoneChange} 
+          />
+          <div className="text-xs text-muted-foreground ml-auto">
+            {doneChecked ? 'Cena finalizada — pronta para próxima fase' : 'Marcar quando a produção estiver concluída'}
+          </div>
+        </div>
       )}
 
       {/* Metadata card */}

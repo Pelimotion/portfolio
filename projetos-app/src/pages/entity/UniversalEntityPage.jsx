@@ -25,10 +25,13 @@ import {
   CheckCircle2, Loader2, Users, TrendingUp, Zap,
   Circle, ArrowRight, Trash2, Home, ChevronRight,
   LayoutDashboard, Database, Share2, Plus, Settings,
-  Copy, ExternalLink, MessageCircle, Link2, Sliders, FileSearch, RefreshCw, Sparkles
+  Copy, ExternalLink, MessageCircle, Link2, Sliders, FileSearch, RefreshCw, Sparkles, Image as ImageIcon
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as Popover from '@radix-ui/react-popover';
 import { ProjectArtPattern } from '../../components/ui/ProjectArtPattern';
+import { CoverImageUploader } from '../../components/ui/CoverImageUploader';
+import { PinnedDocViewer } from '../../components/ui/PinnedDocViewer';
 import { getAccentColorFromId } from '../../lib/artPatternEngine';
 import { TamagochiAvatar } from '../../components/ui/TamagochiAvatar';
 import { GenerativeHeader } from '../../components/ui/GenerativeHeader';
@@ -204,6 +207,30 @@ export function UniversalEntityPage() {
     }
   }, [pageId, isProject]);
 
+  const handleUpdatePageProperties = useCallback(async (updates) => {
+    const currentProps = page?.properties || {};
+    await updatePage(pageId, { properties: { ...currentProps, ...updates } });
+  }, [pageId, page, updatePage]);
+
+  useEffect(() => {
+    const handleKeyDown = async (e) => {
+      if (e.shiftKey && e.key.toLowerCase() === 'd' && !isProject && doneProp) {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable) {
+          return;
+        }
+        e.preventDefault();
+        const doneChecked = propValues[doneProp.id]?.checked === true;
+        handlePropChange(doneProp.id, { checked: !doneChecked });
+        toast.success(doneChecked ? 'Marcação de cena desfeita' : '✓ Cena marcada como feita', {
+          action: { label: 'Desfazer', onClick: () => handlePropChange(doneProp.id, { checked: doneChecked }) },
+          duration: 5000
+        });
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isProject, doneProp, propValues, handlePropChange]);
+
   if (loading && !page) return <PageSkeleton />;
   if (!page) return null;
 
@@ -214,9 +241,11 @@ export function UniversalEntityPage() {
   const priorityProp = Array.isArray(properties) ? properties.find(p => p.name === 'Prioridade') : null;
   const deadlineProp = Array.isArray(properties) ? properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega' || p.property_type === 'date') : null;
   const clienteProp  = Array.isArray(properties) ? properties.find(p => p.name === 'Cliente') : null;
-  const otherProps   = Array.isArray(properties) ? properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Data de Entrega', 'Cliente'].includes(p.name)) : [];
+  const doneProp     = Array.isArray(properties) ? properties.find(p => p.property_type === 'checkbox' && p.name.toLowerCase().includes('feito')) : null;
+  const otherProps   = Array.isArray(properties) ? properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Data de Entrega', 'Cliente'].includes(p.name) && p.id !== doneProp?.id) : [];
 
   const statusVal    = statusProp ? propValues[statusProp.id] : null;
+  const doneChecked  = doneProp ? propValues[doneProp.id]?.checked === true : false;
   const statusOptions = statusProp?.config?.options || [];
   const statusOption = Array.isArray(statusOptions) ? statusOptions.find(o => o.id === statusVal?.selected) : null;
   const statusColors = statusOption ? COLOR_MAP[statusOption.color] || COLOR_MAP.gray : COLOR_MAP.gray;
@@ -263,16 +292,29 @@ export function UniversalEntityPage() {
       </div>
 
       {/* ── HEADER ── */}
-      <div className={`relative group/header shrink-0 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[260px]'}`}>
+      <div className={`relative group/header shrink-0 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[260px]'} ${!isProject && doneChecked && page?.cover ? 'ring-1 ring-emerald-500/20' : ''}`}>
         {/* HERO AREA — responsive height */}
         <div className="h-28 md:h-52 w-full bg-[#050505] relative overflow-hidden">
-          <GenerativeHeader
-            slug={pageId}
-            type={isProject ? 'project' : 'scene'}
-            showIcon={false}
-            refreshKey={headerRefreshKey}
-          />
-          <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.9)]" />
+          {page?.cover && (
+            <img 
+              src={page.cover} 
+              alt="Capa" 
+              className="absolute inset-0 w-full h-full object-cover opacity-80 transition-opacity duration-500"
+            />
+          )}
+          <div className={`absolute inset-0 ${page?.cover ? 'mix-blend-overlay opacity-[0.12]' : ''}`}>
+            <GenerativeHeader
+              slug={pageId}
+              type={isProject ? 'project' : 'scene'}
+              showIcon={false}
+              refreshKey={headerRefreshKey}
+            />
+          </div>
+          {page?.cover ? (
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-0)] via-[var(--surface-0)]/60 to-transparent pointer-events-none" />
+          ) : (
+            <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.9)]" />
+          )}
         </div>
 
         {/* INFO BAR */}
@@ -285,12 +327,19 @@ export function UniversalEntityPage() {
             </div>
 
             <div className="flex flex-col gap-1 min-w-0">
-              <h1
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={handleTitleBlur}
-                className="text-2xl md:text-4xl font-semibold text-white tracking-tighter leading-none focus:outline-none cursor-text hover:opacity-90 transition-opacity"
-              >{page?.title}</h1>
+              <div className="flex items-center gap-3">
+                <h1
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={handleTitleBlur}
+                  className="text-2xl md:text-4xl font-semibold text-white tracking-tighter leading-none focus:outline-none cursor-text hover:opacity-90 transition-opacity"
+                >{page?.title}</h1>
+                {!isProject && doneChecked && (
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 rounded-full whitespace-nowrap">
+                    ✓ Concluída
+                  </span>
+                )}
+              </div>
 
               <div className="flex items-center gap-2 flex-wrap">
                 {statusProp && (
@@ -304,6 +353,10 @@ export function UniversalEntityPage() {
           </div>
 
           <div className="flex items-center gap-3 pb-1">
+             {page?.properties?.pinned_doc_url && (
+               <PinnedDocViewer url={page.properties.pinned_doc_url} title={page.properties.pinned_doc_title} />
+             )}
+
              {isProject && childDatabase && (
                <PropertyManagerModal 
                  databaseId={childDatabase.id} 
@@ -370,6 +423,73 @@ export function UniversalEntityPage() {
                       >
                         {isRandomizing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Randomizar Identidade
                       </DropdownMenu.Item>
+
+                      <Popover.Root>
+                        <Popover.Trigger asChild>
+                          <DropdownMenu.Item
+                            onSelect={(e) => e.preventDefault()}
+                            className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                          >
+                            <ImageIcon className="w-4 h-4" /> Alterar capa
+                          </DropdownMenu.Item>
+                        </Popover.Trigger>
+                        <Popover.Portal>
+                          <Popover.Content align="start" sideOffset={5} className="z-[60] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-2xl shadow-2xl animate-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95">
+                            <CoverImageUploader 
+                              pageId={pageId} 
+                              currentCover={page?.cover} 
+                              onCoverUpdate={(url) => {
+                                fetchPage(pageId);
+                              }}
+                            />
+                          </Popover.Content>
+                        </Popover.Portal>
+                      </Popover.Root>
+
+                      {/* PIN DOC POPOVER */}
+                      <Popover.Root>
+                        <Popover.Trigger asChild>
+                          <DropdownMenu.Item
+                            onSelect={(e) => e.preventDefault()}
+                            className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
+                          >
+                            <Link2 className="w-4 h-4" /> Fixar Documento Mestre
+                          </DropdownMenu.Item>
+                        </Popover.Trigger>
+                        <Popover.Portal>
+                          <Popover.Content align="start" sideOffset={5} className="z-[60] bg-[var(--surface-3)] border border-[var(--border-strong)] rounded-xl shadow-2xl p-4 w-64 animate-in zoom-in-95">
+                            <h4 className="text-xs font-bold mb-3 text-muted-foreground uppercase tracking-wider">Fixar Documento</h4>
+                            <div className="space-y-3">
+                              <input 
+                                id="pin-title"
+                                type="text" 
+                                placeholder="Título (ex: Roteiro Master)" 
+                                defaultValue={page?.properties?.pinned_doc_title || ''}
+                                className="w-full text-xs bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded p-2 focus:outline-none focus:border-primary/50"
+                              />
+                              <input 
+                                id="pin-url"
+                                type="url" 
+                                placeholder="https://docs.google.com/..." 
+                                defaultValue={page?.properties?.pinned_doc_url || ''}
+                                className="w-full text-xs bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded p-2 focus:outline-none focus:border-primary/50"
+                              />
+                              <button 
+                                onClick={() => {
+                                  const title = document.getElementById('pin-title').value;
+                                  const url = document.getElementById('pin-url').value;
+                                  handleUpdatePageProperties({ pinned_doc_title: title, pinned_doc_url: url });
+                                  toast.success('Documento fixado com sucesso');
+                                }}
+                                className="w-full bg-primary text-primary-foreground text-xs font-semibold py-2 rounded hover:bg-primary/90 transition-colors"
+                              >
+                                Salvar Documento
+                              </button>
+                            </div>
+                          </Popover.Content>
+                        </Popover.Portal>
+                      </Popover.Root>
+
                       <DropdownMenu.Item
                         onSelect={() => setShowHeaderEditor(!showHeaderEditor)}
                         className="flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-primary/10 rounded-lg cursor-pointer outline-none"
@@ -537,6 +657,9 @@ export function UniversalEntityPage() {
               onPropChange={handlePropChange}
               ancestorProjectId={grandparentPageId}
               ancestorProjectTitle={parentPageTitle}
+              donePropId={doneProp?.id}
+              doneChecked={doneChecked}
+              onDoneChange={(checked) => handlePropChange(doneProp.id, { checked })}
             />
           )}
           {activeTab === 'notes' && !isProject && (
@@ -713,16 +836,37 @@ function ProductionDashboard({ items, properties, allValues, projectTitle, pageI
       </div>
 
       {/* Progress bar */}
-      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso Geral</span>
-            <div className="text-2xl font-semibold text-foreground">{kpis.progress}% <span className="text-xs text-muted-foreground/50 font-normal">completo</span></div>
-          </div>
-          <span className="text-[10px] font-mono text-muted-foreground/50 bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border-subtle)]">{kpis.done} / {kpis.total} CENAS</span>
+      <div className="bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-2xl p-5 flex items-center gap-6">
+        <div className="relative shrink-0 w-16 h-16 flex items-center justify-center">
+          <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="24" stroke="var(--border-subtle)" strokeWidth="6" fill="none" />
+            <circle 
+              cx="32" cy="32" r="24" 
+              stroke={kpis.progress < 50 ? 'hsl(45 93% 47%)' : 'hsl(142 71% 45%)'} 
+              strokeWidth="6" 
+              fill="none" 
+              strokeLinecap="round"
+              strokeDasharray={150.8}
+              strokeDashoffset={150.8 * (1 - kpis.progress / 100)}
+              style={{ transition: 'stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1)' }}
+            />
+          </svg>
+          <span className="absolute text-[11px] font-bold text-foreground">{kpis.progress}%</span>
         </div>
-        <div className="h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 transition-all duration-1000" style={{ width: `${kpis.progress}%` }}/>
+        
+        <div className="flex-1 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-[0.15em]">Progresso Geral</span>
+              <div className="text-xl font-semibold text-foreground flex items-baseline gap-1">
+                {kpis.progress}% <span className="text-[10px] text-muted-foreground/50 font-normal uppercase tracking-wider">completo</span>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono text-muted-foreground/50 bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border-subtle)]">{kpis.done} / {kpis.total} CENAS</span>
+          </div>
+          <div className="h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 transition-all duration-1000" style={{ width: `${kpis.progress}%` }}/>
+          </div>
         </div>
       </div>
 

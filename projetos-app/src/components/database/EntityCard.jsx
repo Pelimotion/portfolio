@@ -111,7 +111,7 @@ export const EntityCard = memo(function EntityCard({
     const isDone   = doneP ? values[doneP.id]?.checked : false;
     const isBlocked = blockP && isVisible(blockP.id) ? values[blockP.id]?.checked : false;
     const points   = pointsP && isVisible(pointsP.id) ? values[pointsP.id]?.number : null;
-    const coverUrl = coverP && isVisible(coverP.id) ? values[coverP.id]?.text : null;
+    const coverUrl = item?.cover || (coverP && isVisible(coverP.id) ? values[coverP.id]?.text : null);
 
     const ownerVal = ownerP && isVisible(ownerP.id) ? values[ownerP.id] : null;
     const owner    = ownerVal?.selected || ownerVal?.people || (Array.isArray(ownerVal) ? ownerVal[0] : null);
@@ -347,6 +347,7 @@ export const EntityCard = memo(function EntityCard({
           ? 'shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] ring-1 ring-primary/50 rotate-1 scale-[1.03] z-[100]'
           : 'shadow-sm hover:shadow-md hover:-translate-y-0.5'
         }
+        ${!coverUrl ? 'border border-[var(--border-subtle)]' : 'border-none'}
         ${localDone ? 'opacity-60 grayscale-[0.5]' : ''}
         ${isBlocked ? 'ring-2 ring-red-500/20' : ''}
         ${isSelected ? 'ring-2 ring-primary/50 bg-primary/5' : ''}
@@ -362,9 +363,9 @@ export const EntityCard = memo(function EntityCard({
 
       {/* Card Cover */}
       {coverUrl && density !== 'compact' && (
-        <div className="h-24 w-full relative overflow-hidden bg-black/20">
-           <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-500" />
-           <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-2)] to-transparent" />
+        <div className="h-24 w-full relative overflow-hidden bg-[#050505]">
+           <img src={coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out" />
+           <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-1)] via-[var(--surface-1)]/40 to-transparent pointer-events-none" />
         </div>
       )}
 
