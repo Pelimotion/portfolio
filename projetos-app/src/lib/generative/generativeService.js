@@ -43,7 +43,9 @@ export const generativeService = {
     await db.from('projects_identity').upsert({
       slug,
       metadata
-    }, { onConflict: 'slug' });
+    }, { onConflict: 'slug' }).then(({ error }) => {
+      if (error) console.warn('projects_identity upsert skipped:', error.message);
+    });
 
     return metadata;
   },

@@ -212,6 +212,8 @@ export function UniversalEntityPage() {
     await updatePage(pageId, { properties: { ...currentProps, ...updates } });
   }, [pageId, page, updatePage]);
 
+  const doneProp = Array.isArray(properties) ? properties.find(p => p.property_type === 'checkbox' && p.name.toLowerCase().includes('feito')) : null;
+
   useEffect(() => {
     const handleKeyDown = async (e) => {
       if (e.shiftKey && e.key.toLowerCase() === 'd' && !isProject && doneProp) {
@@ -241,7 +243,6 @@ export function UniversalEntityPage() {
   const priorityProp = Array.isArray(properties) ? properties.find(p => p.name === 'Prioridade') : null;
   const deadlineProp = Array.isArray(properties) ? properties.find(p => p.name === 'Deadline' || p.name === 'Entrega' || p.name === 'Data de Entrega' || p.property_type === 'date') : null;
   const clienteProp  = Array.isArray(properties) ? properties.find(p => p.name === 'Cliente') : null;
-  const doneProp     = Array.isArray(properties) ? properties.find(p => p.property_type === 'checkbox' && p.name.toLowerCase().includes('feito')) : null;
   const otherProps   = Array.isArray(properties) ? properties.filter(p => !['Status', 'Prioridade', 'Deadline', 'Entrega', 'Data de Entrega', 'Cliente'].includes(p.name) && p.id !== doneProp?.id) : [];
 
   const statusVal    = statusProp ? propValues[statusProp.id] : null;
