@@ -1,7 +1,7 @@
 # PELIMOTION OS — Status
 **Ultima atualizacao:** 2026-05-21
-**Fase atual:** 4 — Shell + Auth ✅ COMPLETA + Deploy ✅
-**Progresso geral:** ~44% (Fases 1–4 concluidas) — app em producao
+**Fase atual:** 6 — Módulo Financeiro ✅ COMPLETA
+**Progresso geral:** ~65% (Fases 1–6 concluidas) — app em producao
 
 ---
 
@@ -10,7 +10,7 @@
 | Arquivo | Quando ler |
 |---------|-----------|
 | `ARCHITECTURE.md` | Toda sessao nova — decisoes permanentes de stack, schemas, convencoes |
-| `plans/phase-03-nextjs-setup.md` | Referencia — ja concluido |
+| `plans/phase-05-projetos.md` | Referencia — Fase 5 concluida (componentes criados, decisoes tecnicas) |
 
 ---
 
@@ -52,68 +52,51 @@
 - shadcn/ui usa `render` prop em vez de `asChild` (nova versao com base-ui)
 - Rota `/projetos-pessoais` em vez de `/projetos` no modulo personal (evita conflito com pelimotion)
 
----
-
 ### Fase 4 — Shell + Auth
 - [x] Protecao por role em `(pelimotion)/layout.tsx` — viewer → redirect /tasks
 - [x] Avatar dropdown nas sidebars (DropdownMenu com nome, email, separador, Sair)
 - [x] Login polida — logo, spinner no botao, erro destacado, autocomplete
 - [x] Skeleton de loading — `PageSkeleton` reutilizavel + `loading.tsx` em 7 rotas
-- [x] Build passando sem erros ✅
+- [x] `next.config.ts` — basePath '/workspace'
+- [x] `vercel.json` (na raiz do app) — outputDirectory '.next'
+- [x] Deploy Vercel ✅ — URL: `pelispace.vercel.app` / deploy: `pelispace-hv7ng9m6k-...vercel.app`
+- [x] Rewrite `/workspace` adicionado em `Portfolio/vercel.json` → `pelispace.vercel.app` ✅
+- [x] Build ✅
 
-**Arquivos criados:**
-- `components/ui/page-skeleton.tsx`
-- `(pelimotion)/projetos/loading.tsx`
-- `(pelimotion)/financeiro/loading.tsx`
-- `(pelimotion)/crm/loading.tsx`
-- `(personal)/tasks/loading.tsx`
-- `(personal)/gastos/loading.tsx`
-- `(personal)/saude/loading.tsx`
-- `(personal)/projetos-pessoais/loading.tsx`
-
-**Arquivos modificados:**
-- `(pelimotion)/layout.tsx` — role check
-- `components/pelimotion/sidebar.tsx` — dropdown avatar
-- `components/personal/sidebar.tsx` — dropdown avatar
-- `app/login/page.tsx` — polish
-- `next.config.ts` — basePath '/workspace' + remocao de turbopack.root
-- `proxy.ts` — redirect e matcher corrigidos para /workspace/login
-- `vercel.json` (criado) — outputDirectory '.next' (sobrescreve o da raiz do repo)
-
-**Deploy:**
-- Vercel projeto separado conectado a `Pelimotion/portfolio`, Root Directory: `felipe-workspace/app`
-- Deploy feito com sucesso ✅
-- Pendente: rewrite no `vercel.json` da raiz para expor em `pelimotion.art/workspace`
+### Fase 5 — Módulo Projetos + Calendário
+- [x] `components/pelimotion/projetos-table.tsx` — TanStack Table com filtros (stage/cliente) e sort por coluna
+- [x] `components/pelimotion/projetos-kanban.tsx` — Kanban em 5 colunas logicas (Negociacao / Producao / Revisao / Fechamento / Concluido)
+- [x] `components/pelimotion/stage-calendar.tsx` — Gantt CSS Grid customizado (1 linha/projeto, barras coloridas por etapa, navegacao por mes)
+- [x] `(pelimotion)/projetos/page.tsx` + `projetos-view.tsx` — server fetch + stats + toggle lista/kanban
+- [x] `(pelimotion)/projetos/calendario/page.tsx` — calendário de etapas com todos projetos ativos
+- [x] `(pelimotion)/projetos/[id]/page.tsx` + `projeto-tabs.tsx` — detalhe com header financeiro + tabs Etapas/Tarefas/Despesas
+- [x] Build ✅
 
 ---
 
-## ⚠️ PENDENTE — Rewrite para pelimotion.art/workspace
+### Fase 6 — Módulo Financeiro ✅ COMPLETA (2026-05-21)
+- [x] `components/pelimotion/financeiro-dashboard.tsx` — cards (receita, custo, lucro, a pagar) + BarChart Recharts últimos 6 meses
+- [x] `components/pelimotion/financeiro-saidas.tsx` — lista de project_expenses com filtro por status (pago/pendente) e busca
+- [x] `components/pelimotion/financeiro-caixa.tsx` — timeline de cash_flow agrupada (vencido/hoje/7 dias/futuro) com badges por área
+- [x] `app/(pelimotion)/financeiro/page.tsx` — server fetch paralelo (Promise.all) de 4 tabelas
+- [x] `app/(pelimotion)/financeiro/financeiro-view.tsx` — client com tabs Dashboard | Saídas | Caixa
+- [x] `plans/phase-06-financeiro.md` — plano criado
+- [x] Build ✅
 
-O app esta deployado no Vercel mas ainda **nao esta acessivel em pelimotion.art/workspace**.
-Falta adicionar o rewrite no `vercel.json` da raiz do Portfolio.
+### Fase 7 — Módulo Pessoal ✅ COMPLETA (2026-05-22)
+- [x] `tasks/page.tsx` + `tasks-view.tsx` — lista com filtro por área + toggle concluídas
+- [x] `gastos/page.tsx` + `gastos-view.tsx` — tabela com filtro mês/status + cards resumo
+- [x] `saude/page.tsx` + `saude-view.tsx` — health_log com filtro tipo/esfera + badges de status
+- [x] `projetos-pessoais/page.tsx` — lista separada em ativos/arquivados
+- [x] Build ✅
 
-**Para fazer na proxima sessao (ou agora):**
-1. Pegar a URL do projeto workspace no Vercel (ex: `pelimotion-workspace-xxx.vercel.app`)
-2. Adicionar em `Portfolio/vercel.json`:
-   ```json
-   { "source": "/workspace", "destination": "https://[URL-DO-VERCEL]/workspace" },
-   { "source": "/workspace/:path*", "destination": "https://[URL-DO-VERCEL]/workspace/:path*" }
-   ```
-3. Commit + push → deploy automatico do projeto principal
-
----
-
-## ▶️ PROXIMA ACAO — Fase 5: Modulo Projetos + Calendario
+## ▶️ PROXIMA ACAO — Fase 8: CRM + Fornecedores
 
 **O que sera feito:**
-1. Lista de projetos com TanStack Table (filtro por stage/cliente)
-2. Kanban por stage (Negociacao → Concluido)
-3. Calendario de etapas com FullCalendar (barras continuas por projeto)
-4. Pagina individual do projeto (etapas + tarefas + despesas)
+1. `(pelimotion)/crm/page.tsx` — pipeline de prospects (Kanban por crm_status)
+2. Diretório de fornecedores/produtoras com busca por cidade
 
-**Para iniciar:** diga "Fase 5"
-
-O plano detalhado sera criado em `plans/phase-05-projetos.md` ao iniciar.
+**Para iniciar:** diga "Fase 8"
 
 ---
 
@@ -137,35 +120,54 @@ felipe-workspace/
 │       ├── 002_triggers.sql        ✅ executado
 │       └── 003_rls.sql             ✅ executado
 ├── plans/
-│   └── phase-03-nextjs-setup.md    ← plano da Fase 3 (concluida)
-└── app/                            ← Next.js 16 ✅
+│   ├── phase-03-nextjs-setup.md    ← Fase 3 concluida
+│   └── phase-05-projetos.md        ← Fase 5 concluida (decisoes tecnicas do modulo)
+└── app/                            ← Next.js 16 ✅ — basePath '/workspace'
     ├── .env.local                  ← env vars do Next.js
+    ├── vercel.json                 ← outputDirectory '.next'
     ├── proxy.ts                    ← protecao de rotas (auth redirect)
+    ├── next.config.ts              ← basePath '/workspace'
     ├── app/
     │   ├── layout.tsx              ← layout raiz (fonts, dark mode, TooltipProvider)
     │   ├── page.tsx                ← redirect por role
     │   ├── login/page.tsx          ← tela de login
-    │   ├── (pelimotion)/           ← route group empresarial
-    │   │   ├── layout.tsx          ← sidebar Pelimotion + auth check
-    │   │   ├── projetos/page.tsx
-    │   │   ├── projetos/[id]/page.tsx
-    │   │   ├── projetos/calendario/page.tsx
-    │   │   ├── financeiro/page.tsx
-    │   │   └── crm/page.tsx
-    │   └── (personal)/             ← route group pessoal
+    │   ├── (pelimotion)/
+    │   │   ├── layout.tsx          ← sidebar Pelimotion + auth check (admin/editor only)
+    │   │   ├── projetos/
+    │   │   │   ├── page.tsx            ← server: fetch projetos
+    │   │   │   ├── projetos-view.tsx   ← client: stats + toggle lista/kanban
+    │   │   │   ├── loading.tsx
+    │   │   │   ├── calendario/page.tsx ← server: fetch projects + stages
+    │   │   │   └── [id]/
+    │   │   │       ├── page.tsx        ← server: fetch projeto + etapas + tarefas + despesas
+    │   │   │       └── projeto-tabs.tsx ← client: tabs Etapas/Tarefas/Despesas
+    │   │   ├── financeiro/
+    │   │   │   ├── page.tsx        ← stub (Fase 6)
+    │   │   │   └── loading.tsx
+    │   │   └── crm/
+    │   │       ├── page.tsx        ← stub (Fase 8)
+    │   │       └── loading.tsx
+    │   └── (personal)/
     │       ├── layout.tsx          ← sidebar Personal + auth check
-    │       ├── tasks/page.tsx
-    │       ├── gastos/page.tsx
-    │       ├── saude/page.tsx
-    │       └── projetos-pessoais/page.tsx
+    │       ├── tasks/page.tsx + loading.tsx
+    │       ├── gastos/page.tsx + loading.tsx
+    │       ├── saude/page.tsx + loading.tsx
+    │       └── projetos-pessoais/page.tsx + loading.tsx
     ├── components/
-    │   ├── ui/                     ← shadcn/ui (15 componentes)
-    │   ├── pelimotion/sidebar.tsx  ← sidebar empresarial
-    │   └── personal/sidebar.tsx    ← sidebar pessoal
+    │   ├── ui/                     ← shadcn/ui (15 componentes: avatar, badge, button, card,
+    │   │                               dialog, dropdown-menu, input, label, page-skeleton,
+    │   │                               select, separator, sheet, sidebar, skeleton, table, tooltip)
+    │   ├── pelimotion/
+    │   │   ├── sidebar.tsx         ← sidebar empresarial com avatar dropdown
+    │   │   ├── projetos-table.tsx  ← TanStack Table (Fase 5)
+    │   │   ├── projetos-kanban.tsx ← Kanban 5 colunas (Fase 5)
+    │   │   └── stage-calendar.tsx  ← Gantt CSS Grid (Fase 5)
+    │   └── personal/
+    │       └── sidebar.tsx         ← sidebar pessoal com avatar dropdown
     ├── lib/
     │   ├── supabase/server.ts      ← client SSR
     │   ├── supabase/browser.ts     ← client browser
-    │   ├── supabase/types.ts       ← tipos TS (3 schemas, 16 tabelas)
+    │   ├── supabase/types.ts       ← tipos TS (3 schemas, 16 tabelas, todos os enums)
     │   └── utils.ts                ← cn() helper
     └── hooks/use-mobile.ts         ← hook de responsividade
 ```
@@ -179,9 +181,39 @@ felipe-workspace/
 | 1 | Discovery Notion | ✅ Completa | — |
 | 2 | Schema Supabase | ✅ Completa | — |
 | 3 | Setup Next.js 16 | ✅ Completa | `plans/phase-03-nextjs-setup.md` |
-| 4 | Shell + Auth (sidebar, rotas, login) | ✅ Completa | — |
-| 5 | Modulo Projetos + Calendario de etapas | ⏳ Proxima | criado ao iniciar |
-| 6 | Modulo Financeiro | ⏳ | criado ao concluir Fase 5 |
-| 7 | Modulo Pessoal | ⏳ | criado ao concluir Fase 6 |
-| 8 | CRM + Fornecedores | ⏳ | criado ao concluir Fase 7 |
-| 9 | Migracao Notion → Supabase | ⏳ | criado ao concluir Fase 8 |
+| 4 | Shell + Auth (sidebar, rotas, login, deploy) | ✅ Completa | — |
+| 5 | Modulo Projetos + Calendario | ✅ Completa | `plans/phase-05-projetos.md` |
+| 6 | Modulo Financeiro | ✅ Completa | `plans/phase-06-financeiro.md` |
+| 7 | Modulo Pessoal | ⏳ Proxima | `plans/phase-07-personal.md` (criar ao iniciar) |
+| 8 | CRM + Fornecedores | ⏳ | — |
+| 9 | Migracao Notion → Supabase | ⏳ | — |
+
+---
+
+## 🎯 PROXIMA SESSAO — Prompt de inicio
+
+```
+[AI_AGENT_BRIEFING.md carregado automaticamente]
+
+# Context: workspace-agent — Fase 6
+
+📋 STATUS ANTERIOR
+Fases 1–5 concluidas. App em producao: pelispace.vercel.app/workspace
+Modulo Projetos funcional: lista (TanStack), kanban (5 colunas), calendário Gantt CSS, página [id] com tabs.
+Rewrite pelimotion.art/workspace → pelispace.vercel.app feito no Portfolio/vercel.json.
+
+🎯 TAREFA DESTA SESSAO
+Fase 6 — Módulo Financeiro:
+1. Dashboard com cards de resumo (receita, custo, lucro, a receber, a pagar)
+2. Gráfico mensal Recharts (income_entries vs project_expenses por mês)
+3. Lista de saídas com filtros
+4. Caixa Pelimotion: timeline de vencimentos (cash_flow)
+
+📦 ARQUIVOS RELEVANTES
+- `app/(pelimotion)/financeiro/page.tsx` — stub atual (reescrever)
+- `lib/supabase/types.ts` — tipos: CashFlow, ProjectExpense, IncomeEntry
+- `ARCHITECTURE.md` — schema §5 (tabelas cash_flow, income_entries, project_expenses)
+- `components/pelimotion/` — onde criar novos componentes financeiros
+
+⏸️ Prosseguir?
+```
