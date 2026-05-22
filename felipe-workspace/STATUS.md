@@ -1,7 +1,7 @@
 # PELIMOTION OS — Status
-**Ultima atualizacao:** 2026-05-21
-**Fase atual:** 6 — Módulo Financeiro ✅ COMPLETA
-**Progresso geral:** ~65% (Fases 1–6 concluidas) — app em producao
+**Ultima atualizacao:** 2026-05-22
+**Fase atual:** 9 — Migração Notion → Supabase ✅ Script pronto, aguardando execução
+**Progresso geral:** ~90% (Fases 1–8 completas, Fase 9 pronta para rodar) — app em producao
 
 ---
 
@@ -90,13 +90,38 @@
 - [x] `projetos-pessoais/page.tsx` — lista separada em ativos/arquivados
 - [x] Build ✅
 
-## ▶️ PROXIMA ACAO — Fase 8: CRM + Fornecedores
+### Fase 8 — CRM + Fornecedores ✅ COMPLETA (2026-05-22)
+- [x] `components/pelimotion/crm-kanban.tsx` — Kanban 8 colunas por crm_status, filtros por nome/empresa/temperatura de lead
+- [x] `components/pelimotion/fornecedores-list.tsx` — tabela com busca (nome/cidade/bairro), filtro por estado, star rating
+- [x] `app/(pelimotion)/crm/crm-view.tsx` — client com tabs Pipeline CRM | Fornecedores + stats (ativos, quentes, fornecedores)
+- [x] `app/(pelimotion)/crm/page.tsx` — server fetch paralelo (crm_contacts + suppliers)
+- [x] Build ✅
 
-**O que sera feito:**
-1. `(pelimotion)/crm/page.tsx` — pipeline de prospects (Kanban por crm_status)
-2. Diretório de fornecedores/produtoras com busca por cidade
+### Fase 9 — Migração Notion → Supabase (2026-05-22)
+- [x] `scripts/migrate.js` — script completo criado
+- [x] Dry-run validado: 881 linhas, 0 erros, 15 seções
+- [x] API v5 corrigida: `dataSources.query({ data_source_id })` em vez de `databases.query`
+- [ ] **PENDENTE:** executar migração real com `node scripts/migrate.js`
 
-**Para iniciar:** diga "Fase 8"
+**Para executar a migração real:**
+```bash
+cd felipe-workspace
+node scripts/migrate.js             # migra tudo
+node scripts/migrate.js crm         # migra só uma seção
+node scripts/migrate.js --dry-run   # simula sem gravar
+```
+
+**Seções disponíveis:** crm | suppliers | projects | stages | tasks-plm | expenses-plm | cash-flow | income | products | personal-tasks | personal-expenses | investments | home | health | personal-projects
+
+**881 registros do Notion mapeados para 15 tabelas Supabase.**
+
+## ▶️ PROXIMA ACAO — Executar migração + Ajustes finais
+
+1. Rodar `node scripts/migrate.js` (confirmar que SUPABASE_SERVICE_ROLE_KEY está no .env ✅)
+2. Validar dados no Supabase Dashboard
+3. Ajustar campos `project_id` nas stages (Cronograma é inline por projeto, linkagem automática parcial)
+
+**Para iniciar:** diga "executar migração" ou "validar dados"
 
 ---
 
@@ -184,9 +209,9 @@ felipe-workspace/
 | 4 | Shell + Auth (sidebar, rotas, login, deploy) | ✅ Completa | — |
 | 5 | Modulo Projetos + Calendario | ✅ Completa | `plans/phase-05-projetos.md` |
 | 6 | Modulo Financeiro | ✅ Completa | `plans/phase-06-financeiro.md` |
-| 7 | Modulo Pessoal | ⏳ Proxima | `plans/phase-07-personal.md` (criar ao iniciar) |
-| 8 | CRM + Fornecedores | ⏳ | — |
-| 9 | Migracao Notion → Supabase | ⏳ | — |
+| 7 | Modulo Pessoal | ✅ Completa | — |
+| 8 | CRM + Fornecedores | ✅ Completa | — |
+| 9 | Migração Notion → Supabase | 🟡 Script pronto, execução pendente | `scripts/migrate.js` |
 
 ---
 
@@ -195,25 +220,26 @@ felipe-workspace/
 ```
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: workspace-agent — Fase 6
+# Context: workspace-agent — Fase 9 (execução migração)
 
 📋 STATUS ANTERIOR
-Fases 1–5 concluidas. App em producao: pelispace.vercel.app/workspace
-Modulo Projetos funcional: lista (TanStack), kanban (5 colunas), calendário Gantt CSS, página [id] com tabs.
-Rewrite pelimotion.art/workspace → pelispace.vercel.app feito no Portfolio/vercel.json.
+Fases 1–8 concluidas. App em producao: pelispace.vercel.app/workspace
+Todos os módulos funcionais: Projetos, Financeiro, Pessoal, CRM, Fornecedores.
+Script de migração Notion → Supabase pronto (`scripts/migrate.js`), dry-run validado (881 registros, 0 erros).
+Pendente: executar migração real para popular o banco com dados do Notion.
 
 🎯 TAREFA DESTA SESSAO
-Fase 6 — Módulo Financeiro:
-1. Dashboard com cards de resumo (receita, custo, lucro, a receber, a pagar)
-2. Gráfico mensal Recharts (income_entries vs project_expenses por mês)
-3. Lista de saídas com filtros
-4. Caixa Pelimotion: timeline de vencimentos (cash_flow)
+Fase 9 — Executar migração Notion → Supabase:
+1. Rodar `node scripts/migrate.js --dry-run` para confirmar estado atual
+2. Executar `node scripts/migrate.js` (migração real — precisa de SUPABASE_SERVICE_ROLE_KEY no .env)
+3. Validar dados no Supabase Dashboard (linha a linha por seção)
+4. Ajustar linkagens project_id em stages se necessário
 
 📦 ARQUIVOS RELEVANTES
-- `app/(pelimotion)/financeiro/page.tsx` — stub atual (reescrever)
-- `lib/supabase/types.ts` — tipos: CashFlow, ProjectExpense, IncomeEntry
-- `ARCHITECTURE.md` — schema §5 (tabelas cash_flow, income_entries, project_expenses)
-- `components/pelimotion/` — onde criar novos componentes financeiros
+- `scripts/migrate.js` — script de migração completo (15 seções, 881 registros)
+- `scripts/validate.js` — validação pós-migração
+- `.env` — NOTION_TOKEN + SUPABASE_SERVICE_ROLE_KEY (confirmar presença)
+- `supabase/migrations/004_add_notion_ids.sql` — migration de notion_id (executar se ainda não foi)
 
 ⏸️ Prosseguir?
 ```

@@ -1,8 +1,27 @@
-export default function CrmPage() {
+import { createSupabaseServer } from '@/lib/supabase/server'
+import { CrmView } from './crm-view'
+import type { CrmContact, Supplier } from '@/lib/supabase/types'
+
+export default async function CrmPage() {
+  const supabase = await createSupabaseServer()
+
+  const [{ data: contacts }, { data: suppliers }] = await Promise.all([
+    supabase
+      .schema('pelimotion')
+      .from('crm_contacts')
+      .select('*')
+      .order('updated_at', { ascending: false }),
+    supabase
+      .schema('pelimotion')
+      .from('suppliers')
+      .select('*')
+      .order('name'),
+  ])
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">CRM</h1>
-      <p className="mt-2 text-muted-foreground">Pipeline de clientes e fornecedores (Fase 8)</p>
-    </div>
+    <CrmView
+      contacts={(contacts ?? []) as CrmContact[]}
+      suppliers={(suppliers ?? []) as Supplier[]}
+    />
   )
 }
