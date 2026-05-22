@@ -130,32 +130,94 @@
 
 ---
 
-## 🔴 BUGS CONHECIDOS (em correção)
+## 🔴 BUGS CONHECIDOS
 
-### BUG 1 — proxy.ts: loop infinito no login (CORRIGIDO em 2026-05-22)
-**Sintoma:** `Uncaught Error: An error occurred in the Server Components render` em produção.
-**Causa:** Com `basePath: '/pelispace'`, o `request.nextUrl.pathname` no middleware NÃO inclui o basePath.
-Portanto, a condição `pathname.startsWith('/pelispace/login')` era sempre falsa → o middleware
-redirecionava até a página de login → loop infinito → crash do Server Component.
-**Fix:** `proxy.ts` — trocado `/pelispace/login` por `/login` na condição E no matcher.
-**Status:** ✅ Corrigido. Deploy necessário para entrar em produção.
+### BUG 1 — proxy.ts loop infinito ✅ CORRIGIDO (2026-05-22)
+**Fix:** pathname `/pelispace/login` → `/login` (basePath stripado no middleware). Deploy ativo.
 
-### BUG 2 — favicon.ico: 404 (COSMÉTICO)
-**Sintoma:** `favicon.ico: Failed to load resource: 404` no console.
-**Causa:** O browser busca `/favicon.ico` na raiz do domínio (`www.pelimotion.art/favicon.ico`).
-O app está em `/pelispace`, então o favicon fica em `/pelispace/favicon.ico` — path diferente.
-O Portfolio (raiz do domínio) não tem favicon.ico próprio.
-**Fix:** Adicionar `favicon.ico` à raiz do Portfolio (`/favicon.ico`) no projeto principal.
-**Status:** ⏳ Pendente — cosmético, não bloqueia funcionalidade.
+### BUG 2 — favicon.ico 404 (COSMÉTICO — baixa prioridade)
+**Fix:** Adicionar `favicon.ico` na raiz do Portfolio. Não bloqueia funcionalidade.
 
-### BUG 3 — Vercel env vars: possível causa adicional do erro produção
-**Sintoma:** Mesmo erro de Server Component.
-**Causa:** Se `NEXT_PUBLIC_SUPABASE_ANON_KEY` não estiver configurada no painel do Vercel
-para o projeto `pelispace`, ela fica `undefined` em produção → `createServerClient` lança.
-**Fix:** Vercel Dashboard → projeto `pelispace` → Settings → Environment Variables → confirmar:
-  - `NEXT_PUBLIC_SUPABASE_URL` = `https://gfaqnkmmbozmhroicqyc.supabase.co`
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = chave anon do Supabase
-**Status:** ⏳ Verificar manualmente no Vercel Dashboard.
+### BUG 3 — Vercel env vars ✅ CORRIGIDO (2026-05-22)
+**Fix:** `NEXT_PUBLIC_SUPABASE_URL` (sem `/rest/v1`) + `NEXT_PUBLIC_SUPABASE_ANON_KEY` configuradas.
+
+### BUG 4 — Vercel CLI 54 / Next.js 16 / Turbopack path undefined ✅ CORRIGIDO (2026-05-22)
+**Causa:** `modifyConfig` do Vercel CLI 54 quebrava quando `turbopack.root` diferia de `outputFileTracingRoot`.
+**Fix:** `next.config.ts` — ambos apontando para `path.resolve(__dirname, '../..')` (raiz do repo).
+`vercel.json` — `outputDirectory: '.next'` restaurado (necessário para `onBuildComplete` encontrar o manifest).
+
+### BUG 5 — App logado mas dados não aparecem 🔴 PRÓXIMO A CORRIGIR
+**Sintoma:** Login funciona, app carrega, mas todos os módulos aparecem vazios.
+**Diagnóstico executado em 2026-05-22:**
+```
+projects (service_role):  106 ✅  ← dados estão no banco
+personal.tasks:            68 ✅
+profiles (5 usuários):
+  id: 9c17dc40  role: 'admin'     ← único com role válido
+  id: 0e191714  role: 'Toker'     ← role inválido (não é admin/editor/viewer)
+  id: 74542c4e  role: null        ← sem role → RLS bloqueia tudo
+  id: 8bf39397  role: null
+  id: 4676abf8  role: null
+```
+
+**Causa A — Schemas não expostos no Supabase (MAIS PROVÁVEL):**
+Por padrão, Supabase só expõe o schema `public` na API REST.
+Para `pelimotion.*` e `personal.*` funcionarem no app, os schemas precisam ser adicionados em:
+`Supabase Dashboard → Settings → API → "Extra schemas to expose" → pelimotion,personal`
+Se esse campo está vazio, TODAS as queries do app retornam vazio silenciosamente.
+
+**Causa B — Perfil do usuário logado com role null:**
+O app faz `.from('profiles').select('role')` para decidir redirect e RLS.
+Se `role = null`, a função `current_user_role()` retorna null → RLS bloqueia leitura de dados.
+O usuário provavelmente logou com um dos 4 perfis sem role.
+
+**Fix completo (executar na próxima sessão):**
+
+**Passo 1 — Expor schemas (Supabase Dashboard):**
+```
+Supabase → Settings → API → Extra schemas to expose
+Adicionar: pelimotion,personal
+Salvar
+```
+
+**Passo 2 — Corrigir roles dos profiles (Supabase SQL Editor):**
+```sql
+-- Ver todos os profiles com email para identificar quem é quem:
+SELECT p.id, p.role, u.email
+FROM public.profiles p
+JOIN auth.users u ON u.id = p.id;
+
+-- Depois de identificar, setar o role correto (substituir o UUID pelo seu):
+UPDATE public.profiles
+SET role = 'admin'
+WHERE id = '<seu-uuid-aqui>';
+
+-- Corrigir o role inválido 'Toker':
+UPDATE public.profiles
+SET role = 'editor'   -- ou 'viewer' dependendo de quem é
+WHERE role = 'Toker';
+
+-- Setar role padrão para profiles sem role (editor é seguro):
+UPDATE public.profiles
+SET role = 'editor'
+WHERE role IS NULL;
+```
+
+**Passo 3 — Verificar RLS com anon key (opcional, para confirmar):**
+```js
+// No terminal, dentro de felipe-workspace/:
+node -e "
+require('dotenv').config({ path: '.env' });
+const { createClient } = require('@supabase/supabase-js');
+// Usar ANON KEY (não service role) para simular o app:
+const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+sb.schema('pelimotion').from('projects').select('id', { count: 'exact', head: true })
+  .then(r => console.log('projects via anon:', r.count, r.error?.message));
+"
+// Se retornar null ou error → schemas não expostos (Passo 1 resolve)
+// Se retornar 0 → schemas expostos mas RLS bloqueando (Passo 2 resolve)
+// Se retornar 106 → dados OK, problema é outra coisa no frontend
+```
 
 ---
 
@@ -405,38 +467,74 @@ felipe-workspace/
 ```
 [AI_AGENT_BRIEFING.md carregado automaticamente]
 
-# Context: workspace-agent — Fase 10 (qualidade de produção)
+# Context: workspace-agent — Fase 10 (dados visíveis em produção)
 
 📋 STATUS ANTERIOR
-Fases 1–9 concluídas. 881 registros migrados, 0 erros.
-BUG IDENTIFICADO e corrigido no código (proxy.ts — loop de login com basePath):
-  - Condição `/pelispace/login` → `/login` (basePath é stripado pelo Next.js no middleware)
-  - Matcher corrigido igualmente
-FIX ainda não deployado — requer push para main.
+Fases 1–9 completas. Deploy em produção: www.pelimotion.art/pelispace ✅
+Login funcionando. 881 registros no Supabase confirmados via service_role.
+App carrega mas módulos aparecem VAZIOS — dados não chegam ao frontend.
 
-Outros bugs ativos:
-  - favicon.ico 404 (cosmético)
-  - Vercel env vars: confirmar NEXT_PUBLIC_SUPABASE_ANON_KEY no painel do projeto pelispace
+Diagnóstico feito (2026-05-22):
+- 106 projects + 68 personal.tasks no banco ✅
+- Schemas pelimotion/personal provavelmente NÃO expostos na API do Supabase
+- 4 de 5 profiles com role=null → RLS bloqueia queries autenticadas
 
 🎯 TAREFA DESTA SESSÃO
-Fase 10 — Deploy do fix + verificação de produção:
-1. Confirmar env vars no Vercel Dashboard (projeto pelispace) — manual
-2. Push para main → aguardar redeploy
-3. Testar www.pelimotion.art/pelispace — login + navegação por todos os módulos
-4. Checar encoding dos suppliers (se quebrado: node scripts/migrate.js suppliers)
+Fase 10 — Tornar dados visíveis no app:
+
+PASSO 1 (manual, sem código):
+  Supabase Dashboard → Settings → API → "Extra schemas to expose"
+  Adicionar: pelimotion,personal → Salvar
+
+PASSO 2 (Supabase SQL Editor):
+  -- identificar seu UUID:
+  SELECT p.id, p.role, u.email
+  FROM public.profiles p JOIN auth.users u ON u.id = p.id;
+  
+  -- corrigir roles:
+  UPDATE public.profiles SET role = 'admin' WHERE id = '<seu-uuid>';
+  UPDATE public.profiles SET role = 'editor' WHERE role IS NULL OR role = 'Toker';
+
+PASSO 3 (terminal, validar):
+  node -e "
+  require('dotenv').config({ path: '.env' });
+  const { createClient } = require('@supabase/supabase-js');
+  const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+  sb.schema('pelimotion').from('projects').select('id',{count:'exact',head:true})
+    .then(r => console.log('projects via anon:', r.count, r.error?.message));
+  "
+  → Esperado: 106. Se null/error = schemas não expostos. Se 0 = RLS bloqueando.
+
+PASSO 4: Testar www.pelimotion.art/pelispace — módulos devem mostrar dados reais.
 
 📦 ARQUIVOS RELEVANTES
-- `app/proxy.ts` — fix já aplicado, ver diff
-- `app/next.config.ts` — basePath '/pelispace'
-- `Portfolio/vercel.json` — rewrite /pelispace → pelispace.vercel.app
-- `scripts/migrate.js` — re-migrar seção específica se necessário
+- `scripts/migrate.js` — re-migrar seção se necessário
+- `supabase/migrations/003_rls.sql` — políticas RLS atuais (referência)
+- `app/lib/supabase/server.ts` — client SSR (referência para debug)
 
-⏸️ Prosseguir?
+⏸️ Prosseguir com Passo 1 (Supabase Dashboard)?
 ```
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-05-22 — Fase 10 continuação (deploy + diagnóstico de dados vazios)
+**O que foi feito:**
+- [x] Bug identificado: proxy.ts verificava `/pelispace/login` mas basePath faz Next.js stripar o prefixo → loop
+- [x] `app/proxy.ts` corrigido: `/login` na condição e no matcher
+- [x] Bug de build Vercel CLI 54 + Next.js 16 + Turbopack diagnosticado e corrigido:
+  - `turbopack.root` e `outputFileTracingRoot` alinhados com raiz do repo via `path.resolve(__dirname, '../..')`
+  - `vercel.json` com `outputDirectory: '.next'` restaurado
+- [x] `NEXT_PUBLIC_SUPABASE_URL` corrigida no Vercel (estava com `/rest/v1` erroneamente)
+- [x] Deploy em produção: `www.pelimotion.art/pelispace` ✅ — login funciona
+- [x] Diagnóstico de dados vazios:
+  - 106 projects + 68 tasks confirmados no banco via service_role
+  - 4/5 profiles com `role: null` → RLS bloqueia queries
+  - Schemas `pelimotion`/`personal` provavelmente não expostos na API Supabase
+
+**Arquivos modificados:** `app/proxy.ts`, `app/next.config.ts`, `app/vercel.json`, `STATUS.md`, `ARCHITECTURE.md`
+**Próximo passo:** Expor schemas no Supabase + corrigir roles dos profiles
 
 ### 2026-05-22 — Fases 9 e 10 (migração + diagnóstico de produção)
 **O que foi feito:**

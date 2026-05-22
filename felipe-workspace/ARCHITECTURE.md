@@ -170,20 +170,42 @@ ORDER BY ps.start_date, p.name;
 Os 3 databases "Workflow" duplicados do Notion viram **1 tabela** `pelimotion.workflow_tasks`.
 Campo `notion_id` mantém o ID original para rastreabilidade na migração.
 
-### 6.4 Schemas Expostos no Supabase (TEMPORÁRIO — desenvolvimento)
+### 6.4 Schemas Expostos no Supabase (OBRIGATÓRIO para o app funcionar)
 Por padrão, o Supabase expõe só o schema `public` na API REST.
-Para `pelimotion` e `personal` funcionarem durante o desenvolvimento, foram expostos explicitamente.
+Para `pelimotion` e `personal` funcionarem no app, DEVEM estar explicitamente expostos.
 
-**Configuração atual:** Supabase Dashboard → Settings → API → "Extra schemas to expose" → `pelimotion,personal`
+**⚠️ CONFIGURAÇÃO OBRIGATÓRIA:**
+```
+Supabase Dashboard → Settings → API → "Extra schemas to expose"
+Valor: pelimotion,personal
+```
+Se esse campo estiver vazio, TODAS as queries do app retornam vazio sem erro — os módulos
+aparecem carregados mas sem dados. Esta é a causa mais comum de "app vazio após login".
 
-**⚠️ PLANO DE REVERSÃO (pós-desenvolvimento):**
-Quando o sistema estiver em produção e independente do Notion:
-1. Remover `pelimotion` e `personal` de "Extra schemas to expose"
-2. Criar views/functions no schema `public` que acessam os dados internamente
-3. O frontend passa a chamar essas views/functions (que já respeitam RLS)
-4. Os schemas ficam privados — acessíveis só via server-side ou functions internas
+**Plano de reversão (Fase 15 — Hardening):**
+Criar views/functions no schema `public`, remover exposição direta dos schemas privados.
 
-Isso garante que a superfície de ataque da API REST seja mínima em produção.
+### 6.5 Roles de Usuário (OBRIGATÓRIO para RLS funcionar)
+O app usa RLS (Row Level Security) em todas as tabelas. A função `current_user_role()`
+lê `public.profiles.role` do usuário autenticado. Se `role = null`, todas as queries
+retornam vazio (RLS bloqueia silenciosamente).
+
+**Roles válidos:** `admin` | `editor` | `viewer`
+**Qualquer outro valor** (ex: `null`, `'Toker'`) faz o RLS bloquear toda leitura.
+
+**Verificar e corrigir via Supabase SQL Editor:**
+```sql
+-- Ver perfis com email:
+SELECT p.id, p.role, u.email
+FROM public.profiles p
+JOIN auth.users u ON u.id = p.id;
+
+-- Corrigir role do usuário principal:
+UPDATE public.profiles SET role = 'admin' WHERE id = '<uuid-do-admin>';
+
+-- Setar padrão para sem role:
+UPDATE public.profiles SET role = 'editor' WHERE role IS NULL;
+```
 
 ---
 
