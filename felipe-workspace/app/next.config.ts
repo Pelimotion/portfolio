@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: '/workspace',
+  basePath: '/pelispace',
 };
 
 export default nextConfig;

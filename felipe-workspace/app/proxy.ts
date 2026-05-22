@@ -22,13 +22,13 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && !request.nextUrl.pathname.startsWith('/workspace/login')) {
-    return NextResponse.redirect(new URL('/workspace/login', request.url))
+  if (!user && !request.nextUrl.pathname.startsWith('/pelispace/login')) {
+    return NextResponse.redirect(new URL('/pelispace/login', request.url))
   }
 
   return response
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|workspace/login).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|pelispace/login).*)'],
 }
