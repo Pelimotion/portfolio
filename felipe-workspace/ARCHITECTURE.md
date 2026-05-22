@@ -253,17 +253,23 @@ Upload flow: `Frontend → /api/upload → Bunny Storage API → retorna CDN URL
 
 ## 10. ROADMAP DE FASES
 
-| Fase | Nome | Entregável | Pré-requisito |
-|------|------|-----------|---------------|
-| 1 | Discovery Notion | `notion_architecture.json` | — |
-| 2 | Schema Supabase | 3 migrations SQL | — |
-| 3 | Setup Next.js 15 | App rodando localmente com auth | Fase 2 executada |
-| 4 | Shell + Auth | Sidebar, rotas, login, redirect por role | Fase 3 |
-| 5 | Módulo Projetos | Pipeline Kanban + Calendário de etapas | Fase 4 |
-| 6 | Módulo Financeiro | Dashboard financeiro + saídas | Fase 4 |
-| 7 | Módulo Pessoal | Tasks + saúde + gastos pessoais | Fase 4 |
-| 8 | CRM + Fornecedores | CRM Kanban + diretório | Fase 4 |
-| 9 | Migração de dados | Script Notion → Supabase | Fases 5–8 |
+| Fase | Nome | Status | Entregável |
+|------|------|--------|-----------|
+| 1 | Discovery Notion | ✅ | `notion_architecture.json` |
+| 2 | Schema Supabase | ✅ | 4 migrations SQL (001–004) |
+| 3 | Setup Next.js 16 | ✅ | App local com auth e rotas |
+| 4 | Shell + Auth | ✅ | Sidebar, login, deploy Vercel |
+| 5 | Módulo Projetos | ✅ | Kanban + Calendário Gantt |
+| 6 | Módulo Financeiro | ✅ | Dashboard + saídas + caixa |
+| 7 | Módulo Pessoal | ✅ | Tasks + saúde + gastos |
+| 8 | CRM + Fornecedores | ✅ | CRM Kanban + diretório |
+| 9 | Migração de dados | ✅ | 881 registros, 15 tabelas, 0 erros |
+| 10 | Qualidade de Produção | 🔴 | Zero erros console, login OK em prod |
+| 11 | Dados Complementares | ⏳ | Workflow + CRM B2B migrados |
+| 12 | Linkagem de Dados | ⏳ | FKs maximizadas, encoding corrigido |
+| 13 | CRUD | ⏳ | Criar/editar projetos, tasks, despesas |
+| 14 | Sync Incremental Notion | ⏳ | `scripts/sync.js` + cron |
+| 15 | Hardening de Produção | ⏳ | Schemas privados, RLS final |
 
 ---
 
@@ -296,12 +302,47 @@ export function ComponentName({ prop }: Props) { ... }  // named export sempre
 
 | Data | Decisão | Motivo |
 |------|---------|--------|
-| 2026-05-21 | Schemas separados `pelimotion`/`personal` em vez de tabelas com `domain` enum | Isolamento real permite expandir cada domínio sem afetar o outro |
-| 2026-05-21 | `project_stages.start_date` + `end_date` em vez de só `date` | Regra de negócio do calendário: barras contínuas, não pontos |
-| 2026-05-21 | `due_date` usa `make_date()` em vez de `DATE_TRUNC` | `DATE_TRUNC` não é immutable no PostgreSQL — gera erro 42P17 |
-| 2026-05-21 | 3 databases Workflow do Notion → 1 tabela `workflow_tasks` | Eram duplicatas idênticas, sem distinção de dados |
-| 2026-05-21 | `client TEXT` em projetos (não FK obrigatória para CRM) | Permite criar projeto sem cadastro CRM prévio; join é opcional |
-| 2026-05-21 | Bunny.net para mídias, Supabase só dados textuais | Performance: evitar storage pesado no plano gratuito do Supabase |
-| 2026-05-21 | Schemas `pelimotion`/`personal` expostos na API REST (TEMPORÁRIO) | Necessário durante dev; em produção, criar views/functions no `public` e remover exposição direta |
-| 2026-05-21 | Next.js 16 (era 15 no plano original) | `create-next-app@latest` instalou v16; App Router é retrocompatível. `middleware.ts` vira `proxy.ts` |
-| 2026-05-21 | shadcn/ui usa `render` prop (não `asChild`) | Versão mais recente do shadcn usa base-ui com `render` em vez de Radix `asChild` |
+| 2026-05-21 | Schemas separados `pelimotion`/`personal` | Isolamento real — expandir um não afeta o outro |
+| 2026-05-21 | `project_stages.start_date` + `end_date` | Calendário: barras contínuas, não pontos pontuais |
+| 2026-05-21 | `due_date` usa `make_date()` | `DATE_TRUNC` não é immutable no PG — gera erro 42P17 |
+| 2026-05-21 | 3 databases Workflow → 1 tabela `workflow_tasks` | Eram duplicatas idênticas, sem distinção de dados |
+| 2026-05-21 | `client TEXT` (não FK para CRM) | Criar projeto sem cadastro CRM prévio; join é opcional |
+| 2026-05-21 | Bunny.net para mídias, Supabase só dados textuais | Evitar storage pesado no plano gratuito do Supabase |
+| 2026-05-21 | Schemas expostos na API REST (TEMPORÁRIO) | Dev: acesso direto; prod: criar views/functions no `public` |
+| 2026-05-21 | Next.js 16 (era 15 no plano) | `create-next-app@latest` instalou v16. `middleware.ts` → `proxy.ts` |
+| 2026-05-21 | shadcn/ui usa `render` prop (não `asChild`) | Nova versão usa base-ui com `render` em vez de Radix `asChild` |
+| 2026-05-22 | `project_stages.project_id` nullable | DB Cronograma do Notion não tem relation FK com Pipeline |
+| 2026-05-22 | `proxy.ts` matcher usa `/login` (não `/pelispace/login`) | Com basePath, pathname no middleware NÃO inclui o basePath |
+
+---
+
+## 13. DATABASES NOTION — INVENTÁRIO COMPLETO
+
+### ✅ Migrados (15 seções → 881 registros)
+| DB Notion | ID | Tabela Supabase | Registros |
+|-----------|-----|----------------|----------|
+| Pipeline Pelimotion | 95479a5a | pelimotion.projects | 106 |
+| Cronograma | 23401aae | pelimotion.project_stages | 13 |
+| Tasks Plm | 8ae038a8 | pelimotion.tasks | 116 |
+| Saídas PLM | a9160e4a | pelimotion.project_expenses | 170 |
+| Caixa Pelimotion | 7db0f506 | pelimotion.cash_flow | 5 |
+| Entradas | 35201aae | pelimotion.income_entries | 3 |
+| Produtos | d0185ee1 | pelimotion.products | 9 |
+| CRM | 20d01aae | pelimotion.crm_contacts | 18 |
+| Produtoras RJ | 1fc01aae | pelimotion.suppliers | 101 |
+| Produtoras BH | 1fc01aae (BH) | pelimotion.suppliers | 68 |
+| Produtoras SP | 1fc01aae (SP) | pelimotion.suppliers | 100 |
+| Tasks Pessoal | 26201aae | personal.tasks | 68 |
+| Saídas Pessoal | 35201aae (p) | personal.expenses | 11 |
+| Investimento | 2e001aae | personal.investments | 36 |
+| Casa | 2fe01aae | personal.home_items | 38 |
+| Saúde | 2ef01aae | personal.health_log | 3 |
+| Projetos Pessoais | cedb2b50 | personal.projects | 16 |
+
+### ❌ Não migrados — Fase 11
+| DB Notion | ID | Schema mapeado | Observação |
+|-----------|-----|---------------|-----------|
+| Workflow (×3) | 28d, 28c, 25f | pelimotion.workflow_tasks | Tabela já criada no SQL. Schema idêntico entre os 3 DBs. Campos: Tarefa, Responsável, Status, Produto, Canal, Duração, Tipo, Prioridade, Prazo, Observações. Pode ter 0 páginas (só schema). |
+| Alto valor extraido perplexity | 22301aae | pelimotion.crm_contacts | Campos: fn, ln, email, phone, company, title, zip, country, st, ct — formato de lead B2B. Upsert por email no crm_contacts. |
+| NomedaEmpresa (B2B) | 20401aae | NOVO: pelimotion.companies (?) | Campos: Nome da Empresa, Funcionários, Receita R$, Contato Principal, Especialidades, Website, Líder. Escopo diferente de crm_contacts — pode justificar tabela própria. |
+| Pipeline Pelimotion (Principal) | 3e5c9ec2 | pelimotion.projects (upsert) | Schema mais rico: Pessoa (people), Fornecedores (multi_select), Mídias (files), fórmulas A pagar/A receber. Pode ser versão mais antiga do Pipeline migrado. Verificar duplicatas por notion_id antes de migrar. |

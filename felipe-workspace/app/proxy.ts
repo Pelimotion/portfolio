@@ -22,7 +22,10 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && !request.nextUrl.pathname.startsWith('/pelispace/login')) {
+  // Com basePath '/pelispace', request.nextUrl.pathname já NÃO inclui o basePath.
+  // Ex: usuário acessa /pelispace/projetos → pathname aqui é /projetos
+  //     usuário acessa /pelispace/login   → pathname aqui é /login
+  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
     return NextResponse.redirect(new URL('/pelispace/login', request.url))
   }
 
@@ -30,5 +33,7 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|pelispace/login).*)'],
+  // Exclui /login (sem basePath) além dos assets estáticos.
+  // O basePath é stripado pelo Next.js antes de chegar aqui.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|login).*)'],
 }
