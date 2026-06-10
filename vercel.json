@@ -9,8 +9,8 @@
   "rewrites": [
     { "source": "/pelispace", "destination": "https://pelispace.vercel.app/pelispace" },
     { "source": "/pelispace/:path*", "destination": "https://pelispace.vercel.app/pelispace/:path*" },
-    { "source": "/pelimotion-design-system", "destination": "https://pelimotion-design-system.vercel.app/pelimotion-design-system" },
-    { "source": "/pelimotion-design-system/:path*", "destination": "https://pelimotion-design-system.vercel.app/pelimotion-design-system/:path*" },
+    { "source": "/pelimotion-design-system", "destination": "https://pelimotion-design-system.vercel.app" },
+    { "source": "/pelimotion-design-system/:path*", "destination": "https://pelimotion-design-system.vercel.app/:path*" },
     { "source": "/wide-image-studio/public", "destination": "/wide-image-studio/public/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/hub", "destination": "/hub/index.html" },
