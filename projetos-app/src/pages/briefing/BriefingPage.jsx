@@ -122,6 +122,10 @@ function rgbToHex([r, g, b]) {
   return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
 }
 
+function getConfig(slug) {
+  return BRIEFING_CONFIG[slug] || DEFAULT_CONFIG;
+}
+
 // ─── Componentes de UI Básicos ────────────────────────────────────────────────
 function AutoTextarea({ value, onChange, placeholder, rows = 3, maxChars, id, required }) {
   const ref = useRef(null);
