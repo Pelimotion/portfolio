@@ -44,7 +44,7 @@ function hideAuthOverlay() {
 async function lockAdmin() {
   try {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    const cfg = await fetch('/api/blog/config').then(r => r.json());
+    const cfg = await fetch('/api/config').then(r => r.json());
     const sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
     await sb.auth.signOut();
   } catch(e) { /* ignore */ }
@@ -55,7 +55,7 @@ async function checkAdminAccess() {
   const errEl = document.getElementById('auth-error');
   try {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    const cfg = await fetch('/api/blog/config').then(r => r.json());
+    const cfg = await fetch('/api/config').then(r => r.json());
     const sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
 
     const { data: { session } } = await sb.auth.getSession();
@@ -71,7 +71,7 @@ async function checkAdminAccess() {
 
     // Fallback: RLS pode bloquear o SELECT se a linha do perfil não existir ainda
     if (!profile || profile.role !== 'admin') {
-      const fallback = await fetch('/api/blog/config', {
+      const fallback = await fetch('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: session.access_token })

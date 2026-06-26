@@ -16,7 +16,7 @@ let _profile = null;    // cache do perfil do usuário atual
 
 async function getSupabase() {
     if (_supabase) return _supabase;
-    const res = await fetch('/api/blog/config');
+    const res = await fetch('/api/config');
     const { supabaseUrl, supabaseAnonKey } = await res.json();
     _supabase = createClient(supabaseUrl, supabaseAnonKey);
     return _supabase;
