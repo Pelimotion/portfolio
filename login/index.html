@@ -48,14 +48,37 @@
             margin-top: 16px; min-height: 16px;
         }
         .divider { border: none; border-top: 1px solid var(--border); margin: 50px 0 30px; }
-        .footer { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); text-align: center; }
+        .btn-google {
+            width: 100%; background: transparent; color: #fff; border: 1px solid var(--border);
+            padding: 14px; font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            margin-bottom: 20px; font-weight: 500; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-google:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
+        .or-separator {
+            text-align: center; font-size: 10px; font-family: var(--font-mono);
+            color: var(--text-dim); margin-bottom: 20px; position: relative;
+        }
+        .or-separator::before, .or-separator::after {
+            content: ''; position: absolute; top: 50%; width: 35%; height: 1px; background: var(--border);
+        }
+        .or-separator::before { left: 0; }
+        .or-separator::after { right: 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">PELIMOTION <span>STUDIO</span></div>
         <h1>Studio<br>Access</h1>
-        <p class="subtitle">CMS // BLOG-GENERATOR // ADMIN</p>
+        <p class="subtitle">PORTFOLIO // ADMIN // PROJETOS</p>
+
+        <button type="button" class="btn-google" id="btn-google">
+            <svg style="width:14px; height:14px;" viewBox="0 0 24 24"><path fill="currentColor" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.693 0-8.503-3.81-8.503-8.503s3.81-8.503 8.503-8.503c2.202 0 4.2.8 5.76 2.36l3.24-3.24C18.42 1.37 15.42 0 12.24 0 5.48 0 0 5.48 0 12.24s5.48 12.24 12.24 12.24c6.88 0 12.24-5.48 12.24-12.24 0-.82-.08-1.61-.24-2.385H12.24z"/></svg>
+            Entrar com Google
+        </button>
+
+        <div class="or-separator">OU</div>
 
         <form id="login-form">
             <div class="field">
@@ -113,6 +136,19 @@
             const dest = errorParam === 'unauthorized' ? null : nextUrl;
             await redirectTo(dest);
         }
+
+        document.getElementById('btn-google').onclick = async () => {
+            const dest = params.get('next') || '/admin';
+            const { error } = await sb.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + '/login/index.html?next=' + encodeURIComponent(dest)
+                }
+            });
+            if (error) {
+                document.getElementById('error-msg').textContent = 'Erro no login com Google: ' + error.message;
+            }
+        };
 
         document.getElementById('login-form').onsubmit = async (e) => {
             e.preventDefault();
