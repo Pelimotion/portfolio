@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import './briefing.css';
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-const DRAFT_KEY_PREFIX = 'pelimotion_briefing_draft_';
+// ─── Config & Constantes ──────────────────────────────────────────────────────
+const DRAFT_KEY_PREFIX = 'pelimotion_briefing_v3_';
 const COLORMIND_API = 'https://colormind.io/api/';
 const CHAR_LIMIT_LONG = 800;
 
@@ -14,217 +14,116 @@ const BRIEFING_CONFIG = {
     subtitulo: 'Joanna Ribas',
   },
 };
-
 const DEFAULT_CONFIG = {
   clienteNome: 'Cliente',
   titulo: 'Briefing de Portfólio',
   subtitulo: '',
 };
 
-/** Paletas cinematográficas curadas */
 const CURATED_PALETTES = [
-  {
-    name: 'Kubrick',
-    colors: ['#0d0d0d', '#1a0a0a', '#c41e3a', '#f0e6d3', '#8b7355'],
-  },
-  {
-    name: 'Wong Kar-Wai',
-    colors: ['#1a0a00', '#8b1a00', '#ff6b35', '#f7c59f', '#2d1b00'],
-  },
-  {
-    name: 'Lynch',
-    colors: ['#0a0015', '#1a0030', '#8b00ff', '#e8d5b7', '#4a0080'],
-  },
-  {
-    name: 'Wes Anderson',
-    colors: ['#e8d5b7', '#d4a574', '#8b6914', '#c4956a', '#2c1810'],
-  },
-  {
-    name: 'Gaspar Noé',
-    colors: ['#0a0000', '#500000', '#cc0000', '#ff6644', '#ffffff'],
-  },
-  {
-    name: 'Tarkovsky',
-    colors: ['#1a1a0a', '#4a4a2a', '#8b8b5a', '#d4c89a', '#2d2d1a'],
-  },
+  { name: 'Kubrick', colors: ['#0d0d0d', '#1a0a0a', '#c41e3a', '#f0e6d3', '#8b7355'] },
+  { name: 'Wong Kar-Wai', colors: ['#1a0a00', '#8b1a00', '#ff6b35', '#f7c59f', '#2d1b00'] },
+  { name: 'Lynch', colors: ['#0a0015', '#1a0030', '#8b00ff', '#e8d5b7', '#4a0080'] },
+  { name: 'Wes Anderson', colors: ['#e8d5b7', '#d4a574', '#8b6914', '#c4956a', '#2c1810'] },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function getConfig(slug) {
-  return BRIEFING_CONFIG[slug] || DEFAULT_CONFIG;
-}
+const PHASES = [
+  { id: 1, name: 'Intro' },
+  { id: 2, name: 'Sobre Você' },
+  { id: 3, name: 'Seus Trabalhos' },
+  { id: 4, name: 'Estética Visual' },
+  { id: 5, name: 'O Site' },
+];
 
+// O fluxo linear: 8 passos
+const WIZARD_STEPS = [
+  { id: 'step-0-intro', phase: 1 },
+  { id: 'step-1-apresentacao', phase: 2, required: ['q1_apresentacao'] },
+  { id: 'step-2-marcos', phase: 3, required: ['q4_marcos'] },
+  { id: 'step-3-material', phase: 3, required: ['q5_material'] },
+  { id: 'step-4-identidade', phase: 4, required: ['q8_visual'] },
+  { id: 'step-5-cores', phase: 4, required: [] },
+  { id: 'step-6-publico', phase: 5, required: ['q11_publico'] },
+  { id: 'step-7-dominio', phase: 5, required: ['q13_dominio'] },
+];
+
+const INITIAL_FORM = {
+  q1_apresentacao: '', q2_marca: '', q3_redes: '',
+  q4_marcos: '', q5_material: [], q6_destaque: '', q7_creditos: '',
+  q8_visual: [], q9_sites_referencia: '',
+  q10_paleta: '', q10_palette_colors: [], q10_seed_hex: '#3b82f6',
+  q11_publico: [], q12_funcoes: [], q13_dominio: '', q14_recado: '',
+};
+
+// ─── Hooks ────────────────────────────────────────────────────────────────────
 function useSlug() {
   const parts = window.location.pathname.split('/');
   return parts[parts.length - 1] || 'default';
 }
 
-/** rgb array [r,g,b] → hex string */
-function rgbToHex([r, g, b]) {
-  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-}
-
-/** hex string → rgb array */
-function hexToRgb(hex) {
-  const clean = hex.replace('#', '');
-  return [
-    parseInt(clean.substring(0, 2), 16),
-    parseInt(clean.substring(2, 4), 16),
-    parseInt(clean.substring(4, 6), 16),
-  ];
-}
-
-/** debounce */
 function useDebounce(fn, delay) {
   const timer = useRef(null);
-  return useCallback(
-    (...args) => {
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => fn(...args), delay);
-    },
-    [fn, delay]
-  );
+  return useCallback((...args) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => fn(...args), delay);
+  }, [fn, delay]);
 }
 
-// ─── Hook: localStorage draft ─────────────────────────────────────────────────
-function useLocalStorageDraft(slug, initialForm) {
+function useLocalStorageDraft(slug) {
   const key = DRAFT_KEY_PREFIX + slug;
-
-  const [draft, setDraft] = useState(null); // Rascunho encontrado no localStorage
-  const [draftBannerVisible, setDraftBannerVisible] = useState(false);
-  const [savedIndicator, setSavedIndicator] = useState(false);
+  const [draft, setDraft] = useState(null);
+  const [draftSavedToast, setDraftSavedToast] = useState(false);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(key);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setDraft(parsed);
-      }
-    } catch {
-      /* noop */
-    }
+      if (stored) setDraft(JSON.parse(stored));
+    } catch { /* noop */ }
   }, [key]);
 
-  const saveDraft = useCallback(
-    (form) => {
-      try {
-        localStorage.setItem(key, JSON.stringify(form));
-        setSavedIndicator(true);
-        setDraftBannerVisible(true);
-        setTimeout(() => setSavedIndicator(false), 2000);
-      } catch {
-        /* noop */
-      }
-    },
-    [key]
-  );
+  const saveDraft = useCallback((form, step) => {
+    try {
+      localStorage.setItem(key, JSON.stringify({ form, step }));
+      setDraftSavedToast(true);
+      setTimeout(() => setDraftSavedToast(false), 2000);
+    } catch { /* noop */ }
+  }, [key]);
 
   const clearDraft = useCallback(() => {
     try {
       localStorage.removeItem(key);
       setDraft(null);
-      setDraftBannerVisible(false);
-    } catch {
-      /* noop */
-    }
+    } catch { /* noop */ }
   }, [key]);
 
-  return { draft, draftBannerVisible, savedIndicator, saveDraft, clearDraft };
+  return { draft, draftSavedToast, saveDraft, clearDraft };
 }
 
-// ─── Hook: progress tracker ───────────────────────────────────────────────────
-const REQUIRED_FIELDS = ['q1_apresentacao', 'q4_marcos', 'q5_material', 'q8_visual', 'q11_publico', 'q13_dominio'];
-
-function useProgress(form) {
-  const filled = REQUIRED_FIELDS.filter((f) => {
-    const val = form[f];
-    if (Array.isArray(val)) return val.length > 0;
-    return val && val.trim().length > 0;
-  });
-  return Math.round((filled.length / REQUIRED_FIELDS.length) * 100);
-}
-
-// ─── Hook: scroll direction (mostra/esconde progress bar) ─────────────────────
-function useScrollDirection() {
-  const [hidden, setHidden] = useState(false);
-  const lastY = useRef(0);
-
-  useEffect(() => {
-    const handler = () => {
-      const y = window.scrollY;
-      setHidden(y > lastY.current && y > 80);
-      lastY.current = y;
-    };
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
-
-  return hidden;
-}
-
-// ─── Hook: IntersectionObserver fallback for scroll reveals ───────────────────
-function useScrollReveal(containerRef) {
-  useEffect(() => {
-    if (CSS.supports('animation-timeline', 'view()')) return; // Native handles it
-
-    const els = containerRef.current?.querySelectorAll('.briefing-field') ?? [];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        }
-      },
-      { threshold: 0.05 }
-    );
-
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [containerRef]);
-}
-
-// ─── Hook: section active (número em destaque) ────────────────────────────────
-function useSectionHighlight() {
-  useEffect(() => {
-    const sections = document.querySelectorAll('.briefing-section');
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          entry.target.classList.toggle('is-active', entry.isIntersecting);
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, []);
-}
-
-// ─── Hook: textarea auto-resize ───────────────────────────────────────────────
 function useAutoResize(ref) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
     const resize = () => {
       el.style.height = 'auto';
       el.style.height = el.scrollHeight + 'px';
     };
-
     el.addEventListener('input', resize);
-    resize(); // initial
+    resize();
     return () => el.removeEventListener('input', resize);
   }, [ref]);
 }
 
-// ─── Component: AutoTextarea ──────────────────────────────────────────────────
-function AutoTextarea({ value, onChange, placeholder, rows = 4, maxChars, id, required, ...props }) {
+// ─── Helpers Cores ────────────────────────────────────────────────────────────
+function hexToRgb(hex) {
+  const clean = hex.replace('#', '');
+  return [parseInt(clean.substring(0, 2), 16), parseInt(clean.substring(2, 4), 16), parseInt(clean.substring(4, 6), 16)];
+}
+function rgbToHex([r, g, b]) {
+  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+
+// ─── Componentes de UI Básicos ────────────────────────────────────────────────
+function AutoTextarea({ value, onChange, placeholder, rows = 3, maxChars, id, required }) {
   const ref = useRef(null);
   useAutoResize(ref);
   const near = maxChars && value.length > maxChars * 0.85;
@@ -232,22 +131,11 @@ function AutoTextarea({ value, onChange, placeholder, rows = 4, maxChars, id, re
   return (
     <div>
       <textarea
-        ref={ref}
-        id={id}
-        className="briefing-textarea"
-        rows={rows}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        required={required}
-        aria-required={required}
-        {...props}
+        ref={ref} id={id} className="briefing-textarea"
+        rows={rows} placeholder={placeholder} value={value} onChange={onChange} required={required}
       />
       {maxChars && (
-        <div
-          className={`briefing-char-counter ${near ? 'near-limit' : ''}`}
-          aria-live="polite"
-        >
+        <div className={`briefing-char-counter ${near ? 'near-limit' : ''}`}>
           {value.length}/{maxChars}
         </div>
       )}
@@ -255,767 +143,420 @@ function AutoTextarea({ value, onChange, placeholder, rows = 4, maxChars, id, re
   );
 }
 
-// ─── Component: CheckboxGroup ─────────────────────────────────────────────────
-function CheckboxGroup({ name, options, values, onChange, hasOther }) {
-  const [otherText, setOtherText] = useState('');
-  const otherChecked = values.includes('__outro__');
-
-  function toggle(option) {
-    if (values.includes(option)) {
-      onChange(values.filter((v) => v !== option));
-    } else {
-      onChange([...values, option]);
-    }
-  }
-
-  function handleOtherToggle() {
-    if (otherChecked) {
-      onChange(values.filter((v) => !v.startsWith('__')));
-      setOtherText('');
-    } else {
-      onChange([...values, '__outro__']);
-    }
-  }
-
-  function handleOtherText(e) {
-    const text = e.target.value;
-    setOtherText(text);
-    const filtered = values.filter((v) => !v.startsWith('__outro_text__'));
-    if (otherChecked) {
-      onChange(text ? [...filtered, `__outro_text__${text}`] : filtered);
-    }
-  }
-
+function Field({ label, required, hint, children }) {
   return (
-    <div className="briefing-checkbox-group" role="group" aria-label={name}>
-      {options.map((opt) => (
-        <label key={opt} className="briefing-checkbox-item">
-          <input
-            type="checkbox"
-            className="briefing-checkbox-input"
-            checked={values.includes(opt)}
-            onChange={() => toggle(opt)}
-            aria-checked={values.includes(opt)}
-          />
-          <span className="briefing-checkbox-box" aria-hidden="true" />
-          <span className="briefing-checkbox-label">{opt}</span>
-        </label>
-      ))}
-      {hasOther && (
-        <>
-          <label className="briefing-checkbox-item">
-            <input
-              type="checkbox"
-              className="briefing-checkbox-input"
-              checked={otherChecked}
-              onChange={handleOtherToggle}
-            />
-            <span className="briefing-checkbox-box" aria-hidden="true" />
-            <span className="briefing-checkbox-label">Outro</span>
-          </label>
-          {otherChecked && (
-            <input
-              type="text"
-              className="briefing-input briefing-input--other"
-              placeholder="Descreva aqui…"
-              value={otherText}
-              onChange={handleOtherText}
-              autoFocus
-              aria-label="Especifique: outro"
-            />
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── Component: RadioGroup ────────────────────────────────────────────────────
-function RadioGroup({ name, options, value, onChange }) {
-  return (
-    <div className="briefing-radio-group" role="radiogroup" aria-label={name}>
-      {options.map((opt) => (
-        <label key={opt} className="briefing-radio-item">
-          <input
-            type="radio"
-            name={name}
-            className="briefing-radio-input"
-            checked={value === opt}
-            onChange={() => onChange(opt)}
-            aria-checked={value === opt}
-          />
-          <span className="briefing-radio-dot" aria-hidden="true" />
-          <span className="briefing-radio-label">{opt}</span>
-        </label>
-      ))}
-    </div>
-  );
-}
-
-// ─── Component: ColorPalettePicker ────────────────────────────────────────────
-function ColorPalettePicker({ onPaletteSelect }) {
-  const [palette, setPalette] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(null); // index do swatch copiado
-  const [seedHex, setSeedHex] = useState('');
-
-  async function generatePalette(seed = null) {
-    setLoading(true);
-    try {
-      const body = { model: 'default' };
-      if (seed) {
-        const rgb = hexToRgb(seed);
-        body.input = [rgb, 'N', 'N', 'N', 'N'];
-      }
-      const resp = await fetch(COLORMIND_API, {
-        method: 'POST',
-        body: JSON.stringify(body),
-      });
-      const data = await resp.json();
-      const hexes = data.result.map(rgbToHex);
-      setPalette(hexes);
-      onPaletteSelect?.(hexes);
-    } catch {
-      // Fallback: gerar aleatório se API falhar
-      const hexes = Array.from({ length: 5 }, () =>
-        '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0')
-      );
-      setPalette(hexes);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function applyCurated(p) {
-    setPalette(p.colors);
-    onPaletteSelect?.(p.colors);
-  }
-
-  async function copySwatch(hex, idx) {
-    try {
-      await navigator.clipboard.writeText(hex);
-      setCopied(idx);
-      setTimeout(() => setCopied(null), 1500);
-    } catch {
-      /* noop */
-    }
-  }
-
-  return (
-    <div className="briefing-color-picker">
-      <div className="briefing-color-picker-header">
-        <span className="briefing-color-picker-label">Gerador de paleta</span>
-        <div className="briefing-color-picker-actions">
-          <input
-            type="text"
-            className="briefing-input"
-            placeholder="#hex base…"
-            value={seedHex}
-            onChange={(e) => setSeedHex(e.target.value)}
-            style={{ width: 100, padding: '4px 10px', fontSize: 12 }}
-            aria-label="Cor base (hex)"
-            maxLength={7}
-          />
-          <button
-            type="button"
-            className="briefing-color-btn briefing-color-btn--primary"
-            onClick={() => generatePalette(seedHex.match(/^#[0-9a-f]{6}$/i) ? seedHex : null)}
-            disabled={loading}
-            aria-busy={loading}
-          >
-            {loading ? 'Gerando…' : '✦ Gerar'}
-          </button>
-        </div>
-      </div>
-
-      {palette ? (
-        <div className={`briefing-palette-swatches ${loading ? 'loading' : ''}`} role="list" aria-label="Paleta gerada">
-          {palette.map((hex, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`briefing-swatch ${copied === i ? 'copied' : ''}`}
-              style={{ background: hex }}
-              onClick={() => copySwatch(hex, i)}
-              aria-label={`Cor ${hex} — clique para copiar`}
-              role="listitem"
-            >
-              <span className="briefing-swatch-hex">{hex}</span>
-              <span className="briefing-swatch-copied" aria-hidden="true">
-                Copiado!
-              </span>
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div
-          style={{
-            height: 72,
-            display: 'grid',
-            placeItems: 'center',
-            color: 'var(--b-text-muted)',
-            fontSize: 12,
-          }}
-        >
-          Clique em "Gerar" para criar uma paleta com IA
-        </div>
-      )}
-
-      <div className="briefing-curated-palettes" role="list" aria-label="Paletas cinematográficas">
-        {CURATED_PALETTES.map((p) => (
-          <button
-            key={p.name}
-            type="button"
-            className="briefing-curated-chip"
-            onClick={() => applyCurated(p)}
-            aria-label={`Paleta ${p.name}`}
-            role="listitem"
-          >
-            <div className="briefing-curated-dots" aria-hidden="true">
-              {p.colors.map((c, i) => (
-                <span key={i} className="briefing-curated-dot" style={{ background: c }} />
-              ))}
-            </div>
-            {p.name}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Component: Field ─────────────────────────────────────────────────────────
-function Field({ label, required, hint, hintId, children }) {
-  return (
-    <div className="briefing-field" aria-describedby={hint ? hintId : undefined}>
+    <div className="briefing-field">
       <label className="briefing-label">
-        {label}
-        {required && (
-          <span className="briefing-required" aria-label="obrigatório">
-            *
-          </span>
-        )}
+        {label} {required && <span className="briefing-required">*</span>}
       </label>
-      {hint && (
-        <p id={hintId} className="briefing-hint">
-          {hint}
-        </p>
-      )}
+      {hint && <p className="briefing-hint">{hint}</p>}
       {children}
     </div>
   );
 }
 
-// ─── Component: Section ───────────────────────────────────────────────────────
-function Section({ num, title, children }) {
-  return (
-    <div className="briefing-section">
-      <div className="briefing-section-num" aria-hidden="true">
-        {num}
-      </div>
-      <div className="briefing-section-body">
-        <div className="briefing-section-header">
-          <h2 className="briefing-section-title">{title}</h2>
-          <div className="briefing-section-rule" aria-hidden="true" />
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// ─── Component: ProgressBar ───────────────────────────────────────────────────
-function ProgressBar({ progress, hidden }) {
-  return (
-    <>
-      <div
-        className={`briefing-progress-bar ${hidden ? 'hidden' : ''}`}
-        role="progressbar"
-        aria-valuenow={progress}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label="Progresso do briefing"
-      >
-        <div
-          className="briefing-progress-fill"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      <div
-        className="briefing-progress-label"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {progress}%
-      </div>
-    </>
-  );
-}
-
-// ─── Component: DraftBanner ───────────────────────────────────────────────────
-function DraftBanner({ visible, onRestore, hasDraft }) {
-  if (hasDraft) {
-    return (
-      <div className={`briefing-draft-banner ${visible ? 'visible' : ''}`} role="status">
-        <span className="briefing-draft-banner-dot" />
-        <span>Rascunho encontrado</span>
-        <button type="button" className="briefing-draft-restore" onClick={onRestore}>
-          Restaurar
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`briefing-draft-banner ${visible ? 'visible' : ''}`} role="status" aria-live="polite">
-      <span className="briefing-draft-banner-dot" />
-      <span>Rascunho salvo</span>
-    </div>
-  );
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
-const INITIAL_FORM = {
-  q1_apresentacao: '',
-  q2_marca: '',
-  q3_redes: '',
-  q4_marcos: '',
-  q5_material: [],
-  q6_destaque: '',
-  q7_creditos: '',
-  q8_visual: [],
-  q9_sites_referencia: '',
-  q10_paleta: '',
-  q10_palette_colors: [],
-  q11_publico: [],
-  q12_funcoes: [],
-  q13_dominio: '',
-  q14_recado: '',
-};
-
+// ─── Componente Principal ─────────────────────────────────────────────────────
 export default function BriefingPage() {
   const slug = useSlug();
   const config = getConfig(slug);
-  const containerRef = useRef(null);
 
   const [form, setForm] = useState(INITIAL_FORM);
-  const [status, setStatus] = useState('idle');
+  const [currentStep, setCurrentStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | loading | success
 
-  const { draft, draftBannerVisible, savedIndicator, saveDraft, clearDraft } =
-    useLocalStorageDraft(slug, INITIAL_FORM);
-
-  const progress = useProgress(form);
-  const scrollHidden = useScrollDirection();
-
-  // Hooks de efeito visual
-  useScrollReveal(containerRef);
-  useSectionHighlight();
-
-  // Debounced auto-save
+  const { draft, draftSavedToast, saveDraft, clearDraft } = useLocalStorageDraft(slug);
   const debouncedSave = useDebounce(saveDraft, 800);
 
-  // Aciona auto-save a cada mudança no form
+  // Restore draft se existir
   useEffect(() => {
-    if (status === 'idle') {
-      debouncedSave(form);
+    if (draft && draft.form && currentStep === 0 && status === 'idle') {
+      // Pergunta silenciosa? Não, vamos colocar no botão inicial
     }
-  }, [form, debouncedSave, status]);
+  }, [draft, currentStep, status]);
 
-  // Estado derivado — mostrar banner de rascunho ao carregar
-  const [showDraftRestore, setShowDraftRestore] = useState(false);
+  // Auto-save no change
   useEffect(() => {
-    if (draft) setShowDraftRestore(true);
-  }, [draft]);
+    if (status === 'idle') debouncedSave(form, currentStep);
+  }, [form, currentStep, status, debouncedSave]);
 
-  function restoreDraft() {
-    if (draft) {
-      setForm(draft);
-      setShowDraftRestore(false);
+  const set = (field) => (val) => setForm((prev) => ({ ...prev, [field]: val }));
+  const setInput = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  // Navegação
+  const handleNext = () => {
+    // Validar etapa atual
+    const stepDef = WIZARD_STEPS[currentStep];
+    if (stepDef.required) {
+      for (const reqField of stepDef.required) {
+        const val = form[reqField];
+        if (Array.isArray(val) && val.length === 0) {
+          setErrorMsg('Por favor, selecione ao menos uma opção para continuar.');
+          return;
+        } else if (typeof val === 'string' && !val.trim()) {
+          setErrorMsg('Por favor, preencha os campos obrigatórios para continuar.');
+          return;
+        }
+      }
     }
-  }
+    setErrorMsg('');
+    setCurrentStep((c) => Math.min(c + 1, WIZARD_STEPS.length - 1));
+  };
 
-  function set(field) {
-    return (val) => setForm((prev) => ({ ...prev, [field]: val }));
-  }
+  const handlePrev = () => {
+    setErrorMsg('');
+    setCurrentStep((c) => Math.max(c - 1, 0));
+  };
 
-  function setInput(field) {
-    return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
-  }
+  // Atalho de teclado (Enter para avançar em inputs)
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      // Se estiver no textarea não avança (deixa pular linha)
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        if (currentStep < WIZARD_STEPS.length - 1) handleNext();
+        else handleSubmit();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [currentStep, form]);
 
-  // ── Validação ───────────────────────────────────────────────────────────────
-  function validate() {
-    if (!form.q1_apresentacao.trim())
-      return 'Por favor, preencha como você se apresenta profissionalmente.';
-    if (!form.q4_marcos.trim())
-      return 'Por favor, preencha os marcos que quer destacar.';
-    if (!form.q5_material.length)
-      return 'Por favor, selecione pelo menos um tipo de material disponível.';
-    if (!form.q8_visual.length)
-      return 'Por favor, selecione pelo menos uma opção de identidade visual.';
-    if (!form.q11_publico.length)
-      return 'Por favor, selecione o público-alvo do site.';
-    if (!form.q13_dominio)
-      return 'Por favor, selecione uma opção sobre o domínio.';
-    return null;
-  }
-
-  // ── Limpeza de valores internos dos checkboxes ──────────────────────────────
-  function cleanCheckboxValues(arr) {
-    const hasOther = arr.includes('__outro__');
-    const otherText = arr
-      .find((v) => v.startsWith('__outro_text__'))
-      ?.replace('__outro_text__', '');
-    const clean = arr.filter((v) => !v.startsWith('__'));
-    if (hasOther && otherText) clean.push(`Outro: ${otherText}`);
-    else if (hasOther) clean.push('Outro');
-    return clean;
-  }
-
-  // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const err = validate();
-    if (err) {
-      setErrorMsg(err);
-      document.querySelector('.briefing-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
+  const submitFinal = async () => {
     setStatus('loading');
     setErrorMsg('');
-
-    const paletteStr =
-      form.q10_palette_colors.length
-        ? `${form.q10_paleta}\n\nPaleta gerada: ${form.q10_palette_colors.join(', ')}`
-        : form.q10_paleta;
-
-    const respostas = {
-      'Como você se apresenta profissionalmente?': form.q1_apresentacao,
-      'Nome profissional / marca pessoal / logo': form.q2_marca || null,
-      'Redes sociais e portfólios online': form.q3_redes || null,
-      'Marcos a destacar no site': form.q4_marcos,
-      'Material disponível': cleanCheckboxValues(form.q5_material),
-      'Trabalho recente em destaque': form.q6_destaque || null,
-      'Créditos, prêmios e menções': form.q7_creditos || null,
-      'Identidade visual': cleanCheckboxValues(form.q8_visual),
-      'Sites de portfólio que admira': form.q9_sites_referencia || null,
-      'Paleta de cores / estética': paletteStr || null,
-      'Público-alvo do site': cleanCheckboxValues(form.q11_publico),
-      'Funções além de portfólio': cleanCheckboxValues(form.q12_funcoes),
-      'Domínio registrado?': form.q13_dominio,
-      'Recado livre': form.q14_recado || null,
-    };
-
     try {
+      // Clean checkboxes
+      const cleanCb = (arr) => {
+        const clean = arr.filter((v) => !v.startsWith('__'));
+        const outroText = arr.find(v => v.startsWith('__outro_text__'));
+        if (arr.includes('__outro__')) clean.push(outroText ? `Outro: ${outroText.replace('__outro_text__', '')}` : 'Outro');
+        return clean;
+      };
+
+      const pStr = form.q10_palette_colors.length ? `${form.q10_paleta}\n\nPaleta gerada: ${form.q10_palette_colors.join(', ')}` : form.q10_paleta;
+
+      const respostas = {
+        'Apresentação': form.q1_apresentacao,
+        'Marca/Logo': form.q2_marca || null,
+        'Redes': form.q3_redes || null,
+        'Marcos': form.q4_marcos,
+        'Material': cleanCb(form.q5_material),
+        'Destaque': form.q6_destaque || null,
+        'Créditos': form.q7_creditos || null,
+        'Visual': cleanCb(form.q8_visual),
+        'Ref Sites': form.q9_sites_referencia || null,
+        'Paleta': pStr || null,
+        'Público': cleanCb(form.q11_publico),
+        'Funções': cleanCb(form.q12_funcoes),
+        'Domínio': form.q13_dominio,
+        'Recado': form.q14_recado || null,
+      };
+
       const { error } = await supabase.from('briefings').insert({
         slug,
         cliente_nome: config.clienteNome,
         respostas,
       });
-
       if (error) throw error;
-
       clearDraft();
       setStatus('success');
     } catch (err) {
-      console.error('[Briefing] Submit error:', err);
-      setErrorMsg(err.message || 'Algo deu errado. Tenta de novo ou me chama no WhatsApp.');
-      setStatus('error');
+      setErrorMsg(err.message || 'Erro ao enviar. Tente novamente.');
+      setStatus('idle');
     }
-  }
+  };
 
-  // ── Estado de Sucesso ────────────────────────────────────────────────────────
+  const handleSubmit = () => submitFinal();
+
   if (status === 'success') {
     return (
       <div className="briefing-root">
-        <div className="briefing-grain" aria-hidden="true" />
-        <main className="briefing-container" id="main-content">
-          <div className="briefing-success">
-            <span className="briefing-success-icon" role="img" aria-label="Mãos aplaudindo">
-              🙌
-            </span>
-            <h1 className="briefing-success-title">Recebido!</h1>
-            <p className="briefing-success-text">
-              Obrigado, {config.clienteNome.split(' ')[0]}. Vou ler tudo com atenção e te chamo no WhatsApp para marcarmos a reunião.
-            </p>
-            <p className="briefing-success-sig">— Felipe · Pelimotion</p>
-          </div>
-        </main>
+        <div className="briefing-grain" />
+        <div className="briefing-success-screen">
+          <div className="briefing-success-icon">🙌</div>
+          <h1 className="briefing-hero-title">Recebido!</h1>
+          <p className="briefing-hero-text">Obrigado por dedicar seu tempo. Vou analisar todas as informações e entro em contato via WhatsApp para marcarmos nosso alinhamento. — Felipe</p>
+        </div>
       </div>
     );
   }
 
-  // ── Formulário ───────────────────────────────────────────────────────────────
+  const stepDef = WIZARD_STEPS[currentStep];
+  const activePhase = stepDef.phase;
+  const progressPct = Math.round((currentStep / (WIZARD_STEPS.length - 1)) * 100);
+
   return (
     <div className="briefing-root">
-      {/* Skip link */}
-      <a href="#main-content" className="briefing-skip-link">
-        Pular para o formulário
-      </a>
+      <div className="briefing-grain" />
 
-      {/* Grain */}
-      <div className="briefing-grain" aria-hidden="true" />
-
-      {/* Progress */}
-      <ProgressBar progress={progress} hidden={scrollHidden} />
-      <div
-        className="briefing-progress-label"
-        aria-live="polite"
-        aria-atomic="true"
-        aria-label={`Progresso: ${progress} por cento`}
-      >
-        {progress}%
+      {/* Draft Toast */}
+      <div className={`briefing-draft-toast ${draftSavedToast ? 'is-visible' : ''}`}>
+        <span className="briefing-draft-dot" /> Rascunho salvo
       </div>
 
-      {/* Draft banner */}
-      <DraftBanner
-        visible={showDraftRestore || savedIndicator}
-        hasDraft={showDraftRestore}
-        onRestore={restoreDraft}
-      />
+      {/* Mobile Top Header Progress */}
+      <header className="briefing-mobile-header">
+        <span style={{ fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{PHASES.find(p => p.id === activePhase)?.name}</span>
+        <span style={{ fontSize: 11, color: 'var(--b-text-muted)' }}>{currentStep} / {WIZARD_STEPS.length - 1}</span>
+        <div className="briefing-mobile-progress-bar" style={{ width: `${progressPct}%` }} />
+      </header>
 
-      <main className="briefing-container" id="main-content" ref={containerRef}>
-        {/* ── Hero ─────────────────────────────────────────────────── */}
-        <header className="briefing-hero">
-          <span className="briefing-eyebrow">Pelimotion Studio</span>
-          <h1 className="briefing-main-title">{config.titulo}</h1>
-          <p className="briefing-client-name">{config.subtitulo}</p>
-          <div className="briefing-intro-block">
-            <p className="briefing-intro">
-              Preencha com calma — pode voltar quando quiser. Cada detalhe aqui me ajuda a montar as melhores opções para o seu site. Qualquer dúvida, me chama no WhatsApp.
-            </p>
-            <p className="briefing-sig">— Felipe · Pelimotion</p>
-          </div>
-          <div className="briefing-hero-rule" aria-hidden="true" />
-        </header>
+      {/* Desktop Sidebar Timeline */}
+      <aside className="briefing-sidebar">
+        <div className="briefing-brand">Pelimotion Studio</div>
+        <div className="briefing-timeline">
+          {PHASES.map((ph) => {
+            let stateClass = 'is-future';
+            if (activePhase === ph.id) stateClass = 'is-current';
+            else if (activePhase > ph.id) stateClass = 'is-past';
+            return (
+              <div key={ph.id} className={`briefing-phase ${stateClass}`}>
+                <div className="briefing-phase-dot" />
+                <span className="briefing-phase-label">{ph.name}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ marginTop: 'auto', fontSize: 10, color: 'var(--b-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          {progressPct}% concluído
+        </div>
+      </aside>
 
-        {/* ── Form ─────────────────────────────────────────────────── */}
-        <form onSubmit={handleSubmit} noValidate className="briefing-form" aria-label="Formulário de briefing">
-
-          {/* ══ SEÇÃO 1 ═══════════════════════════════════════════ */}
-          <Section num="01" title="Sobre você e sua carreira">
-            <Field label="Como você se apresenta profissionalmente?" required hintId="q1-hint">
-              <AutoTextarea
-                id="q1"
-                placeholder="Figurinista de cinema, estilista, diretora de arte…"
-                value={form.q1_apresentacao}
-                onChange={setInput('q1_apresentacao')}
-                rows={4}
-                maxChars={CHAR_LIMIT_LONG}
-                required
-                aria-required="true"
-              />
-            </Field>
-
-            <Field label="Você tem um nome profissional, marca pessoal ou logo que já usa?">
-              <input
-                type="text"
-                id="q2"
-                className="briefing-input"
-                placeholder="Se tiver logo, pode me mandar por WhatsApp também"
-                value={form.q2_marca}
-                onChange={setInput('q2_marca')}
-                autoComplete="off"
-              />
-            </Field>
-
-            <Field label="Tem redes sociais ou portfólios online ativos? Cole os links aqui.">
-              <AutoTextarea
-                id="q3"
-                placeholder="Instagram, LinkedIn, Vimeo, Behance…"
-                value={form.q3_redes}
-                onChange={setInput('q3_redes')}
-                rows={3}
-              />
-            </Field>
-          </Section>
-
-          {/* ══ SEÇÃO 2 ═══════════════════════════════════════════ */}
-          <Section num="02" title="Sobre os trabalhos">
-            <Field label="Quais são os marcos que você quer destacar no site?" required>
-              <AutoTextarea
-                id="q4"
-                placeholder="Cite títulos, projetos, filmes, séries, artistas. Só os que realmente importam para você."
-                value={form.q4_marcos}
-                onChange={setInput('q4_marcos')}
-                rows={5}
-                maxChars={CHAR_LIMIT_LONG}
-                required
-              />
-            </Field>
-
-            <Field label="Desses marcos, o que você tem de material disponível?" required>
-              <CheckboxGroup
-                name="material disponível"
-                options={[
-                  'Fotos de set / bastidores',
-                  'Stills dos filmes ou séries',
-                  'Making of em vídeo',
-                  'Cartazes e artes gráficas',
-                  'Fotos dos figurinos isolados',
-                  'Clipes ou trechos em vídeo',
-                  'Apenas o que conseguir resgatar pela internet',
-                ]}
-                values={form.q5_material}
-                onChange={set('q5_material')}
-                hasOther
-              />
-            </Field>
-
-            <Field label="Tem algum trabalho recente que você quer em destaque?">
-              <AutoTextarea
-                id="q6"
-                placeholder="Algo dos últimos anos que você sente orgulho especial em mostrar."
-                value={form.q6_destaque}
-                onChange={setInput('q6_destaque')}
-                rows={3}
-              />
-            </Field>
-
-            <Field label="Tem créditos, prêmios ou menções que gostaria de incluir?">
-              <AutoTextarea
-                id="q7"
-                placeholder="Festivais, publicações, premiações, matérias…"
-                value={form.q7_creditos}
-                onChange={setInput('q7_creditos')}
-                rows={3}
-              />
-            </Field>
-          </Section>
-
-          {/* ══ SEÇÃO 3 ═══════════════════════════════════════════ */}
-          <Section num="03" title="Visual e personalidade">
-            <Field label="O que te representa visualmente? Pode marcar vários." required>
-              <CheckboxGroup
-                name="identidade visual"
-                options={[
-                  'Cores vibrantes e saturadas',
-                  'Muita textura e camadas',
-                  'Tipografia marcante e expressiva',
-                  'Colagem e composição densa',
-                  'Movimento e animação na tela',
-                  'Referência vintage / retrô',
-                  'Fotografia como elemento principal',
-                  'Algo dramático e cinematográfico',
-                ]}
-                values={form.q8_visual}
-                onChange={set('q8_visual')}
-                hasOther
-              />
-            </Field>
-
-            <Field label="Links de sites de portfólio que você admira">
-              <AutoTextarea
-                id="q9"
-                placeholder="Não precisa ser da sua área. Fotógrafo, artista visual, designer — cola quantos quiser."
-                value={form.q9_sites_referencia}
-                onChange={setInput('q9_sites_referencia')}
-                rows={3}
-              />
-            </Field>
-
-            <Field
-              label="Tem uma paleta de cores, estética ou período que te represente visualmente hoje?"
-              hint="Cole qualquer referência ou use o gerador de paletas abaixo — ele usa IA para criar combinações cinematográficas."
-              hintId="q10-hint"
-            >
-              <AutoTextarea
-                id="q10"
-                placeholder="Pode citar filmes, décadas, artistas — qualquer referência que venha à cabeça."
-                value={form.q10_paleta}
-                onChange={setInput('q10_paleta')}
-                rows={3}
-                aria-describedby="q10-hint"
-              />
-              <ColorPalettePicker
-                onPaletteSelect={(colors) =>
-                  setForm((prev) => ({ ...prev, q10_palette_colors: colors }))
-                }
-              />
-            </Field>
-          </Section>
-
-          {/* ══ SEÇÃO 4 ═══════════════════════════════════════════ */}
-          <Section num="04" title="Objetivo do site">
-            <Field label="Para quem é esse site? Quem você quer que acesse?" required>
-              <CheckboxGroup
-                name="público-alvo"
-                options={[
-                  'Diretores de cinema e TV',
-                  'Produtoras de audiovisual',
-                  'Agências de publicidade',
-                  'Imprensa e jornalistas',
-                  'Marcas de moda e luxo',
-                ]}
-                values={form.q11_publico}
-                onChange={set('q11_publico')}
-                hasOther
-              />
-            </Field>
-
-            <Field label="O site precisa ter alguma função além de portfólio?">
-              <CheckboxGroup
-                name="funcionalidades extras"
-                options={[
-                  'Formulário de contato',
-                  'Bio / texto longo sobre a trajetória',
-                  'Seção de depoimentos',
-                  'Arquivo histórico navegável',
-                  'Área de imprensa e press kit',
-                  'Não — só o portfólio mesmo',
-                ]}
-                values={form.q12_funcoes}
-                onChange={set('q12_funcoes')}
-                hasOther
-              />
-            </Field>
-
-            <Field label="Você já tem um domínio registrado com seu nome?" required>
-              <RadioGroup
-                name="domínio"
-                options={[
-                  'Sim, já tenho',
-                  'Não tenho ainda',
-                  'Não sei o que é isso — me explica!',
-                ]}
-                value={form.q13_dominio}
-                onChange={set('q13_dominio')}
-              />
-            </Field>
-
-            <Field label="Quer deixar algum recado ou ideia que não coube nas perguntas?">
-              <AutoTextarea
-                id="q14"
-                placeholder="Pode falar à vontade."
-                value={form.q14_recado}
-                onChange={setInput('q14_recado')}
-                rows={4}
-                maxChars={CHAR_LIMIT_LONG}
-              />
-            </Field>
-          </Section>
-
-          {/* ══ Submit ════════════════════════════════════════════ */}
-          <div className="briefing-submit-area">
-            {errorMsg && (
-              <p className="briefing-error" role="alert" aria-live="assertive">
-                {errorMsg}
-              </p>
+      {/* Main Content Area */}
+      <main className="briefing-main-area">
+        <div className="briefing-step-container">
+          
+          <div className="briefing-step-wrapper">
+            {/* Renderizar Passo Atual Dinamicamente */}
+            
+            {currentStep === 0 && (
+              <div className="step-transition-enter-active">
+                <h1 className="briefing-hero-title">{config.titulo}</h1>
+                <h2 className="briefing-hero-client">{config.subtitulo}</h2>
+                <p className="briefing-hero-text">
+                  Preencha com calma, uma etapa por vez. Seu progresso é salvo automaticamente.<br/>
+                  Cada detalhe me ajuda a desenhar a melhor experiência para o seu novo site.
+                </p>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                  <button className="briefing-nav-btn briefing-nav-btn--primary" onClick={handleNext}>
+                    Iniciar Briefing →
+                  </button>
+                  {draft && (
+                    <button className="briefing-draft-restore-btn" onClick={() => { setForm(draft.form); setCurrentStep(draft.step); }}>
+                      Retomar de onde parei
+                    </button>
+                  )}
+                </div>
+              </div>
             )}
-            <button
-              type="submit"
-              id="briefing-submit-btn"
-              disabled={status === 'loading'}
-              className="briefing-submit-btn"
-              aria-busy={status === 'loading'}
-            >
-              {status === 'loading' ? 'Enviando…' : 'Enviar briefing →'}
-            </button>
-          </div>
 
-        </form>
+            {currentStep === 1 && (
+              <div className="step-transition-enter-active">
+                <Field label="1. Como você se apresenta profissionalmente?" required hint="Ex: Figurinista, Artista Visual, Diretora de Arte...">
+                  <AutoTextarea value={form.q1_apresentacao} onChange={setInput('q1_apresentacao')} required />
+                </Field>
+                <Field label="Você tem um nome profissional, marca pessoal ou logo que já usa?">
+                  <input type="text" className="briefing-input" value={form.q2_marca} onChange={setInput('q2_marca')} />
+                </Field>
+                <Field label="Redes sociais e portfólios online (links ativos)">
+                  <AutoTextarea value={form.q3_redes} onChange={setInput('q3_redes')} rows={2} />
+                </Field>
+              </div>
+            )}
+
+            {currentStep === 2 && (
+              <div className="step-transition-enter-active">
+                <Field label="2. Quais são os marcos da sua carreira que você quer destacar?" required hint="Cite títulos, projetos, filmes, exposições ou clientes. Só o que realmente importa.">
+                  <AutoTextarea value={form.q4_marcos} onChange={setInput('q4_marcos')} rows={5} maxChars={1000} required />
+                </Field>
+              </div>
+            )}
+
+            {currentStep === 3 && (
+              <div className="step-transition-enter-active">
+                <Field label="Desses marcos, o que você tem de material visual disponível?" required>
+                  <CheckboxGroup
+                    values={form.q5_material} onChange={set('q5_material')} hasOther
+                    options={['Fotos de set / bastidores', 'Stills dos filmes', 'Making of em vídeo', 'Cartazes / Artes gráficas', 'Somente imagens do Google']}
+                  />
+                </Field>
+                <Field label="Tem algum trabalho recente que você quer colocar em absoluto destaque?">
+                  <AutoTextarea value={form.q6_destaque} onChange={setInput('q6_destaque')} rows={2} />
+                </Field>
+                <Field label="Créditos, prêmios ou publicações na imprensa?">
+                  <AutoTextarea value={form.q7_creditos} onChange={setInput('q7_creditos')} rows={2} />
+                </Field>
+              </div>
+            )}
+
+            {currentStep === 4 && (
+              <div className="step-transition-enter-active">
+                <Field label="3. O que te representa esteticamente?" required>
+                  <CheckboxGroup
+                    values={form.q8_visual} onChange={set('q8_visual')} hasOther
+                    options={['Cores vibrantes e saturadas', 'Muita textura / sujeira / analógico', 'Tipografia gigante e expressiva', 'Minimalismo brutalista', 'Movimento e animação suave', 'Fotografia como rei']}
+                  />
+                </Field>
+                <Field label="Links de sites que você admira (qualquer área)">
+                  <AutoTextarea value={form.q9_sites_referencia} onChange={setInput('q9_sites_referencia')} rows={2} />
+                </Field>
+              </div>
+            )}
+
+            {currentStep === 5 && (
+              <div className="step-transition-enter-active">
+                <Field label="Tem uma paleta de cores ou filme que te representa visualmente?" hint="Descreva em palavras ou crie uma paleta com nossa IA abaixo.">
+                  <AutoTextarea value={form.q10_paleta} onChange={setInput('q10_paleta')} rows={2} />
+                  
+                  {/* Novo Color Picker Interativo e Prático */}
+                  <div className="briefing-color-picker-v2">
+                    <div className="briefing-cp-header">
+                      <input 
+                        type="color" 
+                        className="briefing-cp-native-input" 
+                        title="Escolher cor base"
+                        value={form.q10_seed_hex}
+                        onChange={(e) => {
+                          setForm(p => ({...p, q10_seed_hex: e.target.value}));
+                        }}
+                      />
+                      <div className="briefing-cp-instructions">
+                        <strong>Cor Base da IA</strong>
+                        <span>Escolha sua cor preferida e deixe a IA harmonizar.</span>
+                      </div>
+                      <button 
+                        className="briefing-cp-generate-btn"
+                        onClick={async () => {
+                          try {
+                            const rgb = hexToRgb(form.q10_seed_hex);
+                            const resp = await fetch(COLORMIND_API, { method: 'POST', body: JSON.stringify({ model: 'default', input: [rgb, 'N', 'N', 'N', 'N'] }) });
+                            const data = await resp.json();
+                            setForm(p => ({...p, q10_palette_colors: data.result.map(rgbToHex)}));
+                          } catch { /* erro na IA */ }
+                        }}
+                      >
+                        ✦ Gerar Harmonia
+                      </button>
+                    </div>
+
+                    {form.q10_palette_colors.length > 0 && (
+                      <div className="briefing-palette-swatches">
+                        {form.q10_palette_colors.map((hex, i) => (
+                          <div key={i} className="briefing-swatch" style={{background: hex}} title={hex}>
+                            <span className="briefing-swatch-hex">{hex}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="briefing-curated-palettes">
+                      {CURATED_PALETTES.map(p => (
+                        <button key={p.name} className="briefing-curated-chip" onClick={(e) => { e.preventDefault(); setForm(prev => ({...prev, q10_palette_colors: p.colors})); }}>
+                          <div className="briefing-curated-dots">
+                            {p.colors.map(c => <span key={c} className="briefing-curated-dot" style={{background: c}} />)}
+                          </div>
+                          {p.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </Field>
+              </div>
+            )}
+
+            {currentStep === 6 && (
+              <div className="step-transition-enter-active">
+                <Field label="4. Quem é o público principal do seu site?" required>
+                  <CheckboxGroup
+                    values={form.q11_publico} onChange={set('q11_publico')} hasOther
+                    options={['Diretores(as) de cinema e TV', 'Produtoras / Agências', 'Imprensa / Jornalistas', 'Marcas / Clientes diretos']}
+                  />
+                </Field>
+                <Field label="Funções desejadas além de mostrar portfólio?">
+                  <CheckboxGroup
+                    values={form.q12_funcoes} onChange={set('q12_funcoes')} hasOther
+                    options={['Formulário de contato', 'Bio / Texto sobre trajetória', 'Arquivo de imprensa (Press Kit)', 'Somente galeria visual']}
+                  />
+                </Field>
+              </div>
+            )}
+
+            {currentStep === 7 && (
+              <div className="step-transition-enter-active">
+                <Field label="Você já possui um domínio registrado?" required>
+                  <div className="briefing-radio-group">
+                    {['Sim, já tenho', 'Não tenho ainda', 'Preciso de ajuda com isso'].map(opt => (
+                      <label key={opt} className="briefing-radio-item">
+                        <input type="radio" className="briefing-radio-input" checked={form.q13_dominio === opt} onChange={() => setForm(p => ({...p, q13_dominio: opt}))} />
+                        <span className="briefing-radio-dot"/> <span className="briefing-radio-label">{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </Field>
+                <Field label="Algum último recado livre?">
+                  <AutoTextarea value={form.q14_recado} onChange={setInput('q14_recado')} rows={4} />
+                </Field>
+              </div>
+            )}
+
+            {/* Erro de Validação da Etapa */}
+            {errorMsg && <div className="briefing-error-msg">{errorMsg}</div>}
+
+            {/* Footer de Navegação */}
+            {currentStep > 0 && (
+              <footer className="briefing-step-footer">
+                <button className="briefing-nav-btn" onClick={handlePrev}>← Voltar</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <span className="briefing-shortcut-hint">Cmd+Enter para avançar</span>
+                  {currentStep < WIZARD_STEPS.length - 1 ? (
+                    <button className="briefing-nav-btn briefing-nav-btn--primary" onClick={handleNext}>Continuar →</button>
+                  ) : (
+                    <button className="briefing-nav-btn briefing-nav-btn--primary" onClick={handleSubmit} disabled={status === 'loading'}>
+                      {status === 'loading' ? 'Enviando...' : 'Concluir Briefing ✓'}
+                    </button>
+                  )}
+                </div>
+              </footer>
+            )}
+
+          </div>
+        </div>
       </main>
+    </div>
+  );
+}
+
+// ─── Componente Interno p/ Checkboxes ─────────────────────────────────────────
+function CheckboxGroup({ options, values, onChange, hasOther }) {
+  const [otherText, setOtherText] = useState('');
+  const otherChecked = values.includes('__outro__');
+  
+  const toggle = (opt) => values.includes(opt) ? onChange(values.filter(v => v !== opt)) : onChange([...values, opt]);
+  const handleOtherToggle = () => otherChecked ? onChange(values.filter(v => !v.startsWith('__'))) : onChange([...values, '__outro__']);
+  
+  return (
+    <div className="briefing-checkbox-group">
+      {options.map(opt => (
+        <label key={opt} className="briefing-checkbox-item">
+          <input type="checkbox" className="briefing-checkbox-input" checked={values.includes(opt)} onChange={() => toggle(opt)} />
+          <span className="briefing-checkbox-box" />
+          <span className="briefing-checkbox-label">{opt}</span>
+        </label>
+      ))}
+      {hasOther && (
+        <label className="briefing-checkbox-item">
+          <input type="checkbox" className="briefing-checkbox-input" checked={otherChecked} onChange={handleOtherToggle} />
+          <span className="briefing-checkbox-box" />
+          <span className="briefing-checkbox-label">Outro:</span>
+        </label>
+      )}
+      {otherChecked && (
+        <input type="text" className="briefing-input briefing-input--other" value={otherText} onChange={(e) => {
+          setOtherText(e.target.value);
+          const filtered = values.filter(v => !v.startsWith('__outro_text__'));
+          onChange(e.target.value ? [...filtered, `__outro_text__${e.target.value}`] : filtered);
+        }} placeholder="Detalhe sua resposta..." autoFocus />
+      )}
     </div>
   );
 }
