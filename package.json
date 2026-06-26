@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd projetos-app && npm install && npm run build && cd .. && node blog-generator/index.js"
+    "build": "cd projetos-app && npm install && npm run build"
   },
-  "dependencies": {
-    "google-auth-library": "^9.0.0",
-    "gray-matter": "^4.0.3"
-  }
+  "dependencies": {}
 }
