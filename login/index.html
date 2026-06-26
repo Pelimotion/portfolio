@@ -98,7 +98,7 @@
     </div>
 
     <script type="module">
-        import { getClient, signIn } from '/shared/auth.js';
+        import { getClient, signIn, getUserRole } from '/shared/auth.js';
 
         const params = new URLSearchParams(window.location.search);
         const nextUrl = params.get('next');
