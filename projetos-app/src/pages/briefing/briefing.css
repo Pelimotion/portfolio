@@ -1,0 +1,459 @@
+/* ============================================================
+   BRIEFING PAGE — Pelimotion
+   CSS isolado, não polui o resto do app.
+   Usa custom properties locais para independência total.
+   ============================================================ */
+
+/* ── Importação da fonte ─────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ── Design tokens locais ────────────────────────────────── */
+.briefing-root {
+  --b-bg:           #0a0a0a;
+  --b-bg-elevated:  #111111;
+  --b-bg-input:     #161616;
+  --b-border:       rgba(255, 255, 255, 0.10);
+  --b-border-focus: rgba(255, 255, 255, 0.35);
+  --b-text-primary: #f5f5f5;
+  --b-text-secondary: #a0a0a0;
+  --b-text-muted:   #606060;
+  --b-accent:       #ffffff;
+  --b-error:        #ff4444;
+  --b-success:      #22c55e;
+  --b-section-rule: rgba(255, 255, 255, 0.08);
+
+  /* Typography */
+  --b-font-display: 'Syne', sans-serif;
+  --b-font-body:    'Inter', sans-serif;
+
+  /* Spacing */
+  --b-gap-sm:  12px;
+  --b-gap-md:  24px;
+  --b-gap-lg:  48px;
+  --b-gap-xl:  64px;
+
+  /* Radius */
+  --b-radius:  2px;
+  --b-radius-input: 3px;
+}
+
+/* ── Root / shell ────────────────────────────────────────── */
+.briefing-root {
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--b-bg);
+  color: var(--b-text-primary);
+  font-family: var(--b-font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Grain texture overlay */
+.briefing-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* ── Container ───────────────────────────────────────────── */
+.briefing-container {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+@media (max-width: 640px) {
+  .briefing-container {
+    padding: 48px 20px 96px;
+  }
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.briefing-eyebrow {
+  font-family: var(--b-font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--b-text-muted);
+  margin: 0 0 32px;
+}
+
+.briefing-main-title {
+  font-family: var(--b-font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--b-text-primary);
+  margin: 0 0 8px;
+}
+
+.briefing-client-name {
+  font-family: var(--b-font-display);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 500;
+  color: var(--b-text-secondary);
+  margin: 0 0 28px;
+  letter-spacing: -0.01em;
+}
+
+.briefing-intro {
+  font-size: 14px;
+  color: var(--b-text-secondary);
+  margin: 0;
+  max-width: 540px;
+  line-height: 1.7;
+}
+
+.briefing-sig {
+  font-size: 13px;
+  color: var(--b-text-muted);
+  margin: 10px 0 0;
+  font-style: italic;
+}
+
+.briefing-header-rule {
+  margin: 40px 0 0;
+  height: 1px;
+  background: var(--b-section-rule);
+}
+
+/* ── Section headers ─────────────────────────────────────── */
+.briefing-section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 56px 0 32px;
+}
+
+.briefing-section-title {
+  font-family: var(--b-font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--b-text-muted);
+  white-space: nowrap;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.briefing-section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--b-section-rule);
+}
+
+.briefing-section-line--right {
+  flex: 3;
+}
+
+/* ── Form ────────────────────────────────────────────────── */
+.briefing-form {
+  margin-top: 0;
+}
+
+/* ── Field wrapper ───────────────────────────────────────── */
+.briefing-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.briefing-label {
+  font-family: var(--b-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--b-text-primary);
+  line-height: 1.4;
+  display: block;
+}
+
+.briefing-required {
+  color: var(--b-text-muted);
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+.briefing-hint {
+  font-size: 12px;
+  color: var(--b-text-muted);
+  margin: -4px 0 0;
+  line-height: 1.5;
+}
+
+/* ── Inputs & Textareas ──────────────────────────────────── */
+.briefing-input,
+.briefing-textarea {
+  width: 100%;
+  background: var(--b-bg-input);
+  border: 1px solid var(--b-border);
+  border-radius: var(--b-radius-input);
+  color: var(--b-text-primary);
+  font-family: var(--b-font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 12px 14px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.briefing-input::placeholder,
+.briefing-textarea::placeholder {
+  color: var(--b-text-muted);
+}
+
+.briefing-input:focus,
+.briefing-textarea:focus {
+  border-color: var(--b-border-focus);
+  background: #191919;
+}
+
+.briefing-input--other {
+  margin-top: 8px;
+  border-style: dashed;
+}
+
+/* ── Checkboxes ──────────────────────────────────────────── */
+.briefing-checkbox-group,
+.briefing-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.briefing-checkbox-item,
+.briefing-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--b-radius);
+  cursor: pointer;
+  transition: background 0.12s ease;
+  user-select: none;
+  position: relative;
+}
+
+.briefing-checkbox-item:hover,
+.briefing-radio-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.briefing-checkbox-input,
+.briefing-radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom checkbox box */
+.briefing-checkbox-box {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--b-border);
+  border-radius: 2px;
+  background: var(--b-bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+}
+
+.briefing-checkbox-input:checked ~ .briefing-checkbox-box {
+  background: var(--b-accent);
+  border-color: var(--b-accent);
+}
+
+.briefing-checkbox-input:checked ~ .briefing-checkbox-box::after {
+  content: '';
+  display: block;
+  width: 9px;
+  height: 6px;
+  border-left: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  transform: rotate(-45deg) translate(0px, -1px);
+}
+
+/* Custom radio dot */
+.briefing-radio-dot {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--b-border);
+  border-radius: 50%;
+  background: var(--b-bg-input);
+  transition: all 0.12s ease;
+  position: relative;
+}
+
+.briefing-radio-input:checked ~ .briefing-radio-dot {
+  border-color: var(--b-accent);
+}
+
+.briefing-radio-input:checked ~ .briefing-radio-dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--b-accent);
+}
+
+.briefing-checkbox-label,
+.briefing-radio-label {
+  font-size: 14px;
+  color: var(--b-text-secondary);
+  line-height: 1.4;
+  transition: color 0.12s ease;
+}
+
+.briefing-checkbox-input:checked ~ .briefing-checkbox-label,
+.briefing-radio-input:checked ~ .briefing-radio-label {
+  color: var(--b-text-primary);
+}
+
+/* ── Submit area ─────────────────────────────────────────── */
+.briefing-submit-area {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--b-section-rule);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.briefing-submit-btn {
+  display: inline-block;
+  background: #ffffff;
+  color: #000000;
+  font-family: var(--b-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  border: none;
+  border-radius: var(--b-radius);
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  outline: none;
+}
+
+.briefing-submit-btn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.briefing-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.briefing-submit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Error message ───────────────────────────────────────── */
+.briefing-error {
+  font-size: 13px;
+  color: var(--b-error);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Success state ───────────────────────────────────────── */
+.briefing-success {
+  padding: 64px 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  animation: briefing-fade-in 0.5s ease both;
+}
+
+.briefing-success-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.briefing-success-title {
+  font-family: var(--b-font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--b-text-primary);
+  margin: 0;
+}
+
+.briefing-success-text {
+  font-size: 16px;
+  color: var(--b-text-secondary);
+  max-width: 480px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.briefing-success-sig {
+  font-size: 13px;
+  color: var(--b-text-muted);
+  font-style: italic;
+  margin: 8px 0 0;
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes briefing-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.briefing-form {
+  animation: briefing-fade-in 0.4s ease both;
+}
+
+.briefing-header {
+  animation: briefing-fade-in 0.35s ease both;
+}
+
+/* ── Mobile tweaks ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .briefing-section-header {
+    margin: 44px 0 24px;
+  }
+
+  .briefing-field {
+    margin-bottom: 28px;
+  }
+
+  .briefing-submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .briefing-submit-area {
+    align-items: stretch;
+  }
+}

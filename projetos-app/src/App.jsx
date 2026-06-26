@@ -8,6 +8,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { AccentColorManager } from './components/layout/AccentColorManager';
 
 import Login from './pages/auth/Login';
+const BriefingPage = lazy(() => import('./pages/briefing/BriefingPage'));
 const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
 const UniversalEntityPage = lazy(() =>
   import('./pages/entity/UniversalEntityPage').then(m => ({ default: m.UniversalEntityPage }))
@@ -36,6 +37,16 @@ function App() {
         <ToastProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+
+            {/* Rota pública de briefing — sem autenticação */}
+            <Route
+              path="/briefing/:slug"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <BriefingPage />
+                </Suspense>
+              }
+            />
 
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
