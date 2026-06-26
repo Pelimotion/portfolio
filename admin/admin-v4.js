@@ -219,6 +219,8 @@ function buildSidebarV4(context = 'main') {
             <div class="dot yellow"></div>Curriculum</div>`;
             
         html += `<div class="sb-section" style="margin-top:10px">Tools</div>`;
+        html += `<div class="sb-item ${currentSection==='briefings'?'active':''}" onclick="showBriefings()">
+            <div class="dot" style="background:#ff4b2b"></div>Briefings</div>`;
         html += `<div class="sb-item ${currentSection==='deployHub'?'active':''}" onclick="showDeployHub()">
             <div class="dot green"></div>Deploy Hub</div>`;
         html += `<div class="sb-item ${currentSection==='gifConverter'?'active':''}" onclick="showGifConverter()">
@@ -1464,3 +1466,175 @@ function copyMediaUrl(url) {
         navigator.clipboard.writeText(url).then(() => toast('✓ URL copiada para clipboard')).catch(fallback);
     } else { fallback(); }
 }
+
+// ─── BRIEFINGS PANEL ───
+async function showBriefings() {
+    autoSave(); currentSection = 'briefings'; currentKey = null;
+    buildSidebarV4('main');
+    updateBreadcrumbs([{label: 'Briefings'}]);
+    
+    const main = document.getElementById('main-content');
+    main.innerHTML = `
+        <div class="page-header">
+            <div class="page-label">System — Briefings</div>
+            <h1 class="page-title">Briefings Recebidos</h1>
+        </div>
+        <div class="card" id="briefings-card">
+            <div style="padding:40px 0;text-align:center;color:var(--fg3)">Carregando briefings do banco de dados...</div>
+        </div>
+    `;
+
+    if (!window.supabaseClient) {
+        document.getElementById('briefings-card').innerHTML = `
+            <div style="padding:40px 0;text-align:center;color:var(--red)">
+                Erro: Cliente Supabase não inicializado. Verifique as credenciais do admin.
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('briefings')
+            .select('id, slug, cliente_nome, criado_em')
+            .order('criado_em', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            document.getElementById('briefings-card').innerHTML = `
+                <div style="padding:40px 0;text-align:center;color:var(--fg2)">
+                    Nenhum briefing cadastrado no banco de dados.
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <div class="card-title">Formulários Respondidos (${data.length})</div>
+            <div class="client-list">
+        `;
+
+        data.forEach(b => {
+            const dateStr = new Date(b.criado_em).toLocaleString('pt-BR');
+            html += `
+                <div class="client-row" onclick="showBriefingDetail('${b.id}')">
+                    <div class="info" style="display:flex; flex-direction:column; gap:2px;">
+                        <span class="name" style="font-size:13px; font-weight:700; color:var(--fg);">${esc(b.cliente_nome)}</span>
+                        <span class="meta" style="font-size:10px; color:var(--fg2)">Slug: <strong>${esc(b.slug)}</strong> &bull; Enviado em: ${dateStr}</span>
+                    </div>
+                    <div class="row-actions">
+                        <button class="btn sm primary">Ver Respostas →</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        document.getElementById('briefings-card').innerHTML = html;
+
+    } catch (err) {
+        console.error('Erro ao carregar briefings:', err);
+        document.getElementById('briefings-card').innerHTML = `
+            <div style="padding:40px 0;text-align:center;color:var(--red)">
+                Erro ao carregar do Supabase: ${esc(err.message)}
+            </div>
+        `;
+    }
+}
+
+async function showBriefingDetail(id) {
+    updateBreadcrumbs([{label: 'Briefings', action: 'showBriefings()'}, {label: 'Detalhes'}]);
+    const main = document.getElementById('main-content');
+    main.innerHTML = `
+        <div class="page-header">
+            <div class="page-label">System — Briefing Detail</div>
+            <h1 class="page-title" id="bd-client-name">Carregando detalhes...</h1>
+        </div>
+        <div class="card" id="bd-card">
+            <div style="padding:40px 0;text-align:center;color:var(--fg3)">Buscando respostas detalhadas...</div>
+        </div>
+    `;
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('briefings')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+        if (!data) throw new Error('Briefing não encontrado.');
+
+        document.getElementById('bd-client-name').textContent = data.cliente_nome;
+
+        const dateStr = new Date(data.criado_em).toLocaleString('pt-BR');
+        let html = `
+            <div class="card-title" style="display:flex; align-items:center; justify-content:space-between;">
+                <span>Enviado em: ${dateStr}</span>
+                <span style="font-size:10px; color:var(--fg2); text-transform:none;">ID: ${data.id}</span>
+            </div>
+            
+            <div style="display:grid; gap:20px; margin-top:20px;">
+        `;
+
+        for (const [pergunta, resposta] of Object.entries(data.respostas)) {
+            if (resposta !== null && resposta !== undefined && (!Array.isArray(resposta) || resposta.length > 0)) {
+                let displayResp = '';
+                if (Array.isArray(resposta)) {
+                    displayResp = resposta.join(', ');
+                } else {
+                    displayResp = esc(String(resposta)).replace(/\n/g, '<br/>');
+                }
+
+                html += `
+                    <div style="padding-bottom:16px; border-bottom:1px solid var(--border)">
+                        <h4 style="font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--yellow); margin-bottom:8px;">
+                            ${esc(pergunta)}
+                        </h4>
+                        <div style="font-size:13px; color:var(--fg); line-height:1.6; background:rgba(255,255,255,0.01); padding:14px 18px; border:1px solid rgba(255,255,255,0.03); border-radius:4px; white-space: pre-wrap;">
+                            ${displayResp}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        html += `
+            </div>
+            <div class="actions-bar" style="margin-top:32px; border-top:1px solid var(--border); padding-top:20px;">
+                <button class="btn" onclick="showBriefings()">← Voltar para Lista</button>
+                <button class="btn danger" onclick="deleteBriefing('${data.id}', '${esc(data.cliente_nome)}')">🗑 Excluir Briefing</button>
+            </div>
+        `;
+
+        document.getElementById('bd-card').innerHTML = html;
+
+    } catch (err) {
+        console.error('Erro ao obter briefing:', err);
+        document.getElementById('bd-card').innerHTML = `
+            <div style="padding:40px 0;text-align:center;color:var(--red)">
+                Erro ao obter detalhes: ${esc(err.message)}
+            </div>
+        `;
+    }
+}
+
+async function deleteBriefing(id, clientName) {
+    if (!confirm(`Deseja realmente excluir o briefing de "${clientName}"? Esta ação não pode ser desfeita.`)) return;
+    
+    try {
+        const { error } = await window.supabaseClient
+            .from('briefings')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        toast(`✓ Briefing de ${clientName} excluído.`);
+        showBriefings();
+    } catch (err) {
+        console.error('Erro ao excluir briefing:', err);
+        toast(`⚠ Falha ao excluir: ${err.message}`, true);
+    }
+}
+

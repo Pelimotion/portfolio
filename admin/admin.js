@@ -90,6 +90,8 @@ async function checkAdminAccess() {
     const userEl = document.getElementById('admin-user-email');
     if (userEl) userEl.textContent = profile.email || session.user.email;
 
+    window.supabaseClient = sb;
+
     return true;
   } catch(e) {
     console.error('Admin auth error:', e);

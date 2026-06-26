@@ -20,12 +20,41 @@ const DEFAULT_CONFIG = {
   subtitulo: '',
 };
 
-const CURATED_PALETTES = [
-  { name: 'Kubrick', colors: ['#0d0d0d', '#1a0a0a', '#c41e3a', '#f0e6d3', '#8b7355'] },
-  { name: 'Wong Kar-Wai', colors: ['#1a0a00', '#8b1a00', '#ff6b35', '#f7c59f', '#2d1b00'] },
-  { name: 'Lynch', colors: ['#0a0015', '#1a0030', '#8b00ff', '#e8d5b7', '#4a0080'] },
-  { name: 'Wes Anderson', colors: ['#e8d5b7', '#d4a574', '#8b6914', '#c4956a', '#2c1810'] },
+const CURATED_PALETTE_GROUPS = {
+  'Cinema': [
+    { name: 'Kubrick (O Iluminado)', colors: ['#0d0d0d', '#c41e3a', '#f0e6d3'] },
+    { name: 'Wong Kar-Wai (Amor à Flor da Pele)', colors: ['#1a0a00', '#ff6b35', '#f7c59f'] },
+    { name: 'Lynch (Twin Peaks)', colors: ['#0a0015', '#8b00ff', '#e8d5b7'] },
+    { name: 'Wes Anderson (Grand Budapest)', colors: ['#e8d5b7', '#8b6914', '#2c1810'] },
+  ],
+  'Editorial': [
+    { name: 'Swiss High-Contrast', colors: ['#ffffff', '#ff0000', '#000000'] },
+    { name: 'Warm Editorial', colors: ['#fbfaf7', '#c5a880', '#2b2927'] },
+    { name: 'Neo-Gothic', colors: ['#08090a', '#a3937b', '#d1caa1'] },
+    { name: 'Brutalist Acid', colors: ['#000000', '#dfff00', '#ffffff'] },
+  ],
+  'Vanguard': [
+    { name: 'Cyberpunk Neon', colors: ['#05050a', '#00f0ff', '#ff007f'] },
+    { name: 'Midnight Deep Blue', colors: ['#020813', '#3b82f6', '#93c5fd'] },
+    { name: 'Sand & Obsidian', colors: ['#1c1c1e', '#d2b48c', '#eae6df'] },
+    { name: 'Muted Forest', colors: ['#141b15', '#4b5f43', '#c2cfb2'] },
+  ]
+};
+
+const EXTRA_PALETTES = [
+  { name: 'Tokyo Neon', colors: ['#0f0f1b', '#00ff66', '#ff0055'] },
+  { name: 'Brutalist Concrete', colors: ['#1e1e1e', '#a0a0a0', '#ffffff'] },
+  { name: 'Desert Sunset', colors: ['#3d0c02', '#d95d39', '#f0a202'] },
+  { name: 'Warm Terracotta', colors: ['#2b1b17', '#c57d56', '#eae1db'] },
+  { name: 'Bauhaus Modern', colors: ['#202020', '#db3236', '#f4c20d'] },
+  { name: 'Neo-Mint', colors: ['#1a221e', '#7fffd4', '#ffffff'] },
+  { name: 'Vampire Dark', colors: ['#0a0505', '#990000', '#eaeaea'] },
+  { name: 'Gold & Charcoal', colors: ['#111111', '#d4af37', '#f9f9f9'] },
+  { name: 'Muted Lavender', colors: ['#1d1a24', '#b39ddb', '#ede7f6'] },
+  { name: 'Emerald Luxe', colors: ['#06231c', '#00a86b', '#f5f5f7'] },
+  { name: 'Oatmeal & Slate', colors: ['#272d33', '#dcd6cd', '#f5f2eb'] }
 ];
+
 
 const PHASES = [
   { id: 1, name: 'Intro' },
@@ -168,6 +197,19 @@ export default function BriefingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | success
+  const [activePaletteGroup, setActivePaletteGroup] = useState('Cinema');
+  const [suggestedPalettes, setSuggestedPalettes] = useState([
+    { name: 'Tokyo Neon', colors: ['#0f0f1b', '#00ff66', '#ff0055'] },
+    { name: 'Oatmeal & Slate', colors: ['#272d33', '#dcd6cd', '#f5f2eb'] },
+    { name: 'Brutalist Concrete', colors: ['#1e1e1e', '#a0a0a0', '#ffffff'] },
+    { name: 'Gold & Charcoal', colors: ['#111111', '#d4af37', '#f9f9f9'] }
+  ]);
+
+  const generateMoreSuggestions = () => {
+    const shuffled = [...EXTRA_PALETTES].sort(() => 0.5 - Math.random());
+    setSuggestedPalettes(shuffled.slice(0, 4));
+    setActivePaletteGroup('Sugeridas');
+  };
 
   const { draft, draftSavedToast, saveDraft, clearDraft } = useLocalStorageDraft(slug);
   const debouncedSave = useDebounce(saveDraft, 800);
@@ -262,6 +304,22 @@ export default function BriefingPage() {
         respostas,
       });
       if (error) throw error;
+
+      // Enviar notificação por e-mail de forma assíncrona (não bloqueante)
+      try {
+        await fetch('/api/send-briefing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slug,
+            cliente_nome: config.clienteNome,
+            respostas,
+          }),
+        });
+      } catch (emailErr) {
+        console.error('Falha ao enviar e-mail de notificação:', emailErr);
+      }
+
       clearDraft();
       setStatus('success');
     } catch (err) {
@@ -435,7 +493,9 @@ export default function BriefingPage() {
                             const rgb = hexToRgb(form.q10_seed_hex);
                             const resp = await fetch(COLORMIND_API, { method: 'POST', body: JSON.stringify({ model: 'default', input: [rgb, 'N', 'N', 'N', 'N'] }) });
                             const data = await resp.json();
-                            setForm(p => ({...p, q10_palette_colors: data.result.map(rgbToHex)}));
+                            // Colormind retorna 5 cores. Pegamos 3 com bom contraste (0: escura/principal, 2: neutra/média, 4: clara/fundo)
+                            const selectedRgb = [data.result[0], data.result[2], data.result[4]];
+                            setForm(p => ({...p, q10_palette_colors: selectedRgb.map(rgbToHex)}));
                           } catch { /* erro na IA */ }
                         }}
                       >
@@ -453,8 +513,26 @@ export default function BriefingPage() {
                       </div>
                     )}
 
+                    <div className="briefing-palette-group-selector">
+                      {['Cinema', 'Editorial', 'Vanguard', 'Sugeridas'].map(group => (
+                        <button
+                          key={group}
+                          className={`briefing-group-tab ${activePaletteGroup === group ? 'is-active' : ''}`}
+                          onClick={(e) => { e.preventDefault(); setActivePaletteGroup(group); }}
+                        >
+                          {group}
+                        </button>
+                      ))}
+                      <button
+                        className="briefing-group-more-btn"
+                        onClick={(e) => { e.preventDefault(); generateMoreSuggestions(); }}
+                      >
+                        ✦ Gerar Outros Exemplos
+                      </button>
+                    </div>
+
                     <div className="briefing-curated-palettes">
-                      {CURATED_PALETTES.map(p => (
+                      {(activePaletteGroup === 'Sugeridas' ? suggestedPalettes : CURATED_PALETTE_GROUPS[activePaletteGroup]).map(p => (
                         <button key={p.name} className="briefing-curated-chip" onClick={(e) => { e.preventDefault(); setForm(prev => ({...prev, q10_palette_colors: p.colors})); }}>
                           <div className="briefing-curated-dots">
                             {p.colors.map(c => <span key={c} className="briefing-curated-dot" style={{background: c}} />)}

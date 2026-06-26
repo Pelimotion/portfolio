@@ -95,7 +95,9 @@
         // compartilhado entre domínios, então o cliente Supabase do destino
         // lê os tokens do hash e salva a sessão no próprio localStorage.
         async function redirectTo(url) {
-            const target = url || '/hub';
+            const role = await getUserRole();
+            const fallback = role === 'admin' ? '/admin' : '/projetos/index.html';
+            const target = url || fallback;
             if (target.startsWith('https://studio.pelimotion.art')) {
                 const { data: { session: s } } = await sb.auth.getSession();
                 if (s) {
@@ -109,7 +111,7 @@
 
         if (session) {
             const dest = errorParam === 'unauthorized' ? null : nextUrl;
-            await redirectTo(dest || '/hub');
+            await redirectTo(dest);
         }
 
         document.getElementById('login-form').onsubmit = async (e) => {
@@ -130,7 +132,7 @@
                 btn.disabled = false;
                 btn.textContent = 'ENTRAR';
             } else {
-                await redirectTo(nextUrl || '/hub');
+                await redirectTo(nextUrl);
             }
         };
     </script>
