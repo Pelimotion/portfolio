@@ -167,6 +167,7 @@ function setupCanvasAndSequence() {
   if (!mainArea || !scrollContainer || !canvas) return;
 
   const ctx = canvas.getContext('2d');
+  let currentFrame = 0;
 
   // Inicializar o Lenis Scroll com inércia horizontal e mapeamento do mouse vertical
   lenis = new Lenis({
@@ -245,8 +246,6 @@ function setupCanvasAndSequence() {
       updateNavigationUI();
     }
   });
-
-  let currentFrame = 0;
 
   // GSAP ScrollTrigger na horizontal atrelado ao contêiner de rolagem do Lenis
   gsap.to({ frame: 0 }, {
