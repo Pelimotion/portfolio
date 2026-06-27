@@ -1,0 +1,14 @@
+# Vercel Ignore
+node_modules
+felipe-workspace
+projetos-app
+.git
+.gemini
+.agents
+.planning
+dashboards_encontrados.json
+scripts/visual-backup/
+projetos-app/
+felipe-workspace/
+briefing/video_bg_briefing.mp4
+briefing/bg_briefing.gif
