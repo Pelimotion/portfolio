@@ -155,31 +155,53 @@ function setupEventListeners() {
   }
 }
 
-// ─── Layout de Scroll e Parallax Lateral ───────────────────────────────────────
+// ─── Layout de Scroll e Controle de Vídeo (Horizontal) ──────────────────────────
+let targetTime = 0;
+
 function setupScrollListener() {
   const mainArea = document.querySelector('.briefing-main-area');
-  if (!mainArea) return;
+  const video = document.getElementById('briefing-bg-video');
+  if (!mainArea || !video) return;
+
+  // Interagir uma vez com o vídeo para preparar a decodificação de frames
+  video.play().then(() => {
+    video.pause();
+  }).catch(() => {});
 
   mainArea.addEventListener('scroll', () => {
-    const scrollTop = mainArea.scrollTop;
-    const clientHeight = mainArea.clientHeight;
-    const scrollHeight = mainArea.scrollHeight;
+    const scrollLeft = mainArea.scrollLeft;
+    const clientWidth = mainArea.clientWidth;
+    const scrollWidth = mainArea.scrollWidth;
     
-    // Identificar passo ativo por aproximação
-    const stepIdx = Math.round(scrollTop / clientHeight);
+    // Identificar passo ativo por aproximação no eixo X
+    const stepIdx = Math.round(scrollLeft / clientWidth);
     if (stepIdx !== currentStep && stepIdx < WIZARD_STEPS.length) {
       currentStep = stepIdx;
       updateNavigationUI();
     }
 
-    // Parallax lateral do background GIF (move de 0 a -35vw)
-    const scrollPercent = scrollTop / (scrollHeight - clientHeight || 1);
-    const bgImage = document.getElementById('briefing-bg-image');
-    if (bgImage) {
-      const translateX = -scrollPercent * 35;
-      bgImage.style.transform = `translate3d(${translateX}vw, 0, 0)`;
+    // Calcular timecode do vídeo proporcional à duração dele
+    const maxScroll = scrollWidth - clientWidth;
+    const scrollPercent = scrollLeft / (maxScroll || 1);
+    
+    if (video.duration) {
+      targetTime = scrollPercent * video.duration;
     }
   });
+
+  // Loop de suavização amanteigada (Lerp) para frame-by-frame scrubbing
+  function updateVideoFrame() {
+    if (video.duration) {
+      const diff = targetTime - video.currentTime;
+      if (Math.abs(diff) > 0.01) {
+        // Altera gradualmente o tempo do vídeo (velocidade 0.08)
+        video.currentTime += diff * 0.08;
+      }
+    }
+    requestAnimationFrame(updateVideoFrame);
+  }
+
+  requestAnimationFrame(updateVideoFrame);
 }
 
 function updateNavigationUI() {
@@ -224,13 +246,16 @@ function updateNavigationUI() {
 function scrollToStep(idx) {
   const stepDef = WIZARD_STEPS[idx];
   const el = document.getElementById(stepDef.id);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth' });
+  const mainArea = document.querySelector('.briefing-main-area');
+  if (el && mainArea) {
+    mainArea.scrollTo({
+      left: el.offsetLeft,
+      behavior: 'smooth'
+    });
   }
 }
 
 function handleNext() {
-  // Validar se o passo atual é obrigatório
   const stepDef = WIZARD_STEPS[currentStep];
   if (stepDef.required) {
     for (const reqField of stepDef.required) {

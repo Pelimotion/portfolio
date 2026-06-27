@@ -9,9 +9,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body class="briefing-root">
-  <!-- Background Parallax Canvas/Image Wrapper -->
+  <!-- Background Parallax Video Wrapper (30% da altura da tela na base) -->
   <div class="briefing-bg-container">
-    <img src="/briefing/bg_briefing.gif" id="briefing-bg-image" alt="Background Animation">
+    <video id="briefing-bg-video" src="/briefing/video_bg_briefing.mp4" preload="auto" muted playsinline></video>
     <div class="briefing-bg-overlay"></div>
   </div>
 
@@ -54,7 +54,7 @@
     </div>
   </aside>
 
-  <!-- Main Content Area (Container de Scroll com Snap) -->
+  <!-- Main Content Area (Container de Scroll com Snap no eixo X) -->
   <main class="briefing-main-area">
     <div class="briefing-scroll-container">
 
@@ -64,13 +64,12 @@
           <h1 id="hero-title" class="briefing-hero-title">Briefing de Portfólio</h1>
           <h2 id="hero-subtitle" class="briefing-hero-client">Carregando...</h2>
           <p class="briefing-hero-text">
-            Explore as etapas rolando a tela para baixo. Seu progresso é orgânico.<br>
-            Cada resposta me ajuda a moldar o design ideal para sua presença online.
+            Cada detalhe me ajuda a desenhar a melhor experiência para sua presença online.
           </p>
-          <div style="display: flex; gap: 16px; align-items: center;">
-            <button class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
-              Começar ↓
-            </button>
+          <!-- Indicador de scroll discreto e minimalista em vez do botão -->
+          <div class="briefing-scroll-hint" onclick="handleNext()">
+            <span>Deslize para a direita para iniciar</span>
+            <span class="briefing-scroll-arrow">→</span>
           </div>
         </div>
       </section>
