@@ -91,8 +91,15 @@ function rgbToHex([r, g, b]) {
 // ─── Inicialização ─────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   const pathParts = window.location.pathname.split('/');
-  slug = pathParts[pathParts.length - 1] || 'default';
-  if (slug === 'index.html' || !slug) slug = 'default';
+  let pathSlug = pathParts[pathParts.length - 1];
+  if (pathSlug === 'index.html' || pathSlug === 'briefing' || !pathSlug) {
+    pathSlug = null;
+  }
+  
+  const params = new URLSearchParams(window.location.search);
+  const querySlug = params.get('cliente') || params.get('id') || params.get('slug');
+  
+  slug = querySlug || pathSlug || 'default';
   
   config = BRIEFING_CONFIG[slug] || DEFAULT_CONFIG;
   document.title = `${config.titulo} — Pelimotion`;
