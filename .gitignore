@@ -43,3 +43,9 @@ specs
 .vercel
 .env*.local
 pelimotion-blog-*.json
+
+# Heavy dev folders to exclude from Git and Vercel CLI
+projetos-app/
+felipe-workspace/
+scripts/visual-backup/
+dashboards_encontrados.json
