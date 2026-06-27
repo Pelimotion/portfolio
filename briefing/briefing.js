@@ -515,9 +515,11 @@ async function handleSubmit() {
     return;
   }
 
-  const btnNext = document.getElementById('btn-next');
-  btnNext.disabled = true;
-  btnNext.innerHTML = 'Enviando...';
+  const btnSubmit = document.getElementById('btn-submit');
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = 'Enviando...';
+  }
 
   try {
     const cleanCb = (arr) => {
@@ -581,8 +583,10 @@ async function handleSubmit() {
   } catch (err) {
     console.error('Erro ao enviar o briefing:', err);
     setErrorMsg(err.message || 'Erro ao enviar. Tente novamente.');
-    btnNext.disabled = false;
-    btnNext.innerHTML = 'Concluir Briefing ✓';
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = 'Concluir Briefing ✓';
+    }
   }
 }
 
@@ -603,8 +607,10 @@ function showSuccessScreen() {
   if (sidebar) sidebar.style.display = 'none';
   const mobHeader = document.querySelector('.briefing-mobile-header');
   if (mobHeader) mobHeader.style.display = 'none';
-  const footer = document.querySelector('.briefing-step-footer');
-  if (footer) footer.style.display = 'none';
+  const arrowPrev = document.getElementById('arrow-prev');
+  const arrowNext = document.getElementById('arrow-next');
+  if (arrowPrev) arrowPrev.style.display = 'none';
+  if (arrowNext) arrowNext.style.display = 'none';
 }
 
 window.handleNext = handleNext;
