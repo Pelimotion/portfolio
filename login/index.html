@@ -119,7 +119,7 @@
         // lê os tokens do hash e salva a sessão no próprio localStorage.
         async function redirectTo(url) {
             const role = await getUserRole();
-            const fallback = role === 'admin' ? '/admin' : '/projetos/index.html';
+            const fallback = role === 'admin' ? '/admin' : '/';
             const target = url || fallback;
             if (target.startsWith('https://studio.pelimotion.art')) {
                 const { data: { session: s } } = await sb.auth.getSession();
@@ -133,8 +133,13 @@
         }
 
         if (session) {
-            const dest = errorParam === 'unauthorized' ? null : nextUrl;
-            await redirectTo(dest);
+            const role = await getUserRole();
+            if (role !== 'admin') {
+                document.getElementById('error-msg').textContent = 'Acesso negado: seu perfil não possui privilégios de administrador.';
+            } else {
+                const dest = errorParam === 'unauthorized' ? null : nextUrl;
+                await redirectTo(dest || '/admin');
+            }
         }
 
         document.getElementById('btn-google').onclick = async () => {

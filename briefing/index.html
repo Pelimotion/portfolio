@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Briefing — Pelimotion</title>
+  <link rel="stylesheet" href="/briefing/style.css">
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body class="briefing-root">
+  <div class="briefing-grain"></div>
+
+  <!-- Mobile Top Header Progress -->
+  <header class="briefing-mobile-header">
+    <span id="mobile-phase-label" style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: var(--b-text-primary);">Intro</span>
+    <span id="mobile-step-num" style="font-size: 11px; color: var(--b-text-secondary);">0 / 7</span>
+    <div id="mobile-progress-bar" class="briefing-mobile-progress-bar" style="width: 0%;"></div>
+  </header>
+
+  <!-- Desktop Sidebar Timeline -->
+  <aside class="briefing-sidebar">
+    <div class="briefing-brand">Pelimotion Studio</div>
+    <div class="briefing-timeline">
+      <div class="briefing-phase is-current">
+        <div class="briefing-phase-dot"></div>
+        <span class="briefing-phase-label">Intro</span>
+      </div>
+      <div class="briefing-phase is-future">
+        <div class="briefing-phase-dot"></div>
+        <span class="briefing-phase-label">Sobre Você</span>
+      </div>
+      <div class="briefing-phase is-future">
+        <div class="briefing-phase-dot"></div>
+        <span class="briefing-phase-label">Seus Trabalhos</span>
+      </div>
+      <div class="briefing-phase is-future">
+        <div class="briefing-phase-dot"></div>
+        <span class="briefing-phase-label">Estética Visual</span>
+      </div>
+      <div class="briefing-phase is-future">
+        <div class="briefing-phase-dot"></div>
+        <span class="briefing-phase-label">O Site</span>
+      </div>
+    </div>
+    <div style="margin-top: auto; font-size: 10px; color: var(--b-text-secondary); text-transform: uppercase; letter-spacing: 0.1em;">
+      Briefing interativo
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="briefing-main-area">
+    <div class="briefing-step-container">
+      <div class="briefing-step-wrapper">
+
+        <!-- ── Passo 0: Intro ── -->
+        <div id="step-0-intro" class="briefing-step is-active">
+          <h1 id="hero-title" class="briefing-hero-title">Briefing de Portfólio</h1>
+          <h2 id="hero-subtitle" class="briefing-hero-client">Carregando...</h2>
+          <p class="briefing-hero-text">
+            Preencha com calma, uma etapa por vez.<br>
+            Cada detalhe me ajuda a desenhar a melhor experiência para o seu novo site.
+          </p>
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <button class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
+              Iniciar Briefing →
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Passo 1: Sobre Você ── -->
+        <div id="step-1-apresentacao" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label" for="q1_apresentacao">
+              1. Como você se apresenta profissionalmente? <span class="briefing-required">*</span>
+            </label>
+            <p class="briefing-hint">Ex: Figurinista, Artista Visual, Diretora de Arte...</p>
+            <textarea id="q1_apresentacao" class="briefing-textarea" rows="3" required placeholder="Digite sua resposta..."></textarea>
+          </div>
+          
+          <div class="briefing-field">
+            <label class="briefing-label" for="q2_marca">
+              Você tem um nome profissional, marca pessoal ou logo que já usa?
+            </label>
+            <input type="text" id="q2_marca" class="briefing-input" placeholder="Ex: Joanna Ribas, JR Studio...">
+          </div>
+
+          <div class="briefing-field">
+            <label class="briefing-label" for="q3_redes">
+              Redes sociais e portfólios online (links ativos)
+            </label>
+            <textarea id="q3_redes" class="briefing-textarea" rows="2" placeholder="Instagram, Vimeo, LinkedIn..."></textarea>
+          </div>
+        </div>
+
+        <!-- ── Passo 2: Marcos da Carreira ── -->
+        <div id="step-2-marcos" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label" for="q4_marcos">
+              2. Quais são os marcos da sua carreira que você quer destacar? <span class="briefing-required">*</span>
+            </label>
+            <p class="briefing-hint">Cite títulos, projetos, filmes, exposições ou clientes de destaque. Apenas o que for realmente relevante.</p>
+            <textarea id="q4_marcos" class="briefing-textarea" rows="5" required placeholder="Escreva sobre os marcos mais importantes..."></textarea>
+            <div class="briefing-char-counter" id="q4_marcos_counter">0/800</div>
+          </div>
+        </div>
+
+        <!-- ── Passo 3: Materiais Disponíveis ── -->
+        <div id="step-3-material" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label">
+              Desses marcos, o que você tem de material visual disponível? <span class="briefing-required">*</span>
+            </label>
+            <div class="briefing-checkbox-group">
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q5_material', 'Fotos de set / bastidores')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Fotos de set / bastidores</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q5_material', 'Stills dos filmes')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Stills dos filmes</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q5_material', 'Making of em vídeo')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Making of em vídeo</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q5_material', 'Cartazes / Artes gráficas')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Cartazes / Artes gráficas</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q5_material', 'Somente imagens do Google')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Somente imagens do Google</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckboxOther('q5_material')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Outro:</span>
+              </label>
+            </div>
+            <input type="text" id="q5_material_outro_val" class="briefing-input briefing-input--other" style="display: none;" placeholder="Detalhe sua resposta..." oninput="handleOtherTextInput('q5_material', this)">
+          </div>
+
+          <div class="briefing-field">
+            <label class="briefing-label" for="q6_destaque">
+              Tem algum trabalho recente que você quer colocar em absoluto destaque?
+            </label>
+            <textarea id="q6_destaque" class="briefing-textarea" rows="2" placeholder="Nome do projeto, link ou descrição..."></textarea>
+          </div>
+
+          <div class="briefing-field">
+            <label class="briefing-label" for="q7_creditos">
+              Créditos, prêmios ou publicações na imprensa?
+            </label>
+            <textarea id="q7_creditos" class="briefing-textarea" rows="2" placeholder="Listagem de prêmios ou referências importantes..."></textarea>
+          </div>
+        </div>
+
+        <!-- ── Passo 4: Representação Estética ── -->
+        <div id="step-4-identidade" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label">
+              3. O que te representa esteticamente? <span class="briefing-required">*</span>
+            </label>
+            <div class="briefing-checkbox-group">
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q8_visual', 'Cores vibrantes e saturadas')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Cores vibrantes e saturadas</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q8_visual', 'Muita textura / sujeira / analógico')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Muita textura / sujeira / analógico</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q8_visual', 'Tipografia gigante e expressiva')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Tipografia gigante e expressiva</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q8_visual', 'Minimalismo brutalista')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Minimalismo brutalista</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q8_visual', 'Movimento e animação suave')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Movimento e animação suave</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q8_visual', 'Fotografia como rei')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Fotografia como rei</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckboxOther('q8_visual')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Outro:</span>
+              </label>
+            </div>
+            <input type="text" id="q8_visual_outro_val" class="briefing-input briefing-input--other" style="display: none;" placeholder="Detalhe sua resposta..." oninput="handleOtherTextInput('q8_visual', this)">
+          </div>
+
+          <div class="briefing-field">
+            <label class="briefing-label" for="q9_sites_referencia">
+              Links de sites que você admira (qualquer área)
+            </label>
+            <textarea id="q9_sites_referencia" class="briefing-textarea" rows="2" placeholder="Cole os links e o que você gosta neles..."></textarea>
+          </div>
+        </div>
+
+        <!-- ── Passo 5: Cores e Inspirações ── -->
+        <div id="step-5-cores" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label" for="q10_paleta">
+              Tem uma paleta de cores ou filme que te representa visualmente?
+            </label>
+            <p class="briefing-hint">
+              Descreva o clima e cores em palavras acima ou, se quiser inspirar o moodboard do site, brinque com as cores abaixo.
+            </p>
+            <textarea id="q10_paleta" class="briefing-textarea" rows="2" placeholder="Descreva tons, sensações ou filmes de referência..."></textarea>
+
+            <!-- Color Picker Interativo de Inspiração (Opcional) -->
+            <div class="briefing-color-picker-v2">
+              <div class="briefing-cp-header">
+                <input type="color" id="q10_seed_hex" class="briefing-cp-native-input" title="Escolher cor base" value="#3b82f6">
+                <div class="briefing-cp-instructions">
+                  <strong>Inspiração de Cores (Opcional)</strong>
+                  <span>Se quiser, escolha uma cor e veja algumas harmonias possíveis.</span>
+                </div>
+                <button type="button" class="briefing-cp-generate-btn" onclick="generateAiHarmony()">
+                  ✦ Gerar Sugestões
+                </button>
+              </div>
+
+              <!-- Swatches de exibição da paleta selecionada -->
+              <div class="briefing-palette-swatches" id="palette-swatches" style="display: none; margin-bottom: 24px;"></div>
+
+              <div class="briefing-palette-group-selector">
+                <button type="button" class="briefing-group-tab is-active" onclick="changePaletteTab('Cinema')">Cinema</button>
+                <button type="button" class="briefing-group-tab" onclick="changePaletteTab('Editorial')">Editorial</button>
+                <button type="button" class="briefing-group-tab" onclick="changePaletteTab('Vanguard')">Vanguard</button>
+                <button type="button" class="briefing-group-tab" onclick="changePaletteTab('Sugeridas')">Sugeridas</button>
+                <button type="button" class="briefing-group-more-btn" onclick="generateMoreSuggestions()">
+                  ✦ Gerar Outros Exemplos
+                </button>
+              </div>
+
+              <div class="briefing-curated-palettes" id="curated-palettes-container">
+                <!-- Populados dinamicamente via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Passo 6: Público e Recursos ── -->
+        <div id="step-6-publico" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label">
+              4. Quem é o público principal do seu site? <span class="briefing-required">*</span>
+            </label>
+            <div class="briefing-checkbox-group">
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q11_publico', 'Diretores(as) de cinema e TV')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Diretores(as) de cinema e TV</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q11_publico', 'Produtoras / Agências')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Produtoras / Agências</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q11_publico', 'Imprensa / Jornalistas')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Imprensa / Jornalistas</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q11_publico', 'Marcas / Clientes diretos')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Marcas / Clientes diretos</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckboxOther('q11_publico')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Outro:</span>
+              </label>
+            </div>
+            <input type="text" id="q11_publico_outro_val" class="briefing-input briefing-input--other" style="display: none;" placeholder="Detalhe sua resposta..." oninput="handleOtherTextInput('q11_publico', this)">
+          </div>
+
+          <div class="briefing-field">
+            <label class="briefing-label">
+              Funções desejadas além de mostrar portfólio?
+            </label>
+            <div class="briefing-checkbox-group">
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q12_funcoes', 'Formulário de contato')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Formulário de contato</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q12_funcoes', 'Bio / Texto sobre trajetória')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Bio / Texto sobre trajetória</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q12_funcoes', 'Arquivo de imprensa (Press Kit)')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Arquivo de imprensa (Press Kit)</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckbox('q12_funcoes', 'Somente galeria visual')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Somente galeria visual</span>
+              </label>
+              <label class="briefing-checkbox-item">
+                <input type="checkbox" class="briefing-checkbox-input" onclick="toggleCheckboxOther('q12_funcoes')">
+                <span class="briefing-checkbox-box"></span>
+                <span class="briefing-checkbox-label">Outro:</span>
+              </label>
+            </div>
+            <input type="text" id="q12_funcoes_outro_val" class="briefing-input briefing-input--other" style="display: none;" placeholder="Detalhe sua resposta..." oninput="handleOtherTextInput('q12_funcoes', this)">
+          </div>
+        </div>
+
+        <!-- ── Passo 7: Domínio e Recado ── -->
+        <div id="step-7-dominio" class="briefing-step">
+          <div class="briefing-field">
+            <label class="briefing-label">
+              Você já possui um domínio registrado? <span class="briefing-required">*</span>
+            </label>
+            <div class="briefing-radio-group">
+              <label class="briefing-radio-item">
+                <input type="radio" name="q13_dominio" class="briefing-radio-input" onclick="setRadioOption('q13_dominio', 'Sim, já tenho')">
+                <span class="briefing-radio-dot"></span>
+                <span class="briefing-radio-label">Sim, já tenho</span>
+              </label>
+              <label class="briefing-radio-item">
+                <input type="radio" name="q13_dominio" class="briefing-radio-input" onclick="setRadioOption('q13_dominio', 'Não tenho ainda')">
+                <span class="briefing-radio-dot"></span>
+                <span class="briefing-radio-label">Não tenho ainda</span>
+              </label>
+              <label class="briefing-radio-item">
+                <input type="radio" name="q13_dominio" class="briefing-radio-input" onclick="setRadioOption('q13_dominio', 'Preciso de ajuda com isso')">
+                <span class="briefing-radio-dot"></span>
+                <span class="briefing-radio-label">Preciso de ajuda com isso</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="briefing-field">
+            <label class="briefing-label" for="q14_recado">
+              Algum último recado livre?
+            </label>
+            <textarea id="q14_recado" class="briefing-textarea" rows="4" placeholder="Observações, ideias extras ou algo que queira pontuar..."></textarea>
+          </div>
+        </div>
+
+        <!-- Mensagens de Erro da Etapa -->
+        <div class="briefing-error-msg" id="error-msg" style="display: none;"></div>
+
+        <!-- Footer com Navegação -->
+        <footer class="briefing-step-footer" id="step-footer" style="display: none;">
+          <button class="briefing-nav-btn" onclick="handlePrev()" type="button">← Voltar</button>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span class="briefing-shortcut-hint">Cmd+Enter para avançar</span>
+            <button id="btn-next" class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
+              Continuar →
+            </button>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  </main>
+
+  <script src="/briefing/briefing.js"></script>
+</body>
+</html>
