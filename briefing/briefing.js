@@ -97,13 +97,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   config = BRIEFING_CONFIG[slug] || DEFAULT_CONFIG;
   document.title = `${config.titulo} — Pelimotion`;
   
-  // Renderizar textos iniciais
   const elTitle = document.getElementById('hero-title');
   const elSubtitle = document.getElementById('hero-subtitle');
   if (elTitle) elTitle.textContent = config.titulo;
   if (elSubtitle) elSubtitle.textContent = config.subtitulo || 'Pelimotion Studio';
 
-  // Buscar credenciais públicas do Supabase de forma dinâmica
   try {
     const cfg = await fetch('/api/config').then(r => r.json());
     if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
@@ -114,28 +112,26 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   setupEventListeners();
-  renderStep();
+  setupScrollListener();
   renderCuratedPalettes();
+  updateNavigationUI();
 });
 
 // ─── Eventos de Escuta e Data Binding ──────────────────────────────────────────
 function setupEventListeners() {
-  // Binding dos inputs e textareas de texto simples
   document.querySelectorAll('input[type="text"], textarea').forEach(el => {
     el.addEventListener('input', (e) => {
       const field = e.target.id;
       if (field && form.hasOwnProperty(field)) {
         form[field] = e.target.value;
       }
-      // Auto-resize do textarea se aplicável
-      if (e.target.tagName.toLowerCase() === 'textarea') {
-        e.target.style.height = 'auto';
-        e.target.style.height = e.target.scrollHeight + 'px';
+      if (field === 'q4_marcos') {
+        const counter = document.getElementById('q4_marcos_counter');
+        if (counter) counter.textContent = `${e.target.value.length}/800`;
       }
     });
   });
 
-  // Atalho Cmd+Enter ou Ctrl+Enter
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
@@ -144,7 +140,6 @@ function setupEventListeners() {
     }
   });
 
-  // Color picker seed
   const cpInput = document.getElementById('q10_seed_hex');
   if (cpInput) {
     cpInput.addEventListener('input', (e) => {
@@ -153,22 +148,38 @@ function setupEventListeners() {
   }
 }
 
-// ─── Navegação do Wizard ───────────────────────────────────────────────────────
-function renderStep() {
-  // Ocultar todos os passos e mostrar o ativo
-  WIZARD_STEPS.forEach((step, idx) => {
-    const el = document.getElementById(step.id);
-    if (el) {
-      if (idx === currentStep) el.classList.add('is-active');
-      else el.classList.remove('is-active');
+// ─── Layout de Scroll e Parallax Lateral ───────────────────────────────────────
+function setupScrollListener() {
+  const mainArea = document.querySelector('.briefing-main-area');
+  if (!mainArea) return;
+
+  mainArea.addEventListener('scroll', () => {
+    const scrollTop = mainArea.scrollTop;
+    const clientHeight = mainArea.clientHeight;
+    const scrollHeight = mainArea.scrollHeight;
+    
+    // Identificar passo ativo por aproximação
+    const stepIdx = Math.round(scrollTop / clientHeight);
+    if (stepIdx !== currentStep && stepIdx < WIZARD_STEPS.length) {
+      currentStep = stepIdx;
+      updateNavigationUI();
+    }
+
+    // Parallax lateral do background GIF (move de 0 a -35vw)
+    const scrollPercent = scrollTop / (scrollHeight - clientHeight || 1);
+    const bgImage = document.getElementById('briefing-bg-image');
+    if (bgImage) {
+      const translateX = -scrollPercent * 35;
+      bgImage.style.transform = `translate3d(${translateX}vw, 0, 0)`;
     }
   });
+}
 
-  // Atualizar barras de progresso / timeline
+function updateNavigationUI() {
   const activePhase = WIZARD_STEPS[currentStep].phase;
   const progressPct = Math.round((currentStep / (WIZARD_STEPS.length - 1)) * 100);
 
-  // Sidebar Desktop Timeline
+  // Timeline Desktop
   document.querySelectorAll('.briefing-phase').forEach((phaseEl, idx) => {
     const phaseId = idx + 1;
     phaseEl.className = 'briefing-phase';
@@ -177,7 +188,7 @@ function renderStep() {
     else phaseEl.classList.add('is-future');
   });
 
-  // Mobile Timeline
+  // Timeline Mobile
   const elMobLabel = document.getElementById('mobile-phase-label');
   const elMobBar = document.getElementById('mobile-progress-bar');
   const elMobStep = document.getElementById('mobile-step-num');
@@ -187,33 +198,32 @@ function renderStep() {
   if (elMobBar) elMobBar.style.width = `${progressPct}%`;
   if (elMobStep) elMobStep.textContent = `${currentStep} / ${WIZARD_STEPS.length - 1}`;
 
-  // Botões de navegação no rodapé
-  const footerEl = document.getElementById('step-footer');
-  if (footerEl) {
-    footerEl.style.display = currentStep > 0 ? 'flex' : 'none';
-  }
-
-  // Atualizar o estado do botão Avançar / Concluir
+  // Botões de navegação no footer
+  const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
+  
+  if (btnPrev) btnPrev.style.visibility = currentStep > 0 ? 'visible' : 'hidden';
   if (btnNext) {
     if (currentStep === WIZARD_STEPS.length - 1) {
       btnNext.innerHTML = 'Concluir Briefing ✓';
-      btnNext.className = 'briefing-nav-btn briefing-nav-btn--primary';
     } else {
       btnNext.innerHTML = 'Continuar →';
-      btnNext.className = 'briefing-nav-btn briefing-nav-btn--primary';
     }
   }
 
-  // Resetar mensagem de erro ao mudar de passo
   setErrorMsg('');
-  
-  // Scroll para o topo da área de conteúdo
-  const mainArea = document.querySelector('.briefing-main-area');
-  if (mainArea) mainArea.scrollTop = 0;
+}
+
+function scrollToStep(idx) {
+  const stepDef = WIZARD_STEPS[idx];
+  const el = document.getElementById(stepDef.id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
 function handleNext() {
+  // Validar se o passo atual é obrigatório
   const stepDef = WIZARD_STEPS[currentStep];
   if (stepDef.required) {
     for (const reqField of stepDef.required) {
@@ -229,14 +239,17 @@ function handleNext() {
   }
 
   setErrorMsg('');
-  currentStep = Math.min(currentStep + 1, WIZARD_STEPS.length - 1);
-  renderStep();
+  
+  if (currentStep === WIZARD_STEPS.length - 1) {
+    handleSubmit();
+  } else {
+    scrollToStep(currentStep + 1);
+  }
 }
 
 function handlePrev() {
   setErrorMsg('');
-  currentStep = Math.max(currentStep - 1, 0);
-  renderStep();
+  scrollToStep(Math.max(currentStep - 1, 0));
 }
 
 function setErrorMsg(msg) {
@@ -249,6 +262,20 @@ function setErrorMsg(msg) {
       errEl.style.display = 'none';
     }
   }
+}
+
+function validateAll() {
+  for (let i = 0; i < WIZARD_STEPS.length; i++) {
+    const stepDef = WIZARD_STEPS[i];
+    if (stepDef.required) {
+      for (const reqField of stepDef.required) {
+        const val = form[reqField];
+        if (Array.isArray(val) && val.length === 0) return i;
+        if (typeof val === 'string' && !val.trim()) return i;
+      }
+    }
+  }
+  return -1;
 }
 
 // ─── Binding de Checkboxes e Radios ───────────────────────────────────────────
@@ -315,7 +342,6 @@ function renderCuratedPalettes() {
     container.appendChild(btn);
   });
 
-  // Atualizar estilo ativo das abas
   document.querySelectorAll('.briefing-group-tab').forEach(tab => {
     if (tab.textContent.trim() === activePaletteGroup) tab.classList.add('is-active');
     else tab.classList.remove('is-active');
@@ -347,7 +373,6 @@ window.generateAiHarmony = async function() {
       body: JSON.stringify({ model: 'default', input: [rgb, 'N', 'N', 'N', 'N'] })
     });
     const data = await resp.json();
-    // Colormind traz 5 cores. Pegamos 3 com bom contraste (0, 2, 4)
     const selectedRgb = [data.result[0], data.result[2], data.result[4]];
     setFormPalette(selectedRgb.map(rgbToHex));
   } catch (err) {
@@ -379,12 +404,19 @@ function setFormPalette(colors) {
 
 // ─── Envio do Formulário ───────────────────────────────────────────────────────
 async function handleSubmit() {
+  // Validar todas as seções antes de submeter
+  const invalidIdx = validateAll();
+  if (invalidIdx !== -1) {
+    setErrorMsg('Por favor, preencha todas as perguntas obrigatórias marcadas com asterisco (*).');
+    scrollToStep(invalidIdx);
+    return;
+  }
+
   const btnNext = document.getElementById('btn-next');
   btnNext.disabled = true;
   btnNext.innerHTML = 'Enviando...';
 
   try {
-    // Limpar os arrays de checkboxes substituindo "__outro__" por seu texto descritivo
     const cleanCb = (arr) => {
       const clean = arr.filter((v) => !v.startsWith('__'));
       const outroText = arr.find(v => v.startsWith('__outro_text__'));
@@ -419,7 +451,6 @@ async function handleSubmit() {
       throw new Error('Supabase client não carregou. Tente novamente mais tarde.');
     }
 
-    // Gravar no Supabase
     const { error } = await db.from('briefings').insert({
       slug,
       cliente_nome: config.clienteNome,
@@ -428,7 +459,6 @@ async function handleSubmit() {
 
     if (error) throw error;
 
-    // Disparar notificação por e-mail via Vercel Serverless Function
     try {
       await fetch('/api/send-briefing', {
         method: 'POST',
@@ -443,7 +473,6 @@ async function handleSubmit() {
       console.warn('E-mail notificação falhou:', emailErr);
     }
 
-    // Tela de Sucesso
     showSuccessScreen();
 
   } catch (err) {
@@ -455,24 +484,27 @@ async function handleSubmit() {
 }
 
 function showSuccessScreen() {
-  const container = document.querySelector('.briefing-step-container');
+  const container = document.querySelector('.briefing-scroll-container');
   if (container) {
     container.innerHTML = `
-      <div class="briefing-success-screen">
-        <div class="briefing-success-icon">🙌</div>
-        <h1 class="briefing-hero-title">Recebido!</h1>
-        <p class="briefing-hero-text">Obrigado por dedicar seu tempo. Vou analisar todas as informações e entrarei em contato para marcarmos nosso alinhamento. — Felipe</p>
-      </div>
+      <section class="briefing-step" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div class="briefing-success-screen">
+          <div class="briefing-success-icon">🙌</div>
+          <h1 class="briefing-hero-title">Recebido!</h1>
+          <p class="briefing-hero-text">Obrigado por dedicar seu tempo. Vou analisar todas as informações e entrarei em contato para marcarmos nosso alinhamento. — Felipe</p>
+        </div>
+      </section>
     `;
   }
-  // Esconder a barra lateral de timeline e o cabeçalho mobile
   const sidebar = document.querySelector('.briefing-sidebar');
   if (sidebar) sidebar.style.display = 'none';
   const mobHeader = document.querySelector('.briefing-mobile-header');
   if (mobHeader) mobHeader.style.display = 'none';
+  const footer = document.querySelector('.briefing-step-footer');
+  if (footer) footer.style.display = 'none';
 }
 
-// Expor funções para navegação no HTML
 window.handleNext = handleNext;
 window.handlePrev = handlePrev;
 window.handleSubmit = handleSubmit;
+window.scrollToStep = scrollToStep;

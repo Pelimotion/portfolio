@@ -12,9 +12,9 @@
   --b-bg-input-focus: #1a1a1a;
   
   --b-text-primary:  #efefef;
-  --b-text-secondary: #b8b8b8; /* Aumentado contraste de #909090 para #b8b8b8 */
-  --b-text-muted:    #7c7c7c; /* Aumentado contraste de #4a4a4a para #7c7c7c */
-  --b-text-placeholder: #555555; /* Aumentado contraste de #3a3a3a para #555555 */
+  --b-text-secondary: #b8b8b8;
+  --b-text-muted:    #7c7c7c;
+  --b-text-placeholder: #555555;
   
   --b-border:        rgba(255,255,255,0.08);
   --b-border-hover:  rgba(255,255,255,0.18);
@@ -38,7 +38,7 @@
   --b-radius-md:  4px;
   --b-radius-pill: 999px;
   
-  --b-sidebar-w: 240px;
+  --b-sidebar-w: 260px;
 }
 
 .briefing-root *, .briefing-root *::before, .briefing-root *::after {
@@ -49,7 +49,7 @@
 
 .briefing-root {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--b-bg);
   color: var(--b-text-primary);
   font-family: var(--b-font-body);
@@ -58,16 +58,44 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
-  isolation: isolate;
   display: flex;
   width: 100%;
+}
+
+/* ── Background Parallax & Overlay ─────────────────────── */
+.briefing-bg-container {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  width: 100vw;
+  height: 100vh;
+}
+
+#briefing-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150vw; /* Larga para scroll lateral */
+  height: 100vh;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.briefing-bg-overlay {
+  position: absolute;
+  inset: 0;
+  /* Gradiente suave pro preto no topo, rodapé e laterais */
+  background: linear-gradient(to bottom, #080808 0%, rgba(8,8,8,0.7) 12%, rgba(8,8,8,0.15) 50%, rgba(8,8,8,0.75) 85%, #080808 100%),
+              linear-gradient(to right, #080808 0%, transparent 20%, transparent 80%, #080808 100%);
 }
 
 .briefing-grain {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 200px 200px;
@@ -82,43 +110,33 @@
   100% { transform: translate(0, 0); }
 }
 
-/* ── Layout Principal (Desktop) ────────────────────────── */
+/* ── Sidebar fixa (Desktop) ────────────────────────────── */
 .briefing-sidebar {
   width: var(--b-sidebar-w);
   flex-shrink: 0;
   border-right: 1px solid var(--b-border-section);
   display: flex;
   flex-direction: column;
-  padding: 40px 32px;
+  padding: 48px 36px;
   z-index: 10;
-  background: rgba(8,8,8,0.6);
-  backdrop-filter: blur(20px);
+  background: rgba(8,8,8,0.75);
+  backdrop-filter: blur(25px);
 }
 
-.briefing-main-area {
-  flex: 1;
-  height: 100vh;
-  overflow-y: auto;
-  position: relative;
-  scroll-behavior: smooth;
-  z-index: 5;
-}
-
-/* ── Timeline de Navegação (Sidebar) ───────────────────── */
 .briefing-brand {
   font-family: var(--b-font-display);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--b-text-secondary);
+  color: var(--b-text-primary);
   margin-bottom: 64px;
 }
 
 .briefing-timeline {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
   position: relative;
 }
 
@@ -138,6 +156,7 @@
   align-items: flex-start;
   gap: 16px;
   position: relative;
+  cursor: pointer;
   transition: opacity 0.3s;
 }
 
@@ -148,10 +167,13 @@
 .briefing-phase.is-current .briefing-phase-dot {
   background: var(--b-bg);
   border-color: var(--b-accent);
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.25);
 }
 .briefing-phase.is-future {
-  opacity: 0.45;
+  opacity: 0.4;
+}
+.briefing-phase:hover {
+  opacity: 1;
 }
 
 .briefing-phase-dot {
@@ -172,44 +194,45 @@
   color: var(--b-text-primary);
   letter-spacing: 0.05em;
 }
-.briefing-phase.is-future .briefing-phase-label {
-  color: var(--b-text-secondary);
+
+/* ── Content Area com Scroll Snap ───────────────────────── */
+.briefing-main-area {
+  flex: 1;
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  z-index: 5;
+  position: relative;
+  background: transparent;
 }
 
-/* ── Container do Formulário e Transições ──────────────── */
-.briefing-step-container {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 120px 40px 100px;
-  min-height: 100%;
+.briefing-scroll-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.briefing-step-wrapper {
-  position: relative;
   width: 100%;
 }
 
 .briefing-step {
-  display: none;
-  animation: briefingFadeIn 0.5s var(--b-ease-out) forwards;
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 48px;
 }
 
-.briefing-step.is-active {
-  display: block;
+.briefing-step-inner {
+  width: 100%;
+  max-width: 680px;
+  animation: briefingFadeIn 0.6s var(--b-ease-out);
 }
 
 @keyframes briefingFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 
 /* ── Hero / Intro Step ─────────────────────────────────── */
@@ -232,15 +255,18 @@
 .briefing-hero-text {
   font-size: 16px;
   color: var(--b-text-secondary);
-  line-height: 1.7;
-  max-width: 500px;
+  line-height: 1.75;
+  max-width: 540px;
   font-weight: 300;
   margin-bottom: 48px;
 }
 
-/* ── Campos do Formulário ──────────────────────────────── */
+/* ── Campos de Input e Textarea ────────────────────────── */
 .briefing-field {
-  margin-bottom: 48px;
+  margin-bottom: 32px;
+}
+.briefing-field:last-child {
+  margin-bottom: 0;
 }
 
 .briefing-label {
@@ -255,7 +281,7 @@
 .briefing-required { color: var(--b-text-muted); margin-left: 6px; font-weight: 400; }
 .briefing-hint {
   font-size: 13.5px;
-  color: var(--b-text-secondary); /* Aumentado contraste de muted para secondary */
+  color: var(--b-text-secondary);
   line-height: 1.6;
   margin-bottom: 16px;
   font-weight: 400;
@@ -271,11 +297,9 @@
   font-size: 16px;
   line-height: 1.65;
   padding: 16px;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
   outline: none;
-  box-sizing: border-box;
   resize: none;
-  overflow: hidden;
 }
 
 .briefing-input::placeholder, .briefing-textarea::placeholder { color: var(--b-text-placeholder); }
@@ -293,28 +317,29 @@
   margin-top: 6px;
   font-family: monospace;
 }
-.briefing-char-counter.near-limit { color: var(--b-error); }
 
-/* ── Checkbox Groups e Custom Buttons ────────────────── */
+/* ── Checkboxes e Radios ───────────────────────────────── */
 .briefing-checkbox-group, .briefing-radio-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .briefing-checkbox-item, .briefing-radio-item {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
-  background: var(--b-bg-2);
+  padding: 14px 18px;
+  background: rgba(15, 15, 15, 0.45);
   border: 1px solid var(--b-border);
   border-radius: var(--b-radius-sm);
   cursor: pointer;
   transition: all 0.2s var(--b-ease-out);
   user-select: none;
 }
-
 .briefing-checkbox-item:hover, .briefing-radio-item:hover {
   border-color: var(--b-border-hover);
   background: rgba(255,255,255,0.02);
@@ -336,13 +361,13 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .briefing-checkbox-input:checked ~ .briefing-checkbox-box {
   background: var(--b-accent);
   border-color: var(--b-accent);
 }
-
 .briefing-checkbox-box::after {
   content: '✓';
   color: var(--b-bg);
@@ -350,7 +375,6 @@
   font-weight: 800;
   display: none;
 }
-
 .briefing-checkbox-input:checked ~ .briefing-checkbox-box::after {
   display: block;
 }
@@ -365,12 +389,12 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .briefing-radio-input:checked ~ .briefing-radio-dot {
   border-color: var(--b-accent);
 }
-
 .briefing-radio-dot::after {
   content: '';
   width: 8px;
@@ -379,7 +403,6 @@
   background: var(--b-accent);
   display: none;
 }
-
 .briefing-radio-input:checked ~ .briefing-radio-dot::after {
   display: block;
 }
@@ -391,16 +414,15 @@
 }
 
 .briefing-input--other {
-  margin-top: 12px;
-  animation: briefingFadeIn 0.3s var(--b-ease-out);
+  margin-top: 10px;
 }
 
 /* ── Color Picker V2 ──────────────────────────────────── */
 .briefing-color-picker-v2 {
-  margin-top: 24px;
-  background: var(--b-bg-2);
+  margin-top: 20px;
+  background: rgba(15, 15, 15, 0.45);
   border: 1px solid var(--b-border);
-  padding: 24px;
+  padding: 20px;
   border-radius: var(--b-radius-sm);
 }
 
@@ -408,18 +430,18 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .briefing-cp-native-input {
   -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   background: transparent;
   border: none;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .briefing-cp-native-input::-webkit-color-swatch-wrapper { padding: 0; }
 .briefing-cp-native-input::-webkit-color-swatch { border: none; border-radius: 50%; }
@@ -429,7 +451,7 @@
   display: flex;
   flex-direction: column;
 }
-.briefing-cp-instructions strong { color: var(--b-text-primary); font-size: 15px; font-weight: 500; }
+.briefing-cp-instructions strong { color: var(--b-text-primary); font-size: 14.5px; font-weight: 500; }
 .briefing-cp-instructions span { color: var(--b-text-secondary); font-size: 13px; }
 
 .briefing-cp-generate-btn {
@@ -437,56 +459,52 @@
   background: rgba(255,255,255,0.08);
   color: var(--b-text-primary);
   border: 1px solid var(--b-border-focus);
-  padding: 10px 20px;
+  padding: 8px 18px;
   border-radius: var(--b-radius-pill);
-  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
   cursor: pointer; transition: all 0.2s;
 }
-.briefing-cp-generate-btn:hover:not(:disabled) { background: rgba(255,255,255,0.15); }
-.briefing-cp-generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.briefing-cp-generate-btn:hover { background: rgba(255,255,255,0.15); }
 
 .briefing-palette-swatches {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 80px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 64px;
 }
-.briefing-palette-swatches.loading { opacity: 0.3; pointer-events: none; }
 .briefing-swatch {
   border-radius: var(--b-radius-sm); border: 1px solid rgba(255,255,255,0.1);
   cursor: pointer; position: relative; overflow: hidden;
   transition: transform 0.2s var(--b-ease-spring);
 }
-.briefing-swatch:hover { transform: translateY(-4px); z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+.briefing-swatch:hover { transform: translateY(-4px); z-index: 2; }
 .briefing-swatch-hex {
   position: absolute; bottom: 0; left: 0; right: 0;
-  background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; text-align: center; padding: 4px;
-  font-family: monospace; font-weight: bold; opacity: 0; transition: opacity 0.2s;
+  background: rgba(0,0,0,0.7); color: #fff; font-size: 9px; text-align: center; padding: 2px 4px;
+  font-family: monospace; opacity: 0; transition: opacity 0.2s;
 }
 .briefing-swatch:hover .briefing-swatch-hex { opacity: 1; }
 
 .briefing-palette-group-selector {
-  margin-top: 24px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--b-border-section);
-  padding-bottom: 12px;
+  padding-bottom: 10px;
 }
 .briefing-group-tab {
   background: transparent;
   border: 1px solid transparent;
   color: var(--b-text-secondary);
   font-family: var(--b-font-display);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 6px 12px;
+  letter-spacing: 0.08em;
+  padding: 5px 10px;
   cursor: pointer;
   transition: all 0.2s;
 }
-.briefing-group-tab:hover {
-  color: var(--b-text-primary);
-}
+.briefing-group-tab:hover { color: var(--b-text-primary); }
 .briefing-group-tab.is-active {
   border-color: var(--b-border-focus);
   border-radius: var(--b-radius-pill);
@@ -500,43 +518,45 @@
   border-radius: var(--b-radius-pill);
   color: var(--b-text-secondary);
   font-family: var(--b-font-display);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 6px 14px;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
   cursor: pointer;
-  transition: all 0.2s;
 }
-.briefing-group-more-btn:hover {
-  border-color: var(--b-border-focus);
-  color: var(--b-text-primary);
-  background: rgba(255, 255, 255, 0.02);
-}
+.briefing-group-more-btn:hover { border-color: var(--b-border-focus); color: var(--b-text-primary); }
 
 .briefing-curated-palettes {
-  margin-top: 16px;
+  margin-top: 14px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 .briefing-curated-chip {
   background: transparent; border: 1px solid var(--b-border); border-radius: var(--b-radius-pill);
-  padding: 6px 12px; font-size: 11px; font-weight: 500; color: var(--b-text-secondary);
+  padding: 5px 10px; font-size: 10.5px; font-weight: 500; color: var(--b-text-secondary);
   display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;
 }
 .briefing-curated-chip:hover { border-color: var(--b-border-focus); color: var(--b-text-primary); }
 .briefing-curated-dots { display: flex; gap: 2px; }
-.briefing-curated-dot { width: 8px; height: 8px; border-radius: 50%; }
+.briefing-curated-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-/* ── Botões de Navegação (Footer do Step) ──────────────── */
+/* ── Rodapé Fixo de Navegação ──────────────────────────── */
 .briefing-step-footer {
-  margin-top: 48px;
-  padding-top: 32px;
+  position: fixed;
+  bottom: 0;
+  left: var(--b-sidebar-w);
+  right: 0;
+  height: 90px;
   border-top: 1px solid var(--b-border-section);
+  background: rgba(8, 8, 8, 0.85);
+  backdrop-filter: blur(15px);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 48px;
+  z-index: 100;
 }
 
 .briefing-nav-btn {
@@ -546,11 +566,11 @@
   background: transparent;
   color: var(--b-text-secondary);
   font-family: var(--b-font-display);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 16px 24px;
+  padding: 12px 22px;
   border: 1px solid var(--b-border);
   border-radius: var(--b-radius-pill);
   cursor: pointer;
@@ -571,15 +591,21 @@
   color: var(--b-text-primary);
   border-color: var(--b-border-focus);
 }
-.briefing-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
 
 .briefing-shortcut-hint {
   font-size: 11px;
   color: var(--b-text-muted);
-  font-family: var(--b-font-body);
+}
+
+.briefing-error-msg {
+  background: var(--b-error-bg);
+  color: var(--b-error);
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: var(--b-radius-sm);
+  border: 1px solid rgba(255, 68, 85, 0.15);
+  max-width: 320px;
+  animation: briefingFadeIn 0.3s;
 }
 
 /* ── Success Screen ───────────────────────────────────── */
@@ -587,24 +613,8 @@
   text-align: center;
   max-width: 500px;
   margin: 0 auto;
-  animation: briefingFadeIn 0.8s var(--b-ease-out) forwards;
 }
-
-.briefing-success-icon {
-  font-size: 4rem;
-  margin-bottom: 24px;
-}
-
-.briefing-error-msg {
-  background: var(--b-error-bg);
-  color: var(--b-error);
-  padding: 12px 16px;
-  font-size: 13.5px;
-  border-radius: var(--b-radius-sm);
-  margin-bottom: 24px;
-  border: 1px solid rgba(255, 68, 85, 0.15);
-  animation: briefingFadeIn 0.3s;
-}
+.briefing-success-icon { font-size: 4rem; margin-bottom: 20px; }
 
 /* ── Mobile Layout & Header ───────────────────────────── */
 .briefing-mobile-header {
@@ -614,7 +624,6 @@
 @media (max-width: 768px) {
   .briefing-root {
     flex-direction: column;
-    overflow-y: auto;
   }
   .briefing-sidebar {
     display: none;
@@ -625,50 +634,56 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 24px;
-    background: rgba(8,8,8,0.9);
+    background: rgba(8,8,8,0.92);
     border-bottom: 1px solid var(--b-border-section);
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
+  }
+  
+  #mobile-phase-label {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--b-text-primary);
+  }
+  #mobile-step-num {
+    font-size: 11px;
+    color: var(--b-text-secondary);
   }
   
   .briefing-mobile-progress-bar {
     position: absolute;
     bottom: 0; left: 0;
-    height: 1px;
+    height: 2px;
     background: var(--b-accent);
     transition: width 0.3s;
   }
   
   .briefing-main-area {
-    height: auto;
-    overflow-y: visible;
+    height: 100vh;
   }
   
-  .briefing-step-container {
-    padding: 100px 24px 60px;
+  .briefing-step {
+    padding: 100px 24px 110px;
   }
   
   .briefing-step-footer {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-    margin-top: 32px;
-  }
-  .briefing-step-footer div {
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 12px;
-    align-items: stretch !important;
+    left: 0;
+    padding: 0 24px;
+    height: 85px;
   }
   .briefing-shortcut-hint {
     display: none;
   }
-  
-  .briefing-palette-swatches {
-    height: 60px;
+  .briefing-error-msg {
+    max-width: 180px;
+    font-size: 11px;
+    padding: 6px 12px;
   }
+  
   .briefing-cp-header {
     flex-direction: column;
     align-items: flex-start;

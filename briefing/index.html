@@ -9,67 +9,75 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body class="briefing-root">
+  <!-- Background Parallax Canvas/Image Wrapper -->
+  <div class="briefing-bg-container">
+    <img src="/briefing/bg_briefing.gif" id="briefing-bg-image" alt="Background Animation">
+    <div class="briefing-bg-overlay"></div>
+  </div>
+
   <div class="briefing-grain"></div>
 
   <!-- Mobile Top Header Progress -->
   <header class="briefing-mobile-header">
-    <span id="mobile-phase-label" style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: var(--b-text-primary);">Intro</span>
-    <span id="mobile-step-num" style="font-size: 11px; color: var(--b-text-secondary);">0 / 7</span>
-    <div id="mobile-progress-bar" class="briefing-mobile-progress-bar" style="width: 0%;"></div>
+    <span id="mobile-phase-label">Intro</span>
+    <span id="mobile-step-num">0 / 7</span>
+    <div id="mobile-progress-bar" class="briefing-mobile-progress-bar"></div>
   </header>
 
-  <!-- Desktop Sidebar Timeline -->
+  <!-- Desktop Sidebar Timeline (Fica fixa à esquerda) -->
   <aside class="briefing-sidebar">
     <div class="briefing-brand">Pelimotion Studio</div>
     <div class="briefing-timeline">
-      <div class="briefing-phase is-current">
+      <div class="briefing-phase is-current" onclick="scrollToStep(0)">
         <div class="briefing-phase-dot"></div>
         <span class="briefing-phase-label">Intro</span>
       </div>
-      <div class="briefing-phase is-future">
+      <div class="briefing-phase is-future" onclick="scrollToStep(1)">
         <div class="briefing-phase-dot"></div>
         <span class="briefing-phase-label">Sobre Você</span>
       </div>
-      <div class="briefing-phase is-future">
+      <div class="briefing-phase is-future" onclick="scrollToStep(2)">
         <div class="briefing-phase-dot"></div>
         <span class="briefing-phase-label">Seus Trabalhos</span>
       </div>
-      <div class="briefing-phase is-future">
+      <div class="briefing-phase is-future" onclick="scrollToStep(4)">
         <div class="briefing-phase-dot"></div>
         <span class="briefing-phase-label">Estética Visual</span>
       </div>
-      <div class="briefing-phase is-future">
+      <div class="briefing-phase is-future" onclick="scrollToStep(6)">
         <div class="briefing-phase-dot"></div>
         <span class="briefing-phase-label">O Site</span>
       </div>
     </div>
-    <div style="margin-top: auto; font-size: 10px; color: var(--b-text-secondary); text-transform: uppercase; letter-spacing: 0.1em;">
-      Briefing interativo
+    <div style="margin-top: auto; font-size: 10px; color: var(--b-text-secondary); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;">
+      Scroll para Navegar
     </div>
   </aside>
 
-  <!-- Main Content Area -->
+  <!-- Main Content Area (Container de Scroll com Snap) -->
   <main class="briefing-main-area">
-    <div class="briefing-step-container">
-      <div class="briefing-step-wrapper">
+    <div class="briefing-scroll-container">
 
-        <!-- ── Passo 0: Intro ── -->
-        <div id="step-0-intro" class="briefing-step is-active">
+      <!-- ── Passo 0: Intro ── -->
+      <section id="step-0-intro" class="briefing-step">
+        <div class="briefing-step-inner">
           <h1 id="hero-title" class="briefing-hero-title">Briefing de Portfólio</h1>
           <h2 id="hero-subtitle" class="briefing-hero-client">Carregando...</h2>
           <p class="briefing-hero-text">
-            Preencha com calma, uma etapa por vez.<br>
-            Cada detalhe me ajuda a desenhar a melhor experiência para o seu novo site.
+            Explore as etapas rolando a tela para baixo. Seu progresso é orgânico.<br>
+            Cada resposta me ajuda a moldar o design ideal para sua presença online.
           </p>
           <div style="display: flex; gap: 16px; align-items: center;">
             <button class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
-              Iniciar Briefing →
+              Começar ↓
             </button>
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 1: Sobre Você ── -->
-        <div id="step-1-apresentacao" class="briefing-step">
+      <!-- ── Passo 1: Sobre Você ── -->
+      <section id="step-1-apresentacao" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label" for="q1_apresentacao">
               1. Como você se apresenta profissionalmente? <span class="briefing-required">*</span>
@@ -80,7 +88,7 @@
           
           <div class="briefing-field">
             <label class="briefing-label" for="q2_marca">
-              Você tem um nome profissional, marca pessoal ou logo que já usa?
+              Você possui um nome profissional, marca pessoal ou logo que já usa?
             </label>
             <input type="text" id="q2_marca" class="briefing-input" placeholder="Ex: Joanna Ribas, JR Studio...">
           </div>
@@ -92,21 +100,25 @@
             <textarea id="q3_redes" class="briefing-textarea" rows="2" placeholder="Instagram, Vimeo, LinkedIn..."></textarea>
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 2: Marcos da Carreira ── -->
-        <div id="step-2-marcos" class="briefing-step">
+      <!-- ── Passo 2: Marcos da Carreira ── -->
+      <section id="step-2-marcos" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label" for="q4_marcos">
               2. Quais são os marcos da sua carreira que você quer destacar? <span class="briefing-required">*</span>
             </label>
             <p class="briefing-hint">Cite títulos, projetos, filmes, exposições ou clientes de destaque. Apenas o que for realmente relevante.</p>
-            <textarea id="q4_marcos" class="briefing-textarea" rows="5" required placeholder="Escreva sobre os marcos mais importantes..."></textarea>
+            <textarea id="q4_marcos" class="briefing-textarea" rows="6" required placeholder="Escreva sobre os marcos mais importantes..."></textarea>
             <div class="briefing-char-counter" id="q4_marcos_counter">0/800</div>
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 3: Materiais Disponíveis ── -->
-        <div id="step-3-material" class="briefing-step">
+      <!-- ── Passo 3: Materiais Disponíveis ── -->
+      <section id="step-3-material" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label">
               Desses marcos, o que você tem de material visual disponível? <span class="briefing-required">*</span>
@@ -160,9 +172,11 @@
             <textarea id="q7_creditos" class="briefing-textarea" rows="2" placeholder="Listagem de prêmios ou referências importantes..."></textarea>
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 4: Representação Estética ── -->
-        <div id="step-4-identidade" class="briefing-step">
+      <!-- ── Passo 4: Representação Estética ── -->
+      <section id="step-4-identidade" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label">
               3. O que te representa esteticamente? <span class="briefing-required">*</span>
@@ -214,9 +228,11 @@
             <textarea id="q9_sites_referencia" class="briefing-textarea" rows="2" placeholder="Cole os links e o que você gosta neles..."></textarea>
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 5: Cores e Inspirações ── -->
-        <div id="step-5-cores" class="briefing-step">
+      <!-- ── Passo 5: Cores e Inspirações ── -->
+      <section id="step-5-cores" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label" for="q10_paleta">
               Tem uma paleta de cores ou filme que te representa visualmente?
@@ -226,7 +242,7 @@
             </p>
             <textarea id="q10_paleta" class="briefing-textarea" rows="2" placeholder="Descreva tons, sensações ou filmes de referência..."></textarea>
 
-            <!-- Color Picker Interativo de Inspiração (Opcional) -->
+            <!-- Color Picker Interativo (Opcional) -->
             <div class="briefing-color-picker-v2">
               <div class="briefing-cp-header">
                 <input type="color" id="q10_seed_hex" class="briefing-cp-native-input" title="Escolher cor base" value="#3b82f6">
@@ -239,7 +255,6 @@
                 </button>
               </div>
 
-              <!-- Swatches de exibição da paleta selecionada -->
               <div class="briefing-palette-swatches" id="palette-swatches" style="display: none; margin-bottom: 24px;"></div>
 
               <div class="briefing-palette-group-selector">
@@ -258,9 +273,11 @@
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 6: Público e Recursos ── -->
-        <div id="step-6-publico" class="briefing-step">
+      <!-- ── Passo 6: Público e Recursos ── -->
+      <section id="step-6-publico" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label">
               4. Quem é o público principal do seu site? <span class="briefing-required">*</span>
@@ -329,9 +346,11 @@
             <input type="text" id="q12_funcoes_outro_val" class="briefing-input briefing-input--other" style="display: none;" placeholder="Detalhe sua resposta..." oninput="handleOtherTextInput('q12_funcoes', this)">
           </div>
         </div>
+      </section>
 
-        <!-- ── Passo 7: Domínio e Recado ── -->
-        <div id="step-7-dominio" class="briefing-step">
+      <!-- ── Passo 7: Domínio e Recado ── -->
+      <section id="step-7-dominio" class="briefing-step">
+        <div class="briefing-step-inner">
           <div class="briefing-field">
             <label class="briefing-label">
               Você já possui um domínio registrado? <span class="briefing-required">*</span>
@@ -362,24 +381,22 @@
             <textarea id="q14_recado" class="briefing-textarea" rows="4" placeholder="Observações, ideias extras ou algo que queira pontuar..."></textarea>
           </div>
         </div>
+      </section>
 
-        <!-- Mensagens de Erro da Etapa -->
-        <div class="briefing-error-msg" id="error-msg" style="display: none;"></div>
-
-        <!-- Footer com Navegação -->
-        <footer class="briefing-step-footer" id="step-footer" style="display: none;">
-          <button class="briefing-nav-btn" onclick="handlePrev()" type="button">← Voltar</button>
-          <div style="display: flex; align-items: center; gap: 16px;">
-            <span class="briefing-shortcut-hint">Cmd+Enter para avançar</span>
-            <button id="btn-next" class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
-              Continuar →
-            </button>
-          </div>
-        </footer>
-
-      </div>
     </div>
   </main>
+
+  <!-- Rodapé Fixo com Navegação / Alertas -->
+  <footer class="briefing-step-footer" id="step-footer">
+    <button class="briefing-nav-btn" id="btn-prev" onclick="handlePrev()" type="button">← Anterior</button>
+    <div class="briefing-error-msg" id="error-msg" style="display: none;"></div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <span class="briefing-shortcut-hint">Cmd+Enter para avançar</span>
+      <button id="btn-next" class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
+        Continuar →
+      </button>
+    </div>
+  </footer>
 
   <script src="/briefing/briefing.js"></script>
 </body>
