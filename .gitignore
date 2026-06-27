@@ -45,6 +45,7 @@ specs
 pelimotion-blog-*.json
 
 # Heavy dev folders to exclude from Git and Vercel CLI
+dist/
 projetos-app/
 felipe-workspace/
 scripts/visual-backup/
