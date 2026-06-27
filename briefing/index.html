@@ -9,9 +9,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body class="briefing-root">
-  <!-- Background Parallax Video Wrapper (30% da altura da tela na base) -->
+  <!-- Canvas de Animação de Sequência (30% da altura da tela na base) -->
   <div class="briefing-bg-container">
-    <video id="briefing-bg-video" src="/briefing/video_bg_briefing.mp4" preload="auto" muted playsinline></video>
+    <canvas id="briefing-bg-canvas"></canvas>
     <div class="briefing-bg-overlay"></div>
   </div>
 
@@ -54,6 +54,22 @@
     </div>
   </aside>
 
+  <!-- Setas Laterais de Navegação Minimalistas e Brutalistas -->
+  <button id="arrow-prev" class="briefing-arrow-nav briefing-arrow-nav--left" onclick="handlePrev()" type="button" title="Voltar" style="visibility: hidden;">
+    <span class="briefing-arrow-icon">←</span>
+  </button>
+  <button id="arrow-next" class="briefing-arrow-nav briefing-arrow-nav--right" onclick="handleNext()" type="button" title="Avançar">
+    <span class="briefing-arrow-icon">→</span>
+  </button>
+
+  <!-- Toast de Erro Brutalista (Discreto, no topo direito) -->
+  <div id="brutalist-toast" class="briefing-brutalist-toast" style="display: none;">
+    <div class="briefing-toast-content">
+      <span class="briefing-toast-icon">✕</span>
+      <span id="toast-msg">Mensagem de erro</span>
+    </div>
+  </div>
+
   <!-- Main Content Area (Container de Scroll com Snap no eixo X) -->
   <main class="briefing-main-area">
     <div class="briefing-scroll-container">
@@ -66,7 +82,6 @@
           <p class="briefing-hero-text">
             Cada detalhe me ajuda a desenhar a melhor experiência para sua presença online.
           </p>
-          <!-- Indicador de scroll discreto e minimalista em vez do botão -->
           <div class="briefing-scroll-hint" onclick="handleNext()">
             <span>Deslize para a direita para iniciar</span>
             <span class="briefing-scroll-arrow">→</span>
@@ -243,6 +258,7 @@
 
             <!-- Color Picker Interativo (Opcional) -->
             <div class="briefing-color-picker-v2">
+              <div class="briefing-color-picker-v2">
               <div class="briefing-cp-header">
                 <input type="color" id="q10_seed_hex" class="briefing-cp-native-input" title="Escolher cor base" value="#3b82f6">
                 <div class="briefing-cp-instructions">
@@ -379,23 +395,23 @@
             </label>
             <textarea id="q14_recado" class="briefing-textarea" rows="4" placeholder="Observações, ideias extras ou algo que queira pontuar..."></textarea>
           </div>
+
+          <!-- Botão Brutalista de Submissão posicionado de forma nativa e integrada -->
+          <div class="briefing-submit-container">
+            <button id="btn-submit" class="briefing-submit-btn" onclick="handleSubmit()" type="button">
+              Concluir Briefing ✓
+            </button>
+          </div>
         </div>
       </section>
 
     </div>
   </main>
 
-  <!-- Rodapé Fixo com Navegação / Alertas -->
-  <footer class="briefing-step-footer" id="step-footer">
-    <button class="briefing-nav-btn" id="btn-prev" onclick="handlePrev()" type="button">← Anterior</button>
-    <div class="briefing-error-msg" id="error-msg" style="display: none;"></div>
-    <div style="display: flex; align-items: center; gap: 16px;">
-      <span class="briefing-shortcut-hint">Cmd+Enter para avançar</span>
-      <button id="btn-next" class="briefing-nav-btn briefing-nav-btn--primary" onclick="handleNext()" type="button">
-        Continuar →
-      </button>
-    </div>
-  </footer>
+  <!-- Bibliotecas externas para Scrollytelling Apple-Style (GSAP Core + ScrollTrigger + Lenis) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
   <script src="/briefing/briefing.js"></script>
 </body>

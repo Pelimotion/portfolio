@@ -119,7 +119,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   setupEventListeners();
-  setupScrollListener();
+  setupCanvasAndSequence();
   renderCuratedPalettes();
   updateNavigationUI();
 });
@@ -155,53 +155,117 @@ function setupEventListeners() {
   }
 }
 
-// ─── Layout de Scroll e Controle de Vídeo (Horizontal) ──────────────────────────
-let targetTime = 0;
+// ─── Layout de Scroll e Controle do Background Canvas ──────────────────────────
+let lenis = null;
+const totalFrames = 96;
+const images = [];
 
-function setupScrollListener() {
+function setupCanvasAndSequence() {
   const mainArea = document.querySelector('.briefing-main-area');
-  const video = document.getElementById('briefing-bg-video');
-  if (!mainArea || !video) return;
+  const scrollContainer = document.querySelector('.briefing-scroll-container');
+  const canvas = document.getElementById('briefing-bg-canvas');
+  if (!mainArea || !scrollContainer || !canvas) return;
 
-  // Interagir uma vez com o vídeo para preparar a decodificação de frames
-  video.play().then(() => {
-    video.pause();
-  }).catch(() => {});
+  const ctx = canvas.getContext('2d');
 
-  mainArea.addEventListener('scroll', () => {
+  // Inicializar o Lenis Scroll com inércia horizontal e mapeamento do mouse vertical
+  lenis = new Lenis({
+    wrapper: mainArea,
+    content: scrollContainer,
+    orientation: 'horizontal',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    wheelMultiplier: 1.1,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Pré-carregamento das imagens JPG
+  for (let i = 1; i <= totalFrames; i++) {
+    const img = new Image();
+    const frameNum = String(i).padStart(4, '0');
+    img.src = `/briefing/sequence/frame_${frameNum}.jpg`;
+    images.push(img);
+  }
+
+  // Redimensionar Canvas mantendo proporção 16:9
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight * 0.3; // 30vh na base
+    render(Math.round(currentFrame));
+  }
+
+  function render(frameIdx) {
+    const img = images[frameIdx];
+    if (!img || !img.complete) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const imgRatio = 16 / 9;
+    const canvasRatio = canvas.width / canvas.height;
+    let drawWidth, drawHeight, drawX, drawY;
+
+    if (canvasRatio > imgRatio) {
+      drawWidth = canvas.width;
+      drawHeight = canvas.width / imgRatio;
+      drawX = 0;
+      drawY = (canvas.height - drawHeight) / 2;
+    } else {
+      drawWidth = canvas.height * imgRatio;
+      drawHeight = canvas.height;
+      drawX = (canvas.width - drawWidth) / 2;
+      drawY = 0;
+    }
+
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+  }
+
+  // Renderizar primeiro frame após o carregamento inicial
+  if (images[0]) {
+    images[0].onload = () => render(0);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Integrar Lenis com o GSAP ScrollTrigger
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', () => {
+    ScrollTrigger.update();
+    
+    // Atualizar timeline ativa por aproximação
     const scrollLeft = mainArea.scrollLeft;
     const clientWidth = mainArea.clientWidth;
-    const scrollWidth = mainArea.scrollWidth;
-    
-    // Identificar passo ativo por aproximação no eixo X
     const stepIdx = Math.round(scrollLeft / clientWidth);
     if (stepIdx !== currentStep && stepIdx < WIZARD_STEPS.length) {
       currentStep = stepIdx;
       updateNavigationUI();
     }
-
-    // Calcular timecode do vídeo proporcional à duração dele
-    const maxScroll = scrollWidth - clientWidth;
-    const scrollPercent = scrollLeft / (maxScroll || 1);
-    
-    if (video.duration) {
-      targetTime = scrollPercent * video.duration;
-    }
   });
 
-  // Loop de suavização amanteigada (Lerp) para frame-by-frame scrubbing
-  function updateVideoFrame() {
-    if (video.duration) {
-      const diff = targetTime - video.currentTime;
-      if (Math.abs(diff) > 0.01) {
-        // Altera gradualmente o tempo do vídeo (velocidade 0.08)
-        video.currentTime += diff * 0.08;
+  let currentFrame = 0;
+
+  // GSAP ScrollTrigger na horizontal atrelado ao contêiner de rolagem do Lenis
+  gsap.to({ frame: 0 }, {
+    frame: totalFrames - 1,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.briefing-scroll-container',
+      scroller: '.briefing-main-area',
+      start: 'left left',
+      end: 'right right',
+      scrub: 0.15, // controle ultra fluido e suave do frame
+      horizontal: true,
+      onUpdate: (self) => {
+        const frameIdx = Math.min(totalFrames - 1, Math.max(0, Math.round(self.progress * (totalFrames - 1))));
+        currentFrame = frameIdx;
+        render(frameIdx);
       }
     }
-    requestAnimationFrame(updateVideoFrame);
-  }
-
-  requestAnimationFrame(updateVideoFrame);
+  });
 }
 
 function updateNavigationUI() {
@@ -227,17 +291,15 @@ function updateNavigationUI() {
   if (elMobBar) elMobBar.style.width = `${progressPct}%`;
   if (elMobStep) elMobStep.textContent = `${currentStep} / ${WIZARD_STEPS.length - 1}`;
 
-  // Botões de navegação no footer
-  const btnPrev = document.getElementById('btn-prev');
-  const btnNext = document.getElementById('btn-next');
+  // Controle de visibilidade das setas laterais de navegação
+  const arrowPrev = document.getElementById('arrow-prev');
+  const arrowNext = document.getElementById('arrow-next');
   
-  if (btnPrev) btnPrev.style.visibility = currentStep > 0 ? 'visible' : 'hidden';
-  if (btnNext) {
-    if (currentStep === WIZARD_STEPS.length - 1) {
-      btnNext.innerHTML = 'Concluir Briefing ✓';
-    } else {
-      btnNext.innerHTML = 'Continuar →';
-    }
+  if (arrowPrev) {
+    arrowPrev.style.visibility = currentStep > 0 ? 'visible' : 'hidden';
+  }
+  if (arrowNext) {
+    arrowNext.style.visibility = currentStep < WIZARD_STEPS.length - 1 ? 'visible' : 'hidden';
   }
 
   setErrorMsg('');
@@ -246,11 +308,11 @@ function updateNavigationUI() {
 function scrollToStep(idx) {
   const stepDef = WIZARD_STEPS[idx];
   const el = document.getElementById(stepDef.id);
-  const mainArea = document.querySelector('.briefing-main-area');
-  if (el && mainArea) {
-    mainArea.scrollTo({
-      left: el.offsetLeft,
-      behavior: 'smooth'
+  if (el && lenis) {
+    lenis.scrollTo(el, {
+      immediate: false,
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing suave
     });
   }
 }
@@ -284,15 +346,25 @@ function handlePrev() {
   scrollToStep(Math.max(currentStep - 1, 0));
 }
 
+let toastTimeout = null;
+
 function setErrorMsg(msg) {
-  const errEl = document.getElementById('error-msg');
-  if (errEl) {
-    if (msg) {
-      errEl.textContent = msg;
-      errEl.style.display = 'block';
-    } else {
-      errEl.style.display = 'none';
-    }
+  const toastEl = document.getElementById('brutalist-toast');
+  const toastMsg = document.getElementById('toast-msg');
+  if (!toastEl || !toastMsg) return;
+
+  if (toastTimeout) clearTimeout(toastTimeout);
+
+  if (msg) {
+    toastMsg.textContent = msg;
+    toastEl.style.display = 'block';
+    
+    // Auto-hide após 4 segundos
+    toastTimeout = setTimeout(() => {
+      toastEl.style.display = 'none';
+    }, 4000);
+  } else {
+    toastEl.style.display = 'none';
   }
 }
 
