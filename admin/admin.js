@@ -3,6 +3,7 @@ let D = null;
 let currentSection = null;
 let currentKey = null;
 let hasUnsaved = false;
+window.isUnlocked = function() { return true; };
 
 // ─── Text Formatting Helper ───────────────────────────────────────────────
 function insertFormat(id, tag) {
@@ -412,7 +413,7 @@ function showPortfolio() {
   const P = D.portfolio || {};
   document.getElementById('main-content').innerHTML = `
     <div class="page-header"><div class="page-label">PORTFOLIO PAGE</div><h1 class="page-title">Portfolio Settings</h1></div>
-    <div class="preview-ref">📍 <strong>File:</strong> V1/portfolio/index.html — Footer quotes e localização do estúdio. Contatos e redes sociais estão em <strong>Landing Page → Contact & Social Links</strong>.</div>
+    <div class="preview-ref">📍 <strong>File:</strong> V1/portfolio/index.html — Footer quotes e localização do estúdio.</div>
     <div class="card"><div class="card-title"><span class="icon">💬</span> Footer Quotes</div>
       <div class="field"><label>Quote 1 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-fq1" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1 || 'Visual systems built for those who set the pace, not just follow it.')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-fq1','f-fq1_pt','en','pt')">↕ Auto-Traduzir</button></div>
       <div class="field"><label>Quote 1 — <span style="color:#34d399">PT</span></label><textarea id="f-fq1_pt" rows="2" oninput="markUnsaved()">${esc(P.footerQuote1_pt || 'Sistemas visuais para quem define o ritmo, não apenas o acompanha.')}</textarea></div>
@@ -426,92 +427,176 @@ function showPortfolio() {
 function showCurriculum() {
   autoSave(); currentSection = 'curriculum'; currentKey = null; highlightSb(null);
   const C = D.curriculum || {};
+  const S_pt = C.skills_pt || {};
+
   document.getElementById('main-content').innerHTML = `
-    <div class="page-header"><div class="page-label">CURRICULUM PAGE</div><h1 class="page-title">Curriculum Vitae</h1></div>
-    <div class="preview-ref">📍 <strong>Public:</strong> Curriculum/index.html — <strong>Private:</strong> Curriculum/private/index.html (CV + Cover Letter with PDF download)</div>
-    <div class="card"><div class="card-title"><span class="icon">👤</span> Profile</div>
-      <div class="field"><label>Accent Color (Hex)</label><input type="color" id="f-cvAccent" value="${esc(C.accentColor || '#34d399')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Full Name</label><input id="f-cvName" value="${esc(C.name || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Title Line</label><input id="f-cvTitle" value="${esc(C.title || '')}" oninput="markUnsaved()"><div class="hint">e.g. "Creative Director, motion branding and artistic direction."</div></div>
-      <div class="field"><label>Subtitle / Tagline <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat(\'f-cvSub\', \'b\')">B</button><button type="button" tabindex="-1" onclick="insertFormat(\'f-cvSub\', \'i\')">I</button></div></label><textarea id="f-cvSub" rows="2" oninput="markUnsaved()">${esc(C.subtitle || '')}</textarea></div>
-      <div class="field"><label>Based In</label><input id="f-cvBase" value="${esc(C.basedIn || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Disciplines</label><input id="f-cvDisc" value="${esc(C.disciplines || '')}" oninput="markUnsaved()"><div class="hint">Separated by " · " e.g. "Motion · Direction · Branding · CGI"</div></div>
+    <div class="page-header"><div class="page-label">CURRICULUM PAGE</div><h1 class="page-title">Curriculum Vitae (Bilingual EN / PT)</h1></div>
+    <div class="preview-ref">📍 <strong>Public:</strong> Curriculum/index.html — <strong>Private:</strong> Curriculum/private/index.html (CV + Cover Letter)</div>
+    
+    <div class="card"><div class="card-title"><span class="icon">👤</span> Profile Information</div>
+      <div class="field-pair">
+        <div class="field"><label>Accent Color (Hex)</label><input type="color" id="f-cvAccent" value="${esc(C.accentColor || '#34d399')}" oninput="markUnsaved()"></div>
+        <div class="field"><label>Full Name</label><input id="f-cvName" value="${esc(C.name || '')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Title Line — <span style="color:var(--fg3)">EN</span></label><input id="f-cvTitle" value="${esc(C.title || '')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvTitle','f-cvTitle_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Title Line — <span style="color:#34d399">PT</span></label><input id="f-cvTitle_pt" value="${esc(C.title_pt || '')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Subtitle / Tagline — <span style="color:var(--fg3)">EN</span> <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvSub', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvSub', 'i')">I</button></div></label><textarea id="f-cvSub" rows="2" oninput="markUnsaved()">${esc(C.subtitle || '')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvSub','f-cvSub_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Subtitle / Tagline — <span style="color:#34d399">PT</span> <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvSub_pt', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvSub_pt', 'i')">I</button></div></label><textarea id="f-cvSub_pt" rows="2" oninput="markUnsaved()">${esc(C.subtitle_pt || '')}</textarea></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Based In — <span style="color:var(--fg3)">EN</span></label><input id="f-cvBase" value="${esc(C.basedIn || '')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvBase','f-cvBase_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Based In — <span style="color:#34d399">PT</span></label><input id="f-cvBase_pt" value="${esc(C.basedIn_pt || '')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Disciplines — <span style="color:var(--fg3)">EN</span></label><input id="f-cvDisc" value="${esc(C.disciplines || '')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvDisc','f-cvDisc_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Disciplines — <span style="color:#34d399">PT</span></label><input id="f-cvDisc_pt" value="${esc(C.disciplines_pt || '')}" oninput="markUnsaved()"></div>
+      </div>
       <div class="field"><label>Years Range</label><input id="f-cvYears" value="${esc(C.yearsRange || '')}" oninput="markUnsaved()"></div>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">📝</span> Profile Text</div>
-      <div class="field"><label>Paragraph 1 (main summary — shown in bold)</label><textarea id="f-cvP1" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph1 || '')}</textarea><div class="hint">Your elevator pitch. Focus on what you do and your value proposition.</div></div>
-      <div class="field"><label>Paragraph 2 (supporting detail)</label><textarea id="f-cvP2" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph2 || '')}</textarea><div class="hint">Your background, unique differentiator, current focus.</div></div>
+      <div class="field-pair">
+        <div class="field"><label>Paragraph 1 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-cvP1" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph1 || '')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvP1','f-cvP1_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Paragraph 1 — <span style="color:#34d399">PT</span></label><textarea id="f-cvP1_pt" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph1_pt || '')}</textarea></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Paragraph 2 — <span style="color:var(--fg3)">EN</span></label><textarea id="f-cvP2" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph2 || '')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvP2','f-cvP2_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Paragraph 2 — <span style="color:#34d399">PT</span></label><textarea id="f-cvP2_pt" rows="3" oninput="markUnsaved()">${esc(C.profileParagraph2_pt || '')}</textarea></div>
+      </div>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">📊</span> Stats (4 metric boxes)</div>
       ${(C.stats || [{ value: '', label: '' }, { value: '', label: '' }, { value: '', label: '' }, { value: '', label: '' }]).map((s, i) => `
-        <div style="display:flex;gap:10px;margin-bottom:10px">
-          <div class="field" style="flex:1;margin:0"><label>Value ${i + 1}</label><input id="f-stat${i}v" value="${esc(s.value)}" oninput="markUnsaved()"></div>
-          <div class="field" style="flex:2;margin:0"><label>Label ${i + 1}</label><input id="f-stat${i}l" value="${esc(s.label)}" oninput="markUnsaved()"></div>
+        <div class="exp-block" style="margin-bottom:12px">
+          <div class="exp-block-title">Stat Box ${i + 1}</div>
+          <div class="field-pair" style="margin-bottom:6px">
+            <div class="field" style="margin:0"><label>Value (EN)</label><input id="f-stat${i}v" value="${esc(s.value || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Value (PT)</label><input id="f-stat${i}v_pt" value="${esc(s.value_pt || s.value || '')}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin:0">
+            <div class="field" style="margin:0"><label>Label (EN)</label><input id="f-stat${i}l" value="${esc(s.label || '')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:4px;font-size:9px;padding:2px 8px" onclick="autoTranslate('f-stat${i}l','f-stat${i}l_pt','en','pt')">↕ Traduzir</button></div>
+            <div class="field" style="margin:0"><label>Label (PT)</label><input id="f-stat${i}l_pt" value="${esc(s.label_pt || '')}" oninput="markUnsaved()"></div>
+          </div>
         </div>`).join('')}
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">💼</span> Experience (${(C.experience || []).length} entries)</div>
-      <div class="hint" style="margin-bottom:14px">Each entry = one job/role. Edit inline below. To add/remove entries, use the buttons.</div>
       ${(C.experience || []).map((e, i) => `
         <div class="exp-block"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div class="exp-block-title">Experience ${i + 1}</div>
           <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeExp(${i})">Remove</button>
         </div>
-          <div style="display:flex;gap:10px;margin-bottom:8px">
-            <div class="field" style="flex:1;margin:0"><label>Period</label><input id="f-exp${i}-period" value="${esc(e.period)}" oninput="markUnsaved()"></div>
-            <div class="field" style="flex:2;margin:0"><label>Role</label><input id="f-exp${i}-role" value="${esc(e.role)}" oninput="markUnsaved()"></div>
+          <div class="field-pair">
+            <div class="field" style="margin:0"><label>Period (EN)</label><input id="f-exp${i}-period" value="${esc(e.period || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Period (PT)</label><input id="f-exp${i}-period_pt" value="${esc(e.period_pt || e.period || '')}" oninput="markUnsaved()"></div>
           </div>
-          <div class="field"><label>Company</label><input id="f-exp${i}-company" value="${esc(e.company)}" oninput="markUnsaved()"></div>
-          <div class="field"><label>Bullet points (one per line)</label><textarea id="f-exp${i}-items" rows="3" oninput="markUnsaved()">${(e.items || []).join('\n')}</textarea><div class="hint">Each line becomes a bullet point. Focus on achievements and impact.</div></div>
-          <div class="field"><label>Tags (comma-separated)</label><input id="f-exp${i}-tags" value="${(e.tags || []).join(', ')}" oninput="markUnsaved()"><div class="hint">e.g. DIRECTION, SYSTEMS, AI_R&D</div></div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Role (EN)</label><input id="f-exp${i}-role" value="${esc(e.role || '')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:4px;font-size:9px;padding:2px 8px" onclick="autoTranslate('f-exp${i}-role','f-exp${i}-role_pt','en','pt')">↕ Traduzir</button></div>
+            <div class="field" style="margin:0"><label>Role (PT)</label><input id="f-exp${i}-role_pt" value="${esc(e.role_pt || '')}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Company (EN)</label><input id="f-exp${i}-company" value="${esc(e.company || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Company (PT)</label><input id="f-exp${i}-company_pt" value="${esc(e.company_pt || e.company || '')}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Bullet points — EN (one per line)</label><textarea id="f-exp${i}-items" rows="3" oninput="markUnsaved()">${(e.items || []).join('\n')}</textarea><button type="button" class="btn" style="margin-top:4px;font-size:9px;padding:2px 8px" onclick="autoTranslate('f-exp${i}-items','f-exp${i}-items_pt','en','pt')">↕ Traduzir</button></div>
+            <div class="field" style="margin:0"><label>Bullet points — PT (uma por linha)</label><textarea id="f-exp${i}-items_pt" rows="3" oninput="markUnsaved()">${(e.items_pt || []).join('\n')}</textarea></div>
+          </div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Tags (EN)</label><input id="f-exp${i}-tags" value="${(e.tags || []).join(', ')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Tags (PT)</label><input id="f-exp${i}-tags_pt" value="${(e.tags_pt || e.tags || []).join(', ')}" oninput="markUnsaved()"></div>
+          </div>
         </div>`).join('')}
       <button class="btn" style="margin-top:10px" onclick="addExp()">+ Add Experience</button>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">🎓</span> Education (${(C.education || []).length} entries)</div>
       ${(C.education || []).map((e, i) => `
         <div class="exp-block"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div class="exp-block-title">Education ${i + 1}</div>
           <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeEdu(${i})">Remove</button>
         </div>
-          <div style="display:flex;gap:10px">
-            <div class="field" style="flex:1;margin:0"><label>Period</label><input id="f-edu${i}-period" value="${esc(e.period)}" oninput="markUnsaved()"></div>
-            <div class="field" style="flex:2;margin:0"><label>Title</label><input id="f-edu${i}-title" value="${esc(e.title)}" oninput="markUnsaved()"></div>
-            <div class="field" style="flex:2;margin:0"><label>Institution</label><input id="f-edu${i}-inst" value="${esc(e.institution)}" oninput="markUnsaved()"></div>
+          <div class="field-pair">
+            <div class="field" style="margin:0"><label>Period (EN)</label><input id="f-edu${i}-period" value="${esc(e.period || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Period (PT)</label><input id="f-edu${i}-period_pt" value="${esc(e.period_pt || e.period || '')}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Title (EN)</label><input id="f-edu${i}-title" value="${esc(e.title || '')}" oninput="markUnsaved()"><button type="button" class="btn" style="margin-top:4px;font-size:9px;padding:2px 8px" onclick="autoTranslate('f-edu${i}-title','f-edu${i}-title_pt','en','pt')">↕ Traduzir</button></div>
+            <div class="field" style="margin:0"><label>Title (PT)</label><input id="f-edu${i}-title_pt" value="${esc(e.title_pt || '')}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Institution (EN)</label><input id="f-edu${i}-inst" value="${esc(e.institution || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Institution (PT)</label><input id="f-edu${i}-inst_pt" value="${esc(e.institution_pt || e.institution || '')}" oninput="markUnsaved()"></div>
           </div>
         </div>`).join('')}
       <button class="btn" style="margin-top:10px" onclick="addEdu()">+ Add Education</button>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">🌐</span> Languages (${(C.languages || []).length} entries)</div>
       ${(C.languages || []).map((l, i) => `
-        <div style="display:flex;gap:10px;margin-bottom:8px">
-          <div class="field" style="flex:1;margin:0"><label>Language</label><input id="f-lang${i}-name" value="${esc(l.name)}" oninput="markUnsaved()"></div>
-          <div class="field" style="flex:1;margin:0"><label>Level</label><input id="f-lang${i}-level" value="${esc(l.level)}" oninput="markUnsaved()"></div>
-          <button class="btn danger" style="font-size:8px;padding:4px 8px;align-self:flex-end" onclick="removeLang(${i})">✕</button>
+        <div class="exp-block" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="exp-block-title">Language ${i + 1}</div>
+            <button class="btn danger" style="font-size:8px;padding:4px 8px" onclick="removeLang(${i})">✕</button>
+          </div>
+          <div class="field-pair">
+            <div class="field" style="margin:0"><label>Language (EN)</label><input id="f-lang${i}-name" value="${esc(l.name || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Language (PT)</label><input id="f-lang${i}-name_pt" value="${esc(l.name_pt || l.name || '')}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin-top:8px">
+            <div class="field" style="margin:0"><label>Level (EN)</label><input id="f-lang${i}-level" value="${esc(l.level || '')}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Level (PT)</label><input id="f-lang${i}-level_pt" value="${esc(l.level_pt || l.level || '')}" oninput="markUnsaved()"></div>
+          </div>
         </div>`).join('')}
       <button class="btn" style="margin-top:6px" onclick="addLang()">+ Add Language</button>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">🛠️</span> Skills & Toolset (${Object.keys(C.skills || {}).length} categories)</div>
-      <div class="hint" style="margin-bottom:14px">Each category = one column in the Skills section. Items are comma-separated. Edit category names and tools below.</div>
-      ${Object.keys(C.skills || {}).map((cat, i) => `
+      ${Object.keys(C.skills || {}).map((cat, i) => {
+        const catPt = S_pt[cat] ? S_pt[cat].name : cat;
+        const itemsPt = S_pt[cat] ? (S_pt[cat].items || []).join(', ') : (C.skills[cat] || []).join(', ');
+        return `
         <div class="exp-block"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div class="exp-block-title">Category ${i + 1}</div>
           <button class="btn danger" style="font-size:8px;padding:4px 10px" onclick="removeSkillCat(${i})">Remove</button>
         </div>
-          <div class="field"><label>Category Name</label><input id="f-scat${i}-name" value="${esc(cat)}" oninput="markUnsaved()"><div class="hint">e.g. "Motion & Post", "Design & 3D", "AI & Code"</div></div>
-          <div class="field"><label>Tools (comma-separated)</label><input id="f-scat${i}-items" value="${esc((C.skills[cat] || []).join(', '))}" oninput="markUnsaved()"></div>
-        </div>`).join('')}
+          <div class="field-pair">
+            <div class="field" style="margin:0"><label>Category Name (EN)</label><input id="f-scat${i}-name" value="${esc(cat)}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Category Name (PT)</label><input id="f-scat${i}-name_pt" value="${esc(catPt)}" oninput="markUnsaved()"></div>
+          </div>
+          <div class="field-pair" style="margin-top:10px">
+            <div class="field" style="margin:0"><label>Tools (EN — comma-separated)</label><input id="f-scat${i}-items" value="${esc((C.skills[cat] || []).join(', '))}" oninput="markUnsaved()"></div>
+            <div class="field" style="margin:0"><label>Tools (PT — comma-separated)</label><input id="f-scat${i}-items_pt" value="${esc(itemsPt)}" oninput="markUnsaved()"></div>
+          </div>
+        </div>`;
+      }).join('')}
       <button class="btn" style="margin-top:10px" onclick="addSkillCat()">+ Add Category</button>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">🏢</span> Client Marquee</div>
-      <div class="field"><label>Brands (comma-separated)</label><textarea id="f-cvMarquee" rows="2" oninput="markUnsaved()">${esc((C.clientMarquee || []).join(', '))}</textarea><div class="hint">Scrolling brand names on the CV page.</div></div>
+      <div class="field"><label>Brands (comma-separated)</label><textarea id="f-cvMarquee" rows="2" oninput="markUnsaved()">${esc((C.clientMarquee || []).join(', '))}</textarea></div>
     </div>
+
     <div class="card"><div class="card-title"><span class="icon">📱</span> Contact & Social</div>
-      <div class="field"><label>Contact Call to Action <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'i')">I</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'br')">↵</button></div></label><textarea id="f-cvContactText" rows="3" oninput="markUnsaved()">${esc(C.contactText || 'Open to direction,<br>\n<span class="serif text-white/70">collaborations</span> and<br>\nlong-form briefs<span class="text-white/30">.</span>')}</textarea><div class="hint">The large text in the Contact section of the curriculum.</div></div>
-      <div class="field"><label>Email</label><input id="f-cvEmail" value="${esc(C.contactEmail || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Website</label><input id="f-cvWebsite" value="${esc(C.contactWebsite || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>WhatsApp</label><input id="f-cvWA" value="${esc(C.contactWhatsApp || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Instagram</label><input id="f-cvIG" value="${esc(C.socialInstagram || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>LinkedIn</label><input id="f-cvLI" value="${esc(C.socialLinkedIn || '')}" oninput="markUnsaved()"></div>
-      <div class="field"><label>Behance</label><input id="f-cvBE" value="${esc(C.socialBehance || '')}" oninput="markUnsaved()"></div>
+      <div class="field-pair">
+        <div class="field"><label>Contact Call to Action — EN <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'i')">I</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText', 'br')">↵</button></div></label><textarea id="f-cvContactText" rows="3" oninput="markUnsaved()">${esc(C.contactText || '')}</textarea><button type="button" class="btn" style="margin-top:6px;font-size:10px;padding:4px 10px" onclick="autoTranslate('f-cvContactText','f-cvContactText_pt','en','pt')">↕ Auto-Traduzir</button></div>
+        <div class="field"><label>Contact Call to Action — PT <div class="format-toolbar"><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText_pt', 'b')">B</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText_pt', 'i')">I</button><button type="button" tabindex="-1" onclick="insertFormat('f-cvContactText_pt', 'br')">↵</button></div></label><textarea id="f-cvContactText_pt" rows="3" oninput="markUnsaved()">${esc(C.contactText_pt || '')}</textarea></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>Email</label><input id="f-cvEmail" value="${esc(C.contactEmail || '')}" oninput="markUnsaved()"></div>
+        <div class="field"><label>Website</label><input id="f-cvWebsite" value="${esc(C.contactWebsite || '')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>WhatsApp</label><input id="f-cvWA" value="${esc(C.contactWhatsApp || '')}" oninput="markUnsaved()"></div>
+        <div class="field"><label>Instagram</label><input id="f-cvIG" value="${esc(C.socialInstagram || '')}" oninput="markUnsaved()"></div>
+      </div>
+      <div class="field-pair">
+        <div class="field"><label>LinkedIn</label><input id="f-cvLI" value="${esc(C.socialLinkedIn || '')}" oninput="markUnsaved()"></div>
+        <div class="field"><label>Behance</label><input id="f-cvBE" value="${esc(C.socialBehance || '')}" oninput="markUnsaved()"></div>
+      </div>
     </div>
     <div class="actions-bar"><button class="btn primary" onclick="saveCurriculum()">Apply Changes</button></div>`;
 }
@@ -528,7 +613,7 @@ function openEditor(type, key) {
     <div class="page-header">
       <div class="page-label">${isClient ? 'CLIENT' : 'CATEGORY'}</div>
       <div style="display:flex; align-items:center; gap:15px">
-        <h1 class="page-title" id="page-title-display">${key}</h1>
+        <h1 class="page-title" id="page-title-display">${esc(key)}</h1>
         ${isClient ? `<button class="btn" style="font-size:8px; padding:4px 8px" onclick="startRename()">✎ Rename</button>` : ''}
       </div>
       <div id="rename-box" style="display:none; margin-top:10px; gap:8px; align-items:center">

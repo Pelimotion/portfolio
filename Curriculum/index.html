@@ -45,11 +45,11 @@
                     <span class="hidden lg:inline text-white/20 hover:text-white transition-colors cursor-pointer" onclick="event.preventDefault(); generatePDF();" title="Save as PDF">— MT_PH_01.2025</span>
                 </a>
                 <nav class="hidden md:flex flex-1 justify-center gap-10 nav-label text-white/55">
-                    <a href="#profile" class="nav-link">01.Profile</a>
-                    <a href="#experience" class="nav-link">02.Exp</a>
-                    <a href="#education" class="nav-link">03.Edu</a>
-                    <a href="#skills" class="nav-link">04.Skill</a>
-                    <a href="#contact" class="nav-link">05.Liaise</a>
+                    <a href="#profile" class="nav-link" data-en="01.Profile" data-pt="01.Perfil">01.Profile</a>
+                    <a href="#experience" class="nav-link" data-en="02.Exp" data-pt="02.Exp">02.Exp</a>
+                    <a href="#education" class="nav-link" data-en="03.Edu" data-pt="03.Edu">03.Edu</a>
+                    <a href="#skills" class="nav-link" data-en="04.Skill" data-pt="04.Habilidades">04.Skill</a>
+                    <a href="#contact" class="nav-link" data-en="05.Liaise" data-pt="05.Contato">05.Liaise</a>
                 </nav>
                 <div class="nav-label flex-1 flex justify-end items-center gap-4 font-mono">
                         <button class="lang-toggle" onclick="toggleTheme()" title="Toggle Theme" style="margin-right:8px;">◐</button>
@@ -73,10 +73,10 @@
 
             <div class="container-custom grid grid-cols-12 pt-20 pb-10 sm:pt-28">
                 <div class="col-span-12 lg:col-span-8 reveal-mech">
-                    <div class="label-tiny">Curriculum Vitae — Edition 01 / 2025</div>
+                    <div class="label-tiny" data-en="Curriculum Vitae — Edition 01 / 2025" data-pt="Curriculum Vitae — Edição 01 / 2025">Curriculum Vitae — Edition 01 / 2025</div>
                     <h1 class="hero-title mt-6" id="dyn-name">Felipe<br>Conceição<span class="text-white/30">.</span></h1>
                     <div class="mt-8 max-w-xl">
-                        <p class="hero-sub">
+                        <p class="hero-sub" id="dyn-sub">
                             Creative Director, <span class="serif">motion branding</span> and <span
                                 class="serif">artistic direction</span>.
                             Eight years translating brand strategy into rhythm, light and image — from generative
@@ -86,19 +86,19 @@
                 </div>
                 <aside class="col-span-12 mt-12 grid grid-cols-2 gap-y-8 lg:col-span-4 lg:mt-0 lg:pl-10">
                     <div>
-                        <div class="label-tiny">Based in</div>
+                        <div class="label-tiny" data-en="Based in" data-pt="Localização">Based in</div>
                         <div class="info-text mt-2" id="dyn-based">Rio de Janeiro, BR</div>
                     </div>
                     <div>
-                        <div class="label-tiny">Local time</div>
+                        <div class="label-tiny" data-en="Local time" data-pt="Horário local">Local time</div>
                         <div id="local-time" class="info-text mt-2 font-mono">—</div>
                     </div>
                     <div>
-                        <div class="label-tiny">Discipline</div>
+                        <div class="label-tiny" data-en="Discipline" data-pt="Disciplinas">Discipline</div>
                         <div class="info-text mt-2" id="dyn-disc">Motion · Direction<br>Branding · CGI</div>
                     </div>
                     <div>
-                        <div class="label-tiny">Years</div>
+                        <div class="label-tiny" data-en="Years" data-pt="Anos">Years</div>
                         <div class="info-text mt-2" id="dyn-years">2017 → Now</div>
                     </div>
                 </aside>
@@ -555,18 +555,20 @@ async function loadDynamicContent(lang = window._PLM_LANG || 'en') {
   }
 
   // ── Helpers ──
-  const setText = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
-  const setHTML = (id, val) => { const el=document.getElementById(id); if(el) el.innerHTML=val; };
+  const setText = (id, val) => { const el = typeof id === 'string' ? document.getElementById(id) : id; if(el) el.textContent = val; };
+  const setHTML = (id, val) => { const el = typeof id === 'string' ? document.getElementById(id) : id; if(el) el.innerHTML = val; };
 
   // ── Meta ──
   if(C.basedIn) setText('dyn-based', get('basedIn'));
   if(C.disciplines) setHTML('dyn-disc', get('disciplines').replace(/·/g,'<br>'));
   if(C.yearsRange) setText('dyn-years', get('yearsRange'));
+  const subEl = document.getElementById('dyn-sub');
+  if(subEl) setHTML('dyn-sub', get('subtitle'));
 
   // ── Profile ──
   setHTML('dyn-p1', get('profileParagraph1'));
   const p2 = document.querySelector('#profile p.mt-6');
-  if(p2) p2.textContent = get('profileParagraph2');
+  if(p2) setHTML(p2, get('profileParagraph2'));
 
   // ── Stats ──
   const statsEl = document.getElementById('dyn-stats');

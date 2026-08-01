@@ -4485,28 +4485,42 @@
   "curriculum": {
     "name": "Felipe Conceição",
     "title": "Creative Director, motion branding and creative editing",
+    "title_pt": "Diretor Criativo, motion branding e edição criativa",
     "subtitle": "Eight years translating brand strategy into rhythm, light and image — from generative pipelines to projection mapping.",
+    "subtitle_pt": "Oito anos traduzindo estratégia de marca em ritmo, luz e imagem — de pipelines generativos a mapeamento de projeção.",
     "basedIn": "Rio de Janeiro, BR",
-    "disciplines": "Motion · Branding  · Post Production",
+    "basedIn_pt": "Rio de Janeiro, BR",
+    "disciplines": "Motion · Branding · Post Production",
+    "disciplines_pt": "Motion · Direção · Branding · CGI",
     "yearsRange": "2017 > Now",
     "profileParagraph1": "I've spent eight years working in the space where design decisions become timing decisions — because timing is what the audience actually remembers. My background in music trained that instinct before motion design gave it a medium.",
+    "profileParagraph1_pt": "Trabalho onde a <span class=\"serif italic\">estratégia</span> encontra o <span class=\"serif italic\">motion</span>. Ao longo de oito anos, construí sistemas visuais para marcas globais nos setores automotivo, financeiro e cultural — desenhando como a marca se <em class=\"serif italic not-italic\">move</em>, não apenas como ela se parece.",
     "profileParagraph2": "Today I apply it across industries, formats, and scales: building brands that don't just look right, but land at the right moment.",
+    "profileParagraph2_pt": "Minha bagagem como músico molda tudo: ritmo, peso, silêncio. Hoje lidero o Pelimotion Hub, onde desenvolvemos pipelines de motion integrados a IA e dirigimos experiências imersivas — combinando motion design com luz e projeção para teatro e performances ao vivo.",
     "stats": [
       {
         "value": "08+",
-        "label": "Years of Practice"
+        "label": "Years of Practice",
+        "value_pt": "08+",
+        "label_pt": "Anos de Prática"
       },
       {
         "value": "40+",
-        "label": "Brand Campaigns"
+        "label": "Brand Campaigns",
+        "value_pt": "40+",
+        "label_pt": "Campanhas de Marca"
       },
       {
         "value": "12",
-        "label": "Countries Reached"
+        "label": "Countries Reached",
+        "value_pt": "12",
+        "label_pt": "Países Alcançados"
       },
       {
         "value": "",
-        "label": ""
+        "label": "",
+        "value_pt": "",
+        "label_pt": ""
       }
     ],
     "clientMarquee": [
@@ -4524,14 +4538,24 @@
     "experience": [
       {
         "period": "2018 — Now",
+        "period_pt": "2018 — Presente",
         "role": "Creative Director & Motion Designer",
+        "role_pt": "Diretor Criativo & Motion Designer",
         "company": "Pelimotion",
+        "company_pt": "Pelimotion",
         "items": [
           "Systems lead for modular motion pipelines (digital/retail).",
           "AI-integrated generative video workflow R&D.",
           "Immersive artistic direction (light/projection).",
           "Brand strategy alignment for high-ticket positioning.",
           "Strategic brands: Suzano, O Boticário, Colcci, FG and Embraed."
+        ],
+        "items_pt": [
+          "Liderança de sistemas para pipelines de motion modulares (digital/varejo).",
+          "P&D de fluxos de trabalho de vídeo generativo integrados a IA.",
+          "Direção artística imersiva (luz/projeção).",
+          "Alinhamento de estratégia de marca para posicionamento de alto padrão.",
+          "Marcas estratégicas: Suzano, O Boticário, Colcci, FG e Embraed."
         ],
         "tags": [
           "MOTION_DESIGN",
@@ -4542,29 +4566,58 @@
           "EVENTS",
           "SOCIAL",
           "DIRECTION"
+        ],
+        "tags_pt": [
+          "MOTION_DESIGN",
+          "P&D_IA",
+          "SISTEMAS",
+          "AO_VIVO",
+          "VAREJO",
+          "EVENTOS",
+          "SOCIAL",
+          "DIREÇÃO"
         ]
       },
       {
         "period": "2024 — 2025",
+        "period_pt": "2024 — 2025",
         "role": "Artistic Collaboration — Duo Sirius",
+        "role_pt": "Colaboração Artística — Duo Sirius",
         "company": "Interdisciplinary Visual Artist",
+        "company_pt": "Artista Visual Interdisciplinar",
         "items": [
           "Focused on high-ticket events, blending painting and video art."
+        ],
+        "items_pt": [
+          "Foco em eventos de alto padrão, combinando pintura e videoarte."
         ],
         "tags": [
           "GENERATIVE",
           "FINE_ART",
           "MERCHANDISING"
+        ],
+        "tags_pt": [
+          "GENERATIVO",
+          "ARTE_FINA",
+          "MERCHANDISING"
         ]
       },
       {
         "period": "2019 — 2022",
+        "period_pt": "2019 — 2022",
         "role": "Motion Designer & Post-Producer",
+        "role_pt": "Motion Designer & Pós-Produtor",
         "company": "Rockset",
+        "company_pt": "Rockset",
         "items": [
           "Owned post-production pipeline for aesthetic excellence.",
           "Broadcast / Digital Signage assets for automotive, financial and corporate sector.",
           "Motion Design for Live Streams and Advertising"
+        ],
+        "items_pt": [
+          "Responsável pelo pipeline de pós-produção para excelência estética.",
+          "Ativos para Broadcast / Sinalização Digital nos setores automotivo, financeiro e corporativo.",
+          "Motion Design para transmissões ao vivo e publicidade."
         ],
         "tags": [
           "MOTION",
@@ -4572,15 +4625,29 @@
           "CGI",
           "POST_PROD",
           "BROADCAST"
+        ],
+        "tags_pt": [
+          "MOTION",
+          "AO_VIVO",
+          "CGI",
+          "POS_PROD",
+          "BROADCAST"
         ]
       },
       {
         "period": "2016 — 2018",
+        "period_pt": "2016 — 2018",
         "role": "Video Producer & Creative Editor",
+        "role_pt": "Produtor de Vídeo & Editor Criativo",
         "company": "IAPP — Instituto Ana Paula Pujol",
+        "company_pt": "IAPP — Instituto Ana Paula Pujol",
         "items": [
           "Full-cycle video production for a high-volume online education platform: from course direction and capture to final edit and delivery.",
           "— Extended scope into brand communications — producing advertising campaigns and internal materials alongside core course content."
+        ],
+        "items_pt": [
+          "Produção de vídeo em ciclo completo para plataforma de educação online de alto volume: da direção de cursos e captação até edição final e entrega.",
+          "— Escopo estendido para comunicação de marca — produzindo campanhas publicitárias e materiais internos além do conteúdo de cursos."
         ],
         "tags": [
           "VIDEO_PRODUCTION",
@@ -4588,43 +4655,68 @@
           "CAPTURE",
           "POST_PROD",
           "ONLINE_EDUCATION"
+        ],
+        "tags_pt": [
+          "PRODUCAO_VIDEO",
+          "DIRECAO",
+          "CAPTACAO",
+          "POS_PROD",
+          "EDUCACAO_ONLINE"
         ]
       }
     ],
     "education": [
       {
         "period": "2014 — 2017",
+        "period_pt": "2014 — 2017",
         "title": "Audiovisual Production",
-        "institution": "UNIVALI — Universidade do Vale do Itajaí"
+        "title_pt": "Produção Audiovisual",
+        "institution": "UNIVALI — Universidade do Vale do Itajaí",
+        "institution_pt": "UNIVALI — Universidade do Vale do Itajaí"
       },
       {
         "period": "2021",
+        "period_pt": "2021",
         "title": "Audio Post Production",
-        "institution": "Estúdio Café Maestro"
+        "title_pt": "Pós-Produção de Áudio",
+        "institution": "Estúdio Café Maestro",
+        "institution_pt": "Estúdio Café Maestro"
       },
       {
         "period": "2019",
+        "period_pt": "2019",
         "title": "Motion Design Essencial",
-        "institution": "Layer Lemonade"
+        "title_pt": "Motion Design Essencial",
+        "institution": "Layer Lemonade",
+        "institution_pt": "Layer Lemonade"
       },
       {
         "period": "2020",
+        "period_pt": "2020",
         "title": "Motion Beast",
-        "institution": "Motion Design School"
+        "title_pt": "Motion Beast",
+        "institution": "Motion Design School",
+        "institution_pt": "Motion Design School"
       }
     ],
     "languages": [
       {
         "name": "Portuguese",
-        "level": "Native"
+        "name_pt": "Português",
+        "level": "Native",
+        "level_pt": "Nativo"
       },
       {
         "name": "English",
-        "level": "Professional / B2+"
+        "name_pt": "Inglês",
+        "level": "Professional / B2+",
+        "level_pt": "Profissional / B2+"
       },
       {
         "name": "Spanish",
-        "level": "Conversational / B1"
+        "name_pt": "Espanhol",
+        "level": "Conversational / B1",
+        "level_pt": "Conversacional / B1"
       }
     ],
     "skills": {
@@ -4655,20 +4747,51 @@
         "Client Relations"
       ]
     },
+    "skills_pt": {
+      "Stack": {
+        "name": "Ferramentas & Softwares",
+        "items": [
+          "After Effects",
+          "DaVinci Resolve",
+          "Blender",
+          "Photoshop",
+          "Illustrator",
+          "Ableton",
+          "Premiere"
+        ]
+      },
+      "AI Pipeline": {
+        "name": "Pipeline de IA",
+        "items": [
+          "Midjourney",
+          "Nano Banana",
+          "GPT 2",
+          "Seedance",
+          "Kling",
+          "VEO3",
+          "Antigravity",
+          "Claude Code"
+        ]
+      },
+      "Strategy": {
+        "name": "Estratégia & Direção",
+        "items": [
+          "Sistemas de Marca",
+          "Direção Criativa",
+          "Sistemas de Motion Generativo",
+          "Gestão de Equipes",
+          "Relacionamento com Clientes"
+        ]
+      }
+    },
     "contactEmail": "conceicao.felipe@gmail.com",
     "contactWhatsApp": "5547999664274",
     "socialInstagram": "instagram.com/pelimotion",
     "socialLinkedIn": "https://www.linkedin.com/in/pelife/",
     "socialBehance": "be.net/pelimotion",
     "contactText": "The system is ready. Looking for a <i>full-time creative direction </i>or motion design role — remote, with <span class=\"serif text-white/70\">teams who move fast and think deep.</span>",
+    "contactText_pt": "O sistema está pronto. Em busca de uma oportunidade como <i>Direção Criativa em tempo integral</i> ou motion design — remoto, com <span class=\"serif text-white/70\">equipes que se movem rápido e pensam profundo.</span>",
     "accentColor": "#34d399",
-    "profileParagraph1_pt": "",
-    "profileParagraph2_pt": "",
-    "title_pt": "",
-    "subtitle_pt": "",
-    "basedIn_pt": "",
-    "disciplines_pt": "",
-    "contactText_pt": "",
     "contactWebsite": "https://pelimotion.vercel.app"
   },
   "coverLetter": {

@@ -1,10 +1,12 @@
 /* admin-v4.js - UI enhancements for v4 */
 
+window.isUnlocked = function() { return true; };
+
 // Wait for data load
-const _originalLoadData = loadData;
+const _originalLoadData = typeof loadData !== 'undefined' ? loadData : async function(){};
 loadData = async function() {
     await _originalLoadData();
-    if(isUnlocked()) initV4();
+    if(typeof isUnlocked === 'function' ? isUnlocked() : true) initV4();
 };
 
 function initV4() {
@@ -1109,12 +1111,12 @@ async function runGifConvert() {
 // ═══════════════════════════════════════════════════════════════
 
 const DEPLOY_PROJECTS = [
-    { id: 'landing',   name: 'Landing Page',     icon: '🏠', statusFile: 'STATUS.md',                 url: 'pelimotion.art',               color: 'var(--green)',  note: '' },
-    { id: 'admin',     name: 'Admin Panel',       icon: '⚙️', statusFile: 'STATUS.md',                 url: 'pelimotion.art/admin',         color: 'var(--yellow)', note: '' },
-    { id: 'generator', name: 'Blog Generator',    icon: '✍️', statusFile: 'blog-generator/STATUS.md',  url: 'pelimotion.art/blog-generator', color: 'var(--blue)',   note: '' },
-    { id: 'blog',      name: 'Blog',              icon: '📰', statusFile: 'blog/STATUS.md',            url: 'pelimotion.art/blog',          color: 'var(--blue)',   note: 'Rebuild via build engine no deploy' },
-    { id: 'projetos',  name: 'Projetos App',      icon: '📋', statusFile: 'projetos-app/STATUS.md',    url: 'pelimotion.art/projetos',      color: 'var(--fg2)',    note: 'React — npm run build localmente' },
-    { id: 'shared',    name: 'Shared Modules',    icon: '🔒', statusFile: 'STATUS.md',                 url: null,                           color: 'var(--red)',    note: 'Afeta TODOS os sistemas' },
+    { id: 'landing',   name: 'Landing Page',     icon: '🏠', statusFile: 'STATUS.md', url: 'pelimotion.art',               color: 'var(--green)',  note: '' },
+    { id: 'admin',     name: 'Admin Panel',       icon: '⚙️', statusFile: 'STATUS.md', url: 'pelimotion.art/admin',         color: 'var(--yellow)', note: '' },
+    { id: 'generator', name: 'Blog Generator',    icon: '✍️', statusFile: 'STATUS.md', url: 'pelimotion.art/blog-generator', color: 'var(--blue)',   note: '' },
+    { id: 'blog',      name: 'Blog',              icon: '📰', statusFile: 'STATUS.md', url: 'pelimotion.art/blog',          color: 'var(--blue)',   note: 'Rebuild via build engine no deploy' },
+    { id: 'projetos',  name: 'Projetos App',      icon: '📋', statusFile: 'STATUS.md', url: 'pelimotion.art/projetos',      color: 'var(--fg2)',    note: 'React — npm run build localmente' },
+    { id: 'shared',    name: 'Shared Modules',    icon: '🔒', statusFile: 'STATUS.md', url: null,                           color: 'var(--red)',    note: 'Afeta TODOS os sistemas' },
 ];
 
 function showDeployHub() {

@@ -589,9 +589,8 @@
 
 
 
-    <script src="/Curriculum/script.js"></script>
-    <script id="inject-script">
-            (async function () {
+    <script>
+        window.loadDynamicContent = async function (lang = window._PLM_LANG || 'en') {
                 let D;
                 try {
                     const r = await fetch('/site-content.json?t=' + Date.now());
@@ -600,6 +599,8 @@
                 } catch (e) { return; }
 
                 const C = D.curriculum || {};
+                const isPT = lang === 'pt';
+                const get = (key) => (isPT && C[key + '_pt']) ? C[key + '_pt'] : (C[key] || '');
 
                 // ── Name ──
                 const nameEl = document.getElementById('dyn-name');
@@ -609,26 +610,30 @@
                 }
 
                 // ── Meta ──
-                const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-                const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+                const setText = (id, val) => { const el = typeof id === 'string' ? document.getElementById(id) : id; if (el) el.textContent = val; };
+                const setHTML = (id, val) => { const el = typeof id === 'string' ? document.getElementById(id) : id; if (el) el.innerHTML = val; };
 
-                if (C.basedIn) setText('dyn-based', C.basedIn);
-                if (C.disciplines) setHTML('dyn-disc', C.disciplines.replace(/·/g, '<br>'));
-                if (C.yearsRange) setText('dyn-years', C.yearsRange);
+                if (C.basedIn) setText('dyn-based', get('basedIn'));
+                if (C.disciplines) setHTML('dyn-disc', get('disciplines').replace(/·/g, '<br>'));
+                if (C.yearsRange) setText('dyn-years', get('yearsRange'));
+                const subEl = document.getElementById('dyn-sub');
+                if (subEl) setHTML('dyn-sub', get('subtitle'));
 
                 // ── Profile ──
-                if (C.profileParagraph1) setHTML('dyn-p1', C.profileParagraph1);
+                setHTML('dyn-p1', get('profileParagraph1'));
                 const p2 = document.querySelector('#profile p.mt-6');
-                if (p2 && C.profileParagraph2) p2.textContent = C.profileParagraph2;
+                if (p2) setHTML(p2, get('profileParagraph2'));
 
                 // ── Stats ──
                 const statsEl = document.getElementById('dyn-stats');
                 if (statsEl && C.stats) {
-                    statsEl.innerHTML = C.stats.map((s, i) =>
-                        `<div class="stat-card${i > 0 ? ' border-l' : ''}${i > 1 ? ' border-t sm:border-t-0' : ''}">` +
-                        `<div class="stat-label">${s.value}</div>` +
-                        `<div class="stat-sub">${s.label}</div></div>`
-                    ).join('');
+                    statsEl.innerHTML = C.stats.map((s, i) => {
+                        const val = (isPT && s.value_pt) ? s.value_pt : s.value;
+                        const lbl = (isPT && s.label_pt) ? s.label_pt : s.label;
+                        return `<div class="stat-card${i > 0 ? ' border-l' : ''}${i > 1 ? ' border-t sm:border-t-0' : ''}">` +
+                               `<div class="stat-label">${val}</div>` +
+                               `<div class="stat-sub">${lbl}</div></div>`;
+                    }).join('');
                 }
 
                 // ── Marquee ──
@@ -641,19 +646,24 @@
                 // ── Experience ──
                 const expEl = document.getElementById('dyn-exp');
                 if (expEl && C.experience) {
-                    expEl.innerHTML = C.experience.map((e, i, arr) =>
-                        `<article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 ${i < arr.length - 1 ? 'border-b border-white/10' : ''} group transition-all hover:bg-white/[0.02]">` +
+                    expEl.innerHTML = C.experience.map((e, i, arr) => {
+                        const period = (isPT && e.period_pt) ? e.period_pt : e.period;
+                        const role = (isPT && e.role_pt) ? e.role_pt : e.role;
+                        const company = (isPT && e.company_pt) ? e.company_pt : e.company;
+                        const items = (isPT && e.items_pt) ? e.items_pt : e.items;
+                        const tags = (isPT && e.tags_pt) ? e.tags_pt : e.tags;
+                        return `<article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 ${i < arr.length - 1 ? 'border-b border-white/10' : ''} group transition-all hover:bg-white/[0.02]">` +
                         `<div class="col-span-12 sm:col-span-3 px-5 sm:px-8">` +
                         `<div class="font-mono text-[10px] text-white/30">EXP_0${i + 1}</div>` +
-                        `<div class="mono-label mt-1">${e.period}</div></div>` +
+                        `<div class="mono-label mt-1">${period}</div></div>` +
                         `<div class="col-span-12 mt-6 sm:col-span-6 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">` +
-                        `<h3 class="exp-title font-mono uppercase tracking-tight">${e.role}</h3>` +
-                        `<div class="serif text-white/40 text-sm italic mt-1">${e.company}</div>` +
-                        `<ul class="exp-list mt-8">${(e.items || []).map(it => '<li><span>' + it + '</span></li>').join('')}</ul></div>` +
+                        `<h3 class="exp-title font-mono uppercase tracking-tight">${role}</h3>` +
+                        `<div class="serif text-white/40 text-sm italic mt-1">${company}</div>` +
+                        `<ul class="exp-list mt-8">${(items || []).map(it => '<li><span>' + it + '</span></li>').join('')}</ul></div>` +
                         `<div class="col-span-12 mt-6 sm:col-span-3 sm:mt-0 px-5 sm:px-8 border-l border-white/5 lg:border-l">` +
-                        `<div class="tag-cloud">${(e.tags || []).map(t => '<span>[' + t + ']</span>').join('')}</div></div>` +
-                        `</article>`
-                    ).join('');
+                        `<div class="tag-cloud">${(tags || []).map(t => '<span>[' + t + ']</span>').join('')}</div></div>` +
+                        `</article>`;
+                    }).join('');
                     document.querySelectorAll('#dyn-exp .reveal-mech').forEach(el => {
                         setTimeout(() => el.classList.add('visible'), 100);
                     });
@@ -662,25 +672,30 @@
                 // ── Education ──
                 const eduEl = document.getElementById('dyn-edu');
                 if (eduEl && C.education) {
-                    eduEl.innerHTML = C.education.map((e, i, arr) =>
-                        `<div class="edu-item reveal-mech visible grid grid-cols-12 py-7 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} group hover:bg-white/[0.01] transition-colors">` +
+                    eduEl.innerHTML = C.education.map((e, i, arr) => {
+                        const period = (isPT && e.period_pt) ? e.period_pt : e.period;
+                        const title = (isPT && e.title_pt) ? e.title_pt : e.title;
+                        const inst = (isPT && e.institution_pt) ? e.institution_pt : e.institution;
+                        return `<div class="edu-item reveal-mech visible grid grid-cols-12 py-7 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} group hover:bg-white/[0.01] transition-colors">` +
                         `<div class="col-span-4 sm:col-span-2 font-mono text-[10px] text-white/30">EDU_0${i + 1}</div>` +
-                        `<div class="col-span-8 sm:col-span-3 mono-label">${e.period}</div>` +
+                        `<div class="col-span-8 sm:col-span-3 mono-label">${period}</div>` +
                         `<div class="col-span-12 sm:col-span-7 mt-2 sm:mt-0">` +
-                        `<div class="text-white font-mono text-sm uppercase tracking-tight">${e.title}</div>` +
-                        `<div class="serif text-[11px] text-white/30 italic">${e.institution}</div></div></div>`
-                    ).join('');
+                        `<div class="text-white font-mono text-sm uppercase tracking-tight">${title}</div>` +
+                        `<div class="serif text-[11px] text-white/30 italic">${inst}</div></div></div>`;
+                    }).join('');
                 }
 
                 // ── Languages ──
                 const langEl = document.getElementById('dyn-lang');
                 if (langEl && C.languages) {
-                    const lvlMap = { Native: 100, 'Professional / B2+': 85, 'Conversational / B1': 55 };
-                    langEl.innerHTML = '<div class="label-tiny mb-6">Languages</div><div class="space-y-6">' +
+                    const lvlMap = { Native: 100, 'Professional / B2+': 85, 'Conversational / B1': 55, 'Nativo': 100, 'Profissional': 85, 'Conversacional': 55 };
+                    langEl.innerHTML = `<div class="label-tiny mb-6">${isPT?'Idiomas':'Languages'}</div><div class="space-y-6">` +
                         C.languages.map(l => {
-                            const pct = lvlMap[l.level] || 70;
+                            const name = (isPT && l.name_pt) ? l.name_pt : l.name;
+                            const level = (isPT && l.level_pt) ? l.level_pt : l.level;
+                            const pct = lvlMap[level] || 70;
                             return `<div class="lang-bar" data-val="${pct}">` +
-                                `<div class="flex justify-between text-sm mb-2"><span>${l.name}</span><span class="label-tiny">${l.level}</span></div>` +
+                                `<div class="flex justify-between text-sm mb-2"><span>${name}</span><span class="label-tiny">${level}</span></div>` +
                                 `<div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></div>`;
                         }).join('') + '</div>';
                 }
@@ -695,20 +710,22 @@
                         'lg:border-r border-white/10 border-t lg:border-t-0',
                         'border-t lg:border-t-0 sm:border-l border-white/10'
                     ];
-                    skillsEl.innerHTML = cats.map((cat, i) =>
-                        `<div class="skill-group reveal-mech visible ${borders[i] || 'border-white/10'} p-10">` +
+                    skillsEl.innerHTML = cats.map((cat, i) => {
+                        const catTitle = (isPT && C.skills_pt && C.skills_pt[cat]) ? C.skills_pt[cat].name : cat;
+                        const items = (isPT && C.skills_pt && C.skills_pt[cat]) ? C.skills_pt[cat].items : C.skills[cat];
+                        return `<div class="skill-group reveal-mech visible ${borders[i] || 'border-white/10'} p-10">` +
                         `<div class="flex justify-between items-center mb-8">` +
-                        `<div class="label-tiny font-mono">${cat.toUpperCase().replace(/ /g, '_')}</div>` +
+                        `<div class="label-tiny font-mono">${catTitle.toUpperCase().replace(/ /g, '_')}</div>` +
                         `<div class="mono-label text-white/10">CAT_0${i + 1}</div></div>` +
                         `<ul class="skill-list font-mono text-[11px] uppercase space-y-4">` +
-                        C.skills[cat].map(s => '<li>' + s + '</li>').join('') +
-                        `</ul></div>`
-                    ).join('');
+                        items.map(s => '<li>' + s + '</li>').join('') +
+                        `</ul></div>`;
+                    }).join('');
                 }
 
                 // ── Contact ──
                 const ctaEl = document.getElementById('dyn-contact-text');
-                if (ctaEl && C.contactText) ctaEl.innerHTML = C.contactText;
+                if (ctaEl) ctaEl.innerHTML = get('contactText');
 
                 const emailEl = document.getElementById('dyn-email');
                 if (emailEl && C.contactEmail) {
@@ -719,12 +736,12 @@
                 if (ccEl) {
                     let cards = [];
                     const webUrl = C.contactWebsite && C.contactWebsite.startsWith('http') ? C.contactWebsite : (C.contactWebsite ? 'https://'+C.contactWebsite : 'https://pelimotion.com');
-    cards.push(`<a href="${webUrl}" target="_blank" class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
-        <div class="label-tiny" data-en="Portfolio" data-pt="Portfólio">Portfolio</div>
-        <div class="tag-label mt-3" data-en="visit website" data-pt="visite a página">visit website</div></a>`);
+                    cards.push(`<a href="${webUrl}" target="_blank" class="contact-card border-t border-white/10 group transition-colors hover:bg-white/5">
+        <div class="label-tiny" data-en="Portfolio" data-pt="Portfólio">${isPT?'Portfólio':'Portfolio'}</div>
+        <div class="tag-label mt-3" data-en="visit website" data-pt="visite a página">${isPT?'visite a página':'visit website'}</div></a>`);
                     cards.push(`<div class="contact-card border-t border-l border-white/10">
-        <div class="label-tiny">City</div>
-        <div class="tag-label mt-3">${C.basedIn || 'Rio de Janeiro'}</div></div>`);
+        <div class="label-tiny">${isPT?'Cidade':'City'}</div>
+        <div class="tag-label mt-3">${get('basedIn') || 'Rio de Janeiro'}</div></div>`);
                     if (C.socialLinkedIn) {
                         const un = C.socialLinkedIn.split('/').filter(Boolean).pop();
                         cards.push(`<a href="${C.socialLinkedIn.startsWith('http') ? C.socialLinkedIn : 'https://' + C.socialLinkedIn}" target="_blank" class="contact-card border-t ${cards.length % 2 === 1 ? 'border-l' : ''} border-white/10 group transition-colors hover:bg-white/5">
@@ -758,13 +775,6 @@
                     const titleEl = document.getElementById('dyn-page-title');
                     if (titleEl) titleEl.textContent = (C.name || 'Felipe Conceição') + ' — Application for ' + APP.companyName;
 
-                    const heroLabel = document.getElementById('dyn-hero-label');
-                    if (heroLabel) heroLabel.textContent = APP.heroLabel || ('Curriculum Vitae — Application / ' + APP.companyName);
-
-                    const clTitle = document.getElementById('dyn-cl-title');
-                    if (clTitle) {
-                        clTitle.textContent = 'Application: ' + APP.companyName;
-                        clTitle.style.color = APP.accentColor || '#34d399';
                     }
 
                     const navIntro = document.querySelector('a[href="#cover-letter"]');
@@ -786,7 +796,9 @@
                         });
                     }
                 }
-            })();
+            };
+            loadDynamicContent();
+            document.addEventListener('plm-lang-change', (e) => loadDynamicContent(e.detail.lang));
     </script>
 
     <script>
