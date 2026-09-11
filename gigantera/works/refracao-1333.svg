@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <defs>
+    <radialGradient id="abyss-glow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#37443F" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0E1613" stop-opacity="0.95"/>
+    </radialGradient>
+    <linearGradient id="caustic-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C77E" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#DDE3DC" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#37443F" stop-opacity="0.1"/>
+    </linearGradient>
+    <filter id="noise-erode" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" fill="#0E1613" />
+  <rect width="100%" height="100%" fill="url(#abyss-glow)" />
+  <path d="M 60 80 C 200 140, 650.9765181769476 80, 740 110" fill="none" stroke="#E8C77E" stroke-width="1.0" opacity="0.20" filter="url(#noise-erode)" />
+<path d="M 60 98 C 254.51856792321107 155.32018934753637, 669.6993983924865 88.06653346024694, 740 128" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.21" filter="url(#noise-erode)" />
+<path d="M 60 116 C 300.4298527259332 165.5201368945807, 659.1156912190818 96.52908288456747, 740 146" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.23" filter="url(#noise-erode)" />
+<path d="M 60 134 C 330.4854720354117 171.29659809623988, 621.8166572924748 105.76787633024823, 740 164" fill="none" stroke="#E8C77E" stroke-width="2.8" opacity="0.24" filter="url(#noise-erode)" />
+<path d="M 60 152 C 339.9403044258107 173.74146526860042, 566.934400967184 116.13219545502386, 740 182" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.25" filter="url(#noise-erode)" />
+<path d="M 60 170 C 327.30163975559543 174.24423210006216, 507.9060126772456 127.92645075960517, 740 200" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.26" filter="url(#noise-erode)" />
+<path d="M 60 188 C 294.5648452771611 174.36787431841478, 459.1837005630486 141.3980457016387, 740 218" fill="none" stroke="#E8C77E" stroke-width="2.2" opacity="0.28" filter="url(#noise-erode)" />
+<path d="M 60 206 C 246.89834102182664 175.70923372400856, 432.69638588018836 156.727513500577, 740 236" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.29" filter="url(#noise-erode)" />
+<path d="M 60 224 C 191.8276199201388 179.75637706752528, 434.9290870404234 174.02131984792476, 740 254" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.30" filter="url(#noise-erode)" />
+<path d="M 60 242 C 138.04713793872065 187.75567147897635, 465.335160931553 193.30761845609024, 740 272" fill="none" stroke="#E8C77E" stroke-width="1.6" opacity="0.31" filter="url(#noise-erode)" />
+<path d="M 60 260 C 94.04765065689006 200.60045020397328, 516.4701402161289 214.5351286587159, 740 290" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.33" filter="url(#noise-erode)" />
+<path d="M 60 278 C 66.77570965546775 218.7512138054681, 575.8143985705378 237.57517980902048, 740 308" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.34" filter="url(#noise-erode)" />
+<path d="M 60 296 C 60.53695476298233 242.19449501995118, 628.8383918462547 262.22684097244246, 740 326" fill="none" stroke="#E8C77E" stroke-width="1.0" opacity="0.35" filter="url(#noise-erode)" />
+<path d="M 60 314 C 76.31634819917856 270.4440617479916, 662.5599972129687 288.2249314089268, 740 344" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.36" filter="url(#noise-erode)" />
+<path d="M 60 332 C 111.62267069787508 302.584350719558, 668.7229895948058 315.25059249220476, 740 362" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.38" filter="url(#noise-erode)" />
+<path d="M 60 350 C 160.8818302521504 337.3522520341532, 645.8184535148189 342.94399959700667, 740 380" fill="none" stroke="#E8C77E" stroke-width="2.8" opacity="0.39" filter="url(#noise-erode)" />
+<path d="M 60 368 C 216.3168886790691 373.2499390063668, 599.4542182290108 370.918707171379, 740 398" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.40" filter="url(#noise-erode)" />
+<path d="M 60 386 C 269.17586915940524 408.6786645627788, 540.9818655445829 398.7770551013416, 740 416" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.41" filter="url(#noise-erode)" />
+<path d="M 60 404 C 311.11350093888143 442.08157255655806, 484.71746669327564 426.1260221647426, 740 434" fill="none" stroke="#E8C77E" stroke-width="2.2" opacity="0.42" filter="url(#noise-erode)" />
+<path d="M 60 422 C 335.5087540844081 472.0827670903496, 444.4365088033996 452.592894547136, 740 452" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.44" filter="url(#noise-erode)" />
+<path d="M 60 440 C 338.51015452727347 497.610217199022, 430.0011752139156 477.8401247653964, 740 470" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.45" filter="url(#noise-erode)" />
+<path d="M 60 458 C 319.64384713235927 517.9915181830049, 444.9457390373886 501.5787886206794, 740 488" fill="none" stroke="#E8C77E" stroke-width="1.6" opacity="0.46" filter="url(#noise-erode)" />
+<path d="M 60 476 C 281.8884070048466 533.0139555175118, 485.6112498399478 523.5801036944758, 740 506" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.47" filter="url(#noise-erode)" />
+<path d="M 60 494 C 231.20458797403444 542.9435060075215, 542.0413723178559 543.6845501816732, 740 524" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.49" filter="url(#noise-erode)" />
+<path d="M 60 512 C 175.59425062878262 548.5010788719353, 600.4200444191969 561.808230441792, 740 542" fill="none" stroke="#E8C77E" stroke-width="1.0" opacity="0.50" filter="url(#noise-erode)" />
+<path d="M 60 530 C 123.83704447548823 550.7981190701015, 646.4541311861946 577.9462137331569, 740 560" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.51" filter="url(#noise-erode)" />
+<path d="M 60 548 C 84.10429432800848 551.237325233759, 668.8728826833844 592.1727327860076, 740 578" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.52" filter="url(#noise-erode)" />
+<path d="M 60 566 C 62.668927790691185 551.3873507758525, 662.187406662962 604.6382243777994, 740 596" fill="none" stroke="#E8C77E" stroke-width="2.8" opacity="0.54" filter="url(#noise-erode)" />
+<path d="M 60 584 C 62.91511791881564 552.8426807529988, 628.034540818854 615.563331893616, 740 614" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.55" filter="url(#noise-erode)" />
+<path d="M 60 602 C 84.80399670438092 557.0812012641561, 574.7760978325356 625.2301089706879, 740 632" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.56" filter="url(#noise-erode)" />
+<path d="M 60 620 C 124.87979147993912 565.3321842869194, 515.4516020001922 633.9707749099463, 740 650" fill="none" stroke="#E8C77E" stroke-width="2.2" opacity="0.57" filter="url(#noise-erode)" />
+<path d="M 60 638 C 176.81541543723668 578.4664804728438, 464.58575891570524 642.1544701408748, 740 668" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.59" filter="url(#noise-erode)" />
+<path d="M 60 656 C 232.41137551421545 596.9187286523523, 434.6323009744532 650.1725397574753, 740 686" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.60" filter="url(#noise-erode)" />
+<path d="M 60 674 C 282.8902920590114 620.6485308424783, 432.9248793438211 658.422931824331, 740 704" fill="none" stroke="#E8C77E" stroke-width="1.6" opacity="0.61" filter="url(#noise-erode)" />
+<path d="M 60 692 C 320.28265407990955 649.144060878368, 459.88153038739887 667.2943324430696, 740 722" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.63" filter="url(#noise-erode)" />
+<path d="M 60 710 C 338.68502979728186 681.4677843202404, 508.9023257836465 677.1506700640606, 740 740" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.64" filter="url(#noise-erode)" />
+<path d="M 60 728 C 335.19208871689887 716.3402056126798, 567.9852651595543 688.3166068075424, 740 758" fill="none" stroke="#E8C77E" stroke-width="1.0" opacity="0.65" filter="url(#noise-erode)" />
+<path d="M 60 746 C 310.3552894325443 752.2541616119419, 622.6647843663521 701.0645952094187, 740 776" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.66" filter="url(#noise-erode)" />
+<path d="M 60 764 C 268.09581643953175 787.6094519808735, 659.5534300873153 715.6040163984256, 740 794" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.68" filter="url(#noise-erode)" />
+<path d="M 60 782 C 215.08551132192193 820.8557803192325, 669.6195753134559 732.0728327312697, 740 812" fill="none" stroke="#E8C77E" stroke-width="2.8" opacity="0.69" filter="url(#noise-erode)" />
+<path d="M 60 800 C 159.69353566689085 850.6312375239495, 650.3986766243268 750.5320876688309, 740 830" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.70" filter="url(#noise-erode)" />
+<path d="M 60 818 C 110.66506447128697 875.8839570731966, 606.5966803713036 770.9634721660113, 740 848" fill="none" stroke="#37443F" stroke-width="1.6" opacity="0.71" filter="url(#noise-erode)" />
+<path d="M 60 836 C 75.74061529858936 895.9660751300603, 548.9378428851516 793.270054595586, 740 866" fill="none" stroke="#E8C77E" stroke-width="2.2" opacity="0.73" filter="url(#noise-erode)" />
+<path d="M 60 854 C 60.433990754176534 910.6916022895916, 491.5390585047389 817.2801451062943, 740 884" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.74" filter="url(#noise-erode)" />
+<path d="M 60 872 C 67.16177029146263 920.353037458427, 448.45355149897955 842.7541403554119, 740 902" fill="none" stroke="#DDE3DC" stroke-width="1.0" opacity="0.75" filter="url(#noise-erode)" />
+<path d="M 60 890 C 94.86178545196533 925.6952397985935, 430.2301566424725 869.3940757379122, 740 920" fill="none" stroke="#E8C77E" stroke-width="1.6" opacity="0.76" filter="url(#noise-erode)" />
+<path d="M 60 908 C 139.16081290993492 927.8488926769429, 441.33059655920516 896.8555042949877, 740 938" fill="none" stroke="#DDE3DC" stroke-width="2.2" opacity="0.77" filter="url(#noise-erode)" />
+<path d="M 60 926 C 193.06501027702856 928.2295030874495, 479.0370964161851 924.7612287273321, 740 956" fill="none" stroke="#37443F" stroke-width="2.8" opacity="0.79" filter="url(#noise-erode)" />
+
+</svg>

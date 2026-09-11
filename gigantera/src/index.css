@@ -1,0 +1,378 @@
+/* =========================================================================
+   GIGANTERA — SISTEMA DE DESIGN & COLUNA ESTRATIGRÁFICA
+   Pelimotion Digital Art Platform
+   ========================================================================= */
+
+:root {
+  /* Tokens de Cor Primários (Derivados fisicamente de tokens.ts) */
+  --depth-abyss: #0E1613;
+  --depth-mid: #37443F;
+  --surface-glass: #DDE3DC;
+  --light-caustic: #E8C77E;
+  --sediment-clay: #8C6142;
+  --foam-white: #F2F0E9;
+
+  /* Tokens Tipográficos */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Eixos Variáveis da Fonte Fraunces */
+  --fraunces-opsz: 72;
+  --fraunces-wght: 400;
+  --fraunces-soft: 50;
+  --fraunces-wonk: 0;
+
+  /* Dimensões e Espaçamentos Estratigráficos */
+  --column-max-width: 70ch;
+  --stratum-gap: clamp(5rem, 12vh, 12rem);
+  --stratum-indent-epipelagic: 0px;
+  --stratum-indent-mesopelagic: 48px;
+  --stratum-indent-bathypelagic: 16px;
+}
+
+/* Reset Universal Rigoroso */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  background-color: var(--depth-abyss);
+  color: var(--surface-glass);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--depth-abyss);
+  line-height: 1.6;
+  font-weight: 400;
+  overflow-x: hidden;
+  position: relative;
+  transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Camada WebGL de Fundo (Cáusticas) */
+#canvas-caustics-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* Conteúdo Principal — Sobreposto com Z-Index de Leitura */
+#app-shell {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tipografia Disciplinada */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-variation-settings: 
+    'opsz' var(--fraunces-opsz), 
+    'wght' var(--fraunces-wght), 
+    'SOFT' var(--fraunces-soft), 
+    'WONK' var(--fraunces-wonk);
+  font-weight: normal;
+  letter-spacing: -0.02em;
+  color: var(--foam-white);
+  line-height: 1.15;
+}
+
+p {
+  max-width: var(--column-max-width);
+  color: var(--surface-glass);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* Cabeçalho Minimalista e Silencioso */
+.header-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.75rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 50;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.header-bar * {
+  pointer-events: auto;
+}
+
+.header-brand {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-variation-settings: 'opsz' 36, 'wght' 300, 'SOFT' 40, 'WONK' 0;
+  color: var(--surface-glass);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.control-pill {
+  background: rgba(221, 227, 220, 0.06);
+  border: 1px solid rgba(221, 227, 220, 0.14);
+  color: var(--surface-glass);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.control-pill:hover, .control-pill:focus-visible {
+  border-color: var(--light-caustic);
+  color: var(--foam-white);
+  outline: none;
+}
+
+.control-pill.active {
+  background: rgba(232, 199, 126, 0.12);
+  border-color: var(--light-caustic);
+  color: var(--light-caustic);
+}
+
+/* Seções Estratigráficas */
+.stratigraphy-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 8rem 2rem 14rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--stratum-gap);
+}
+
+.stratum-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Recuos Assimétricos por Estrato (Coluna Geológica) */
+.stratum-block[data-stratum="epipelagic"] {
+  padding-left: var(--stratum-indent-epipelagic);
+}
+
+.stratum-block[data-stratum="mesopelagic"] {
+  padding-left: var(--stratum-indent-mesopelagic);
+}
+
+.stratum-block[data-stratum="bathypelagic"] {
+  padding-left: var(--stratum-indent-bathypelagic);
+}
+
+@media (max-width: 768px) {
+  .stratum-block[data-stratum="mesopelagic"],
+  .stratum-block[data-stratum="bathypelagic"] {
+    padding-left: 0;
+  }
+  .header-bar {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.stratum-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stratum-depth-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--light-caustic);
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.stratum-title {
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1.05;
+}
+
+.stratum-description {
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+  color: rgba(221, 227, 220, 0.8);
+}
+
+/* Correnteza Horizontal (Obras do Estrato) */
+.current-drift-track {
+  display: flex;
+  gap: 3rem;
+  overflow-x: auto;
+  padding: 1.5rem 0 2.5rem 0;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.current-drift-track::-webkit-scrollbar {
+  display: none;
+}
+
+.current-drift-track:active {
+  cursor: grabbing;
+}
+
+/* Card de Obra Não Clichê — Sem Cantos Genéricos, Sem Sombra Falsa */
+.artwork-specimen {
+  flex: 0 0 auto;
+  width: clamp(280px, 38vw, 540px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+}
+
+.artwork-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: rgba(14, 22, 19, 0.6);
+  border: 1px solid rgba(221, 227, 220, 0.08);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.artwork-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.04) brightness(0.96);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+}
+
+.artwork-specimen:hover .artwork-frame img {
+  transform: scale(1.02);
+  filter: contrast(1.08) brightness(1.02);
+}
+
+.artwork-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.artwork-title {
+  font-size: 1.4rem;
+  color: var(--foam-white);
+  font-variation-settings: 'opsz' 36, 'wght' 400, 'SOFT' 30;
+}
+
+.artwork-materials {
+  font-size: 0.85rem;
+  color: rgba(221, 227, 220, 0.6);
+  font-weight: 500;
+}
+
+.artwork-year {
+  font-size: 0.8rem;
+  color: var(--sediment-clay);
+  font-weight: 600;
+}
+
+/* Painel de Navegação Cimática (Overlay Modal / Seção Abertura) */
+.cymatic-stage {
+  position: relative;
+  width: 100%;
+  height: 75vh;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4rem;
+}
+
+.cymatic-canvas-container {
+  width: 100%;
+  max-width: 580px;
+  aspect-ratio: 1 / 1;
+  position: relative;
+}
+
+.cymatic-dial-info {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.cymatic-freq-readout {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--light-caustic);
+  letter-spacing: 0.05em;
+}
+
+.cymatic-instruction {
+  font-size: 0.85rem;
+  color: rgba(221, 227, 220, 0.5);
+}
+
+/* Acessibilidade & Água Parada (Still Water Mode) */
+body.still-water-mode #canvas-caustics-layer {
+  display: none !important;
+}
+
+body.still-water-mode {
+  background: radial-gradient(circle at 50% 20%, #1c2723 0%, var(--depth-abyss) 100%);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--light-caustic);
+  outline-offset: 4px;
+}
