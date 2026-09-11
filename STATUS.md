@@ -26,18 +26,33 @@
 | `vercel.json` | ✅ Rotas corretas | 2026-05-16 |
 | **Deploy Hub** (`admin-v4.js`) | ✅ Implementado | 2026-05-17 |
 | **Media Scanner** (`api/bunny/scan.js`) | ✅ Implementado | 2026-05-17 |
+| **Gigantera** (`/gigantera/`) | ✅ Implementado e em Produção | 2026-09-11 |
 
 ## 🚧 SUBPROJETO ATIVO
 
 | Subprojeto | Status | Próxima Ação |
 |-----------|--------|--------------|
-| `/wide-image-studio` | ⚙️ PRs 1–10 completos — aguardando teste | Aplicar migrations + configurar Bunny env vars + teste ponta-a-ponta |
-
-> Trabalhar em wide-image-studio: abrir nova sessão Claude Code **dentro de `/wide-image-studio/`** e usar o prompt em `wide-image-studio/STATUS.md → PRÓXIMA SESSÃO`.
+| `/gigantera` | ✅ 4 Pilares implementados | Ajustes de catálogo ou curadoria conforme feedback do artista |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-11 — Implementação da Experiência Gigantera (`/gigantera/`)
+
+**O que foi feito:**
+- [x] Scaffold 100% autocontido em `/gigantera/` (Vite + React + TS) com zero risco ou alteração nas rotas do site principal
+- [x] Pilar 1: Shader OGL de cáusticas com refração de Snell-Descartes e atenuação por profundidade
+- [x] Pilar 2: Navegação cimática de Chladni com partículas reativas e sintetizador Tone.js acoplado
+- [x] Pilar 3: Scroll hidrodinâmico com Lenis e correnteza horizontal entre peças do mesmo estrato
+- [x] Pilar 4: Transições por erosão física de ruído procedural com eixos dinâmicos da tipografia Fraunces
+- [x] Acessibilidade: Modo "Água Parada" (prefers-reduced-motion e toggle manual) e mapa semântico para leitores de tela
+- [x] Testes no browser automatizados: navegação funcional e integridade absoluta do site raiz confirmada
+
+**Arquivos criados:** `/gigantera/**` (código fonte, shaders, assets, build)
+**Arquivos modificados:** `STATUS.md`
+
+---
 
 ### 2026-09-11 — Auditoria + Limpeza Organizacional
 
