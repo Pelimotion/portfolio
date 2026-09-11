@@ -14,6 +14,7 @@ Composto por 5 subprojetos ativos num único repositório.
 | Pasta | Responsabilidade | Status | Agente |
 |-------|----------------|--------|--------|
 | `/` (raiz) | Landing page + admin Bunny.net | ESTÁVEL | Este arquivo |
+| `/gigantera` | Portfólio de Arte Digital 3D + Brutalismo Experimental | ESTÁVEL / ONLINE | `gigantera/README.md` |
 | `/blog` | Portal público (blog → hub editorial) | ESTÁVEL | `blog/CLAUDE.md` |
 | `/blog-generator` | CMS + gerador de conteúdo IA | EM DESENVOLVIMENTO ATIVO | `blog-generator/CLAUDE.md` |
 | `/projetos-app` | Gerenciador interno de projetos (React) | BETA | `projetos-app/CLAUDE.md` |
@@ -26,7 +27,7 @@ Composto por 5 subprojetos ativos num único repositório.
 
 ## Stack Global
 - **Frontend:** Vanilla HTML/CSS/JS (blog, landing, admin, generator, wide-image-studio)
-- **Exceção:** `projetos-app` usa React + Vite
+- **Exceções:** `projetos-app` e `gigantera` usam React + Vite + TypeScript (Three.js, Tone.js, GSAP, OGL em Gigantera)
 - **DB:** Supabase (PostgreSQL + RLS + Realtime)
 - **CDN/Storage:** Bunny.net (`pelimotion-portfolio.b-cdn.net`)
 - **Edge compute:** Bunny Edge Scripting (alternativa ao Vercel quando o limite de 12 functions importa)

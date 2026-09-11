@@ -4,9 +4,12 @@
   "redirects": [
     { "source": "/v1", "destination": "/v1/", "permanent": true },
     { "source": "/curriculum", "destination": "/curriculum/", "permanent": true },
-    { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
+    { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true },
+    { "source": "/gigantera", "destination": "/gigantera/", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/gigantera", "destination": "/gigantera/index.html" },
+    { "source": "/gigantera/", "destination": "/gigantera/index.html" },
     { "source": "/pelispace", "destination": "https://pelispace.vercel.app/pelispace" },
     { "source": "/pelispace/:path*", "destination": "https://pelispace.vercel.app/pelispace/:path*" },
     { "source": "/pelimotion-design-system", "destination": "https://pelimotion-design-system.vercel.app" },

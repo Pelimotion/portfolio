@@ -6,9 +6,9 @@
 ## 📊 SNAPSHOT ATUAL
 
 **Data:** 2026-09-11
-**Projeto:** Landing page + Painel Admin Bunny.net
-**Status:** ESTÁVEL — limpeza e auditoria concluídas
-**Próxima Ação:** Upgrades e melhorias — definir scope na próxima sessão
+**Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
+**Status:** ESTÁVEL & ONLINE — Gigantera em produção com documentação completa
+**Próxima Ação:** Próximos upgrades/melhorias de catálogo ou novos recursos conforme roadmap
 **Bloqueadores:** Nenhum
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -23,20 +23,30 @@
 | Login unificado (`/login/`) | ✅ Funcional | 2026-05-16 |
 | Shared auth (`/shared/auth.js`) | ✅ Funcional | 2026-05-16 |
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
-| `vercel.json` | ✅ Rotas corretas | 2026-05-16 |
+| `vercel.json` | ✅ Rotas e rewrites `/gigantera` configurados | 2026-09-11 |
 | **Deploy Hub** (`admin-v4.js`) | ✅ Implementado | 2026-05-17 |
 | **Media Scanner** (`api/bunny/scan.js`) | ✅ Implementado | 2026-05-17 |
-| **Gigantera** (`/gigantera/`) | ✅ Implementado e em Produção | 2026-09-11 |
+| **Gigantera** (`/gigantera/`) | ✅ Em Produção & Online (`pelimotion.art/gigantera`) | 2026-09-11 |
 
 ## 🚧 SUBPROJETO ATIVO
 
 | Subprojeto | Status | Próxima Ação |
 |-----------|--------|--------------|
-| `/gigantera` | ✅ Brutalismo Artístico Moderno Ativo | Pronto para exibição pública / curadoria |
+| `/gigantera` | ✅ Online & Documentado (`gigantera/README.md`) | Iniciar novos updates, curadoria ou melhorias futuras |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-11 — Documentação Arquitetural Completa & Deploy Online
+
+**O que foi feito:**
+- [x] **Criação do Manual Oficial de Gigantera (`gigantera/README.md`):** Documentação técnica abrangente explicando a arquitetura em Three.js, os 4 pilares físicos (cáusticas OGL, cimática Tone.js, hidrodinâmica Lenis, erosão procedual GSAP com Fraunces dinâmica), motor de areia, tokens, catálogo de obras, guia passo-a-passo para adicionar novas obras/estratos e roadmap de updates futuros.
+- [x] **Atualização de Orquestração (`CLAUDE.md`):** Registrado `/gigantera` na matriz de subprojetos ativos e definida a stack React + Vite + TS como exceção autorizada junto a `projetos-app`.
+- [x] **Garantia de Roteamento Online (`vercel.json`):** Adicionado redirect e rewrites dedicados para `/gigantera` e `/gigantera/` apontando para `/gigantera/index.html` estático, garantindo resolução imediata e sem erro 404 em produção na Vercel (`www.pelimotion.art/gigantera`).
+- [x] **Sincronização Online:** Build de produção validado (`tsc && vite build`) e enviado via GitHub para deploy automático na Vercel.
+
+---
 
 ### 2026-09-11 — Identidade Visual Brutalista Artística Experimental (`/gigantera/`)
 
