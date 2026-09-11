@@ -46,10 +46,11 @@
 - [x] Pilar 2: Navegação cimática de Chladni com partículas reativas e sintetizador Tone.js acoplado
 - [x] Pilar 3: Scroll hidrodinâmico com Lenis e correnteza horizontal entre peças do mesmo estrato
 - [x] Pilar 4: Transições por erosão física de ruído procedural com eixos dinâmicos da tipografia Fraunces
+- [x] **Fase 6 — Obras Reais do Artista:** Curadoria estratégica do acervo `Pipeline Gigantera` (Espinhaço, Zimbro e Notalgia) distribuídas nos 3 estratos oceânicos
 - [x] Acessibilidade: Modo "Água Parada" (prefers-reduced-motion e toggle manual) e mapa semântico para leitores de tela
 - [x] Testes no browser automatizados: navegação funcional e integridade absoluta do site raiz confirmada
 
-**Arquivos criados:** `/gigantera/**` (código fonte, shaders, assets, build)
+**Arquivos criados:** `/gigantera/**` (código fonte, shaders, assets, obras reais, build)
 **Arquivos modificados:** `STATUS.md`
 
 ---
