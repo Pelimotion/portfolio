@@ -2,11 +2,20 @@ import { create } from 'zustand';
 import { StratumId, Artwork } from '../types/art';
 import { STRATA_CATALOG } from '../data/artworks';
 
+export type ViewMode = 'explore' | 'gallery';
+
 interface AppState {
   // Profundidade e Scroll Estratigráfico (Pilar 3)
   depthProgress: number; // 0.0 (superfície) a 1.0 (abismo)
   activeStratum: StratumId;
   
+  // Coordenadas Espaciais da Câmera 3D
+  cameraTargetY: number; // Y de destino para glide suave (12 a -24)
+  cameraCurrentY: number; // Y atual interpolado
+  cameraVelocity: number; // Taxa de variação para inércia da areia
+  viewMode: ViewMode;
+  hoveredArtwork: Artwork | null;
+
   // Sintonia Cimática (Pilar 2)
   cymaticFrequency: number; // em Hertz
   isTuned: boolean; // travado em um modo harmônico estável
@@ -24,6 +33,11 @@ interface AppState {
   // Ações
   setDepthProgress: (progress: number) => void;
   setActiveStratum: (stratum: StratumId) => void;
+  setCameraTargetY: (y: number) => void;
+  updateCameraPosition: (currentY: number, velocity: number) => void;
+  warpToStratum: (stratumId: StratumId) => void;
+  setViewMode: (mode: ViewMode) => void;
+  setHoveredArtwork: (art: Artwork | null) => void;
   setCymaticFrequency: (freq: number) => void;
   toggleAudio: () => void;
   setAudioEnabled: (enabled: boolean) => void;
@@ -32,9 +46,21 @@ interface AppState {
   setErosionProgress: (p: number) => void;
 }
 
+// Mapeamento de profundidade Y para cada estrato
+export const STRATA_Y_MAP: Record<StratumId, number> = {
+  epipelagic: 10,
+  mesopelagic: -3,
+  bathypelagic: -18
+};
+
 export const useAppStore = create<AppState>((set, get) => ({
   depthProgress: 0.0,
   activeStratum: 'epipelagic',
+  cameraTargetY: 10,
+  cameraCurrentY: 10,
+  cameraVelocity: 0,
+  viewMode: 'explore',
+  hoveredArtwork: null,
   cymaticFrequency: 174,
   isTuned: true,
   isAudioEnabled: false,
@@ -62,17 +88,41 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({
         activeStratum: stratum,
         cymaticFrequency: target.resonanceFreqHz,
-        isTuned: true
+        isTuned: true,
+        cameraTargetY: STRATA_Y_MAP[stratum]
       });
     } else {
       set({ activeStratum: stratum });
     }
   },
 
+  setCameraTargetY: (y: number) => {
+    const clampedY = Math.max(-24, Math.min(14, y));
+    // Converte Y (14 a -24) para depthProgress (0.0 a 1.0)
+    const progress = (14 - clampedY) / 38;
+    get().setDepthProgress(progress);
+    set({ cameraTargetY: clampedY });
+  },
+
+  updateCameraPosition: (currentY: number, velocity: number) => {
+    set({
+      cameraCurrentY: currentY,
+      cameraVelocity: velocity
+    });
+  },
+
+  warpToStratum: (stratumId: StratumId) => {
+    const targetY = STRATA_Y_MAP[stratumId];
+    get().setActiveStratum(stratumId);
+    get().setCameraTargetY(targetY);
+  },
+
+  setViewMode: (mode: ViewMode) => set({ viewMode: mode }),
+  setHoveredArtwork: (art: Artwork | null) => set({ hoveredArtwork: art }),
+
   setCymaticFrequency: (freq: number) => {
-    // Verifica se a frequência está próxima de algum dos nós estáveis (tolerância de ±12 Hz)
     const tunedStratum = STRATA_CATALOG.find(
-      (s) => Math.abs(s.resonanceFreqHz - freq) <= 12
+      (s) => Math.abs(s.resonanceFreqHz - freq) <= 14
     );
 
     if (tunedStratum) {

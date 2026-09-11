@@ -42,11 +42,11 @@
 
 **O que foi feito:**
 - [x] Scaffold 100% autocontido em `/gigantera/` (Vite + React + TS) com zero risco ou alteração nas rotas do site principal
-- [x] Pilar 1: Shader OGL de cáusticas com refração de Snell-Descartes e atenuação por profundidade
-- [x] Pilar 2: Navegação cimática de Chladni com partículas reativas e sintetizador Tone.js acoplado
-- [x] Pilar 3: Scroll hidrodinâmico com Lenis e correnteza horizontal entre peças do mesmo estrato
-- [x] Pilar 4: Transições por erosão física de ruído procedural com eixos dinâmicos da tipografia Fraunces
+- [x] **Ambiente 3D Oceânico Espacial:** Navegação contínua em Three.js pelo oceano com luz volumétrica, teto cáustico, assoalho basáltico e 9 monólitos físicos reflexivos para as obras
+- [x] **Física de Areia nos Cantos da Tela:** Simulação de 2.000 partículas granulares com acúmulo nas quinas e avalanches inerciais reativas à câmera e ao cursor
+- [x] **Floating HUD Dock:** Barra flutuante de vidro fosco com profundímetro contínuo em metros e bar, salto de estrato suave e detecção de obras no hover
 - [x] **Fase 6 — Obras Reais do Artista:** Curadoria estratégica do acervo `Pipeline Gigantera` (Espinhaço, Zimbro e Notalgia) distribuídas nos 3 estratos oceânicos
+- [x] Pilar 4: Transições por erosão física de ruído procedural com eixos dinâmicos da tipografia Fraunces
 - [x] Acessibilidade: Modo "Água Parada" (prefers-reduced-motion e toggle manual) e mapa semântico para leitores de tela
 - [x] Testes no browser automatizados: navegação funcional e integridade absoluta do site raiz confirmada
 
