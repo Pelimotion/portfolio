@@ -1,5 +1,5 @@
 /* =========================================================================
-   GIGANTERA — SISTEMA DE DESIGN & COLUNA ESTRATIGRÁFICA
+   GIGANTERA — SISTEMA DE DESIGN & BRUTALISMO ARTÍSTICO EXPERIMENTAL
    Pelimotion Digital Art Platform
    ========================================================================= */
 
@@ -12,9 +12,11 @@
   --sediment-clay: #8C6142;
   --foam-white: #F2F0E9;
 
-  /* Tokens Tipográficos */
+  /* Tipografia Brutalista & Experimental */
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+  --font-exp: 'Syne', 'Fraunces', sans-serif;
 
   /* Eixos Variáveis da Fonte Fraunces */
   --fraunces-opsz: 72;
@@ -58,6 +60,16 @@ body {
   transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Classes Utilitárias Tipográficas */
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.font-exp {
+  font-family: var(--font-exp);
+}
+
 /* Camada WebGL de Fundo (Cáusticas) */
 #canvas-caustics-layer {
   position: fixed;
@@ -70,6 +82,28 @@ body {
   opacity: 0.85;
 }
 
+/* Camada WebGL 3D Espacial */
+#oceanic-3d-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* Camada de Partículas de Areia Física */
+#sand-physics-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 5;
+}
+
 /* Conteúdo Principal — Sobreposto com Z-Index de Leitura */
 #app-shell {
   position: relative;
@@ -80,39 +114,94 @@ body {
   flex-direction: column;
 }
 
-/* Tipografia Disciplinada */
-h1, h2, h3, .font-display {
-  font-family: var(--font-display);
-  font-variation-settings: 
-    'opsz' var(--fraunces-opsz), 
-    'wght' var(--fraunces-wght), 
-    'SOFT' var(--fraunces-soft), 
-    'WONK' var(--fraunces-wonk);
-  font-weight: normal;
-  letter-spacing: -0.02em;
-  color: var(--foam-white);
-  line-height: 1.15;
+/* =========================================================================
+   1. GRAFISMOS DE ENQUADRAMENTO E RETÍCULOS BRUTALISTAS (VIEWPORT)
+   ========================================================================= */
+
+.viewport-reticles-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+  mix-blend-mode: screen;
 }
 
-p {
-  max-width: var(--column-max-width);
-  color: var(--surface-glass);
-  font-size: 1.05rem;
-  line-height: 1.7;
+.reticle-corner {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: rgba(221, 227, 220, 0.4);
 }
 
-/* Cabeçalho Minimalista e Silencioso */
+.reticle-top-left {
+  top: 0.75rem;
+  left: 1rem;
+}
+
+.reticle-top-right {
+  top: 0.75rem;
+  right: 1rem;
+  align-items: flex-start;
+}
+
+.reticle-bottom-left {
+  bottom: 0.75rem;
+  left: 1rem;
+  align-items: flex-end;
+}
+
+.reticle-bottom-right {
+  bottom: 0.75rem;
+  right: 1rem;
+  align-items: flex-end;
+}
+
+.reticle-bracket {
+  color: var(--light-caustic);
+  font-size: 1.1rem;
+  line-height: 1;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.reticle-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.reticle-data.text-right {
+  text-align: right;
+}
+
+.reticle-mono-bold {
+  color: rgba(221, 227, 220, 0.75);
+  font-weight: 700;
+}
+
+.reticle-mono-dim {
+  color: rgba(221, 227, 220, 0.35);
+  font-size: 0.62rem;
+}
+
+/* =========================================================================
+   2. CABEÇALHO BRUTALISTA COM TELEMETRIA LUNAR & MARÉ
+   ========================================================================= */
+
 .header-bar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 1.75rem 2.5rem;
+  padding: 2.2rem 2.8rem 1rem 2.8rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 50;
-  mix-blend-mode: difference;
   pointer-events: none;
 }
 
@@ -120,250 +209,327 @@ p {
   pointer-events: auto;
 }
 
-.header-brand {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-variation-settings: 'opsz' 36, 'wght' 300, 'SOFT' 40, 'WONK' 0;
-  color: var(--surface-glass);
+.header-brand.brutalist-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
   text-decoration: none;
-  letter-spacing: -0.01em;
+}
+
+.brand-title {
+  font-family: var(--font-exp);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--foam-white);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--light-caustic);
+  font-weight: 700;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.control-pill {
-  background: rgba(221, 227, 220, 0.06);
-  border: 1px solid rgba(221, 227, 220, 0.14);
+.brutalist-pill {
+  background: rgba(14, 22, 19, 0.85);
+  border: 1px solid rgba(221, 227, 220, 0.18);
   color: var(--surface-glass);
-  padding: 0.45rem 0.9rem;
-  font-size: 0.82rem;
-  font-family: var(--font-body);
-  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pill-dot {
+  color: var(--light-caustic);
+  font-size: 0.6rem;
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.pill-divider {
+  opacity: 0.3;
+}
+
+.brutalist-btn {
   cursor: pointer;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
 }
 
-.control-pill:hover, .control-pill:focus-visible {
+.brutalist-btn:hover {
+  background: var(--light-caustic);
+  color: var(--depth-abyss);
   border-color: var(--light-caustic);
-  color: var(--foam-white);
-  outline: none;
+  font-weight: 700;
 }
 
-.control-pill.active {
-  background: rgba(232, 199, 126, 0.12);
+.brutalist-btn.active {
   border-color: var(--light-caustic);
   color: var(--light-caustic);
-}
-
-/* Seções Estratigráficas */
-.stratigraphy-container {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 8rem 2rem 14rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: var(--stratum-gap);
-}
-
-.stratum-block {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  position: relative;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Recuos Assimétricos por Estrato (Coluna Geológica) */
-.stratum-block[data-stratum="epipelagic"] {
-  padding-left: var(--stratum-indent-epipelagic);
-}
-
-.stratum-block[data-stratum="mesopelagic"] {
-  padding-left: var(--stratum-indent-mesopelagic);
-}
-
-.stratum-block[data-stratum="bathypelagic"] {
-  padding-left: var(--stratum-indent-bathypelagic);
-}
-
-@media (max-width: 768px) {
-  .stratum-block[data-stratum="mesopelagic"],
-  .stratum-block[data-stratum="bathypelagic"] {
-    padding-left: 0;
-  }
-  .header-bar {
-    padding: 1.25rem 1.5rem;
-  }
-}
-
-.stratum-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.stratum-depth-label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--light-caustic);
-  letter-spacing: 0.04em;
-  opacity: 0.85;
-}
-
-.stratum-title {
-  font-size: clamp(2.2rem, 5vw, 4.2rem);
-  line-height: 1.05;
-}
-
-.stratum-description {
-  margin-top: 0.75rem;
-  font-size: 1.1rem;
-  color: rgba(221, 227, 220, 0.8);
-}
-
-/* Correnteza Horizontal (Obras do Estrato) */
-.current-drift-track {
-  display: flex;
-  gap: 3rem;
-  overflow-x: auto;
-  padding: 1.5rem 0 2.5rem 0;
-  scrollbar-width: none;
-  cursor: grab;
-  user-select: none;
-}
-
-.current-drift-track::-webkit-scrollbar {
-  display: none;
-}
-
-.current-drift-track:active {
-  cursor: grabbing;
-}
-
-/* Card de Obra Não Clichê — Sem Cantos Genéricos, Sem Sombra Falsa */
-.artwork-specimen {
-  flex: 0 0 auto;
-  width: clamp(280px, 38vw, 540px);
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  position: relative;
-}
-
-.artwork-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  background: rgba(14, 22, 19, 0.6);
-  border: 1px solid rgba(221, 227, 220, 0.08);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.artwork-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: contrast(1.04) brightness(0.96);
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
-}
-
-.artwork-specimen:hover .artwork-frame img {
-  transform: scale(1.02);
-  filter: contrast(1.08) brightness(1.02);
-}
-
-.artwork-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.artwork-title {
-  font-size: 1.4rem;
-  color: var(--foam-white);
-  font-variation-settings: 'opsz' 36, 'wght' 400, 'SOFT' 30;
-}
-
-.artwork-materials {
-  font-size: 0.85rem;
-  color: rgba(221, 227, 220, 0.6);
-  font-weight: 500;
-}
-
-.artwork-year {
-  font-size: 0.8rem;
-  color: var(--sediment-clay);
-  font-weight: 600;
-}
-
-/* Painel de Navegação Cimática (Overlay Modal / Seção Abertura) */
-.cymatic-stage {
-  position: relative;
-  width: 100%;
-  height: 75vh;
-  min-height: 520px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4rem;
-}
-
-.cymatic-canvas-container {
-  width: 100%;
-  max-width: 580px;
-  aspect-ratio: 1 / 1;
-  position: relative;
-}
-
-.cymatic-dial-info {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;
-}
-
-.cymatic-freq-readout {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--light-caustic);
-  letter-spacing: 0.05em;
-}
-
-.cymatic-instruction {
-  font-size: 0.85rem;
-  color: rgba(221, 227, 220, 0.5);
-}
-
-/* Acessibilidade & Água Parada (Still Water Mode) */
-body.still-water-mode #canvas-caustics-layer,
-body.still-water-mode #sand-physics-layer,
-body.still-water-mode #oceanic-3d-viewport {
-  display: none !important;
-}
-
-body.still-water-mode {
-  background: radial-gradient(circle at 50% 20%, #1c2723 0%, var(--depth-abyss) 100%);
+  box-shadow: 0 0 14px rgba(232, 199, 126, 0.2);
 }
 
 /* =========================================================================
-   FLOATING HUD DOCK — Controle Subaquático Espacial
+   3. RÉGUA BATIMÉTRICA VERTICAL BRUTALISTA (MARGEM DIREITA)
+   ========================================================================= */
+
+.bathymetric-ruler-container {
+  position: fixed;
+  right: 1.75rem;
+  top: 14vh;
+  bottom: 16vh;
+  width: 76px;
+  z-index: 40;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bathymetric-ruler-container * {
+  pointer-events: auto;
+}
+
+.ruler-header, .ruler-footer {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: rgba(221, 227, 220, 0.4);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.ruler-axis-track {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  margin: 0.85rem 0;
+  border-left: 1px solid rgba(221, 227, 220, 0.16);
+}
+
+.ruler-node {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.ruler-node.is-stratum-node {
+  cursor: pointer;
+}
+
+.ruler-tick-notch {
+  width: 10px;
+  height: 1px;
+  background: rgba(221, 227, 220, 0.35);
+}
+
+.ruler-node.is-stratum-node .ruler-tick-notch {
+  width: 14px;
+  height: 2px;
+  background: var(--surface-glass);
+}
+
+.ruler-node.is-active-stratum .ruler-tick-notch {
+  background: var(--light-caustic);
+  box-shadow: 0 0 8px var(--light-caustic);
+}
+
+.ruler-tick-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(221, 227, 220, 0.45);
+  letter-spacing: 0.06em;
+}
+
+.ruler-node.is-stratum-node .ruler-tick-num {
+  color: var(--surface-glass);
+  font-weight: 700;
+}
+
+.ruler-node.is-active-stratum .ruler-tick-num {
+  color: var(--light-caustic);
+}
+
+.ruler-tick-tag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--light-caustic);
+  font-weight: 700;
+}
+
+.ruler-depth-cursor {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  z-index: 10;
+  transition: top 0.1s linear;
+  pointer-events: none;
+}
+
+.cursor-reticle-line {
+  width: 18px;
+  height: 2px;
+  background: var(--light-caustic);
+  box-shadow: 0 0 10px var(--light-caustic);
+}
+
+.cursor-readout-pill {
+  background: rgba(14, 22, 19, 0.95);
+  border: 1px solid var(--light-caustic);
+  padding: 0.2rem 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--light-caustic);
+  box-shadow: 0 0 12px rgba(232, 199, 126, 0.3);
+}
+
+/* =========================================================================
+   4. PAINEL BRUTALISTA DE IDENTIFICAÇÃO DO ESTRATO (AMBIENT HUD)
+   ========================================================================= */
+
+.ambient-specimen-hud {
+  position: fixed;
+  top: 7rem;
+  left: 2.8rem;
+  max-width: 480px;
+  z-index: 25;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: rgba(14, 22, 19, 0.76);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(221, 227, 220, 0.16);
+  border-left: 3px solid var(--light-caustic);
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+}
+
+.ambient-specimen-hud * {
+  pointer-events: auto;
+}
+
+.specimen-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.specimen-bracket-tag {
+  color: var(--light-caustic);
+  font-weight: 700;
+}
+
+.specimen-serial {
+  color: rgba(221, 227, 220, 0.4);
+}
+
+.specimen-monument-title {
+  font-family: var(--font-exp);
+  font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--foam-white);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin: 0.35rem 0;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
+}
+
+.specimen-telemetry-strip {
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid rgba(221, 227, 220, 0.14);
+  border-bottom: 1px solid rgba(221, 227, 220, 0.14);
+}
+
+.telemetry-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.cell-k {
+  color: rgba(221, 227, 220, 0.45);
+  letter-spacing: 0.05em;
+}
+
+.cell-v {
+  color: var(--light-caustic);
+  font-weight: 700;
+}
+
+.specimen-narrative {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: rgba(221, 227, 220, 0.82);
+  line-height: 1.6;
+  border-left: 2px solid var(--light-caustic);
+  padding-left: 1.1rem;
+}
+
+.specimen-interaction-prompt {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: rgba(232, 199, 126, 0.85);
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+}
+
+.prompt-arrow {
+  color: var(--light-caustic);
+  animation: bounceV 2s infinite ease-in-out;
+}
+
+@keyframes bounceV {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* =========================================================================
+   5. FLOATING HUD DOCK — CONSOLE DE TELEMETRIA BRUTALISTA
    ========================================================================= */
 
 .floating-hud-dock {
@@ -375,7 +541,7 @@ body.still-water-mode {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   pointer-events: none;
   width: auto;
   max-width: 95vw;
@@ -385,19 +551,26 @@ body.still-water-mode {
   pointer-events: auto;
 }
 
-/* Preview da Obra Sob a Mira */
-.hud-artwork-preview {
-  background: rgba(14, 22, 19, 0.88);
+/* Viewfinder Reticle da Obra Sob a Mira */
+.hud-artwork-reticle {
+  background: rgba(14, 22, 19, 0.94);
   border: 1px solid var(--light-caustic);
-  padding: 0.5rem 1.25rem;
-  border-radius: 4px;
-  backdrop-filter: blur(16px);
+  border-radius: 0;
+  padding: 0.45rem 1.25rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
   cursor: pointer;
-  animation: hudFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  animation: hudFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease;
+}
+
+.hud-artwork-reticle:hover {
+  background: rgba(24, 36, 31, 0.98);
+  box-shadow: 0 0 20px rgba(232, 199, 126, 0.35);
 }
 
 @keyframes hudFadeIn {
@@ -405,173 +578,407 @@ body.still-water-mode {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.hud-preview-accent {
-  font-size: 0.75rem;
+.reticle-target-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.reticle-glyph {
+  font-family: var(--font-mono);
   color: var(--light-caustic);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-.hud-preview-title {
-  font-family: var(--font-display);
   font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.reticle-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--light-caustic);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.reticle-title {
+  font-family: var(--font-exp);
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--foam-white);
-  font-variation-settings: 'opsz' 36, 'wght' 400;
+  letter-spacing: 0.02em;
 }
 
-.hud-preview-action {
-  font-size: 0.75rem;
-  color: rgba(221, 227, 220, 0.5);
+.reticle-action {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: rgba(221, 227, 220, 0.6);
 }
 
-/* Barra de Vidro (Dock) */
-.hud-glass-bar {
-  background: rgba(14, 22, 19, 0.78);
-  border: 1px solid rgba(221, 227, 220, 0.16);
-  border-radius: 6px;
-  padding: 0.55rem 1.25rem;
+/* Console Principal Brutalista */
+.hud-brutalist-console {
+  position: relative;
+  background: rgba(14, 22, 19, 0.88);
+  border: 1px solid rgba(221, 227, 220, 0.22);
+  border-radius: 0;
+  padding: 0.55rem 1.4rem;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(221, 227, 220, 0.1);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(232, 199, 126, 0.4);
 }
 
-.hud-divider {
+.hud-corner-mark {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--light-caustic);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.hud-cm-tl { top: -6px; left: -5px; }
+.hud-cm-tr { top: -6px; right: -5px; }
+.hud-cm-bl { bottom: -6px; left: -5px; }
+.hud-cm-br { bottom: -6px; right: -5px; }
+
+.hud-v-divider {
   width: 1px;
-  height: 24px;
-  background: rgba(221, 227, 220, 0.12);
+  height: 28px;
+  background: rgba(221, 227, 220, 0.16);
 }
 
-/* Medidor de Profundidade */
-.hud-gauge-cluster {
+/* Medidor de Profundidade e Pressão */
+.hud-gauge-block {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.hud-depth-value {
+.hud-depth-row {
   display: flex;
   align-items: baseline;
-  gap: 0.15rem;
+  gap: 0.2rem;
   line-height: 1;
 }
 
-.hud-num {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
+.hud-mono-num {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
   color: var(--light-caustic);
-  font-variation-settings: 'opsz' 36, 'wght' 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
 
-.hud-unit {
+.hud-unit-mono {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--surface-glass);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.hud-pressure-label {
+.hud-pressure-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   color: rgba(221, 227, 220, 0.55);
   letter-spacing: 0.04em;
   margin-top: 0.2rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* Navegação por Estratos */
-.hud-strata-nav {
+.hud-dot-sep {
+  opacity: 0.4;
+}
+
+.hud-stratum-code {
+  color: var(--light-caustic);
+}
+
+/* Segmentos de Estratos */
+.hud-strata-segment {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
-.hud-stratum-btn {
+.hud-segment-btn {
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid rgba(221, 227, 220, 0.14);
+  border-radius: 0;
   color: rgba(221, 227, 220, 0.7);
-  padding: 0.4rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-family: var(--font-body);
-  font-weight: 500;
+  padding: 0.42rem 0.8rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
-.hud-btn-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(221, 227, 220, 0.3);
-  transition: background 0.25s ease;
+.segment-indicator {
+  font-size: 0.65rem;
+  color: rgba(221, 227, 220, 0.4);
 }
 
-.hud-stratum-btn:hover {
+.hud-segment-btn:hover {
   color: var(--foam-white);
-  background: rgba(221, 227, 220, 0.06);
+  background: rgba(221, 227, 220, 0.08);
+  border-color: rgba(221, 227, 220, 0.35);
 }
 
-.hud-stratum-btn.active {
-  background: rgba(232, 199, 126, 0.12);
-  border-color: rgba(232, 199, 126, 0.3);
+.hud-segment-btn.is-active {
+  background: rgba(232, 199, 126, 0.16);
+  border-color: var(--light-caustic);
   color: var(--light-caustic);
+  font-weight: 700;
 }
 
-.hud-stratum-btn.active .hud-btn-dot {
-  background: var(--light-caustic);
+.hud-segment-btn.is-active .segment-indicator {
+  color: var(--light-caustic);
   box-shadow: 0 0 8px var(--light-caustic);
 }
 
-/* Ações do HUD */
-.hud-actions-cluster {
+/* Ações de Sensores */
+.hud-sensor-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.hud-action-btn {
-  background: rgba(221, 227, 220, 0.05);
-  border: 1px solid rgba(221, 227, 220, 0.14);
+.hud-action-toggle {
+  background: rgba(221, 227, 220, 0.04);
+  border: 1px solid rgba(221, 227, 220, 0.16);
+  border-radius: 0;
   color: var(--surface-glass);
-  padding: 0.4rem 0.75rem;
-  font-size: 0.75rem;
+  padding: 0.42rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
   font-weight: 600;
-  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
 }
 
-.hud-action-btn:hover {
+.toggle-indicator {
+  font-size: 0.6rem;
+  color: rgba(221, 227, 220, 0.45);
+}
+
+.hud-action-toggle:hover {
   border-color: var(--light-caustic);
   color: var(--foam-white);
 }
 
-.hud-action-btn.active {
-  background: rgba(232, 199, 126, 0.15);
+.hud-action-toggle.is-active {
+  background: var(--light-caustic);
+  color: var(--depth-abyss);
   border-color: var(--light-caustic);
-  color: var(--light-caustic);
+  font-weight: 700;
 }
 
-@media (max-width: 768px) {
-  .floating-hud-dock {
-    bottom: 1rem;
-    width: 96vw;
-  }
-  .hud-glass-bar {
-    padding: 0.45rem 0.75rem;
-    gap: 0.6rem;
-    overflow-x: auto;
-  }
-  .hud-stratum-btn {
-    padding: 0.35rem 0.5rem;
-    font-size: 0.72rem;
-  }
+.hud-action-toggle.is-active .toggle-indicator {
+  color: var(--depth-abyss);
+}
+
+/* =========================================================================
+   6. MODAL DE INSPEÇÃO & DOSSIER ESPECIME BRUTALISTA
+   ========================================================================= */
+
+.erosion-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(14, 22, 19, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.specimen-dossier-card {
+  position: relative;
+  background: rgba(14, 22, 19, 0.96);
+  border: 1px solid rgba(221, 227, 220, 0.22);
+  border-radius: 0;
+  padding: 2.5rem;
+  max-width: 1040px;
+  width: 92vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+}
+
+.dossier-bracket {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: var(--light-caustic);
+  line-height: 1;
+}
+
+.db-tl { top: 0.6rem; left: 0.6rem; }
+.db-tr { top: 0.6rem; right: 0.6rem; }
+.db-bl { bottom: 0.6rem; left: 0.6rem; }
+.db-br { bottom: 0.6rem; right: 0.6rem; }
+
+.dossier-header-bar {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--light-caustic);
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(221, 227, 220, 0.15);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dossier-grid-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.dossier-canvas-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-color: #0E1613;
+  border: 1px solid rgba(221, 227, 220, 0.14);
+  overflow: hidden;
+}
+
+.canvas-corner {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--light-caustic);
+  z-index: 2;
+  line-height: 1;
+}
+
+.cc-tl { top: 4px; left: 6px; }
+.cc-tr { top: 4px; right: 6px; }
+.cc-bl { bottom: 4px; left: 6px; }
+.cc-br { bottom: 4px; right: 6px; }
+
+.dossier-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.dossier-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dossier-series-tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--light-caustic);
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.dossier-title {
+  font-family: var(--font-exp);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--foam-white);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-top: 0.35rem;
+}
+
+.dossier-description {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  color: var(--surface-glass);
+  line-height: 1.7;
+}
+
+.dossier-table {
+  border: 1px solid rgba(221, 227, 220, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.dossier-table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(221, 227, 220, 0.1);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.dossier-table-row:last-child {
+  border-bottom: none;
+}
+
+.table-key {
+  color: rgba(221, 227, 220, 0.45);
+  letter-spacing: 0.04em;
+}
+
+.table-val {
+  color: var(--surface-glass);
+  font-weight: 600;
+}
+
+.dossier-close-btn {
+  background: transparent;
+  border: 1px solid var(--light-caustic);
+  border-radius: 0;
+  color: var(--light-caustic);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.06em;
+  margin-top: 1rem;
+  align-self: flex-start;
+}
+
+.dossier-close-btn:hover {
+  background: var(--light-caustic);
+  color: var(--depth-abyss);
+}
+
+/* =========================================================================
+   7. ACESSIBILIDADE & MODO ÁGUA PARADA (STILL WATER MODE)
+   ========================================================================= */
+
+body.still-water-mode #canvas-caustics-layer,
+body.still-water-mode #sand-physics-layer,
+body.still-water-mode #oceanic-3d-viewport {
+  display: none !important;
+}
+
+body.still-water-mode {
+  background: radial-gradient(circle at 50% 20%, #1c2723 0%, var(--depth-abyss) 100%);
 }
 
 .sr-only {
@@ -591,3 +998,56 @@ body.still-water-mode {
   outline-offset: 4px;
 }
 
+/* =========================================================================
+   8. RESPONSIVIDADE & DISPOSITIVOS MÓVEIS
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .header-bar {
+    padding: 1rem 1.25rem;
+  }
+  
+  .brand-title {
+    font-size: 1.25rem;
+  }
+  
+  .brand-badge {
+    display: none;
+  }
+  
+  .viewport-reticles-container {
+    display: none;
+  }
+
+  .bathymetric-ruler-container {
+    right: 0.5rem;
+    width: 50px;
+  }
+
+  .ambient-specimen-hud {
+    top: 5rem;
+    left: 1.25rem;
+    right: 3.5rem;
+    max-width: none;
+  }
+
+  .specimen-monument-title {
+    font-size: 2.2rem;
+  }
+
+  .floating-hud-dock {
+    bottom: 1rem;
+    width: 96vw;
+  }
+
+  .hud-brutalist-console {
+    padding: 0.45rem 0.75rem;
+    gap: 0.6rem;
+    overflow-x: auto;
+  }
+
+  .hud-segment-btn {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}

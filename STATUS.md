@@ -32,11 +32,25 @@
 
 | Subprojeto | Status | Próxima Ação |
 |-----------|--------|--------------|
-| `/gigantera` | ✅ 4 Pilares implementados | Ajustes de catálogo ou curadoria conforme feedback do artista |
+| `/gigantera` | ✅ Brutalismo Artístico Moderno Ativo | Pronto para exibição pública / curadoria |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-11 — Identidade Visual Brutalista Artística Experimental (`/gigantera/`)
+
+**O que foi feito:**
+- [x] **Tipografia Brutalista Escultural:** Pareamento de alto impacto entre `Syne` (800 ultra-pesada experimental), `Fraunces` (com eixos dinâmicos de erosão) e `Space Mono` (telemetria e índices tabulares).
+- [x] **Grafismos de Retículo (Viewport Framing):** Quatro cantoneiras heráldicas/técnicas nos cantos do viewport (`┌ ┐ └ ┘`) com coordenadas cartográficas, indicador de taxa de quadros (FPS) e índices de estrato.
+- [x] **Régua Batimétrica Vertical Brutalista:** Eixo milimétrico na margem direita com marcas de escala (`0000M` a `4000M`), nós de salto táctil por estrato e agulha de profundidade em tempo real (`[⌖ 0421M]`).
+- [x] **Painel de Contexto Brutalista (Ambient Specimen HUD):** Bloco estético de alta legibilidade com vidro fosco escuro, borda de ouro cáustico, índices bracketed (`[STRATUM // 01]`) e telemetria barométrica.
+- [x] **Floating HUD Dock Brutalista:** Geometria retangular estrita com cantoneiras em cruz (`+`), medidor com zeros à esquerda (`0421 M`), botões segmentados com preenchimento invertido no hover.
+- [x] **Dossier de Inspeção Brutalista (`ErosionModal`):** Dossier de arquivo de espécime com cantoneiras de corte, tabela de suporte/cronologia e botão de retorno escultural.
+- [x] **Monólitos 3D Wireframe:** Adicionadas arestas wireframe arquiteturais de 0.38 de opacidade em ouro cáustico em volta de cada moldura monolítica 3D.
+- [x] Verificado visualmente no navegador com subagente sem qualquer quebra e integridade 100% preservada no site raiz.
+
+---
 
 ### 2026-09-11 — Implementação da Experiência Gigantera (`/gigantera/`)
 

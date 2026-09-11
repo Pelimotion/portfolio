@@ -163,6 +163,16 @@ export const OceanicScene3D: React.FC = () => {
         frameMesh.receiveShadow = true;
         group.add(frameMesh);
 
+        // Arestas Wireframe Arquiteturais Brutalistas
+        const edgeGeo = new THREE.EdgesGeometry(frameGeo);
+        const edgeMat = new THREE.LineBasicMaterial({
+          color: 0xe8c77e,
+          transparent: true,
+          opacity: 0.38
+        });
+        const wireframeEdges = new THREE.LineSegments(edgeGeo, edgeMat);
+        group.add(wireframeEdges);
+
         // Plano da Obra de Arte com Textura Real
         const texture = textureLoader.load(art.imageSrc);
         texture.generateMipmaps = true;

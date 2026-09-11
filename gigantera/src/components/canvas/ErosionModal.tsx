@@ -86,7 +86,6 @@ export const ErosionModal: React.FC = () => {
 
         for (let i = 0; i < slices; i++) {
           const sliceY = i * sliceH;
-          // Deslocamento horizontal baseado em seno e ruído proporcional ao progresso
           const noiseOffset =
             Math.sin(i * 0.4 + progress * 8.0) *
             Math.cos(i * 0.2) *
@@ -165,104 +164,75 @@ export const ErosionModal: React.FC = () => {
     <div
       ref={modalRef}
       className="erosion-modal-backdrop"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(14, 22, 19, 0.94)',
-        backdropFilter: 'blur(16px)',
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem'
-      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-artwork-title"
     >
-      <div
-        style={{
-          maxWidth: '1080px',
-          width: '100%',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'center'
-        }}
-      >
-        {/* Canvas de Transição por Erosão */}
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '4 / 5',
-            backgroundColor: '#0E1613',
-            border: '1px solid rgba(221, 227, 220, 0.12)',
-            overflow: 'hidden'
-          }}
-        >
-          <canvas
-            ref={canvasRef}
-            style={{ width: '100%', height: '100%', display: 'block' }}
-          />
+      <div className="specimen-dossier-card">
+        {/* Cantoneiras Gráficas Brutalistas */}
+        <span className="dossier-bracket db-tl">┌</span>
+        <span className="dossier-bracket db-tr">┐</span>
+        <span className="dossier-bracket db-bl">└</span>
+        <span className="dossier-bracket db-br">┘</span>
+
+        {/* Barra Superior do Dossier */}
+        <div className="dossier-header-bar">
+          <span className="dossier-id">[SPECIMEN ARCHIVE // ID: GGN-ART-{selectedArtwork.id.toUpperCase()}]</span>
+          <span className="dossier-status">DISPLACEMENT_STATUS: {erosionProgress > 0.01 ? 'ERODING' : 'CRYSTALLIZED'}</span>
         </div>
 
-        {/* Informações da Obra com Fraunces Dinâmica */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <span
-              style={{
-                fontSize: '0.85rem',
-                color: 'var(--light-caustic)',
-                fontWeight: 600,
-                letterSpacing: '0.04em'
-              }}
-            >
-              {selectedArtwork.series} · {selectedArtwork.depthMeters}m de profundidade
-            </span>
-            <h2
-              ref={titleRef}
-              id="modal-artwork-title"
-              style={{
-                fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-                color: 'var(--foam-white)',
-                marginTop: '0.5rem',
-                lineHeight: 1.1
-              }}
-            >
-              {selectedArtwork.title}
-            </h2>
+        <div className="dossier-grid-body">
+          {/* Canvas de Transição por Erosão */}
+          <div className="dossier-canvas-frame">
+            <span className="canvas-corner cc-tl">+</span>
+            <span className="canvas-corner cc-tr">+</span>
+            <span className="canvas-corner cc-bl">+</span>
+            <span className="canvas-corner cc-br">+</span>
+            <canvas ref={canvasRef} className="dossier-canvas" />
           </div>
 
-          <p style={{ color: 'var(--surface-glass)', fontSize: '1.05rem', lineHeight: 1.7 }}>
-            {selectedArtwork.description}
-          </p>
+          {/* Informações Brutalistas da Obra */}
+          <div className="dossier-info-col">
+            <div className="dossier-heading-group">
+              <span className="dossier-series-tag">
+                [SERIES // {selectedArtwork.series.toUpperCase()}] · {selectedArtwork.depthMeters}M DEPTH
+              </span>
+              <h2 ref={titleRef} id="modal-artwork-title" className="dossier-title">
+                {selectedArtwork.title}
+              </h2>
+            </div>
 
-          <div
-            style={{
-              paddingTop: '1rem',
-              borderTop: '1px solid rgba(221, 227, 220, 0.1)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.4rem',
-              fontSize: '0.85rem',
-              color: 'rgba(221, 227, 220, 0.6)'
-            }}
-          >
-            <div><strong>Ano:</strong> {selectedArtwork.year}</div>
-            <div><strong>Física/Materiais:</strong> {selectedArtwork.materials}</div>
+            <p className="dossier-description">
+              {selectedArtwork.description}
+            </p>
+
+            {/* Tabela de Telemetria e Físicas */}
+            <div className="dossier-table">
+              <div className="dossier-table-row">
+                <span className="table-key">[CRONOLOGIA]</span>
+                <span className="table-val">{selectedArtwork.year}</span>
+              </div>
+              <div className="dossier-table-row">
+                <span className="table-key">[SUPORTE & MATERIAIS]</span>
+                <span className="table-val">{selectedArtwork.materials.toUpperCase()}</span>
+              </div>
+              <div className="dossier-table-row">
+                <span className="table-key">[ESTRATO DEPOSICIONAL]</span>
+                <span className="table-val">BATIMETRIA -{selectedArtwork.depthMeters}M</span>
+              </div>
+              <div className="dossier-table-row">
+                <span className="table-key">[FATOR DE EROSÃO]</span>
+                <span className="table-val font-mono">{erosionProgress.toFixed(3)} PH</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleClose}
+              className="dossier-close-btn"
+            >
+              [✕ RETORNAR À COLUNA ESTRATIGRÁFICA]
+            </button>
           </div>
-
-          <button
-            onClick={handleClose}
-            className="control-pill"
-            style={{ alignSelf: 'flex-start', marginTop: '1rem' }}
-          >
-            Retornar ao Estrato
-          </button>
         </div>
       </div>
     </div>

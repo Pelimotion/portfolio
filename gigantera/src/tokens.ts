@@ -59,6 +59,8 @@ export const TOKENS = {
   typography: {
     display: "'Fraunces', Georgia, serif",
     body: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+    mono: "'Space Mono', 'Courier New', monospace",
+    experimentalDisplay: "'Syne', 'Fraunces', sans-serif",
     frauncesAxes: {
       opsz: { min: 9, max: 144, default: 72 },
       wght: { min: 100, max: 900, default: 400 },
@@ -96,4 +98,6 @@ export function injectCssTokens(): void {
   
   root.style.setProperty('--font-display', TOKENS.typography.display);
   root.style.setProperty('--font-body', TOKENS.typography.body);
+  root.style.setProperty('--font-mono', TOKENS.typography.mono);
+  root.style.setProperty('--font-exp', TOKENS.typography.experimentalDisplay);
 }
