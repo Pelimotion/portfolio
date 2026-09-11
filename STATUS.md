@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-05-19
+**Data:** 2026-09-11
 **Projeto:** Landing page + Painel Admin Bunny.net
-**Status:** ESTÁVEL — sem mudanças pendentes
-**Próxima Ação:** Nenhuma na raiz. Subprojeto ativo: `wide-image-studio` (ver abaixo)
+**Status:** ESTÁVEL — limpeza e auditoria concluídas
+**Próxima Ação:** Upgrades e melhorias — definir scope na próxima sessão
 **Bloqueadores:** Nenhum
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -39,7 +39,21 @@
 
 ## 📝 HISTÓRICO DE SESSÕES
 
-### 2026-05-17 — Deploy Hub + Media Scanner + Bug Fixes Admin
+### 2026-09-11 — Auditoria + Limpeza Organizacional
+
+**O que foi feito:**
+- [x] Auditoria completa da estrutura de pastas e estado do git
+- [x] 7 arquivos `.md` de planejamento movidos da raiz → `.planning/docs/`
+- [x] 3 arquivos `.sql` movidos da raiz → `scripts/database/`
+- [x] `.gitignore` atualizado: `Site Antigo/`, `scratch/` adicionados; espaços indevidos corrigidos
+- [x] `STATUS.md` atualizado
+- [x] ⚠️ **PENDENTE:** `git add -A && git commit` para registrar deleções de `felipe-workspace/`, `wide-image-studio/`, `projetos-backup/` (confirmar antes)
+
+**Arquivos modificados:** `.gitignore`, `STATUS.md`
+**Arquivos movidos:** 7 docs → `.planning/docs/`, 3 SQLs → `scripts/database/`
+
+---
+
 
 **O que foi feito:**
 - [x] `admin/admin.js` — bug `download is not defined` corrigido (função `download()` adicionada)

@@ -25,10 +25,10 @@ node_modules/
 *.tar
 *.gz
 *.pdf
- *.psd
- *.ai
- *.prproj
- *.aep
+*.psd
+*.ai
+*.prproj
+*.aep
 
 # Patch scripts and temp files
 patch_*.py
@@ -50,3 +50,5 @@ projetos-app/
 felipe-workspace/
 scripts/visual-backup/
 dashboards_encontrados.json
+Site Antigo/
+scratch/
