@@ -2,98 +2,99 @@ import { StratumInfo } from '../types/art';
 
 /**
  * Catálogo Autoral de Obras de gigantera
- * Cada peça reflete rigorosamente as leis físicas de refração, ressonância ou sedimentação.
+ * Seleção curatorial do acervo real do artista (Espinhaço, Zimbro e Notalgia).
+ * Distribuído pelas 3 camadas físicas da coluna estratigráfica oceânica.
  */
 export const STRATA_CATALOG: StratumInfo[] = [
   {
     id: 'epipelagic',
     title: 'Estrato Epipelágico',
-    depthRange: '0m — 200m (Zona Fótica)',
-    description: 'A camada onde os fótons solares sofrem refração e dispersão espectral. As obras investigam a fronteira óptica entre dois meios de densidades distintas.',
+    depthRange: '0m — 200m (Zona Fótica & Luz)',
+    description: 'A camada onde os fótons solares sofrem refração e dispersão. As esculturas de prata polida e liga de titânio interagem com a lâmina superficial e o fluxo laminar.',
     resonanceFreqHz: 174,
     nodalMode: { n: 2, m: 2 },
     artworks: [
       {
-        id: 'refracao-1333',
-        title: 'Índice de Refração 1.333',
-        series: 'Fronteira Óptica',
-        stratum: 'epipelagic',
-        year: 2025,
-        materials: 'Cálculo de traçado de raios em tempo real, matriz de dispersão de Cauchy',
-        description: 'Um estudo numérico da lei de Snell-Descartes aplicada à interface de contato entre o ar e fluidos de viscosidade calculada. O padrão refratado nunca se repete.',
-        depthMeters: 12,
-        imageSrc: '/gigantera/works/refracao-1333.svg',
-        imageAlt: 'Padrão refrativo de cáusticas em luz âmbar sobre fundo ardósia escuro'
-      },
-      {
-        id: 'morfologia-atenuacao',
-        title: 'Morfologia da Atenuação',
-        series: 'Fronteira Óptica',
-        stratum: 'epipelagic',
-        year: 2024,
-        materials: 'Simulação espectral e densidade coloidal em grade vetorial',
-        description: 'Mapeamento do desaparecimento progressivo dos comprimentos de onda vermelhos nos primeiros metros de penetração luminosa.',
-        depthMeters: 45,
-        imageSrc: '/gigantera/works/morfologia-atenuacao.svg',
-        imageAlt: 'Gradiente de densidade espectral esmaecendo em tons de verde-ardósia e ouro pálido'
-      },
-      {
-        id: 'fronteira-incompressivel',
-        title: 'Fronteira Incompressível',
-        series: 'Fronteira Óptica',
+        id: 'espinhaco-cinetica-prata',
+        title: 'Espinhaço I: Cinética de Prata',
+        series: 'Espinhaço & Hidrodinâmica',
         stratum: 'epipelagic',
         year: 2026,
-        materials: 'Estudo dinâmico de tensão superficial e equilíbrio de Laplace',
-        description: 'A lâmina invisível que separa a atmosfera do meio denso. A energia é dissipada em oscilações capilares de micro-frequência.',
-        depthMeters: 110,
-        imageSrc: '/gigantera/works/fronteira-incompressivel.svg',
-        imageAlt: 'Linhas vetoriais de tensão superficial deformadas por forças de cisalhamento'
+        materials: 'Escultura cinética em liga de prata e titânio, mecânica ondulatória submersa',
+        description: 'Estrutura articulada concebida a partir da biomecânica da ictiologia marinha. O movimento responde ao fluxo de água com desaceleração inercial calculada.',
+        depthMeters: 12,
+        imageSrc: '/gigantera/works/espinhaco-cinetica-prata.jpg',
+        imageAlt: 'Escultura de coluna vertebral em prata brilhante ondulando sob refrações e folhas de lótus em água rasa cristalina'
+      },
+      {
+        id: 'espinhaco-vitrine-aquario',
+        title: 'Espinhaço: Contenção Vítrea',
+        series: 'Espinhaço & Hidrodinâmica',
+        stratum: 'epipelagic',
+        year: 2026,
+        materials: 'Escultura de prata polida suspensa em câmara de vidro óptico temperado de alta transparência',
+        description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo cristalino antes da descida oceânica.',
+        depthMeters: 45,
+        imageSrc: '/gigantera/works/espinhaco-vitrine-aquario.jpg',
+        imageAlt: 'Escultura espinhal de prata suspensa verticalmente dentro de aquário monolítico de vidro em galeria minimalista'
+      },
+      {
+        id: 'zimbro-estudo-espectral',
+        title: 'Zimbro: Atlas Fotogramétrico',
+        series: 'Zimbro Espinhaço',
+        stratum: 'epipelagic',
+        year: 2026,
+        materials: 'Atlas composicional, estudos fotogramétricos, coordenadas tridimensionais e tapeçaria acústica',
+        description: 'Mapeamento integral do ciclo de criação: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão e análise computacional.',
+        depthMeters: 140,
+        imageSrc: '/gigantera/works/zimbro-estudo-espectral.jpg',
+        imageAlt: 'Composição de múltiplos painéis fotográficos mostrando ateliê, tapeçaria, peças 3D e renderizações submersas do projeto Zimbro'
       }
     ]
   },
   {
     id: 'mesopelagic',
     title: 'Estrato Mesopelágico',
-    depthRange: '200m — 1000m (Zona Crepuscular)',
-    description: 'A luz solar cessa de sustentar a fotossíntese. O espaço é dominado pela propagação mecânica da pressão e frequências acústicas de baixa atenuação.',
+    depthRange: '200m — 1000m (Zona Crepuscular & Ressonância)',
+    description: 'A luz solar dissipa-se. O espaço é dominado pela atenuação de comprimentos de onda, filamentos bioluminescentes e rastreamento cinemático por coordenadas vetoriais.',
     resonanceFreqHz: 396,
     nodalMode: { n: 4, m: 3 },
     artworks: [
       {
-        id: 'no-harmonico-432',
-        title: 'Nó Harmônico 432',
-        series: 'Geometria Cimática',
-        stratum: 'mesopelagic',
-        year: 2025,
-        materials: 'Partículas de quartzo sobre placa de titânio submetida a excitação eletroacústica',
-        description: 'Registros fotogramétricos de grãos inertes se acumulando estritamente sobre as zonas de aceleração nula de uma membrana em vibração constante.',
-        depthMeters: 340,
-        imageSrc: '/gigantera/works/no-harmonico-432.svg',
-        imageAlt: 'Padrão geométrico de Chladni com grânulos claros acumulados em curvas hiperbólicas simétricas'
-      },
-      {
-        id: 'dispersao-helmholtz',
-        title: 'Dispersão de Helmholtz',
-        series: 'Geometria Cimática',
-        stratum: 'mesopelagic',
-        year: 2024,
-        materials: 'Ressonador esférico de pressão hidrostática e interferometria laser',
-        description: 'Investigação do aprisionamento de ondas acústicas em cavidades seladas sob pressões crescentes.',
-        depthMeters: 620,
-        imageSrc: '/gigantera/works/dispersao-helmholtz.svg',
-        imageAlt: 'Círculos concêntricos de interferência acústica interagindo com eixos nodais ortogonais'
-      },
-      {
-        id: 'matriz-nodal-b7',
-        title: 'Matriz Nodal B-7',
-        series: 'Geometria Cimática',
+        id: 'espinhaco-descida-crepuscular',
+        title: 'Espinhaço II: Descida Crepuscular',
+        series: 'Espinhaço & Hidrodinâmica',
         stratum: 'mesopelagic',
         year: 2026,
-        materials: 'Geração procedural de modos próprios de vibração bidimensional',
-        description: 'Quando a frequência atinge a sétima harmônica, a distribuição de nós transita de simetria radial para labirintos fractais ortogonais.',
+        materials: 'Coluna biomecânica em liga cromo-níquel, filamentos bioluminescentes sob atenuação de profundidade',
+        description: 'A transição na qual a luz solar residual é substituída pela escuridão compressiva e o arrasto fluido se estabiliza.',
+        depthMeters: 380,
+        imageSrc: '/gigantera/works/espinhaco-descida-crepuscular.jpg',
+        imageAlt: 'Vértebras metálicas texturizadas descendo pelo oceano escuro envoltas em micro-filamentos de luz bioluminescente'
+      },
+      {
+        id: 'zimbro-rastreamento-vetorial',
+        title: 'Zimbro: Vetor Nodal & Coordenadas',
+        series: 'Zimbro Espinhaço',
+        stratum: 'mesopelagic',
+        year: 2026,
+        materials: 'Rastreamento fotogramétrico tridimensional em tempo real, nuvem de vetores de posição',
+        description: 'Inspeção cinemática da articulação óssea em meio denso com marcadores computacionais de deslocamento angular.',
+        depthMeters: 620,
+        imageSrc: '/gigantera/works/zimbro-rastreamento-vetorial.jpg',
+        imageAlt: 'A coluna de prata flutuando na escuridão marinha com pontos e coordenadas cartesianas x e y sobrepostas'
+      },
+      {
+        id: 'espinhaco-relevo-neotribal',
+        title: 'Matriz Óssea Neotribal',
+        series: 'Espinhaço & Morfologia',
+        stratum: 'mesopelagic',
+        year: 2026,
+        materials: 'Fundição em liga de prata e osso sintético sinterizado em alta densidade',
+        description: 'Detalhe macroscópico da tessitura de nervuras e filamentos de tração da escultura, estruturada para suportar pressões diferenciais extremas.',
         depthMeters: 890,
-        imageSrc: '/gigantera/works/matriz-nodal-b7.svg',
-        imageAlt: 'Grid complexo de nós ressonantes com alta densidade em formato de labirinto acústico'
+        imageSrc: '/gigantera/works/espinhaco-relevo-neotribal.jpg',
+        imageAlt: 'Fotografia macro de alta textura da coluna esculpida com filamentos ósseos entrelaçados em fundo preto'
       }
     ]
   },
@@ -101,45 +102,45 @@ export const STRATA_CATALOG: StratumInfo[] = [
     id: 'bathypelagic',
     title: 'Estrato Batipelágico',
     depthRange: '1000m — 4000m (Tempo Geológico & Sedimento)',
-    description: 'Escuridão absoluta. O único movimento perceptível é a queda perpétua de partículas microscópicas — a neve marinha consolidando-se em pedra ao longo de éons.',
+    description: 'Escuridão e pressão colossal de até 400 bar. O silte e a matéria inerte entram em litificação; a escultura atinge o repouso dinâmico no assoalho abissal.',
     resonanceFreqHz: 528,
     nodalMode: { n: 5, m: 5 },
     artworks: [
       {
-        id: 'sedimentacao-continua-vii',
-        title: 'Sedimentação Contínua VII',
-        series: 'Tempo Profundo',
-        stratum: 'bathypelagic',
-        year: 2025,
-        materials: 'Decantação de silte e argila esmectita sob pressão de 300 bar',
-        description: 'Lâminas micrométricas de sedimento depositadas grão a grão, registrando séculos de inércia em cada milímetro de espessura.',
-        depthMeters: 1450,
-        imageSrc: '/gigantera/works/sedimentacao-continua-vii.svg',
-        imageAlt: 'Camadas horizontais de sedimento mineral em tons de argila escura e ardósia densa'
-      },
-      {
-        id: 'tempo-geologico-basalto',
-        title: 'Tempo Geológico e Basalto',
-        series: 'Tempo Profundo',
-        stratum: 'bathypelagic',
-        year: 2024,
-        materials: 'Fratura concoidal de rocha magmática e erosão por fluxo laminar',
-        description: 'A resistência final da matéria sólida contra a dissolução química em águas anóxicas profundas.',
-        depthMeters: 2300,
-        imageSrc: '/gigantera/works/tempo-geologico-basalto.svg',
-        imageAlt: 'Fraturas angulares em rocha vulcânica preenchidas por micro-sedimentos refratados'
-      },
-      {
-        id: 'materia-barionica-inerte',
-        title: 'Matéria Bariônica Inerte',
-        series: 'Tempo Profundo',
+        id: 'espinhaco-registro-abissal',
+        title: 'Espinhaço III: Registro Abissal',
+        series: 'Espinhaço & Hidrodinâmica',
         stratum: 'bathypelagic',
         year: 2026,
-        materials: 'Cálculo de meia-vida isotópica de carbonatos em repouso barométrico',
-        description: 'O estágio no qual qualquer vestígio de turbulência cessa. O silêncio geológico como condição final da escultura.',
-        depthMeters: 3800,
-        imageSrc: '/gigantera/works/materia-barionica-inerte.svg',
-        imageAlt: 'Composição de alta densidade mineral com textura granular fina e contraste abissal'
+        materials: 'Matéria inerte sob pressão hidrostática de 180 bar, presença bioluminescente pelágica',
+        description: 'O esqueleto metálico em repouso dinâmico no vácuo fotônico batipelágico, cercado pela fauna de profundidade.',
+        depthMeters: 1850,
+        imageSrc: '/gigantera/works/espinhaco-registro-abissal.jpg',
+        imageAlt: 'Coluna de prata no abismo mais escuro, com olhos fosforescentes brilhando suavemente na penumbra'
+      },
+      {
+        id: 'sedimento-litificacao-final',
+        title: 'Sedimentação & Litificação Final',
+        series: 'Zimbro Espinhaço',
+        stratum: 'bathypelagic',
+        year: 2026,
+        materials: 'Impacto de leito marinho, decantação de silte e nuvem de partículas rastreadas computacionalmente',
+        description: 'O momento de impacto da escultura contra o assoalho oceânico; o silte milenar é carreado e precipita-se em litificação.',
+        depthMeters: 2800,
+        imageSrc: '/gigantera/works/sedimento-litificacao-final.jpg',
+        imageAlt: 'A escultura óssea colidindo contra o fundo de areia e silte, levantando nuvens densas de sedimento com bounding boxes'
+      },
+      {
+        id: 'notalgia-monolito-costeiro',
+        title: 'Notalgia: O Monolito Terminal',
+        series: 'Notalgia',
+        stratum: 'bathypelagic',
+        year: 2026,
+        materials: 'Painel emissivo de LED monolítico, fiação industrial exposta e rocha vulcânica basáltica',
+        description: 'O artefato tecnológico enterrado no sedimento como relicário final da civilização na fronteira entre a terra e o abismo.',
+        depthMeters: 3950,
+        imageSrc: '/gigantera/works/notalgia-monolito-costeiro.jpg',
+        imageAlt: 'Painel LED vertical verde erguido sobre rochas escuras e areia molhada sob céu nublado dramático'
       }
     ]
   }

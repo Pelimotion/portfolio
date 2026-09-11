@@ -30,6 +30,14 @@ node_modules/
 *.prproj
 *.aep
 
+# Allow Gigantera web-optimized artwork assets
+!gigantera/works/*.jpg
+!gigantera/works/*.png
+!gigantera/works/*.jpeg
+!gigantera/public/works/*.jpg
+!gigantera/public/works/*.png
+!gigantera/public/works/*.jpeg
+
 # Patch scripts and temp files
 patch_*.py
 fix_*.py
