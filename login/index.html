@@ -113,22 +113,11 @@
         const sb = await getClient();
         const { data: { session } } = await sb.auth.getSession();
 
-        // Redireciona para `url`, passando tokens no hash quando o destino é
-        // um subdomínio externo (ex: studio.pelimotion.art) — localStorage não é
-        // compartilhado entre domínios, então o cliente Supabase do destino
-        // lê os tokens do hash e salva a sessão no próprio localStorage.
+        // Redireciona para o destino solicitado ou fallback de acordo com a role
         async function redirectTo(url) {
             const role = await getUserRole();
             const fallback = role === 'admin' ? '/admin' : '/';
             const target = url || fallback;
-            if (target.startsWith('https://studio.pelimotion.art')) {
-                const { data: { session: s } } = await sb.auth.getSession();
-                if (s) {
-                    const hash = `access_token=${s.access_token}&refresh_token=${s.refresh_token}&type=recovery&expires_in=${s.expires_in}`;
-                    window.location.href = target.split('#')[0] + '#' + hash;
-                    return;
-                }
-            }
             window.location.href = target;
         }
 
