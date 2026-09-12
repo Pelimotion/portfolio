@@ -427,7 +427,22 @@ export const GalleryScene3D: React.FC = () => {
 
     // 3.1 CAIXAS ACÚSTICAS 3D FIXADAS NAS PAREDES (Voltadas das Paredes para o Centro do Salão)
     const speakerCabinets: THREE.Group[] = [];
-    const soundWaveRings: { mesh: THREE.Mesh; speakerIdx: number; ringIdx: number }[] = [];
+    const acousticAirHaze: { mesh: THREE.Mesh; speakerIdx: number; puffIdx: number }[] = [];
+    const speakerWoofers: THREE.Mesh[] = [];
+
+    // Textura procedural de gradiente radial suave (sem linhas duras de vetor) para distorção de ar
+    const hazeCanvas = document.createElement('canvas');
+    hazeCanvas.width = 128;
+    hazeCanvas.height = 128;
+    const hctx = hazeCanvas.getContext('2d')!;
+    const grad = hctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0.0, 'rgba(255, 255, 255, 0.45)');
+    grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.22)');
+    grad.addColorStop(0.65, 'rgba(255, 255, 255, 0.05)');
+    grad.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
+    hctx.fillStyle = grad;
+    hctx.fillRect(0, 0, 128, 128);
+    const hazeTexture = new THREE.CanvasTexture(hazeCanvas);
 
     layout.speakers.forEach((spk, sIdx) => {
       const spkGroup = new THREE.Group();
@@ -473,6 +488,7 @@ export const GalleryScene3D: React.FC = () => {
       const woofer = new THREE.Mesh(wooferGeo, coneMat);
       woofer.position.set(0, -0.13, 0.193);
       spkGroup.add(woofer);
+      speakerWoofers.push(woofer);
 
       const tweeterGeo = new THREE.CircleGeometry(0.065, 20);
       const tweeter = new THREE.Mesh(tweeterGeo, coneMat);
@@ -486,21 +502,22 @@ export const GalleryScene3D: React.FC = () => {
       led.position.set(0, -0.3, 0.193);
       spkGroup.add(led);
 
-      // Ondas de Som Animadas em direção ao centro da galeria
-      for (let r = 0; r < 3; r++) {
-        const ringGeo = new THREE.RingGeometry(0.14, 0.22, 28);
-        const ringMat = new THREE.MeshBasicMaterial({
-          color: isLight ? 0xd94726 : 0xe4c379,
+      // Efeito de Distorção de Ar / Onda de Calor Térmico Acústico (suave, sem vetores rígidos)
+      for (let p = 0; p < 4; p++) {
+        const puffGeo = new THREE.PlaneGeometry(0.55, 0.55);
+        const puffMat = new THREE.MeshBasicMaterial({
+          map: hazeTexture,
+          color: isLight ? 0xc8baa8 : 0xdfd2b8,
           transparent: true,
           opacity: 0,
-          side: THREE.DoubleSide,
+          depthWrite: false,
           blending: THREE.AdditiveBlending,
-          depthWrite: false
+          side: THREE.DoubleSide
         });
-        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-        ringMesh.position.set(0, -0.13, 0.22);
-        spkGroup.add(ringMesh);
-        soundWaveRings.push({ mesh: ringMesh, speakerIdx: sIdx, ringIdx: r });
+        const puffMesh = new THREE.Mesh(puffGeo, puffMat);
+        puffMesh.position.set(0, -0.13, 0.22);
+        spkGroup.add(puffMesh);
+        acousticAirHaze.push({ mesh: puffMesh, speakerIdx: sIdx, puffIdx: p });
       }
 
       scene.add(spkGroup);
@@ -1378,13 +1395,27 @@ export const GalleryScene3D: React.FC = () => {
         });
       }
 
-      // ONDAS SONORAS DAS CAIXAS ACÚSTICAS & ATENUAÇÃO ESPACIAL FÍSICA
+      // DISTORÇÃO DE AR ACÚSTICO & ATENUAÇÃO ESPACIAL FÍSICA
       if (isAudioPlaying) {
-        soundWaveRings.forEach(({ mesh, ringIdx }) => {
-          const progress = ((elapsedTime * 1.8 + ringIdx * 0.33) % 1.0);
-          mesh.scale.setScalar(1.0 + progress * 3.4);
-          mesh.position.z = 0.2 + progress * 1.2;
-          (mesh.material as THREE.MeshBasicMaterial).opacity = Math.sin(progress * Math.PI) * 0.45;
+        const energy = soundEngine.getEnergy();
+
+        // Vibração física do cone do woofer com as frequências sonoras
+        speakerWoofers.forEach((w) => {
+          w.position.z = 0.193 + Math.sin(elapsedTime * 38.0) * (energy * 0.014);
+        });
+
+        // Efeito elegante de ar quente / refração sônica saindo das caixas em direção ao salão
+        acousticAirHaze.forEach(({ mesh, puffIdx }) => {
+          const progress = ((elapsedTime * 0.75 + puffIdx * 0.25) % 1.0);
+          mesh.scale.setScalar(0.75 + progress * 2.3);
+          // O ar avança para fora da parede em direção ao salão
+          mesh.position.z = 0.22 + progress * 2.5;
+          // Turbulência de ar suave e elevação térmica sutil
+          mesh.position.x = Math.sin(elapsedTime * 2.2 + puffIdx * 1.7) * 0.06 * progress;
+          mesh.position.y = -0.13 + Math.cos(elapsedTime * 1.8 + puffIdx * 1.3) * 0.05 * progress + progress * 0.12;
+          mesh.rotation.z = Math.sin(elapsedTime * 0.5 + puffIdx) * 0.35;
+          // Opacidade ultra sutil e elegante (calor/vento imperceptível a olho nu, sem linhas duras de vetor)
+          (mesh.material as THREE.MeshBasicMaterial).opacity = Math.sin(progress * Math.PI) * (0.06 + energy * 0.10);
         });
 
         // Atualização de áudio espacial físico com atenuação e panner estéreo
@@ -1395,9 +1426,12 @@ export const GalleryScene3D: React.FC = () => {
           storeState.soundVolume
         );
       } else {
-        soundWaveRings.forEach(({ mesh }) => {
+        acousticAirHaze.forEach(({ mesh }) => {
           const mat = mesh.material as THREE.MeshBasicMaterial;
           mat.opacity = THREE.MathUtils.lerp(mat.opacity, 0, 0.15);
+        });
+        speakerWoofers.forEach((w) => {
+          w.position.z = THREE.MathUtils.lerp(w.position.z, 0.193, 0.1);
         });
       }
 
@@ -1520,6 +1554,7 @@ export const GalleryScene3D: React.FC = () => {
       inspectionRig.removeFromParent();
       dustGeo.dispose();
       dustMat.dispose();
+      hazeTexture.dispose();
 
       artworkItems.forEach((item) => {
         if (item.videoEl) {

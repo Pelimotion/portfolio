@@ -189,16 +189,16 @@ class SoundEngine {
     this.gainNode.gain.setTargetAtTime(finalVol, this.audioCtx.currentTime, 0.06);
   }
 
-  public async fadeOut(durationMs = 400): Promise<void> {
+  public async fadeOut(durationMs = 1200): Promise<void> {
     if (!this.gainNode || !this.audioCtx) {
       this.pause();
       return;
     }
     const t = this.audioCtx.currentTime;
-    const currentGain = this.gainNode.gain.value;
+    const currentGain = Math.max(0.001, this.gainNode.gain.value);
     this.gainNode.gain.cancelScheduledValues(t);
     this.gainNode.gain.setValueAtTime(currentGain, t);
-    this.gainNode.gain.linearRampToValueAtTime(0.001, t + durationMs / 1000);
+    this.gainNode.gain.exponentialRampToValueAtTime(0.0001, t + durationMs / 1000);
     return new Promise((resolve) => {
       setTimeout(() => {
         this.pause();
@@ -207,16 +207,19 @@ class SoundEngine {
     });
   }
 
-  public async fadeIn(targetVolume = 0.85, durationMs = 500): Promise<void> {
+  public async fadeIn(targetVolume = 0.85, durationMs = 1400): Promise<void> {
     if (!this.gainNode || !this.audioCtx) {
       await this.resume();
       return;
     }
     const t = this.audioCtx.currentTime;
     this.gainNode.gain.cancelScheduledValues(t);
-    this.gainNode.gain.setValueAtTime(0.001, t);
+    this.gainNode.gain.setValueAtTime(0.0001, t);
     await this.resume();
-    this.gainNode.gain.linearRampToValueAtTime(Math.max(0.01, Math.min(1, targetVolume)), t + durationMs / 1000);
+    this.gainNode.gain.exponentialRampToValueAtTime(
+      Math.max(0.01, Math.min(1, targetVolume)),
+      t + durationMs / 1000
+    );
   }
 
   public getFrequencyData(): Uint8Array | null {

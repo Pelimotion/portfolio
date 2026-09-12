@@ -22,28 +22,69 @@ export const CinemaView: React.FC = () => {
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
-  // Crossfade de áudio ao inspecionar obra de vídeo
+  // Crossfade de áudio aveludado e cinematográfico ao inspecionar obra de vídeo
   useEffect(() => {
     if (!cinemaArtwork) return;
 
-    if (cinemaArtwork.medium === 'video') {
-      // Fade-out da música de fundo (CD / ambiente)
-      soundEngine.fadeOut(400);
+    let fadeInterval: number | null = null;
+    let vidElement: HTMLVideoElement | null = null;
 
-      // Inicia áudio do vídeo desmutado por padrão
+    if (cinemaArtwork.medium === 'video') {
+      // Fade-out suave de 1.4s da música de fundo (CD / galeria)
+      soundEngine.fadeOut(1400);
+
+      // Inicia áudio do vídeo com rampa de volume suave de 0.0 a 0.85
       const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
       if (vid) {
+        vidElement = vid;
         vid.muted = false;
-        vid.volume = 0.9;
+        vid.volume = 0.0;
         setIsVideoMuted(false);
         vid.play().catch(() => {});
+
+        const startTime = performance.now();
+        const duration = 1200;
+        const targetVol = 0.85;
+
+        const rampIn = (now: number) => {
+          const progress = Math.min(1.0, (now - startTime) / duration);
+          // Easing suave (quad)
+          vid.volume = progress * progress * targetVol;
+          if (progress < 1.0) {
+            fadeInterval = requestAnimationFrame(rampIn);
+          }
+        };
+        fadeInterval = requestAnimationFrame(rampIn);
       }
     }
 
     return () => {
-      // Ao sair do vídeo, se a música anterior estava tocando, faz fade-in suave
-      if (cinemaArtwork.medium === 'video' && wasAudioPlayingBeforeVideo) {
-        soundEngine.fadeIn(soundVolume, 500);
+      if (fadeInterval) cancelAnimationFrame(fadeInterval);
+
+      // Ao sair do vídeo, fade-out gradual do áudio do vídeo antes de pausar
+      if (cinemaArtwork.medium === 'video') {
+        if (vidElement) {
+          const v = vidElement;
+          const startVol = v.volume;
+          const startTime = performance.now();
+          const duration = 700;
+
+          const rampOut = (now: number) => {
+            const progress = Math.min(1.0, (now - startTime) / duration);
+            v.volume = Math.max(0, startVol * (1.0 - progress));
+            if (progress < 1.0) {
+              requestAnimationFrame(rampOut);
+            } else {
+              v.muted = true;
+            }
+          };
+          requestAnimationFrame(rampOut);
+        }
+
+        // Retorno suave da trilha sonora da galeria
+        if (wasAudioPlayingBeforeVideo) {
+          soundEngine.fadeIn(soundVolume, 1400);
+        }
       }
     };
   }, [cinemaArtwork, wasAudioPlayingBeforeVideo, soundVolume]);

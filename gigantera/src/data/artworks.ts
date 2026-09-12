@@ -284,7 +284,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel de algodão mate 310g/m², vitrine de vidro temperado e liga de prata',
     description: 'Estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.',
-    imageSrc: '/gigantera/works/espinhaco-cinetica-prata.jpg',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-cinetica-prata.jpg',
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400, // 0.557857 (Vertical)
     spatialCoords: { x: -3.8, y: 0.0, z: 12.0, rotY: 0.12 },
@@ -299,7 +299,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel arquivístico mate sem brilho, vitrine de vidro óptico e titânio',
     description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação do fluxo hidrodinâmico.',
-    imageSrc: '/gigantera/works/espinhaco-vitrine-aquario.jpg',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-vitrine-aquario.jpg',
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400, // 0.557857 (Vertical)
     spatialCoords: { x: 3.8, y: 0.0, z: 6.5, rotY: -0.15 },
@@ -314,7 +314,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel mate panorâmico de museu, coordenadas fotogramétricas e vitrine horizontal selada',
     description: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão e análise algorítmica.',
-    imageSrc: '/gigantera/works/zimbro-estudo-espectral.jpg',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/zimbro-estudo-espectral.jpg',
     aspectRatio: '16 / 9',
     aspectRatioNum: 1400 / 787, // 1.778907 (Widescreen Horizontal Master Study)
     spatialCoords: { x: -4.0, y: 0.0, z: 1.0, rotY: 0.14 },
@@ -329,7 +329,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel mate aveludado, silte basáltico e vitrine de vidro ultra-claro',
     description: 'Momento de repouso definitivo da peça contra o piso basáltico; a matéria inerte entra em contato com silte em processo de litificação.',
-    imageSrc: '/gigantera/works/sedimento-litificacao-final.jpg',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/sedimento-litificacao-final.jpg',
     aspectRatio: '9 / 16',
     aspectRatioNum: 787 / 1400, // 0.562143 (Vertical)
     spatialCoords: { x: 3.8, y: 0.0, z: -4.5, rotY: -0.12 },
@@ -344,7 +344,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel mate de alta gramatura, vitrine de vidro arquitetural e fiação industrial',
     description: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre a arquitetura bruta e o abismo natural.',
-    imageSrc: '/gigantera/works/notalgia-monolito-costeiro.jpg',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/notalgia-monolito-costeiro.jpg',
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400, // 0.557857 (Vertical)
     spatialCoords: { x: -3.8, y: 0.0, z: -10.0, rotY: 0.1 },
@@ -359,7 +359,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel de algodão fosco 310g/m², vitrine de vidro selada e pigmentos minerais',
     description: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica, revelando texturas de compressão sedimentar marinha.',
-    imageSrc: '/gigantera/works/espinhaco-registro-abissal.jpg',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-registro-abissal.jpg',
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400, // 0.557857 (Vertical)
     spatialCoords: { x: 3.8, y: 0.0, z: -15.5, rotY: -0.12 },
@@ -367,7 +367,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
 
   // ==========================================
-  // SECTOR 02: VIDEO (3 Vitrines Cinéticas com Pôsteres Exclusivos e Sem Repetição)
+  // SECTOR 02: VIDEO (3 Vitrines Cinéticas Servidas via Bunny.net CDN Global)
   // ==========================================
   {
     id: 'video-espinhaco-cinetico',
@@ -378,8 +378,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Vitrine de vidro flutuante, simulação hidrodinâmica em tempo real e renderização volumétrica',
     description: 'Movimento ondular da coluna de prata em meio denso. Cada vértebra transmite torque desacelerado para a vértebra seguinte.',
-    imageSrc: '/gigantera/works/espinhaco-descida-crepuscular.jpg',
-    videoSrc: '/gigantera/works/video/video-01-kinetic-spine.mp4',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg',
+    videoSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4',
     duration: '00:06 (Loop Contínuo)',
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960, // 0.5625 (Vertical)
@@ -395,8 +395,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Vitrine de vidro flutuante, sistema estocástico de pontos (stippling) e ruído vetorial',
     description: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.',
-    imageSrc: '/gigantera/works/zimbro-rastreamento-vetorial.jpg',
-    videoSrc: '/gigantera/works/video/video-02-stipples-simulation.mp4',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/zimbro-rastreamento-vetorial.jpg',
+    videoSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-02-stipples-simulation.mp4',
     duration: '00:06 (Loop Contínuo)',
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960, // 0.5625 (Vertical)
@@ -412,8 +412,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Vitrine de vidro flutuante, liga cromo-níquel virtual e reflexão anisotrópica',
     description: 'Sequência em plano-sequência fechado destacando as reflexões metálicas de alta pureza enquanto a estrutura se curva em ciclo contínuo.',
-    imageSrc: '/gigantera/works/espinhaco-relevo-neotribal.jpg',
-    videoSrc: '/gigantera/works/video/video-03-metallic-spine.mp4',
+    imageSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-relevo-neotribal.jpg',
+    videoSrc: 'https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-03-metallic-spine.mp4',
     duration: '00:06 (Loop Contínuo)',
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960, // 0.5625 (Vertical)

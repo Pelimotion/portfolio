@@ -24,148 +24,134 @@ export const ControlsGuideModal: React.FC = () => {
       onClick={() => setShowGuideModal(false)}
       role="dialog"
       aria-modal="true"
-      aria-label="Guia Completo de Controles e Navegação"
+      aria-label="Guia Rápido de Navegação e Contemplação"
     >
-      <div className="controls-guide-card" onClick={(e) => e.stopPropagation()}>
-        <header className="guide-card-header">
-          <div className="guide-header-title">
-            <span className="guide-eyebrow font-mono">[GIGANTERA // MANUAL DE NAVEGAÇÃO]</span>
-            <h2 className="guide-title">Controles & Interação</h2>
+      <div className="controls-guide-card-graphic" onClick={(e) => e.stopPropagation()}>
+        {/* Cabeçalho Minimalista */}
+        <header className="graphic-guide-header">
+          <div className="guide-header-text">
+            <span className="guide-eyebrow font-mono">[GIGANTERA // GUIA DE NAVEGAÇÃO]</span>
+            <h2 className="guide-title">Como Explorar o Espaço</h2>
           </div>
           <button
             onClick={() => setShowGuideModal(false)}
             className="guide-close-btn font-mono"
-            aria-label="Fechar guia de controles"
+            aria-label="Fechar guia de navegação"
           >
-            <kbd className="keycap">H</kbd>
             <span>FECHAR</span>
+            <kbd className="keycap">✕</kbd>
           </button>
         </header>
 
-        <div className="guide-grid">
-          {/* Grupo 1: Caminhada & Câmera */}
-          <div className="guide-group">
-            <h3 className="guide-group-title font-mono">01. CAMINHADA & MIRA LIVRE</h3>
-            <div className="guide-items-list">
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">W</kbd>
-                  <kbd className="keycap">A</kbd>
-                  <kbd className="keycap">S</kbd>
-                  <kbd className="keycap">D</kbd>
-                </div>
-                <span className="guide-desc">Deslocamento tridimensional pela galeria</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <span className="mouse-badge">
-                    <span className="mouse-icon mouse-look" />
-                    <span>MOUSE</span>
-                  </span>
-                </div>
-                <span className="guide-desc">Visão panorâmica 360° em primeira pessoa</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">SHIFT</kbd>
-                </div>
-                <span className="guide-desc">Caminhada acelerada (passo rápido)</span>
-              </div>
+        {/* 3 Esquemas Gráficos Visuais com Micro-Animações */}
+        <div className="graphic-guide-triptych">
+          {/* 01. Olhar em Volta */}
+          <div className="graphic-guide-col">
+            <div className="schematic-canvas-box">
+              <svg className="schematic-svg" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Arco de visão panorâmica */}
+                <path d="M 20 65 A 42 42 0 0 1 100 65" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" />
+                {/* Setas animadas de arrasto lateral */}
+                <path className="schematic-arrow-left" d="M 25 61 L 18 65 L 25 69" stroke="var(--accent-gold)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path className="schematic-arrow-right" d="M 95 61 L 102 65 L 95 69" stroke="var(--accent-gold)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                {/* Silhueta do Mouse com balanço */}
+                <g className="schematic-mouse-icon">
+                  <rect x="51" y="32" width="18" height="28" rx="9" stroke="currentColor" strokeWidth="1.6" />
+                  <line x1="60" y1="36" x2="60" y2="42" stroke="var(--accent-gold)" strokeWidth="1.6" strokeLinecap="round" />
+                </g>
+              </svg>
             </div>
+            <h3 className="graphic-col-title">1. Olhar em Volta</h3>
+            <p className="graphic-col-desc">
+              Mova ou arraste o mouse livremente para direcionar o olhar em 360° pela galeria.
+            </p>
           </div>
 
-          {/* Grupo 2: Interação com Obras */}
-          <div className="guide-group">
-            <h3 className="guide-group-title font-mono">02. INTERAÇÃO & APRECIAÇÃO</h3>
-            <div className="guide-items-list">
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">E</kbd>
-                  <span className="guide-or">ou</span>
-                  <span className="mouse-badge">CLIQUE</span>
-                </div>
-                <span className="guide-desc">Aproximar obra da vitrine e abrir inspeção</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">R</kbd>
-                </div>
-                <span className="guide-desc">
-                  <strong>Modo Lupa (300%)</strong> / Alternar enquadramento 100%
-                </span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <span className="mouse-badge">
-                    <span className="mouse-icon mouse-wheel" />
-                    <span>RODA</span>
-                  </span>
-                </div>
-                <span className="guide-desc">Ajuste contínuo de zoom (50% a 350%)</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">←</kbd>
-                  <kbd className="keycap">→</kbd>
-                </div>
-                <span className="guide-desc">Folhear pranchetas da série</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">E</kbd>
-                  <span className="guide-or">ou</span>
-                  <kbd className="keycap">Q</kbd>
-                </div>
-                <span className="guide-desc">Devolver a obra à vitrine e continuar caminhando</span>
-              </div>
+          {/* 02. Caminhar */}
+          <div className="graphic-guide-col">
+            <div className="schematic-canvas-box">
+              <svg className="schematic-svg" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Cruz direcional de teclas */}
+                {/* Tecla Cima (W / ↑) com pulso */}
+                <g className="schematic-key-forward">
+                  <rect x="49" y="16" width="22" height="22" rx="4" stroke="var(--accent-coral)" strokeWidth="1.4" fill="rgba(217, 71, 38, 0.12)" />
+                  <path d="M 60 23 L 56 28 M 60 23 L 64 28 M 60 23 L 60 32" stroke="var(--accent-coral)" strokeWidth="1.5" strokeLinecap="round" />
+                </g>
+                {/* Tecla Esquerda (A / ←) */}
+                <rect x="23" y="42" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="1.2" opacity="0.6" />
+                <path d="M 30 53 L 35 49 M 30 53 L 35 57" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
+                {/* Tecla Baixo (S / ↓) */}
+                <rect x="49" y="42" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="1.2" opacity="0.6" />
+                <path d="M 60 57 L 56 53 M 60 57 L 64 53" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
+                {/* Tecla Direita (D / →) */}
+                <rect x="75" y="42" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="1.2" opacity="0.6" />
+                <path d="M 90 53 L 85 49 M 90 53 L 85 57" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
+              </svg>
             </div>
+            <h3 className="graphic-col-title">2. Caminhar</h3>
+            <p className="graphic-col-desc">
+              Pressione as <strong>Setas</strong> ou as teclas <strong>W A S D</strong> para avançar, recuar e percorrer o corredor.
+            </p>
           </div>
 
-          {/* Grupo 3: Áudio, CD & Menus */}
-          <div className="guide-group">
-            <h3 className="guide-group-title font-mono">03. ÁUDIO ESPACIAL & ACERVO</h3>
-            <div className="guide-items-list">
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">TAB</kbd>
-                </div>
-                <span className="guide-desc">Abrir Catálogo Geral / Alternar modo grade</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">CD</kbd>
-                  <span className="guide-or">no piso</span>
-                </div>
-                <span className="guide-desc">Pegar estojo acrílico e folhear as 17 faixas</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">ESPAÇO</kbd>
-                  <span className="guide-or">/</span>
-                  <kbd className="keycap">M</kbd>
-                </div>
-                <span className="guide-desc">Pausar / Mutar som de instalações em vídeo</span>
-              </div>
-              <div className="guide-row">
-                <div className="guide-keys">
-                  <kbd className="keycap">H</kbd>
-                </div>
-                <span className="guide-desc">Abrir / Fechar este manual de navegação</span>
-              </div>
+          {/* 03. Aproximar & Inspecionar */}
+          <div className="graphic-guide-col">
+            <div className="schematic-canvas-box">
+              <svg className="schematic-svg" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Moldura da Obra */}
+                <rect x="40" y="16" width="40" height="52" rx="2" stroke="currentColor" strokeWidth="1.2" opacity="0.4" />
+                <line x1="45" y1="28" x2="75" y2="28" stroke="currentColor" strokeWidth="1" opacity="0.2" />
+                <line x1="45" y1="36" x2="68" y2="36" stroke="currentColor" strokeWidth="1" opacity="0.2" />
+                {/* Retículo de Foco Animado */}
+                <g className="schematic-focus-reticle">
+                  <path d="M 34 26 L 34 20 L 40 20" stroke="var(--accent-gold)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M 86 26 L 86 20 L 80 20" stroke="var(--accent-gold)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M 34 58 L 34 64 L 40 64" stroke="var(--accent-gold)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M 86 58 L 86 64 L 80 64" stroke="var(--accent-gold)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="60" cy="42" r="3" fill="var(--accent-gold)" />
+                </g>
+              </svg>
             </div>
+            <h3 className="graphic-col-title">3. Aproximar</h3>
+            <p className="graphic-col-desc">
+              Mire e dê <strong>1 clique</strong> (ou tecla <strong>E</strong>) em qualquer vitrine para destacar e ler a obra.
+            </p>
           </div>
         </div>
 
-        <footer className="guide-card-footer font-mono">
-          <div className="guide-tip">
-            <span className="tip-marker">◈ PONTO IDEAL:</span> Posicione-se sobre os anéis sutis gravados no piso em frente a cada vitrine para contemplação perfeita.
+        {/* Faixa Inferior de Atalhos Rápidos & Ponto Contemplativo */}
+        <footer className="graphic-guide-footer font-mono">
+          <div className="graphic-shortcuts-strip">
+            <div className="shortcut-pill">
+              <kbd className="keycap">R</kbd>
+              <span>MODO LUPA (ZOOM 300%)</span>
+            </div>
+            <span className="strip-sep">·</span>
+            <div className="shortcut-pill">
+              <kbd className="keycap keycap-coral">E</kbd>
+              <span>/</span>
+              <kbd className="keycap keycap-coral">Q</kbd>
+              <span>DEVOLVER À VITRINE</span>
+            </div>
+            <span className="strip-sep">·</span>
+            <div className="shortcut-pill">
+              <kbd className="keycap">TAB</kbd>
+              <span>CATÁLOGO GERAL</span>
+            </div>
           </div>
-          <button
-            onClick={() => setShowGuideModal(false)}
-            className="guide-ack-btn"
-          >
-            ENTENDIDO
-          </button>
+
+          <div className="graphic-action-row">
+            <div className="floor-spot-tip">
+              <span className="spot-bullet">◈</span>
+              <span>Posicione-se sobre os anéis gravados no piso para o ângulo ideal de cada peça.</span>
+            </div>
+            <button
+              onClick={() => setShowGuideModal(false)}
+              className="graphic-enter-btn"
+            >
+              ENTENDIDO · CONTINUAR
+            </button>
+          </div>
         </footer>
       </div>
     </div>
