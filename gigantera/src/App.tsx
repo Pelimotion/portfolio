@@ -1,95 +1,53 @@
 import React, { useEffect } from 'react';
-import { injectCssTokens } from './tokens';
 import { useAppStore } from './core/store';
+import { applyThemeTokens } from './tokens';
 
-import { OceanicScene3D } from './components/canvas/OceanicScene3D';
-import { SandPhysicsOverlay } from './components/canvas/SandPhysicsOverlay';
-import { FloatingHUD } from './components/ui/FloatingHUD';
-import { DepthRuler } from './components/ui/DepthRuler';
-import { ViewportReticles } from './components/ui/ViewportReticles';
-import { ErosionModal } from './components/canvas/ErosionModal';
-import { Header } from './components/layout/Header';
-import { SemanticMap } from './components/layout/SemanticMap';
-import { STRATA_CATALOG } from './data/artworks';
+import { GalleryHeader } from './components/layout/GalleryHeader';
+import { GalleryScene3D } from './components/canvas/GalleryScene3D';
+import { ArchiveIndex } from './components/layout/ArchiveIndex';
+import { MinimalBottomBar } from './components/layout/MinimalBottomBar';
+import { CDJewelCasePOV } from './components/audio/CDJewelCasePOV';
+import { CinemaView } from './components/modal/CinemaView';
+import { ArtistBioModal } from './components/modal/ArtistBioModal';
+import { ControlsGuideModal } from './components/modal/ControlsGuideModal';
+import { IntroSequence } from './components/ui/IntroSequence';
 
 export const App: React.FC = () => {
-  const activeStratum = useAppStore((s) => s.activeStratum);
+  const theme = useAppStore((s) => s.theme);
+  const viewMode = useAppStore((s) => s.viewMode);
 
   useEffect(() => {
-    injectCssTokens();
-  }, []);
-
-  const activeStratumData = STRATA_CATALOG.find((s) => s.id === activeStratum);
-  const stratumIndex = STRATA_CATALOG.findIndex((s) => s.id === activeStratum) + 1;
-  const stratumCode = activeStratum === 'epipelagic' ? 'EPIPELÁGICO' : activeStratum === 'mesopelagic' ? 'MESOPELÁGICO' : 'BATIPELÁGICO';
+    applyThemeTokens(theme);
+  }, [theme]);
 
   return (
-    <>
-      {/* 1. Navegação Acessível para Leitores de Tela e Teclado */}
-      <SemanticMap />
+    <main className="gallery-main-app" data-theme={theme} data-mode={viewMode}>
+      {/* 1. Animação Inicial no Espaço 3D (Materialização das Obras em 4s) */}
+      <IntroSequence />
 
-      {/* 2. Grafismos de Enquadramento e Retículos Brutalistas nos Cantos */}
-      <ViewportReticles />
+      {/* 2. Top Bar Minimalista com Proteção Feathered */}
+      <GalleryHeader />
 
-      {/* 3. Cabeçalho Brutalista com Telemetria Lunar/Maré e Controles de Áudio */}
-      <Header />
+      {/* 3. Espaço 3D Hiper-Realista (Paredes, Luz Volumétrica, Vitrines de Vidro e Papel Fosco) */}
+      <GalleryScene3D />
 
-      {/* 4. Régua Batimétrica Vertical Brutalista na Margem Direita */}
-      <DepthRuler />
+      {/* 4. Modo Catálogo Tradicional em Grade */}
+      {viewMode === 'archive' && <ArchiveIndex />}
 
-      {/* 5. Ambiente 3D Oceânico Espacial (Three.js com Pedestais Wireframe e Caustics) */}
-      <OceanicScene3D />
+      {/* 6. Bottom Bar Unificada com Proteção Feathered e Controles Essenciais */}
+      <MinimalBottomBar />
 
-      {/* 6. Simulação Física de Areia e Sedimento nos Cantos da Tela */}
-      <SandPhysicsOverlay />
+      {/* 7. Experiência de CD Físico em POV na Entrada com Contracapa e 17 Faixas */}
+      <CDJewelCasePOV />
 
-      {/* 7. Painel Brutalista de Identificação do Estrato Geológico */}
-      <section className="ambient-specimen-hud" aria-label="Identificação Estratigráfica">
-        <div className="specimen-tag-row">
-          <span className="specimen-bracket-tag">
-            [STRATUM // 0{stratumIndex} · {stratumCode} · {activeStratumData?.depthRange}]
-          </span>
-          <span className="specimen-serial">ARCHIVE.SERIES: {activeStratumData?.title.toUpperCase()}</span>
-        </div>
+      {/* 8. Modo Cinema Atmosférico com Foco Volumétrico e Modo Lupa */}
+      <CinemaView />
 
-        <h1 className="specimen-monument-title">
-          {activeStratumData?.title}
-        </h1>
+      {/* 9. Painel Arquitetural do Artista & Contato */}
+      <ArtistBioModal />
 
-        <div className="specimen-telemetry-strip">
-          <div className="telemetry-cell">
-            <span className="cell-k">[PRESSÃO ESTIMADA]</span>
-            <span className="cell-v">
-              {(1 + (activeStratum === 'epipelagic' ? 0 : activeStratum === 'mesopelagic' ? 400 : 3000) / 10).toFixed(1)} BAR
-            </span>
-          </div>
-          <div className="telemetry-cell">
-            <span className="cell-k">[INCIDÊNCIA SOLAR]</span>
-            <span className="cell-v">
-              {activeStratum === 'epipelagic' ? '100% (FÓTICA)' : activeStratum === 'mesopelagic' ? '1% (DISFÓTICA)' : '0% (AFÓTICA)'}
-            </span>
-          </div>
-          <div className="telemetry-cell">
-            <span className="cell-k">[ACERVO DEPOSITADO]</span>
-            <span className="cell-v">03 MONÓLITOS 3D</span>
-          </div>
-        </div>
-
-        <p className="specimen-narrative">
-          {activeStratumData?.description}
-        </p>
-
-        <div className="specimen-interaction-prompt">
-          <span className="prompt-arrow">▲▼</span>
-          <span>ARRASTE VERTICAL / RODA DO MOUSE P/ NAVEGAR · CLIQUE NOS MONÓLITOS 3D P/ INSPECIONAR</span>
-        </div>
-      </section>
-
-      {/* 8. HUD Flutuante Subaquático (Console de Telemetria e Salto Táctil) */}
-      <FloatingHUD />
-
-      {/* 9. Dossier de Inspeção por Erosão Física e Modulação de Fontes */}
-      <ErosionModal />
-    </>
+      {/* 10. Manual / Guia Tátil de Controles On-Demand (H) */}
+      <ControlsGuideModal />
+    </main>
   );
 };

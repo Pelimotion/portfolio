@@ -1,52 +1,50 @@
-# GIGANTERA — Portfólio de Arte Digital, Físicas Subaquáticas & Brutalismo Experimental
-> **Plataforma Subaquática de Exposição Curatorial** | Subprojeto de `www.pelimotion.art/gigantera`
+# GIGANTERA — Galeria Digital Brutalista, Game 3D & Acervo Espacial
+> **Pavilhão Tridimensional Contemporâneo de Exposição Curatorial** | Subprojeto de `www.pelimotion.art/gigantera`
 
 ---
 
-## 🌊 Visão Geral do Projeto
+## 🏛️ Visão Geral do Projeto
 
-**Gigantera** é uma experiência imersiva de arte digital que reimagina a navegação de um portfólio como um mergulho contínuo através de uma **coluna estratigráfica oceânica (de 0m a 4000m de profundidade)**.
+**Gigantera** é uma experiência imersiva de arte digital que reimagina a navegação de um portfólio como a exploração física em primeira pessoa de um **pavilhão arquitetural brutalista monumental**.
 
-A plataforma funde computação gráfica tridimensional em tempo real, física de partículas granulares, síntese sonora cimática e uma identidade visual inspirada no **Brutalismo Artístico Moderno e Experimental**.
+O visitante flutua ("nada") no espaço tridimensional entre vitrines flutuantes de vidro acrílico que guardam impressões em papel mate de algodão, experimentando iluminação realista com sombras suaves, vigas estruturais com claraboias de onde emanam feixes de luz volumétrica (*god rays*), uma estação de áudio tátil na entrada e controles em primeira pessoa inspirados na era clássica de jogos PS1/PS2.
 
 ```
-    0000m ── [01 // SUPERFÍCIE] ── Estrato Epipelágico (Fótica, Refração, Prata)
-    0400m ── [02 // PENUMBRA]   ── Estrato Mesopelágico (Disfótica, Bioluminescência)
-    3000m ── [03 // ABISMO]     ── Estrato Batipelágico (Afótica, Litificação, Sedimento)
+       [ENTRADA Z: +20M] ── Estação do CD Jewel Case 3D (Álbum Autoral em POV)
+       [SETOR 01 Z: +10M] ── STILL (Imagens & Esculturas em Papel Mate Suspenso)
+       [SETOR 02 Z: -22M] ── VÍDEO (Cinética & Motion Textures em Loop Real)
+       [SETOR 03 Z: -75M] ── MONUMENTO FINAL & ACERVO COMPLETO
 ```
 
 ---
 
-## 🏛️ Os 4 Pilares Físicos
+## 🎮 Mecânicas de Game 3D & POV (Estética PS1 / PS2)
 
-1. **Cáusticas WebGL (OGL)**: Shader procedural de refração solar cáustica na camada superior aquática (`caustics.frag`).
-2. **Cimática Sonora (Tone.js + Chladni)**: Síntese acústica com frequências ressonantes autorais (432Hz a 864Hz) simulando dispersão sonora sob alta pressão hidrostática.
-3. **Hidrodinâmica Fluida (Lenis + Three.js)**: Navegação espacial tridimensional suave com inércia fluida, desaceleração viscosa e amortecimento físico.
-4. **Erosão Física & Fraunces Dinâmica (GSAP + Canvas 2D)**: Ao inspecionar uma obra, o sedimento dissolve a imagem em fatias procedurais de ruído enquanto os eixos variáveis da fonte **Fraunces** (`opsz`, `wght`, `SOFT`, `WONK`) sofrem modulação tipográfica em tempo real.
+### 1. Mão 3D Low-Poly Facetada & CD Jewel Case em POV (Fiel à Referência)
+- **Mão 3D Facetada em Primeira Pessoa:** Construída proceduralmente com sombreamento *flat* (`flatShading: true`), reproduzindo exatamente as facetas poligonais de gesso/cerâmica angular segurando a quina do estojo de acrílico.
+- **Contracapa Dinâmica em Alta Resolução:** Tipografia pixel/mono em Canvas 1024x1024 contendo o título `BACK COVER`, lista das 17 faixas autorais numeradas com BPM, o selo Compact Disc e o **código de barras autêntico** no canto inferior direito.
+- **Giro Físico de 180° (`[F]`):** Rotação suave do estojo no espaço 3D alternando entre a contracapa com as faixas e a capa frontal com arte impressa de Pelimotion.
+- **Áudio Ultraleve:** Play instantâneo de previews leves de 10s ao trocar de faixa com upgrade transparente para a versão full de 48kHz após 4s de escuta contínua.
+- **Balanço e Inércia Física:** *Idle breathing bob* e inércia do mouse acompanhando os movimentos do jogador.
 
----
+### 2. Controles de Game FPS & Física Tátil
+- **Teclas:** `W`, `A`, `S`, `D` e Setas direcionais para caminhar pelo salão, `Shift` para correr.
+- **Mouse Look & Arraste:** Rotação horizontal e inclinação vertical suavemente amortecidas com limites de pitch para explorar as paredes de concreto e claraboias.
+- **Head Bobbing & Passos:** Balanço de cabeça ao caminhar e som sutil de passos no concreto sintetizado proceduralmente via Web Audio API.
+- **Interação Contextual (`[E]`):**
+  - No pedestal de entrada: pega o CD na mão / guarda de volta.
+  - Perto de uma vitrine: transpasse a barreira de vidro para o Modo Cinema.
 
-## 📐 Identidade Visual: Brutalismo Artístico & Grafismos
+### 3. Vitrines de Vidro Flutuantes & Transição para o Modo Cinema
+- Vitrines translúcidas em `MeshPhysicalMaterial` com transmissão de 92%, suspensas sem cubos amarelos e sem pedestais pesados.
+- Ao pressionar `[E]` ou avançar contra a vitrine, a câmera transpasse o vidro com efeito sonoro harmônico; a iluminação da galeria se apaga suavemente e um **holofote volumétrico focado** ilumina a obra de arte no Modo Cinema, com metadados essenciais e proteções *feathered* suaves.
 
-O design rejeita soluções genéricas (como botões arredondados ou cartões clichês) em favor de uma estética monumental, técnica e de arquivo de pesquisa:
+### 4. Simulação Retro PS1 / PS2 (Tecla `[P]`)
+- Efeito de pós-processamento opcional com matriz de dithering Bayer 4x4, scanlines sutis e vinheta CRT, transformando toda a galeria em uma experiência nostálgica dos anos 90/2000.
 
-| Elemento | Implementação | Arquivo Fonte |
-| :--- | :--- | :--- |
-| **Headlines Monumentais** | Fonte **`Syne` (800 Extra-Bold)** com tracking comprimido (`-0.03em`) e presença escultural contemporânea. | `src/index.css`, `tokens.ts` |
-| **Telemetria Tabular** | Fonte **`Space Mono` (400 e 700)** em numerais tabulares com zeros à esquerda (`0421 M`) e notação bracketed (`[STRATUM // 01]`). | `src/tokens.ts`, `FloatingHUD.tsx` |
-| **Grafismos de Viewport** | Quatro cantoneiras nos cantos da tela (`┌ ┐ └ ┘`) com latitude, longitude, FPS e índice deposicional. | `src/components/ui/ViewportReticles.tsx` |
-| **Régua Batimétrica Vertical** | Eixo milimétrico na margem direita (`0000M` a `4000M`) com nós clicáveis e agulha dinâmica `[⌖ 0421M]`. | `src/components/ui/DepthRuler.tsx` |
-| **Console Modular (HUD)** | Painel inferior com cantoneiras em cruz (`+`), seletor segmentado com hover invertido e botões táteis de sensores. | `src/components/ui/FloatingHUD.tsx` |
-| **Dossier de Espécime** | Modal em formato de ficha técnica de laboratório com tabela de física, cronologia e suporte. | `src/components/canvas/ErosionModal.tsx` |
-| **Monólitos 3D Wireframe** | Molduras monolíticas de vidro/titânio no Three.js contornadas por arestas arquiteturais de traço fino dourado. | `src/components/canvas/OceanicScene3D.tsx` |
-
----
-
-## 🏜️ Física de Areia & Sedimento nos Cantos (`sandEngine.ts`)
-
-- **2.000 partículas granulares** simuladas a 60 FPS com integração de Euler.
-- **Sedimentação nos Cantos**: A areia se acumula organicamente no canto inferior esquerdo e direito da tela.
-- **Avalanches Inerciais**: A rolagem da tela ou rotação da câmera injeta velocidade angular nas partículas, fazendo dunas escorrerem realisticamente.
+### 5. Dualidade de Temas
+- **Obsidiana (Dark Noir):** Salão escuro brutalista com concreto grafite, basalto polido e iluminação dourada de claraboias.
+- **Alabastro (White Cube):** Galeria branca brutalista contemporânea em giz e concreto claro, mantendo a profundidade e sombras realistas.
 
 ---
 
@@ -58,114 +56,52 @@ gigantera/
 ├── index.source.html            ← Template fonte para o Vite
 ├── package.json                 ← Dependências e scripts de build
 ├── tsconfig.json                ← Configuração do TypeScript
-├── vite.config.ts               ← Configuração de build e plugins (GLSL, React)
-├── works/                       ← Acervo de imagens reais das obras (Pipeline Gigantera)
-│   ├── espinhaco-cinetica-prata.jpg
-│   ├── espinhaco-vitrine-aquario.jpg
-│   ├── espinhaco-descida-crepuscular.jpg
-│   ├── zimbro-rastreamento-vetorial.jpg
-│   ├── espinhaco-relevo-neotribal.jpg
-│   ├── zimbro-estudo-espectral.jpg
-│   ├── espinhaco-registro-abissal.jpg
-│   ├── sedimento-litificacao-final.jpg
-│   └── notalgia-monolito-costeiro.jpg
+├── vite.config.ts               ← Configuração do Vite com HMR e dev-rewrite
 ├── assets/                      ← Bundles compilados JS e CSS de produção
+├── works/                       ← Acervo de mídias otimizadas
+│   ├── audio/                   ← Previews 10s e faixas full das 17 músicas autorais
+│   ├── video/                   ← Loops de vídeo otimizados (.mp4)
+│   └── *.jpg                    ← Obras de arte em alta resolução
 └── src/
     ├── App.tsx                  ← Orquestrador principal da cena e interfaces
     ├── main.tsx                 ← Ponto de entrada React
-    ├── index.css                ← Sistema de estilos brutalista e tokens CSS
-    ├── tokens.ts                ← Fonte única de verdade de design tokens
+    ├── index.css                ← Design brutalista, proteções feathered e HUD
+    ├── tokens.ts                ← Design tokens Dark & Light
     ├── types/
-    │   └── art.ts               ← Tipagens de obras e estratos
+    │   └── art.ts               ← Tipagens de obras e faixas de áudio
     ├── data/
-    │   └── artworks.ts          ← Catálogo oficial das obras e séries
+    │   └── artworks.ts          ← Catálogo oficial das obras e 17 faixas autorais
     ├── core/
-    │   ├── store.ts             ← Estado global Zustand (câmera, áudio, estratos)
-    │   ├── audioEngine.ts       ← Motor Tone.js de áudio subaquático
-    │   ├── tideService.ts       ← Cálculo astronômico de fases lunares e marés
-    │   └── physics/
-    │       └── sandEngine.ts    ← Motor de partículas de areia e dunas
+    │   ├── store.ts             ← Estado global Zustand (física, câmera, CD, cinema)
+    │   ├── playerController.ts  ← Motor de física FPS (WASD, mouse look, head bob)
+    │   └── soundEngine.ts       ← Web Audio API (previews, upgrade full e SFX procedurais)
     ├── components/
     │   ├── canvas/
-    │   │   ├── OceanicScene3D.tsx    ← Espaço 3D Three.js, luz, pedestais e monólitos
-    │   │   ├── SandPhysicsOverlay.tsx← Canvas 2D de renderização das partículas
-    │   │   ├── CausticCanvas.tsx     ← Shader WebGL de cáusticas
-    │   │   └── ErosionModal.tsx      ← Dossier brutalista e erosão física GSAP
+    │   │   ├── GalleryScene3D.tsx    ← Salão 3D, luzes, vitrines e animação a 60 FPS
+    │   │   ├── CDViewmodel3D.ts      ← Viewmodel 3D em câmera com mão low-poly e CD
+    │   │   └── AudioVisualizer.tsx   ← Espectrograma em tempo real
+    │   ├── audio/
+    │   │   └── CDJewelCasePOV.tsx    ← HUD tátil minimalista do álbum em POV
+    │   ├── modal/
+    │   │   ├── CinemaView.tsx        ← Modo cinema volumétrico focado
+    │   │   └── ArtistBioModal.tsx    ← Declaração conceitual e contato direto
     │   ├── layout/
-    │   │   ├── Header.tsx            ← Cabeçalho com dados de maré e botões de motor
-    │   │   ├── SemanticMap.tsx       ← Mapa acessível para leitor de tela
-    │   │   └── CurrentDrift.tsx      ← Correnteza horizontal táctil
+    │   │   ├── GalleryHeader.tsx     ← Top bar minimalista com tema e retro mode
+    │   │   ├── MinimalBottomBar.tsx  ← Bottom dock feathered com Z e setores
+    │   │   └── ArchiveIndex.tsx      ← Catálogo tradicional em grade
     │   └── ui/
-    │       ├── FloatingHUD.tsx       ← Console flutuante brutalista
-    │       ├── DepthRuler.tsx        ← Régua batimétrica vertical
-    │       └── ViewportReticles.tsx  ← Cantoneiras e retículos de enquadramento
-    └── shaders/
-        ├── caustics.frag
-        └── caustics.vert
+    │       ├── IntroSequence.tsx     ← Intro com materialização em 4s
+    │       └── RetroPSXOverlay.tsx   ← Simulação visual dithered PS1/PS2
 ```
 
 ---
 
-## 🛠️ Guia de Manutenção & Atualizações Futuras
+## ⚡ Comandos Úteis
 
-### 1. Como rodar localmente para desenvolvimento
 ```bash
-cd gigantera
-npm install       # apenas se adicionou novas dependências
-npm run dev       # inicia o servidor Vite em http://localhost:5173/gigantera/
-```
+# Iniciar ambiente de desenvolvimento
+npm run dev
 
-### 2. Como compilar para produção
-O script de build compila o TypeScript, gera o bundle Vite e copia automaticamente o `index.source.html` processado para `gigantera/index.html` e os assets para `gigantera/assets/`:
-```bash
-cd gigantera
+# Compilar para produção (Vercel)
 npm run build
 ```
-> **Nota de Higiene**: Ao gerar novos bundles, apague os arquivos `.js` e `.css` com hash antigo em `gigantera/assets/` para manter o git limpo.
-
-### 3. Como adicionar ou substituir obras de arte
-1. **Origem**: O pipeline do artista reside em `/Volumes/PLM_SSD_01/Google Drive/Pelimotion/Pipeline SSD 01/Gigantera/Pipeline Gigantera/`.
-2. **Adicionar imagem**: Salve a imagem otimizada em `gigantera/works/nome-da-obra.jpg` (recomenda-se JPG ou WebP, resolução ~1400x1750, proporção 4:5).
-3. **Registrar no catálogo**: Abra [`gigantera/src/data/artworks.ts`](src/data/artworks.ts) e adicione/edite a entrada no array `artworks` do estrato correspondente:
-   ```ts
-   {
-     id: 'novo-especime',
-     title: 'Título da Obra',
-     series: 'Série Artística',
-     stratum: 'mesopelagic', // 'epipelagic' | 'mesopelagic' | 'bathypelagic'
-     year: 2026,
-     materials: 'Técnica e Materiais',
-     description: 'Descrição curatorial e física da peça...',
-     depthMeters: 650,
-     imageSrc: '/gigantera/works/nome-da-obra.jpg',
-     imageAlt: 'Texto alternativo para acessibilidade',
-     aspectRatio: '4 / 5'
-   }
-   ```
-4. Execute `npm run build` para consolidar o build de produção.
-
-### 4. Como adicionar novos estratos oceânicos
-1. Em [`src/types/art.ts`](src/types/art.ts), adicione a nova zona ao union type `StratumId` (ex: `'hadalpelagic'`).
-2. Em [`src/data/artworks.ts`](src/data/artworks.ts), adicione a configuração do estrato no `STRATA_CATALOG`.
-3. Em [`src/components/ui/DepthRuler.tsx`](src/components/ui/DepthRuler.tsx), adicione a marca de profundidade no array `rulerTicks`.
-4. Em [`src/components/canvas/OceanicScene3D.tsx`](src/components/canvas/OceanicScene3D.tsx), ajuste a altura `spatialCoordinates` dos pedestais 3D.
-
----
-
-## 🚀 Deploy & Operação Online
-
-- **URL de Produção:** `https://www.pelimotion.art/gigantera`
-- **Mecanismo de Deploy:** O repositório está vinculado à Vercel. Qualquer `git push origin main` aciona o deploy instantâneo.
-- **Roteamento Vercel (`vercel.json`):**
-  ```json
-  {
-    "redirects": [
-      { "source": "/gigantera", "destination": "/gigantera/", "permanent": true }
-    ],
-    "rewrites": [
-      { "source": "/gigantera", "destination": "/gigantera/index.html" },
-      { "source": "/gigantera/", "destination": "/gigantera/index.html" }
-    ]
-  }
-  ```
-- **Integridade da Raiz:** `/gigantera` é totalmente autocontido. A raiz de Pelimotion (`www.pelimotion.art/`) e suas rotas continuam operando de forma 100% estática e imutável.

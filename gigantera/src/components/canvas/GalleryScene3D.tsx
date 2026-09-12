@@ -1,0 +1,1608 @@
+import React, { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
+import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
+import { useAppStore } from '../../core/store';
+import { ARTWORKS_CATALOG } from '../../data/artworks';
+import { Artwork } from '../../types/art';
+import { TOKENS } from '../../tokens';
+import { soundEngine } from '../../core/soundEngine';
+import { CDViewmodel3D } from './CDViewmodel3D';
+import { PlayerController } from '../../core/playerController';
+import { computeModularGalleryLayout, ViewingSpotInfo } from '../../core/modularGallery';
+
+/**
+ * Gerador procedural de textura de piso: Microcimento / Marmorite Alabastro claro
+ * com juntas de dilatação de placas de 2x2 metros e reflexo aveludado suave.
+ */
+function createFloorTexture(isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = isLight ? '#f2f1ec' : '#131615';
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  const imgData = ctx.getImageData(0, 0, 1024, 1024);
+  const data = imgData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    const noise = (Math.random() - 0.5) * (isLight ? 10 : 7);
+    data[i] = Math.min(255, Math.max(0, data[i] + noise));
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, 1024, 1024);
+  ctx.beginPath();
+  ctx.moveTo(512, 0);
+  ctx.lineTo(512, 1024);
+  ctx.moveTo(0, 512);
+  ctx.lineTo(1024, 512);
+  ctx.stroke();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(8, 44);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Gerador procedural de textura de parede: Gesso mate de museu com micro-grão tátil
+ */
+function createWallTexture(isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = isLight ? '#faf9f6' : '#0e1110';
+  ctx.fillRect(0, 0, 512, 512);
+
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const data = imgData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    const grain = (Math.random() - 0.5) * (isLight ? 7 : 5);
+    data[i] = Math.min(255, Math.max(0, data[i] + grain));
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain));
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(20, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Gerador procedural da Plaquinha Física 3D de cada obra com tipografia brutalista/minimalista
+ */
+function createPlaqueTexture(art: Artwork, index: number, isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = isLight ? '#fbfbfa' : '#141716';
+  ctx.fillRect(0, 0, 1024, 256);
+
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(6, 6, 1012, 244);
+
+  ctx.fillStyle = isLight ? '#b88d34' : '#e4c379';
+  ctx.fillRect(28, 28, 6, 200);
+
+  const numStr = String(index + 1).padStart(2, '0');
+  ctx.fillStyle = isLight ? '#0d0f0e' : '#f4f3ef';
+  ctx.font = 'bold 36px "Space Mono", monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText(`${numStr}. ${art.title.toUpperCase()}`, 52, 78);
+
+  ctx.fillStyle = isLight ? '#484d4a' : '#909692';
+  ctx.font = '600 22px "Space Mono", monospace';
+  const mediumStr = art.medium === 'video' ? 'VITRINE CINÉTICA // LOOP' : 'IMPRESSO GICLÉE EM VIDRO';
+  ctx.fillText(`${art.year} · ${mediumStr}`, 52, 126);
+
+  ctx.font = '400 20px "Space Mono", monospace';
+  ctx.fillStyle = isLight ? '#7a807c' : '#68706c';
+  ctx.fillText(`PELIMOTION // FELIPE CONCEIÇÃO · ${art.series || 'GIGANTERA'}`, 52, 170);
+
+  ctx.font = 'bold 18px "Space Mono", monospace';
+  ctx.fillStyle = isLight ? '#b88d34' : '#e4c379';
+  ctx.fillText('[E] / [CLIQUE] INSPECIONAR 3D', 52, 214);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = isLight ? '#8a908c' : '#4d5551';
+  ctx.font = '18px "Space Mono", monospace';
+  ctx.fillText(`PLM-ACC-${numStr}`, 990, 78);
+
+  const bcX = 860;
+  const bcY = 110;
+  ctx.fillStyle = isLight ? '#222' : '#ddd';
+  const bars = [2, 1, 3, 1, 2, 4, 1, 2, 3, 1, 4, 2];
+  let curX = bcX;
+  for (let b = 0; b < bars.length; b++) {
+    ctx.fillRect(curX, bcY, bars[b] * 2, 60);
+    curX += bars[b] * 2 + 3;
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  return tex;
+}
+
+/**
+ * Gerador procedural da Plaquinha Física 3D do Pedestal de CD
+ */
+function createPedestalPlaqueTexture(isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = isLight ? '#fbfbfa' : '#141716';
+  ctx.fillRect(0, 0, 1024, 256);
+
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(6, 6, 1012, 244);
+
+  ctx.fillStyle = isLight ? '#d94726' : '#ff6b4a';
+  ctx.fillRect(28, 28, 6, 200);
+
+  ctx.fillStyle = isLight ? '#0d0f0e' : '#f4f3ef';
+  ctx.font = 'bold 34px "Space Mono", monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('00. ESTAÇÃO DE ÁUDIO POV // JEWEL CASE', 52, 78);
+
+  ctx.fillStyle = isLight ? '#484d4a' : '#909692';
+  ctx.font = '600 22px "Space Mono", monospace';
+  ctx.fillText('FELIPE CONCEIÇÃO // ÁLBUM AUTORAL COM 17 FAIXAS ORIGINAIS', 52, 126);
+
+  ctx.font = '400 20px "Space Mono", monospace';
+  ctx.fillStyle = isLight ? '#7a807c' : '#68706c';
+  ctx.fillText('ESTOJO FÍSICO DE CD 3D INTERATIVO · FOLHEIE AS FAIXAS COM O MOUSE', 52, 170);
+
+  ctx.font = 'bold 18px "Space Mono", monospace';
+  ctx.fillStyle = isLight ? '#d94726' : '#ff6b4a';
+  ctx.fillText("[E] / [CLIQUE] PEGAR CD EM PRIMEIRA PESSOA", 52, 214);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+export const GalleryScene3D: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const theme = useAppStore((s) => s.theme);
+  const cameraTargetZ = useAppStore((s) => s.cameraTargetZ);
+  const updateCameraZ = useAppStore((s) => s.updateCameraZ);
+  const setProximityArtwork = useAppStore((s) => s.setProximityArtwork);
+  const setHoveredArtwork = useAppStore((s) => s.setHoveredArtwork);
+  const openCinema = useAppStore((s) => s.openCinema);
+  const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
+  const isAudioPlaying = useAppStore((s) => s.isAudioPlaying);
+  const setIntroPhase = useAppStore((s) => s.setIntroPhase);
+  const setIntroSpawnProgress = useAppStore((s) => s.setIntroSpawnProgress);
+  const isHoldingCD = useAppStore((s) => s.isHoldingCD);
+  const gameControlPrompt = useAppStore((s) => s.gameControlPrompt);
+  const setGameControlPrompt = useAppStore((s) => s.setGameControlPrompt);
+  const setCurrentAudioTrack = useAppStore((s) => s.setCurrentAudioTrack);
+  const setIsAudioPlaying = useAppStore((s) => s.setIsAudioPlaying);
+  const isPointerLocked = useAppStore((s) => s.isPointerLocked);
+  const hoveredTarget = useAppStore((s) => s.hoveredTarget);
+
+  const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+    let width = container.clientWidth;
+    let height = container.clientHeight;
+    const isLight = theme === 'light';
+
+    // 1. Cena, Câmera e Renderizador com Sombras Suaves PCF
+    const scene = new THREE.Scene();
+    const currentThemeTokens = TOKENS.themes[theme];
+    scene.fog = new THREE.FogExp2(currentThemeTokens.canvasFog, 0.014);
+
+    const camera = new THREE.PerspectiveCamera(TOKENS.navigation.cameraFov, width / height, 0.1, 180);
+    camera.position.set(0, 0.4, cameraTargetZ);
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = isLight ? 1.05 : 1.15;
+    renderer.setClearColor(currentThemeTokens.canvasFog);
+    container.appendChild(renderer.domElement);
+
+    // 2. Sistema de Iluminação Realista Quase Branco com Sombras Suaves
+    const hemiLight = new THREE.HemisphereLight(
+      isLight ? 0xffffff : 0x181c1a,
+      isLight ? 0xf0eee6 : 0x0a0c0b,
+      isLight ? 1.45 : 0.85
+    );
+    scene.add(hemiLight);
+
+    const ambientLight = new THREE.AmbientLight(
+      isLight ? 0xfcfbfa : 0x141716,
+      isLight ? 0.75 : 0.55
+    );
+    scene.add(ambientLight);
+
+    // 3. Arquitetura Modular Dinâmica: Salão Procedural Adaptável ao Acervo
+    const layout = computeModularGalleryLayout(ARTWORKS_CATALOG);
+    const hallCenterZ = (layout.frontWallZ + layout.backWallZ) / 2;
+    const hallLen = layout.hallLength;
+
+    const sunLight = new THREE.DirectionalLight(
+      isLight ? 0xfffdf7 : 0xffedd0,
+      isLight ? 1.9 : 2.2
+    );
+    sunLight.position.set(12, 24, hallCenterZ + 30);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 1;
+    sunLight.shadow.camera.far = hallLen + 50;
+    sunLight.shadow.camera.left = -22;
+    sunLight.shadow.camera.right = 22;
+    sunLight.shadow.camera.top = 22;
+    sunLight.shadow.camera.bottom = -22;
+    sunLight.shadow.bias = -0.0003;
+    scene.add(sunLight);
+
+    const visitorLight = new THREE.PointLight(
+      isLight ? 0xfffaea : 0xe4c379,
+      isLight ? 0.8 : 1.4,
+      32
+    );
+    scene.add(visitorLight);
+
+    const floorTexture = createFloorTexture(isLight);
+    const wallTexture = createWallTexture(isLight);
+
+    const floorGeo = new THREE.PlaneGeometry(layout.roomWidth + 6, hallLen + 12, 1, 1);
+    floorGeo.rotateX(-Math.PI / 2);
+    const floorMat = new THREE.MeshStandardMaterial({
+      map: floorTexture,
+      roughness: isLight ? 0.38 : 0.45,
+      metalness: isLight ? 0.08 : 0.12
+    });
+    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+    floorMesh.position.set(0, -3.2, hallCenterZ);
+    floorMesh.receiveShadow = true;
+    scene.add(floorMesh);
+
+    // Reflexão Planar em Tempo Real do Piso (Simulação Raytracing / RTX)
+    const floorReflector = new Reflector(new THREE.PlaneGeometry(layout.roomWidth, hallLen), {
+      clipBias: 0.003,
+      textureWidth: Math.min(1024, (typeof window !== 'undefined' ? window.innerWidth : 1280) * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)),
+      textureHeight: Math.min(1024, (typeof window !== 'undefined' ? window.innerHeight : 720) * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)),
+      color: isLight ? 0xd0cec7 : 0x666666
+    });
+    floorReflector.position.set(0, -3.193, hallCenterZ);
+    floorReflector.rotateX(-Math.PI / 2);
+    (floorReflector.material as any).transparent = true;
+    (floorReflector.material as any).opacity = isLight ? 0.38 : 0.44;
+    scene.add(floorReflector);
+
+    const wallGeo = new THREE.PlaneGeometry(hallLen + 12, 24);
+    const wallMat = new THREE.MeshStandardMaterial({
+      map: wallTexture,
+      roughness: 0.88,
+      metalness: 0.02
+    });
+
+    const leftWall = new THREE.Mesh(wallGeo, wallMat);
+    leftWall.position.set(-layout.halfWidth - 1, 6, hallCenterZ);
+    leftWall.rotation.y = Math.PI / 2;
+    leftWall.receiveShadow = true;
+    scene.add(leftWall);
+
+    const rightWall = new THREE.Mesh(wallGeo, wallMat);
+    rightWall.position.set(layout.halfWidth + 1, 6, hallCenterZ);
+    rightWall.rotation.y = -Math.PI / 2;
+    rightWall.receiveShadow = true;
+    scene.add(rightWall);
+
+    const backWallGeo = new THREE.PlaneGeometry(layout.roomWidth + 4, 24);
+    const backWall = new THREE.Mesh(backWallGeo, wallMat);
+    backWall.position.set(0, 6, layout.backWallZ);
+    backWall.receiveShadow = true;
+    scene.add(backWall);
+
+    // Rodapé negativo arquitetural
+    const revealMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x222423 : 0x050606 });
+    const revealGeo = new THREE.BoxGeometry(0.08, 0.08, hallLen + 12);
+    const leftReveal = new THREE.Mesh(revealGeo, revealMat);
+    leftReveal.position.set(-layout.halfWidth - 0.94, -3.16, hallCenterZ);
+    scene.add(leftReveal);
+
+    const rightReveal = new THREE.Mesh(revealGeo, revealMat);
+    rightReveal.position.set(layout.halfWidth + 0.94, -3.16, hallCenterZ);
+    scene.add(rightReveal);
+
+    // Bancos Monolíticos Quase Brancos
+    const benchesGroup = new THREE.Group();
+    const benchGeo = new THREE.BoxGeometry(1.6, 0.52, 4.4);
+    const benchMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0xf4f3ee : 0x1b1e1d,
+      roughness: 0.86,
+      metalness: 0.04
+    });
+    layout.benchesZ.forEach((bz) => {
+      const bench = new THREE.Mesh(benchGeo, benchMat);
+      bench.position.set(0, -2.94, bz);
+      bench.castShadow = true;
+      bench.receiveShadow = true;
+      benchesGroup.add(bench);
+
+      const baseGeo = new THREE.BoxGeometry(1.35, 0.12, 4.1);
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0xdedcd4 : 0x090b0a,
+        roughness: 0.95
+      });
+      const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+      baseMesh.position.set(0, -3.14, bz);
+      baseMesh.receiveShadow = true;
+      benchesGroup.add(baseMesh);
+    });
+    scene.add(benchesGroup);
+
+    // Vigas Estruturais no Teto com Claraboias
+    const ceilingBeamsGroup = new THREE.Group();
+    const beamGeo = new THREE.BoxGeometry(layout.roomWidth + 4, 1.4, 1.2);
+    const beamMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0xebe9e2 : 0x141716,
+      roughness: 0.9
+    });
+
+    const lightShaftGroup = new THREE.Group();
+    const shaftGeo = new THREE.CylinderGeometry(0.8, 5.2, 18, 16, 1, true);
+    const shaftMat = new THREE.MeshBasicMaterial({
+      color: isLight ? 0xfffcf5 : 0xffeed1,
+      transparent: true,
+      opacity: isLight ? 0.03 : 0.05,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+
+    layout.ceilingBeamsZ.forEach((bz) => {
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.position.set(0, 11, bz);
+      beam.castShadow = true;
+      beam.receiveShadow = true;
+      ceilingBeamsGroup.add(beam);
+
+      const shaft = new THREE.Mesh(shaftGeo, shaftMat);
+      shaft.position.set(0, 2, bz - 2);
+      shaft.rotation.z = -0.15;
+      lightShaftGroup.add(shaft);
+    });
+    scene.add(ceilingBeamsGroup);
+    scene.add(lightShaftGroup);
+
+    // 3.01 Partículas Atmosféricas Sutis (Dust Motes de Museu em Luz Volumétrica)
+    const dustCount = 140;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPositions = new Float32Array(dustCount * 3);
+    const dustBaseY = new Float32Array(dustCount);
+    for (let p = 0; p < dustCount; p++) {
+      dustPositions[p * 3] = (Math.random() - 0.5) * 26;
+      dustBaseY[p] = -2.5 + Math.random() * 8.5;
+      dustPositions[p * 3 + 1] = dustBaseY[p];
+      dustPositions[p * 3 + 2] = 25 - Math.random() * 125;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const dustMat = new THREE.PointsMaterial({
+      color: isLight ? 0xb88d34 : 0xe4c379,
+      size: 0.045,
+      transparent: true,
+      opacity: isLight ? 0.35 : 0.5,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const dustPoints = new THREE.Points(dustGeo, dustMat);
+    scene.add(dustPoints);
+
+    // 3.1 CAIXAS ACÚSTICAS 3D FIXADAS NAS PAREDES (Voltadas das Paredes para o Centro do Salão)
+    const speakerCabinets: THREE.Group[] = [];
+    const soundWaveRings: { mesh: THREE.Mesh; speakerIdx: number; ringIdx: number }[] = [];
+
+    layout.speakers.forEach((spk, sIdx) => {
+      const spkGroup = new THREE.Group();
+      spkGroup.position.set(spk.x, spk.y, spk.z);
+      spkGroup.rotation.y = spk.rotY;
+
+      // Suporte metálico de ancoragem na parede de concreto
+      const bracketGeo = new THREE.BoxGeometry(0.16, 0.26, 0.22);
+      const bracketMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0x666866 : 0x242826,
+        metalness: 0.8,
+        roughness: 0.25
+      });
+      const bracket = new THREE.Mesh(bracketGeo, bracketMat);
+      bracket.position.z = -0.25;
+      spkGroup.add(bracket);
+
+      // Gabinete acústico elegante
+      const spkBodyGeo = new THREE.BoxGeometry(0.52, 0.78, 0.38);
+      const spkBodyMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0xeeece5 : 0x181a19,
+        roughness: 0.75,
+        metalness: 0.15
+      });
+      const spkBody = new THREE.Mesh(spkBodyGeo, spkBodyMat);
+      spkBody.castShadow = true;
+      spkGroup.add(spkBody);
+
+      // Baffle frontal rebaixado
+      const baffleGeo = new THREE.PlaneGeometry(0.46, 0.72);
+      const baffleMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x242725 : 0x0c0e0d });
+      const baffle = new THREE.Mesh(baffleGeo, baffleMat);
+      baffle.position.z = 0.191;
+      spkGroup.add(baffle);
+
+      // Cones de alto-falante (Woofer & Tweeter)
+      const wooferGeo = new THREE.CircleGeometry(0.15, 24);
+      const coneMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0xd0cec7 : 0x333635,
+        roughness: 0.45,
+        metalness: 0.3
+      });
+      const woofer = new THREE.Mesh(wooferGeo, coneMat);
+      woofer.position.set(0, -0.13, 0.193);
+      spkGroup.add(woofer);
+
+      const tweeterGeo = new THREE.CircleGeometry(0.065, 20);
+      const tweeter = new THREE.Mesh(tweeterGeo, coneMat);
+      tweeter.position.set(0, 0.17, 0.193);
+      spkGroup.add(tweeter);
+
+      // LED indicador acústico
+      const ledGeo = new THREE.CircleGeometry(0.012, 12);
+      const ledMat = new THREE.MeshBasicMaterial({ color: 0x63e2b7 });
+      const led = new THREE.Mesh(ledGeo, ledMat);
+      led.position.set(0, -0.3, 0.193);
+      spkGroup.add(led);
+
+      // Ondas de Som Animadas em direção ao centro da galeria
+      for (let r = 0; r < 3; r++) {
+        const ringGeo = new THREE.RingGeometry(0.14, 0.22, 28);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: isLight ? 0xd94726 : 0xe4c379,
+          transparent: true,
+          opacity: 0,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.position.set(0, -0.13, 0.22);
+        spkGroup.add(ringMesh);
+        soundWaveRings.push({ mesh: ringMesh, speakerIdx: sIdx, ringIdx: r });
+      }
+
+      scene.add(spkGroup);
+      speakerCabinets.push(spkGroup);
+    });
+
+    // 3.2 PONTOS CONTEMPLATIVOS NO PISO (Viewing Spots Sutis)
+    const viewingSpotRings: { mesh: THREE.Mesh; mat: THREE.MeshBasicMaterial; spot: ViewingSpotInfo }[] = [];
+    const viewingSpotsGroup = new THREE.Group();
+
+    layout.viewingSpots.forEach((spot) => {
+      const isStill = spot.medium === 'still';
+      const color = isStill ? 0xe4c379 : 0x63e2b7;
+
+      // Anel fino no piso
+      const ringGeo = new THREE.RingGeometry(0.68, 0.76, 32);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.22,
+        side: THREE.DoubleSide
+      });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = -Math.PI / 2;
+      ringMesh.position.set(spot.x, -3.191, spot.z);
+      viewingSpotsGroup.add(ringMesh);
+
+      // Ponto central
+      const dotGeo = new THREE.CircleGeometry(0.045, 16);
+      const dotMat = new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.35,
+        side: THREE.DoubleSide
+      });
+      const dotMesh = new THREE.Mesh(dotGeo, dotMat);
+      dotMesh.rotation.x = -Math.PI / 2;
+      dotMesh.position.set(spot.x, -3.19, spot.z);
+      viewingSpotsGroup.add(dotMesh);
+
+      viewingSpotRings.push({ mesh: ringMesh, mat: ringMat, spot });
+    });
+    scene.add(viewingSpotsGroup);
+
+    // 4. Estação do CD Jewel Case logo na Entrada (Z = +18)
+    const cdStationGroup = new THREE.Group();
+    cdStationGroup.position.set(2.8, -0.4, 18);
+    cdStationGroup.rotation.y = -0.3;
+
+    const cdStandGeo = new THREE.CylinderGeometry(0.38, 0.48, 2.4, 24);
+    const cdStandMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0xdcdad2 : 0x222624,
+      metalness: 0.75,
+      roughness: 0.22
+    });
+    const cdStand = new THREE.Mesh(cdStandGeo, cdStandMat);
+    cdStand.position.y = -1.2;
+    cdStand.castShadow = true;
+    cdStand.receiveShadow = true;
+    (cdStand as any).isCDStation = true;
+    cdStationGroup.add(cdStand);
+
+    const cdPlaqueGeo = new THREE.BoxGeometry(1.9, 0.48, 0.04);
+    const cdPlaqueTex = createPedestalPlaqueTexture(isLight);
+    const cdPlaqueMat = new THREE.MeshStandardMaterial({
+      map: cdPlaqueTex,
+      roughness: 0.82,
+      metalness: 0.08
+    });
+    const cdPlaqueMesh = new THREE.Mesh(cdPlaqueGeo, cdPlaqueMat);
+    cdPlaqueMesh.position.set(0, -0.65, 0.38);
+    cdPlaqueMesh.rotation.x = -0.35;
+    cdPlaqueMesh.castShadow = true;
+    cdPlaqueMesh.receiveShadow = true;
+    (cdPlaqueMesh as any).isCDStation = true;
+    cdStationGroup.add(cdPlaqueMesh);
+
+    const cdCaseGeo = new THREE.BoxGeometry(1.4, 1.4, 0.12);
+    const cdCaseMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transmission: 0.94,
+      roughness: 0.04,
+      ior: 1.52,
+      thickness: 0.2,
+      transparent: true,
+      opacity: 0.92
+    });
+    const cdCaseMesh = new THREE.Mesh(cdCaseGeo, cdCaseMat);
+    cdCaseMesh.position.y = 0.2;
+    cdCaseMesh.rotation.x = -0.2;
+    cdCaseMesh.castShadow = true;
+    (cdCaseMesh as any).isCDStation = true;
+    cdStationGroup.add(cdCaseMesh);
+
+    const textureLoader = new THREE.TextureLoader();
+    const cdCoverTex = textureLoader.load('/gigantera/works/espinhaco-cinetica-prata.jpg');
+    const cdPaperGeo = new THREE.PlaneGeometry(1.3, 1.3);
+    const cdPaperMat = new THREE.MeshStandardMaterial({
+      map: cdCoverTex,
+      roughness: 0.95,
+      metalness: 0.0
+    });
+    const cdPaperMesh = new THREE.Mesh(cdPaperGeo, cdPaperMat);
+    cdPaperMesh.position.set(0, 0.2, 0.01);
+    cdPaperMesh.rotation.x = -0.2;
+    (cdPaperMesh as any).isCDStation = true;
+    cdStationGroup.add(cdPaperMesh);
+
+    scene.add(cdStationGroup);
+
+    // 5. Vitrines de Vidro Flutuantes & Plaquinhas Físicas 3D em Baixo de Cada Obra
+    const artworkItems: {
+      group: THREE.Group;
+      glassMesh: THREE.Mesh;
+      paperMesh: THREE.Mesh;
+      plaqueMesh: THREE.Mesh;
+      artwork: Artwork;
+      videoEl?: HTMLVideoElement;
+    }[] = [];
+
+    layout.artworksWithCoords.forEach((art, idx) => {
+      const coords = art.computedCoords;
+      const group = new THREE.Group();
+      group.position.set(coords.x, coords.y, coords.z);
+      if (coords.rotY) group.rotation.y = coords.rotY;
+
+      group.scale.set(0.001, 0.001, 0.001);
+
+      // Cálculo de proporção nativa exata (sem achatamento nem distorção)
+      const ratio = art.aspectRatioNum || (art.aspectRatio === '16 / 9' ? 1400 / 787 : 781 / 1400);
+      const isLandscape = ratio > 1.0;
+
+      let paperW: number;
+      let paperH: number;
+      if (isLandscape) {
+        paperW = 4.8;
+        paperH = paperW / ratio; // ~2.70m
+      } else {
+        paperH = 4.8;
+        paperW = paperH * ratio; // ~2.68m
+      }
+
+      const glassW = paperW + 0.6;
+      const glassH = paperH + 0.8;
+      const glassD = 0.45;
+
+      const glassGeo = new THREE.BoxGeometry(glassW, glassH, glassD);
+      const glassMat = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff,
+        transmission: 0.92,
+        roughness: 0.04,
+        ior: 1.52,
+        thickness: 0.8,
+        transparent: true,
+        opacity: 0.88,
+        reflectivity: 0.6
+      });
+      const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+      glassMesh.castShadow = true;
+      glassMesh.receiveShadow = true;
+      group.add(glassMesh);
+
+      const edgeGeo = new THREE.EdgesGeometry(glassGeo);
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: currentThemeTokens.wireframe,
+        transparent: true,
+        opacity: isLight ? 0.35 : 0.4
+      });
+      const wireframe = new THREE.LineSegments(edgeGeo, edgeMat);
+      group.add(wireframe);
+
+      let paperMat: THREE.Material;
+      let videoElement: HTMLVideoElement | undefined;
+
+      if (art.medium === 'video' && art.videoSrc) {
+        const vid = document.createElement('video');
+        vid.src = art.videoSrc;
+        vid.crossOrigin = 'anonymous';
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.autoplay = true;
+        vid.setAttribute('data-art-id', art.id);
+        vid.play().catch(() => {});
+
+        const videoTex = new THREE.VideoTexture(vid);
+        videoTex.minFilter = THREE.LinearFilter;
+        videoTex.magFilter = THREE.LinearFilter;
+
+        paperMat = new THREE.MeshStandardMaterial({
+          map: videoTex,
+          roughness: 0.95,
+          metalness: 0.0,
+          side: THREE.FrontSide
+        });
+        videoElement = vid;
+      } else {
+        const tex = textureLoader.load(art.imageSrc);
+        tex.minFilter = THREE.LinearMipmapLinearFilter;
+
+        paperMat = new THREE.MeshStandardMaterial({
+          map: tex,
+          roughness: 0.96,
+          metalness: 0.0,
+          side: THREE.FrontSide
+        });
+      }
+
+      const paperGeo = new THREE.PlaneGeometry(paperW, paperH);
+      const paperMesh = new THREE.Mesh(paperGeo, paperMat);
+      paperMesh.position.z = 0.02;
+      (paperMesh as any).artworkData = art;
+      (glassMesh as any).artworkData = art;
+      group.add(paperMesh);
+
+      // Plaquinha Física 3D em Baixo da Obra (dimensionada proporcionalmente à vitrine)
+      const plaqueW = Math.min(glassW * 0.75, 2.8);
+      const plaqueGeo = new THREE.BoxGeometry(plaqueW, 0.62, 0.04);
+      const plaqueTex = createPlaqueTexture(art, idx, isLight);
+      const plaqueMat = new THREE.MeshStandardMaterial({
+        map: plaqueTex,
+        roughness: 0.82,
+        metalness: 0.08
+      });
+      const plaqueMesh = new THREE.Mesh(plaqueGeo, plaqueMat);
+      plaqueMesh.position.set(0, -(glassH / 2) - 0.42, 0.02);
+      plaqueMesh.castShadow = true;
+      plaqueMesh.receiveShadow = true;
+      (plaqueMesh as any).artworkData = art;
+      (plaqueMesh as any).isArtworkPlaque = true;
+      group.add(plaqueMesh);
+
+      scene.add(group);
+      artworkItems.push({
+        group,
+        glassMesh,
+        paperMesh,
+        plaqueMesh,
+        artwork: art,
+        videoEl: videoElement
+      });
+    });
+
+    // 7. RIG DE INSPEÇÃO 3D EM PRIMEIRO PLANO (A Obra saindo da caixa de vidro em 3D)
+    // Acoplado diretamente à câmera: o jogador pode rotacionar e dar zoom na peça sem interferência de luz externa
+    const inspectionRig = new THREE.Group();
+    inspectionRig.position.set(0, 0, -2.1);
+    inspectionRig.visible = false;
+
+    // Fundo neutro fino de passe-partout / moldura
+    const backingGeo = new THREE.PlaneGeometry(1.0, 1.0);
+    const backingMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x141615 : 0x050606 });
+    const inspectionBacking = new THREE.Mesh(backingGeo, backingMat);
+    inspectionRig.add(inspectionBacking);
+
+    // Plano da Obra em Primeiro Plano (Imunidade total à iluminação externa)
+    const artPlaneGeo = new THREE.PlaneGeometry(1.0, 1.0);
+    const artPlaneMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      side: THREE.FrontSide,
+      toneMapped: false // Imunidade a sombras ou luzes externas da galeria
+    });
+    const inspectionArtMesh = new THREE.Mesh(artPlaneGeo, artPlaneMat);
+    inspectionArtMesh.position.z = 0.01;
+    inspectionRig.add(inspectionArtMesh);
+
+    camera.add(inspectionRig);
+
+    // Variáveis de controle de inspeção 3D (Rotação, Pan e Zoom fluidos)
+    let targetInspRotX = 0;
+    let targetInspRotY = 0;
+    let curInspRotX = 0;
+    let curInspRotY = 0;
+    let targetInspZoom = 1.0;
+    let curInspZoom = 1.0;
+    let targetPanX = 0;
+    let targetPanY = 0;
+    let curPanX = 0;
+    let curPanY = 0;
+    let currentArtW = 1.0;
+    let currentArtH = 1.3;
+    let inspectionTransition = 0.0;
+    let activeCinemaArtId: string | null = null;
+    let isMouseDown = false;
+
+    // 8. Viewmodel 3D do CD Jewel Case em POV com Mão Low-Poly
+    const cdViewmodel = new CDViewmodel3D((track) => {
+      setCurrentAudioTrack(track);
+      setIsAudioPlaying(true);
+    });
+    camera.add(cdViewmodel.rootGroup);
+    scene.add(camera);
+
+    // 9. Motor de Jogabilidade em Primeira Pessoa (Player Controller FPS)
+    const playerController = new PlayerController(camera, container, {
+      walkSpeed: 10.5,
+      sprintMultiplier: 1.65,
+      minZ: layout.playerBounds.minZ,
+      maxZ: layout.playerBounds.maxZ,
+      minX: layout.playerBounds.minX,
+      maxX: layout.playerBounds.maxX
+    });
+    playerController.updateBounds(layout.playerBounds);
+
+    playerController.onPointerLockChange = (locked) => {
+      useAppStore.getState().setPointerLocked(locked);
+    };
+
+    playerController.onInteract = () => {
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork) {
+        state.closeCinema();
+        return;
+      }
+      if (state.isHoldingCD) {
+        state.stowCD();
+        cdViewmodel.stow();
+        return;
+      }
+
+      const distToCD = Math.hypot(camera.position.x - 2.8, camera.position.z - 18);
+      if (distToCD < 4.8) {
+        state.takeCD();
+        cdViewmodel.take();
+        return;
+      }
+
+      // Raycast frontal central com alcance máximo estrito de 6.5m
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const candidates = [
+        ...artworkItems.map((m) => m.glassMesh),
+        ...artworkItems.map((m) => m.paperMesh),
+        ...artworkItems.map((m) => m.plaqueMesh)
+      ];
+      const hits = raycaster.intersectObjects(candidates);
+      const validHits = hits.filter((h) => h.distance <= 6.5);
+      if (validHits.length > 0) {
+        const hitObj = validHits[0].object as any;
+        if (hitObj.artworkData) {
+          soundEngine.playGlassPassSound();
+          openCinema(hitObj.artworkData as Artwork);
+          return;
+        }
+      }
+
+      // Se estiver próximo ao ponto contemplativo ideal
+      const closest = useAppStore.getState().proximityArtwork;
+      if (closest) {
+        soundEngine.playGlassPassSound();
+        openCinema(closest);
+      }
+    };
+
+    playerController.onCancelAction = () => {
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork) {
+        state.closeCinema();
+      } else if (state.isHoldingCD) {
+        state.stowCD();
+        cdViewmodel.stow();
+      }
+    };
+
+    playerController.onToggleArchive = () => {
+      const cur = useAppStore.getState().viewMode;
+      const next = cur === 'spatial' ? 'archive' : 'spatial';
+      useAppStore.getState().setViewMode(next);
+      if (next === 'spatial') {
+        playerController.requestLock();
+      } else {
+        playerController.exitLock();
+      }
+    };
+
+    playerController.onToggleGuide = () => {
+      useAppStore.getState().toggleGuideModal();
+    };
+
+    playerController.onPlayerActivity = () => {
+      if (!useAppStore.getState().hasPlayerMoved) {
+        useAppStore.getState().setHasPlayerMoved(true);
+      }
+    };
+
+    playerController.onNextStill = () => {
+      useAppStore.getState().nextStillSheet();
+    };
+
+    playerController.onPrevStill = () => {
+      useAppStore.getState().prevStillSheet();
+    };
+
+    playerController.onResetStillZoom = () => {
+      useAppStore.getState().toggleLoupeMode();
+    };
+
+    playerController.onToggleVideoAudio = () => {
+      useAppStore.getState().toggleVideoAudio();
+    };
+
+    playerController.onFlipCD = () => {
+      const state = useAppStore.getState();
+      if (state.isHoldingCD) {
+        state.flipCD();
+        cdViewmodel.flip();
+      }
+    };
+
+    playerController.onScrollCD = (delta) => {
+      cdViewmodel.scrollTracks(delta);
+    };
+
+    // 10. Interação por Raycasting & Clique
+    const raycaster = new THREE.Raycaster();
+    const mouseCoord = new THREE.Vector2();
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button === 0) {
+        isMouseDown = true;
+      }
+    };
+
+    const onMouseUp = () => {
+      isMouseDown = false;
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork) {
+        try {
+          document.body.style.cursor = state.isLoupeMode ? 'move' : 'default';
+        } catch {}
+      }
+    };
+
+    const onPointerMove = (e: MouseEvent) => {
+      const state = useAppStore.getState();
+      const isCinema = Boolean(state.cinemaArtwork);
+      const holding = state.isHoldingCD;
+
+      const rect = container.getBoundingClientRect();
+      mouseCoord.x = ((e.clientX - rect.left) / width) * 2 - 1;
+      mouseCoord.y = -((e.clientY - rect.top) / height) * 2 + 1;
+
+      // Se estiver no Modo Cinema (Inspeção 3D da Obra)
+      if (isCinema) {
+        if (state.isLoupeMode) {
+          // Pan fluido do Modo Lupa de Crítico
+          targetPanX -= e.movementX * 0.0035;
+          targetPanY += e.movementY * 0.0035;
+          const maxPanX = Math.max(0.35, (currentArtW * (curInspZoom - 1.0)) * 0.45);
+          const maxPanY = Math.max(0.35, (currentArtH * (curInspZoom - 1.0)) * 0.45);
+          targetPanX = Math.max(-maxPanX, Math.min(maxPanX, targetPanX));
+          targetPanY = Math.max(-maxPanY, Math.min(maxPanY, targetPanY));
+          document.body.style.cursor = 'move';
+        } else if (isMouseDown) {
+          targetInspRotY += e.movementX * 0.0035;
+          targetInspRotX += e.movementY * 0.0035;
+          targetInspRotY = Math.max(-0.55, Math.min(0.55, targetInspRotY));
+          targetInspRotX = Math.max(-0.4, Math.min(0.4, targetInspRotX));
+          document.body.style.cursor = 'grabbing';
+        } else {
+          document.body.style.cursor = 'default';
+        }
+        return;
+      }
+
+      // Se estiver segurando o CD na mão
+      if (holding) {
+        cdViewmodel.addSway(e.movementX, e.movementY);
+
+        if (cdViewmodel.backInlayMesh) {
+          raycaster.setFromCamera(mouseCoord, camera);
+          const cdHits = raycaster.intersectObject(cdViewmodel.backInlayMesh);
+          if (cdHits.length > 0 && cdHits[0].uv) {
+            const trackIdx = cdViewmodel.getTrackIndexAtUV(cdHits[0].uv);
+            cdViewmodel.setHoveredTrack(trackIdx);
+            useAppStore.getState().setHoveredTrackIndex(trackIdx);
+            document.body.style.cursor = 'pointer';
+            return;
+          } else {
+            cdViewmodel.setHoveredTrack(null);
+            useAppStore.getState().setHoveredTrackIndex(null);
+          }
+        }
+        document.body.style.cursor = 'default';
+        return;
+      }
+
+      // Raycasting normal na galeria: em Pointer Lock, usa estritamente o centro (0, 0)
+      if (playerController.isLocked) {
+        mouseCoord.set(0, 0);
+      }
+      raycaster.setFromCamera(mouseCoord, camera);
+      const candidates = [
+        ...artworkItems.map((m) => m.glassMesh),
+        ...artworkItems.map((m) => m.paperMesh),
+        ...artworkItems.map((m) => m.plaqueMesh),
+        cdCaseMesh,
+        cdPaperMesh,
+        cdPlaqueMesh
+      ];
+      const hits = raycaster.intersectObjects(candidates);
+      const validHits = hits.filter((h) => h.distance <= 6.5);
+
+      if (validHits.length > 0) {
+        const hitObj = validHits[0].object as any;
+        if (hitObj.artworkData) {
+          setHoveredArtwork(hitObj.artworkData as Artwork);
+          useAppStore.getState().setHoveredTarget('artwork');
+          setReticleState('artwork');
+          document.body.style.cursor = 'pointer';
+        } else if (hitObj.isCDStation) {
+          useAppStore.getState().setHoveredTarget('cd');
+          setReticleState('cd');
+          document.body.style.cursor = 'pointer';
+        }
+      } else {
+        setHoveredArtwork(null);
+        useAppStore.getState().setHoveredTarget(null);
+        setReticleState('idle');
+        document.body.style.cursor = 'default';
+      }
+    };
+
+    const onClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-bottom-feather-bar, .cinema-top-inspection-hud, .still-prancheta-dock, .modal-backdrop, .controls-guide-card, header, footer')) {
+        return;
+      }
+
+      const state = useAppStore.getState();
+
+      // Se uma ação acabou de ser fechada (cooldown anti-clique fantasma de 400ms)
+      if (Date.now() - state.lastActionCloseTime < 400) {
+        return;
+      }
+
+      // Se estiver no Modo Cinema, não interage com a galeria de fundo
+      if (state.cinemaArtwork) {
+        return;
+      }
+
+      // Se estiver segurando o CD na mão
+      if (state.isHoldingCD) {
+        if (cdViewmodel.backInlayMesh) {
+          raycaster.setFromCamera(mouseCoord, camera);
+          const cdHits = raycaster.intersectObject(cdViewmodel.backInlayMesh);
+          if (cdHits.length > 0 && cdHits[0].uv) {
+            const trackIdx = cdViewmodel.getTrackIndexAtUV(cdHits[0].uv);
+            if (trackIdx !== null) {
+              cdViewmodel.selectTrackByIndex(trackIdx);
+              return;
+            }
+          }
+        }
+        return;
+      }
+
+      // Se o Pointer Lock NÃO estiver ativo, o clique no canvas reativa o Pointer Lock
+      if (!playerController.isLocked) {
+        playerController.requestLock();
+        return;
+      }
+
+      // Se o Pointer Lock já estava ativo, raycasting a partir do retículo central (0, 0)
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const candidates = [
+        ...artworkItems.map((m) => m.glassMesh),
+        ...artworkItems.map((m) => m.paperMesh),
+        ...artworkItems.map((m) => m.plaqueMesh),
+        cdCaseMesh,
+        cdPaperMesh,
+        cdPlaqueMesh
+      ];
+      const hits = raycaster.intersectObjects(candidates);
+      const validHits = hits.filter((h) => h.distance <= 6.5);
+
+      if (validHits.length > 0) {
+        const hitObj = validHits[0].object as any;
+        if (hitObj.isCDStation) {
+          useAppStore.getState().takeCD();
+          cdViewmodel.take();
+        } else if (hitObj.artworkData) {
+          soundEngine.playGlassPassSound();
+          openCinema(hitObj.artworkData as Artwork);
+        }
+      }
+    };
+
+    // Zoom fluido com Roda do Mouse no Modo Cinema 3D
+    const onWheel = (e: WheelEvent) => {
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.12 : 0.12;
+        targetInspZoom = Math.max(0.5, Math.min(3.5, targetInspZoom + delta));
+        state.setInspectionZoom(targetInspZoom);
+        if (targetInspZoom > 1.8 && !state.isLoupeMode) {
+          state.setLoupeMode(true);
+        } else if (targetInspZoom <= 1.2 && state.isLoupeMode) {
+          state.setLoupeMode(false);
+        }
+        return;
+      }
+    };
+
+    // Escuta global para atalhos táteis de jogabilidade (R e Q)
+    const onGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'r' || e.key === 'R') {
+        const state = useAppStore.getState();
+        if (state.cinemaArtwork) {
+          e.preventDefault();
+          e.stopPropagation();
+          state.toggleLoupeMode();
+        }
+      } else if (e.key === 'q' || e.key === 'Q') {
+        const state = useAppStore.getState();
+        if (state.cinemaArtwork || state.isHoldingCD) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (state.cinemaArtwork) state.closeCinema();
+          if (state.isHoldingCD) {
+            state.stowCD();
+            cdViewmodel.stow();
+          }
+        }
+      }
+    };
+
+    // Sincronização direta com o estado da store para alternância do Modo Lupa
+    const unsubLoupe = useAppStore.subscribe((state, prev) => {
+      if (state.isLoupeMode !== prev.isLoupeMode) {
+        if (state.isLoupeMode) {
+          targetInspZoom = 2.8;
+          targetInspRotX = 0;
+          targetInspRotY = 0;
+        } else {
+          targetInspZoom = 1.0;
+          targetInspRotX = 0;
+          targetInspRotY = 0;
+          targetPanX = 0;
+          targetPanY = 0;
+        }
+      }
+    });
+
+    const handleRequestLock = () => {
+      playerController.requestLock();
+    };
+
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('click', onClick);
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onGlobalKeyDown, { capture: true });
+    window.addEventListener('gigantera:request-lock', handleRequestLock);
+
+    const onResize = () => {
+      width = container.clientWidth;
+      height = container.clientHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    };
+    window.addEventListener('resize', onResize);
+
+    // Assinatura dinâmica da qualidade gráfica com Pixel Ratio adaptativo para Mac M1 / Retina
+    const applyQualitySettings = (q: 'light' | 'med' | 'high') => {
+      if (q === 'high') {
+        floorReflector.visible = true;
+        (floorReflector.material as any).opacity = isLight ? 0.38 : 0.44;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
+      } else if (q === 'med') {
+        floorReflector.visible = true;
+        (floorReflector.material as any).opacity = isLight ? 0.18 : 0.22;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+      } else {
+        floorReflector.visible = false;
+        renderer.shadowMap.type = THREE.BasicShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
+      }
+      renderer.shadowMap.needsUpdate = true;
+    };
+
+    applyQualitySettings(useAppStore.getState().graphicsQuality);
+
+    const unsubQuality = useAppStore.subscribe((state) => {
+      applyQualitySettings(state.graphicsQuality);
+    });
+
+    // 11. Loop de Animação a 60 FPS com Frustum Culling Otimizado
+    let rafId: number;
+    let prevCamZ = camera.position.z;
+    let prevTargetZ = useAppStore.getState().cameraTargetZ;
+
+    const clock = new THREE.Clock();
+    const cameraFrustum = new THREE.Frustum();
+    const cameraProjScreenMatrix = new THREE.Matrix4();
+
+    const animate = () => {
+      rafId = requestAnimationFrame(animate);
+
+      const delta = Math.min(clock.getDelta(), 0.08);
+      const elapsedTime = clock.getElapsedTime();
+
+      const storeState = useAppStore.getState();
+      const currentCinemaArt = storeState.cinemaArtwork;
+      const holdingCD = storeState.isHoldingCD;
+      const isAudioPlaying = storeState.isAudioPlaying;
+
+      playerController.isHoldingCD = holdingCD;
+      playerController.isCinemaActive = Boolean(currentCinemaArt);
+
+      // Oculta o CD no pedestal quando estiver na mão
+      cdCaseMesh.visible = !holdingCD;
+      cdPaperMesh.visible = !holdingCD;
+
+      // Transição suave de Z por botões da interface
+      const currentStoreTargetZ = storeState.cameraTargetZ;
+      if (Math.abs(currentStoreTargetZ - prevTargetZ) > 0.5) {
+        playerController.position.z = THREE.MathUtils.lerp(playerController.position.z, currentStoreTargetZ, 0.12);
+        if (Math.abs(playerController.position.z - currentStoreTargetZ) < 0.2) {
+          prevTargetZ = currentStoreTargetZ;
+        }
+      } else {
+        prevTargetZ = currentStoreTargetZ;
+      }
+
+      // Atualiza física do jogador (só anda se não estiver inspecionando obra)
+      playerController.update(delta);
+      cdViewmodel.update(elapsedTime, playerController.isMoving());
+
+      // Rotina de Materialização das Obras (Intro 4s)
+      if (elapsedTime <= 4.2) {
+        const progress = Math.min(1, elapsedTime / 4.0);
+        setIntroSpawnProgress(progress);
+
+        artworkItems.forEach((item, idx) => {
+          const spawnDelay = 0.3 + (idx / artworkItems.length) * 2.8;
+          if (elapsedTime > spawnDelay) {
+            const itemT = Math.min(1, (elapsedTime - spawnDelay) / 0.8);
+            const easeScale = 1 - Math.pow(1 - itemT, 3);
+            item.group.scale.set(easeScale, easeScale, easeScale);
+          }
+        });
+
+        if (elapsedTime >= 4.0) {
+          setIntroPhase('ready');
+        }
+      }
+
+      // DINÂMICA DO MODO DE INSPEÇÃO 3D (Obra no Primeiro Plano saindo da vitrine)
+      if (currentCinemaArt) {
+        // Se a obra acabou de ser aberta ou se mudou de prancheta
+        if (activeCinemaArtId !== currentCinemaArt.id) {
+          if (activeCinemaArtId) {
+            const prevFound = artworkItems.find((a) => a.artwork.id === activeCinemaArtId);
+            if (prevFound) prevFound.group.visible = true;
+          }
+
+          const found = artworkItems.find((a) => a.artwork.id === currentCinemaArt.id);
+          if (found) {
+            // Oculta completamente a vitrine do salão (vidro, moldura, papel, plaquinha)
+            // Eliminando 100% qualquer fantasma ou camada duplicada atrás da obra em visualização!
+            found.group.visible = false;
+
+            const isVid = currentCinemaArt.medium === 'video';
+            if (isVid && found.videoEl) {
+              const vidTex = new THREE.VideoTexture(found.videoEl);
+              vidTex.colorSpace = THREE.SRGBColorSpace;
+              artPlaneMat.map = vidTex;
+            } else {
+              artPlaneMat.map = (found.paperMesh.material as any).map;
+            }
+            artPlaneMat.needsUpdate = true;
+
+            // Cálculo de proporção rigorosa no rig de inspeção em primeiro plano
+            const ratio = currentCinemaArt.aspectRatioNum || (currentCinemaArt.aspectRatio === '16 / 9' ? 1400 / 787 : 781 / 1400);
+            let w: number;
+            let h: number;
+
+            if (ratio > 1.0) {
+              // Widescreen / Paisagem (ex: 16:9)
+              w = Math.min(1.80, 1.30 * ratio); // 1.80m
+              h = w / ratio; // ~1.01m
+            } else {
+              // Retrato (ex: 9:16)
+              h = 1.30;
+              w = h * ratio; // ~0.725m
+            }
+
+            currentArtW = w;
+            currentArtH = h;
+
+            artPlaneGeo.dispose();
+            inspectionArtMesh.geometry = new THREE.PlaneGeometry(w, h);
+            backingGeo.dispose();
+            inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.06, h + 0.06);
+
+            inspectionRig.visible = true;
+            inspectionTransition = 0.1;
+            targetInspRotX = 0;
+            targetInspRotY = 0;
+            curInspRotX = 0;
+            curInspRotY = 0;
+            targetInspZoom = 1.0;
+            curInspZoom = 1.0;
+            curPanX = 0;
+            curPanY = 0;
+            targetPanX = 0;
+            targetPanY = 0;
+            activeCinemaArtId = currentCinemaArt.id;
+          }
+        }
+
+        // Animação de interpolação da inspeção 3D
+        inspectionTransition = THREE.MathUtils.lerp(inspectionTransition, 1.0, 0.1);
+
+        if (storeState.isLoupeMode) {
+          curInspZoom = THREE.MathUtils.lerp(curInspZoom, 2.8, 0.14);
+          curInspRotX = THREE.MathUtils.lerp(curInspRotX, 0, 0.18);
+          curInspRotY = THREE.MathUtils.lerp(curInspRotY, 0, 0.18);
+          curPanX = THREE.MathUtils.lerp(curPanX, targetPanX, 0.15);
+          curPanY = THREE.MathUtils.lerp(curPanY, targetPanY, 0.15);
+        } else {
+          curInspZoom = THREE.MathUtils.lerp(curInspZoom, targetInspZoom, 0.14);
+          curInspRotX = THREE.MathUtils.lerp(curInspRotX, targetInspRotX, 0.12);
+          curInspRotY = THREE.MathUtils.lerp(curInspRotY, targetInspRotY, 0.12);
+          curPanX = THREE.MathUtils.lerp(curPanX, 0, 0.18);
+          curPanY = THREE.MathUtils.lerp(curPanY, 0, 0.18);
+        }
+
+        inspectionRig.position.set(curPanX, curPanY, -2.1);
+        inspectionRig.rotation.x = curInspRotX;
+        inspectionRig.rotation.y = curInspRotY;
+        const totalScale = curInspZoom * inspectionTransition;
+        inspectionRig.scale.set(totalScale, totalScale, totalScale);
+
+        // A iluminação externa da galeria apaga suavemente, isolando a obra em 3D
+        ambientLight.intensity = THREE.MathUtils.lerp(ambientLight.intensity, 0.02, 0.08);
+        sunLight.intensity = THREE.MathUtils.lerp(sunLight.intensity, 0.02, 0.08);
+      } else {
+        // Se saiu da inspeção, devolve a obra à vitrine original no salão
+        if (activeCinemaArtId) {
+          const found = artworkItems.find((a) => a.artwork.id === activeCinemaArtId);
+          if (found) {
+            found.group.visible = true; // Vitrine completa reaparece no salão
+          }
+          inspectionRig.visible = false;
+          activeCinemaArtId = null;
+          curPanX = 0;
+          curPanY = 0;
+          targetPanX = 0;
+          targetPanY = 0;
+        }
+
+        const defAmbient = isLight ? 0.75 : 0.55;
+        const defSun = isLight ? 1.9 : 2.2;
+        ambientLight.intensity = THREE.MathUtils.lerp(ambientLight.intensity, defAmbient, 0.08);
+        sunLight.intensity = THREE.MathUtils.lerp(sunLight.intensity, defSun, 0.08);
+
+        // Pulsação sutil dos pontos contemplativos no piso quando livre no salão
+        viewingSpotRings.forEach(({ mesh, mat, spot }) => {
+          const dist = Math.hypot(camera.position.x - spot.x, camera.position.z - spot.z);
+          const isNear = dist < 2.2;
+          const targetOpacity = isNear
+            ? 0.5 + Math.sin(elapsedTime * 3.2) * 0.15
+            : (spot.medium === 'video' ? 0.22 : 0.14);
+          mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.1);
+          if (isNear) {
+            mesh.scale.setScalar(1.0 + Math.sin(elapsedTime * 2.8) * 0.04);
+          } else {
+            mesh.scale.setScalar(1.0);
+          }
+        });
+      }
+
+      // ONDAS SONORAS DAS CAIXAS ACÚSTICAS & ATENUAÇÃO ESPACIAL FÍSICA
+      if (isAudioPlaying) {
+        soundWaveRings.forEach(({ mesh, ringIdx }) => {
+          const progress = ((elapsedTime * 1.8 + ringIdx * 0.33) % 1.0);
+          mesh.scale.setScalar(1.0 + progress * 3.4);
+          mesh.position.z = 0.2 + progress * 1.2;
+          (mesh.material as THREE.MeshBasicMaterial).opacity = Math.sin(progress * Math.PI) * 0.45;
+        });
+
+        // Atualização de áudio espacial físico com atenuação e panner estéreo
+        soundEngine.updateSpatialAcoustics(
+          camera.position.x,
+          camera.position.z,
+          layout.speakers,
+          storeState.soundVolume
+        );
+      } else {
+        soundWaveRings.forEach(({ mesh }) => {
+          const mat = mesh.material as THREE.MeshBasicMaterial;
+          mat.opacity = THREE.MathUtils.lerp(mat.opacity, 0, 0.15);
+        });
+      }
+
+      // Telemetria Z
+      const velocityZ = camera.position.z - prevCamZ;
+      prevCamZ = camera.position.z;
+      updateCameraZ(camera.position.z, velocityZ);
+
+      visitorLight.position.set(camera.position.x, camera.position.y + 1.0, camera.position.z);
+
+      if (isAudioPlaying) {
+        const energy = soundEngine.getEnergy();
+        visitorLight.intensity = (isLight ? 0.8 : 1.4) + energy * 1.2;
+      }
+
+      // Atualiza matriz de frustum para culling de vídeos e objetos fora do campo de visão
+      cameraProjScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+      cameraFrustum.setFromProjectionMatrix(cameraProjScreenMatrix);
+
+      // Otimização de fill-rate M1: durante a inspeção de obras em primeiro plano,
+      // desativa o refletor do piso para economizar 100% do pass secundário de renderização
+      if (currentCinemaArt) {
+        if (floorReflector.visible) floorReflector.visible = false;
+      } else {
+        const targetReflVis = storeState.graphicsQuality !== 'light';
+        if (floorReflector.visible !== targetReflVis) floorReflector.visible = targetReflVis;
+      }
+
+      // Animação sutil dos dust motes atmosféricos
+      const dustPosAttr = dustGeo.attributes.position as THREE.BufferAttribute;
+      const dustPosArr = dustPosAttr.array as Float32Array;
+      for (let p = 0; p < dustCount; p++) {
+        dustPosArr[p * 3 + 1] = dustBaseY[p] + Math.sin(elapsedTime * 0.4 + p * 0.2) * 0.35;
+        dustPosArr[p * 3] += Math.sin(elapsedTime * 0.3 + p) * 0.001;
+      }
+      dustPosAttr.needsUpdate = true;
+
+      // Flutuação suave das vitrines quando livres
+      if (!currentCinemaArt) {
+        artworkItems.forEach((item, idx) => {
+          item.group.position.y = THREE.MathUtils.lerp(
+            item.group.position.y,
+            Math.sin(elapsedTime * 0.8 + idx * 0.9) * 0.08,
+            0.04
+          );
+        });
+      }
+
+      // Detecção de Proximidade das Obras com Culling Inteligente de Vídeo
+      let closestArt: Artwork | null = null;
+      let minDistance = Infinity;
+
+      for (const item of artworkItems) {
+        const d = camera.position.distanceTo(item.group.position);
+        if (d < minDistance) {
+          minDistance = d;
+          closestArt = item.artwork;
+        }
+
+        if (item.videoEl) {
+          if (currentCinemaArt) {
+            // Se estiver inspecionando uma obra no cinema, pausa todas as outras vitrines de vídeo
+            if (currentCinemaArt.id !== item.artwork.id && !item.videoEl.paused) {
+              item.videoEl.pause();
+            }
+          } else {
+            const isNear = Math.abs(camera.position.z - item.group.position.z) < 32;
+            const inFrustum = cameraFrustum.containsPoint(item.group.position);
+            if (isNear && inFrustum) {
+              if (item.videoEl.paused) {
+                item.videoEl.play().catch(() => {});
+              }
+            } else if (!item.videoEl.paused) {
+              item.videoEl.pause();
+            }
+          }
+        }
+      }
+
+      if (minDistance < TOKENS.navigation.proximityThreshold && closestArt && !currentCinemaArt) {
+        setProximityArtwork(closestArt);
+      } else {
+        setProximityArtwork(null);
+      }
+
+      // Atualização dos Prompts Táticos de Jogo (Minimalista & Contextual — sem sobreposições)
+      const distToCD = Math.hypot(camera.position.x - 2.8, camera.position.z - 18);
+      const currentHoveredTarget = storeState.hoveredTarget;
+
+      if (currentCinemaArt || holdingCD) {
+        setGameControlPrompt(null);
+      } else if (currentHoveredTarget === 'cd' && distToCD < 4.5) {
+        setGameControlPrompt('cd');
+      } else if ((currentHoveredTarget === 'artwork' || currentHoveredTarget === 'plaque') && closestArt && minDistance < 6.5) {
+        setGameControlPrompt(`art:${closestArt.title.toUpperCase()}`);
+      } else {
+        setGameControlPrompt(null);
+      }
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('click', onClick);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onGlobalKeyDown, { capture: true });
+      window.removeEventListener('gigantera:request-lock', handleRequestLock);
+      window.removeEventListener('resize', onResize);
+      unsubQuality();
+      unsubLoupe();
+
+      playerController.dispose();
+      cdViewmodel.rootGroup.removeFromParent();
+      inspectionRig.removeFromParent();
+      dustGeo.dispose();
+      dustMat.dispose();
+
+      artworkItems.forEach((item) => {
+        if (item.videoEl) {
+          item.videoEl.pause();
+          item.videoEl.removeAttribute('src');
+          item.videoEl.load();
+        }
+      });
+
+      floorTexture.dispose();
+      wallTexture.dispose();
+      renderer.dispose();
+      floorGeo.dispose();
+      floorMat.dispose();
+      wallGeo.dispose();
+      wallMat.dispose();
+      if (renderer.domElement.parentNode) {
+        renderer.domElement.parentNode.removeChild(renderer.domElement);
+      }
+    };
+  }, [theme]);
+
+  return (
+    <div
+      ref={containerRef}
+      id="gallery-3d-viewport"
+      className="gallery-3d-container"
+      aria-label="Espaço 3D Brutalista Realista — Caminhe livremente pela galeria entre vitrines de vidro, plaquinhas 3D e o álbum de CD"
+    >
+      {/* Retículo Central Tático Minimalista Brutalista */}
+      {!isHoldingCD && !cinemaArtwork && (
+        <div className={`tactile-center-reticle ${reticleState !== 'idle' ? 'is-targeting' : ''}`} aria-hidden="true">
+          <span className="reticle-bracket">[</span>
+          <span className="reticle-dot">
+            {reticleState === 'artwork' ? '⌕' : reticleState === 'cd' ? '☊' : '·'}
+          </span>
+          <span className="reticle-bracket">]</span>
+        </div>
+      )}
+
+      {/* Floating Tactical Game Action Prompt (Minimalista com Keycaps e Ícones) */}
+      {gameControlPrompt && !cinemaArtwork && (
+        <div className="game-action-prompt-overlay" aria-live="polite">
+          <div className="game-action-prompt-badge font-mono">
+            {gameControlPrompt === 'cd' ? (
+              <>
+                <kbd className="keycap">E</kbd>
+                <span className="keycap-label">/</span>
+                <span className="mouse-badge">
+                  <span className="mouse-icon mouse-left-click" />
+                </span>
+                <span className="keycap-label">PEGAR ÁLBUM CD</span>
+              </>
+            ) : gameControlPrompt.startsWith('art:') ? (
+              <>
+                <kbd className="keycap">E</kbd>
+                <span className="keycap-label">/</span>
+                <span className="mouse-badge">
+                  <span className="mouse-icon mouse-left-click" />
+                </span>
+                <span className="keycap-label">INSPECIONAR {gameControlPrompt.replace('art:', '')}</span>
+              </>
+            ) : (
+              <span className="keycap-label">{gameControlPrompt}</span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Dica discreta de clique para ativar Câmera Livre se não estiver bloqueado */}
+      {!isPointerLocked && !isHoldingCD && !cinemaArtwork && (
+        <div
+          className="pointer-lock-hint-dock font-mono"
+          aria-hidden="true"
+          onClick={() => window.dispatchEvent(new CustomEvent('gigantera:request-lock'))}
+          style={{ cursor: 'pointer' }}
+        >
+          <span className="mouse-badge">
+            <span className="mouse-icon mouse-left-click" />
+            <span className="keycap-label">CLIQUE P/ MIRA LIVRE</span>
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};

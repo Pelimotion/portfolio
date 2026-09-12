@@ -1,14 +1,13 @@
 /**
- * TOKENS.TS — Fonte única de verdade do Sistema de Design gigantera
- * Alimenta simultaneamente as variáveis CSS e os uniforms dos Shaders WebGL/OGL.
- * Nenhuma cor ou métrica deve ser declarada fora deste arquivo.
+ * TOKENS.TS — Sistema de Design Brutalista Espacial para Gigantera
+ * Suporte a Temas Dual (Obsidiana / Escuro e Alabastro / Claro)
+ * Tipografia monumental, coordenadas de galeria e física de navegação Z.
  */
 
 export interface ColorToken {
   hex: string;
-  rgb: [number, number, number]; // [0..255]
-  glsl: [number, number, number]; // [0.0..1.0] normalizado para shaders
-  description: string;
+  rgb: [number, number, number];
+  threeHex: number;
 }
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -19,85 +18,91 @@ function hexToRgb(hex: string): [number, number, number] {
   return [r, g, b];
 }
 
-function createToken(hex: string, description: string): ColorToken {
+function createToken(hex: string): ColorToken {
   const [r, g, b] = hexToRgb(hex);
   return {
     hex,
     rgb: [r, g, b],
-    glsl: [r / 255, g / 255, b / 255],
-    description
+    threeHex: parseInt(cleanHex(hex), 16)
   };
 }
 
+function cleanHex(hex: string): string {
+  return hex.replace('#', '0x');
+}
+
 export const TOKENS = {
-  colors: {
-    depthAbyss: createToken(
-      '#0E1613',
-      'Fundo mais profundo — preto azul-esverdeado orgânico'
-    ),
-    depthMid: createToken(
-      '#37443F',
-      'Camada intermediária — verde-ardósia'
-    ),
-    surfaceGlass: createToken(
-      '#DDE3DC',
-      'Superfície próxima ao topo — verde-vidro pálido'
-    ),
-    lightCaustic: createToken(
-      '#E8C77E',
-      'Luz refratada solar — accent primário de iluminação'
-    ),
-    sedimentClay: createToken(
-      '#8C6142',
-      'Argila/sedimento úmido — accent geológico secundário'
-    ),
-    foamWhite: createToken(
-      '#F2F0E9',
-      'Espuma cálcica — texto de alto contraste com moderação'
-    )
-  },
-  typography: {
-    display: "'Fraunces', Georgia, serif",
-    body: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-    mono: "'Space Mono', 'Courier New', monospace",
-    experimentalDisplay: "'Syne', 'Fraunces', sans-serif",
-    frauncesAxes: {
-      opsz: { min: 9, max: 144, default: 72 },
-      wght: { min: 100, max: 900, default: 400 },
-      soft: { min: 0, max: 100, default: 50 },
-      wonk: { min: 0, max: 1, default: 0 }
+  themes: {
+    dark: {
+      bgPrimary: createToken('#08090A'),
+      bgSurface: createToken('#121514'),
+      bgSurfaceElevated: createToken('#1B201D'),
+      borderSubtle: 'rgba(255, 255, 255, 0.09)',
+      borderStrong: 'rgba(255, 255, 255, 0.24)',
+      textPrimary: createToken('#F4F3EF'),
+      textSecondary: createToken('#909692'),
+      textTertiary: createToken('#5B625E'),
+      accentGold: createToken('#E4C379'),
+      accentCyan: createToken('#63E2B7'),
+      accentCoral: createToken('#FF6B4A'),
+      canvasFog: 0x08090a,
+      canvasPlinth: 0x141816,
+      canvasFrame: 0x1e2421,
+      wireframe: 0xe4c379
+    },
+    light: {
+      bgPrimary: createToken('#FBFBFA'),
+      bgSurface: createToken('#F3F2EE'),
+      bgSurfaceElevated: createToken('#EAE9E3'),
+      borderSubtle: 'rgba(0, 0, 0, 0.08)',
+      borderStrong: 'rgba(0, 0, 0, 0.22)',
+      textPrimary: createToken('#0D0F0E'),
+      textSecondary: createToken('#484D4A'),
+      textTertiary: createToken('#7A807C'),
+      accentGold: createToken('#B88D34'),
+      accentCyan: createToken('#1A8B67'),
+      accentCoral: createToken('#D94726'),
+      canvasFog: 0xfbfbfa,
+      canvasPlinth: 0xf0efe9,
+      canvasFrame: 0xe8e6de,
+      wireframe: 0x0d0f0e
     }
   },
-  strata: {
-    depthLevels: [
-      { id: 'epipelagic', name: 'Estrato Epipelágico', depthMeters: 0, offsetPx: 0 },
-      { id: 'mesopelagic', name: 'Estrato Mesopelágico', depthMeters: 200, offsetPx: 48 },
-      { id: 'bathypelagic', name: 'Estrato Batipelágico', depthMeters: 1000, offsetPx: 16 }
-    ]
+  typography: {
+    display: "'Syne', 'Fraunces', sans-serif",
+    serif: "'Fraunces', Georgia, serif",
+    mono: "'Space Mono', 'Courier New', monospace",
+    body: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif"
   },
-  physics: {
-    waterFriction: 0.94,
-    lightAttenuationCoeff: 1.8,
-    chladniGridResolution: 128
+  navigation: {
+    zStart: 25,
+    zEnd: -95,
+    cameraFov: 48,
+    proximityThreshold: 6.5,
+    cinemaSnapDistance: 3.2
   }
 } as const;
 
-/**
- * Gera as variáveis CSS correspondentes para injeção no :root
- */
-export function injectCssTokens(): void {
+export function applyThemeTokens(theme: 'dark' | 'light'): void {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
-  
-  root.style.setProperty('--depth-abyss', TOKENS.colors.depthAbyss.hex);
-  root.style.setProperty('--depth-mid', TOKENS.colors.depthMid.hex);
-  root.style.setProperty('--surface-glass', TOKENS.colors.surfaceGlass.hex);
-  root.style.setProperty('--light-caustic', TOKENS.colors.lightCaustic.hex);
-  root.style.setProperty('--sediment-clay', TOKENS.colors.sedimentClay.hex);
-  root.style.setProperty('--foam-white', TOKENS.colors.foamWhite.hex);
-  
+  const t = TOKENS.themes[theme];
+
+  root.dataset.theme = theme;
+  root.style.setProperty('--bg-primary', t.bgPrimary.hex);
+  root.style.setProperty('--bg-surface', t.bgSurface.hex);
+  root.style.setProperty('--bg-surface-elevated', t.bgSurfaceElevated.hex);
+  root.style.setProperty('--border-subtle', t.borderSubtle);
+  root.style.setProperty('--border-strong', t.borderStrong);
+  root.style.setProperty('--text-primary', t.textPrimary.hex);
+  root.style.setProperty('--text-secondary', t.textSecondary.hex);
+  root.style.setProperty('--text-tertiary', t.textTertiary.hex);
+  root.style.setProperty('--accent-gold', t.accentGold.hex);
+  root.style.setProperty('--accent-cyan', t.accentCyan.hex);
+  root.style.setProperty('--accent-coral', t.accentCoral.hex);
+
   root.style.setProperty('--font-display', TOKENS.typography.display);
-  root.style.setProperty('--font-body', TOKENS.typography.body);
+  root.style.setProperty('--font-serif', TOKENS.typography.serif);
   root.style.setProperty('--font-mono', TOKENS.typography.mono);
-  root.style.setProperty('--font-exp', TOKENS.typography.experimentalDisplay);
+  root.style.setProperty('--font-body', TOKENS.typography.body);
 }

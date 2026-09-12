@@ -1,0 +1,228 @@
+/**
+ * MODULAR GALLERY — Gerador Arquitetural Procedural da Galeria 3D Gigantera
+ * Calcula dinamicamente o comprimento do salão, espaçamento e coordenadas de vitrines,
+ * pontos contemplativos no piso, caixas acústicas fixadas nas paredes voltadas para o centro,
+ * vigas do teto, bancos centrais e limites de movimentação (minZ, maxZ) com base no acervo.
+ */
+
+import { Artwork } from '../types/art';
+
+export interface ViewingSpotInfo {
+  artworkId: string;
+  x: number;
+  z: number;
+  medium: 'still' | 'video';
+  title: string;
+}
+
+export interface SpeakerPlacement {
+  id: string;
+  x: number;
+  y: number;
+  z: number;
+  rotY: number; // Radianos: voltada para o centro do salão
+  wall: 'left' | 'right';
+}
+
+export interface ModularGalleryLayout {
+  // Limites da sala
+  roomWidth: number;       // Largura total (ex: 28m)
+  halfWidth: number;       // x: -14m a +14m
+  roomHeight: number;      // Altura total (ex: 12m)
+  hallLength: number;      // Comprimento total calculado
+  zStart: number;          // Início da galeria (ex: +30m)
+  zEnd: number;            // Fim da galeria (ex: -95m)
+  entranceZ: number;       // Posição inicial da câmera (ex: +22m)
+  backWallZ: number;       // Parede de fundo (ex: zEnd - 4m)
+  frontWallZ: number;      // Parede de entrada (ex: zStart + 4m)
+
+  // Layout das Obras
+  artworksWithCoords: (Artwork & {
+    computedCoords: { x: number; y: number; z: number; rotY: number };
+    viewingSpot: ViewingSpotInfo;
+  })[];
+
+  // Elementos Arquiteturais
+  viewingSpots: ViewingSpotInfo[];
+  speakers: SpeakerPlacement[];
+  ceilingBeamsZ: number[];
+  benchesZ: number[];
+
+  // Limites para o PlayerController
+  playerBounds: {
+    minZ: number;
+    maxZ: number;
+    minX: number;
+    maxX: number;
+  };
+}
+
+export function computeModularGalleryLayout(artworks: Artwork[]): ModularGalleryLayout {
+  const roomWidth = 28.0;
+  const halfWidth = 14.0;
+  const roomHeight = 12.0;
+
+  const entranceZ = 22.0;
+  const zStart = 30.0;
+  const cdStationZ = 18.0;
+
+  // Separação por setor
+  const stillWorks = artworks.filter((a) => a.medium === 'still');
+  const videoWorks = artworks.filter((a) => a.medium === 'video');
+
+  // Espaçamento longitudinal entre obras consecutivas
+  const stillSpacing = 6.2;
+  const sectorTransitionGap = 9.0;
+  const videoSpacing = 7.5;
+
+  const stillStartX = 3.9;  // Distância lateral da parede/centro
+  const viewingOffset = 3.6; // Distância do ponto de observação ideal em frente à vitrine
+
+  let currentZ = 12.0; // Início do setor Still após a entrada
+  const artworksWithCoords: ModularGalleryLayout['artworksWithCoords'] = [];
+  const viewingSpots: ViewingSpotInfo[] = [];
+
+  // 1. Distribuição das Obras Still (Alternando Esquerda e Direita)
+  stillWorks.forEach((art, index) => {
+    const isLeft = index % 2 === 0;
+    const x = isLeft ? -stillStartX : stillStartX;
+    const rotY = isLeft ? 0.12 : -0.12;
+
+    const computedCoords = {
+      x,
+      y: 0.0,
+      z: currentZ,
+      rotY
+    };
+
+    // Ponto ideal de observação: no piso em frente à vitrine voltado para a peça
+    const spotX = isLeft ? x + viewingOffset * 0.7 : x - viewingOffset * 0.7;
+    const spotZ = currentZ;
+
+    const viewingSpot: ViewingSpotInfo = {
+      artworkId: art.id,
+      x: spotX,
+      z: spotZ,
+      medium: 'still',
+      title: art.title
+    };
+
+    artworksWithCoords.push({
+      ...art,
+      computedCoords,
+      viewingSpot
+    });
+    viewingSpots.push(viewingSpot);
+
+    currentZ -= stillSpacing;
+  });
+
+  // Espaçamento do portal de transição entre Still e Vídeo
+  currentZ -= sectorTransitionGap;
+
+  // 2. Distribuição das Obras de Vídeo (Alternando Esquerda e Direita)
+  videoWorks.forEach((art, index) => {
+    const isLeft = index % 2 === 0;
+    const x = isLeft ? -stillStartX : stillStartX;
+    const rotY = isLeft ? 0.15 : -0.15;
+
+    const computedCoords = {
+      x,
+      y: 0.0,
+      z: currentZ,
+      rotY
+    };
+
+    const spotX = isLeft ? x + viewingOffset * 0.75 : x - viewingOffset * 0.75;
+    const spotZ = currentZ;
+
+    const viewingSpot: ViewingSpotInfo = {
+      artworkId: art.id,
+      x: spotX,
+      z: spotZ,
+      medium: 'video',
+      title: art.title
+    };
+
+    artworksWithCoords.push({
+      ...art,
+      computedCoords,
+      viewingSpot
+    });
+    viewingSpots.push(viewingSpot);
+
+    currentZ -= videoSpacing;
+  });
+
+  // Fim do salão calculado proporcionalmente
+  const zEnd = currentZ - 12.0;
+  const backWallZ = zEnd - 4.0;
+  const frontWallZ = zStart + 4.0;
+  const hallLength = Math.abs(frontWallZ - backWallZ);
+
+  // 3. Distribuição de Vigas de Teto (A cada 14m)
+  const ceilingBeamsZ: number[] = [];
+  for (let z = zStart + 2; z >= zEnd - 2; z -= 14.0) {
+    ceilingBeamsZ.push(z);
+  }
+
+  // 4. Distribuição de Bancos Monolíticos no Corredor Central
+  const benchesZ: number[] = [];
+  const benchSpacing = 22.0;
+  for (let z = 8.0; z >= zEnd + 10.0; z -= benchSpacing) {
+    benchesZ.push(z);
+  }
+
+  // 5. Caixas Acústicas Montadas nas Paredes Laterais Voltadas para o Centro
+  // Parede Esquerda (x = -13.2m): rotY = Math.PI / 2 (90°) -> aponta para +X (centro)
+  // Parede Direita (x = +13.2m): rotY = -Math.PI / 2 (-90°) -> aponta para -X (centro)
+  const speakers: SpeakerPlacement[] = [];
+  const spkWallOffset = 13.2;
+  const spkInterval = 18.0;
+  let spkCount = 0;
+
+  for (let z = cdStationZ; z >= zEnd + 6.0; z -= spkInterval) {
+    speakers.push({
+      id: `spk-left-${spkCount}`,
+      x: -spkWallOffset,
+      y: 1.8,
+      z,
+      rotY: Math.PI / 2, // Aponta da parede esquerda para o centro
+      wall: 'left'
+    });
+
+    speakers.push({
+      id: `spk-right-${spkCount}`,
+      x: spkWallOffset,
+      y: 1.8,
+      z: z - 4.0, // Levemente defasado para enriquecer o campo acústico difuso
+      rotY: -Math.PI / 2, // Aponta da parede direita para o centro
+      wall: 'right'
+    });
+
+    spkCount++;
+  }
+
+  return {
+    roomWidth,
+    halfWidth,
+    roomHeight,
+    hallLength,
+    zStart,
+    zEnd,
+    entranceZ,
+    backWallZ,
+    frontWallZ,
+    artworksWithCoords,
+    viewingSpots,
+    speakers,
+    ceilingBeamsZ,
+    benchesZ,
+    playerBounds: {
+      minZ: zEnd + 2.0,
+      maxZ: zStart - 4.0,
+      minX: -11.5,
+      maxX: 11.5
+    }
+  };
+}

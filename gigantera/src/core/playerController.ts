@@ -1,0 +1,476 @@
+/**
+ * PLAYER CONTROLLER — Física e Jogabilidade de Game Web 3D (Primeira Pessoa / FPS)
+ * Suporta movimentação fluida (WASD, Setas, Shift para correr), mouse look livre com Pointer Lock,
+ * pitch/yaw clamping suave, head bobbing, amortecimento por fricção, limites espaciais da galeria
+ * e bloqueio inteligente de rotação ao interagir com o CD na mão ou modais.
+ */
+
+import * as THREE from 'three';
+import { soundEngine } from './soundEngine';
+
+export interface PlayerControlsConfig {
+  walkSpeed: number;
+  sprintMultiplier: number;
+  friction: number;
+  mouseSensitivity: number;
+  bobIntensity: number;
+  minZ: number;
+  maxZ: number;
+  minX: number;
+  maxX: number;
+}
+
+const DEFAULT_CONFIG: PlayerControlsConfig = {
+  walkSpeed: 10.5,
+  sprintMultiplier: 1.65,
+  friction: 0.88,
+  mouseSensitivity: 0.0022,
+  bobIntensity: 0.035,
+  minZ: -102.0,
+  maxZ: 25.0,
+  minX: -12.5,
+  maxX: 12.5
+};
+
+export class PlayerController {
+  public camera: THREE.PerspectiveCamera;
+  public config: PlayerControlsConfig;
+
+  // Vetores de posição e física
+  public position: THREE.Vector3;
+  public velocity: THREE.Vector3;
+
+  // Ângulos de rotação Euler
+  public yaw: number = 0; // Rotação horizontal
+  public pitch: number = 0; // Inclinação vertical
+
+  // Estados de teclas
+  private keys = {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    sprint: false
+  };
+
+  // Head Bobbing e passos
+  private stepTimer: number = 0;
+  public headBobY: number = 0;
+  public headBobX: number = 0;
+  private lastFootstepTime: number = 0;
+
+  // Controle de mouse e Pointer Lock
+  private isPointerDown: boolean = false;
+  private prevMouseX: number = 0;
+  private prevMouseY: number = 0;
+  public isLocked: boolean = false;
+
+  // Interação e Callbacks
+  public onInteract?: () => void;
+  public onCancelAction?: () => void;
+  public onToggleArchive?: () => void;
+  public onToggleGuide?: () => void;
+  public onPlayerActivity?: () => void;
+  public onFlipCD?: () => void;
+  public onEscape?: () => void;
+  public onScrollCD?: (delta: number) => void;
+  public onPointerLockChange?: (locked: boolean) => void;
+  public onNextStill?: () => void;
+  public onPrevStill?: () => void;
+  public onResetStillZoom?: () => void;
+  public onToggleVideoAudio?: () => void;
+
+  public isHoldingCD: boolean = false;
+  public isCinemaActive: boolean = false;
+
+  public updateBounds(bounds: { minZ: number; maxZ: number; minX: number; maxX: number }): void {
+    this.config.minZ = bounds.minZ;
+    this.config.maxZ = bounds.maxZ;
+    this.config.minX = bounds.minX;
+    this.config.maxX = bounds.maxX;
+  }
+
+  private domElement: HTMLElement;
+
+  constructor(camera: THREE.PerspectiveCamera, domElement: HTMLElement, config?: Partial<PlayerControlsConfig>) {
+    this.camera = camera;
+    this.domElement = domElement;
+    this.config = { ...DEFAULT_CONFIG, ...config };
+
+    this.position = camera.position.clone();
+    this.velocity = new THREE.Vector3();
+
+    this.bindEvents();
+  }
+
+  private bindEvents(): void {
+    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('keyup', this.handleKeyUp);
+    this.domElement.addEventListener('mousedown', this.handleMouseDown);
+    window.addEventListener('mousemove', this.handleMouseMove);
+    window.addEventListener('mouseup', this.handleMouseUp);
+    this.domElement.addEventListener('wheel', this.handleWheel, { passive: false });
+    document.addEventListener('pointerlockchange', this.handlePointerLockChange);
+
+    // Touch support para mobile
+    this.domElement.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+    this.domElement.addEventListener('touchmove', this.handleTouchMove, { passive: true });
+    this.domElement.addEventListener('touchend', this.handleTouchEnd);
+  }
+
+  public dispose(): void {
+    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('keyup', this.handleKeyUp);
+    this.domElement.removeEventListener('mousedown', this.handleMouseDown);
+    window.removeEventListener('mousemove', this.handleMouseMove);
+    window.removeEventListener('mouseup', this.handleMouseUp);
+    this.domElement.removeEventListener('wheel', this.handleWheel);
+    document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
+
+    this.domElement.removeEventListener('touchstart', this.handleTouchStart);
+    this.domElement.removeEventListener('touchmove', this.handleTouchMove);
+    this.domElement.removeEventListener('touchend', this.handleTouchEnd);
+  }
+
+  private handlePointerLockChange = (): void => {
+    this.isLocked = document.pointerLockElement === this.domElement;
+    if (this.onPointerLockChange) {
+      this.onPointerLockChange(this.isLocked);
+    }
+    if (!this.isLocked) {
+      this.isPointerDown = false;
+    }
+  };
+
+  public requestLock(): void {
+    if (this.isHoldingCD || this.isCinemaActive) return;
+    if (document.pointerLockElement !== this.domElement) {
+      try {
+        this.domElement.requestPointerLock();
+      } catch {
+        // Ignora caso bloqueado pelo navegador
+      }
+    }
+  }
+
+  public exitLock(): void {
+    if (document.pointerLockElement === this.domElement) {
+      try {
+        document.exitPointerLock();
+      } catch {
+        // Ignora
+      }
+    }
+  }
+
+  private handleKeyDown = (e: KeyboardEvent): void => {
+    // Ignora inputs se o usuário estiver digitando em um input HTML
+    if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
+      return;
+    }
+
+    switch (e.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        this.keys.forward = true;
+        if (this.onPlayerActivity) this.onPlayerActivity();
+        break;
+      case 'KeyS':
+      case 'ArrowDown':
+        this.keys.backward = true;
+        if (this.onPlayerActivity) this.onPlayerActivity();
+        break;
+      case 'KeyA':
+      case 'ArrowLeft':
+        if (this.isCinemaActive) {
+          if (this.onPrevStill) this.onPrevStill();
+          return;
+        }
+        this.keys.left = true;
+        if (this.onPlayerActivity) this.onPlayerActivity();
+        break;
+      case 'KeyD':
+      case 'ArrowRight':
+        if (this.isCinemaActive) {
+          if (this.onNextStill) this.onNextStill();
+          return;
+        }
+        this.keys.right = true;
+        if (this.onPlayerActivity) this.onPlayerActivity();
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.keys.sprint = true;
+        if (this.onPlayerActivity) this.onPlayerActivity();
+        break;
+      case 'KeyE':
+        if (this.isCinemaActive || this.isHoldingCD) {
+          if (this.onCancelAction) this.onCancelAction();
+        } else if (this.onInteract) {
+          this.onInteract();
+        }
+        break;
+      case 'KeyQ':
+        if (this.onCancelAction) this.onCancelAction();
+        break;
+      case 'Tab':
+        e.preventDefault();
+        if (this.onToggleArchive) this.onToggleArchive();
+        break;
+      case 'KeyH':
+        if (this.onToggleGuide) this.onToggleGuide();
+        break;
+      case 'KeyF':
+        if (this.onFlipCD) this.onFlipCD();
+        break;
+      case 'KeyR':
+        if (this.isCinemaActive && this.onResetStillZoom) {
+          this.onResetStillZoom();
+        }
+        break;
+      case 'KeyM':
+        if (this.isCinemaActive && this.onToggleVideoAudio) {
+          this.onToggleVideoAudio();
+        }
+        break;
+      case 'Escape':
+        if (this.isLocked) {
+          this.exitLock();
+        }
+        break;
+    }
+  };
+
+  private handleKeyUp = (e: KeyboardEvent): void => {
+    switch (e.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        this.keys.forward = false;
+        break;
+      case 'KeyS':
+      case 'ArrowDown':
+        this.keys.backward = false;
+        break;
+      case 'KeyA':
+      case 'ArrowLeft':
+        this.keys.left = false;
+        break;
+      case 'KeyD':
+      case 'ArrowRight':
+        this.keys.right = false;
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.keys.sprint = false;
+        break;
+    }
+  };
+
+  private handleMouseDown = (e: MouseEvent): void => {
+    // Se estiver segurando o CD na mão ou em modo cinema, NÃO captura rotação de câmera
+    if (this.isHoldingCD || this.isCinemaActive) {
+      this.isPointerDown = false;
+      return;
+    }
+
+    // Não captura se o clique foi em um elemento de interface
+    if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-backdrop, .modal-backdrop, header, footer')) {
+      return;
+    }
+
+    if (e.button === 0) {
+      this.isPointerDown = true;
+      this.prevMouseX = e.clientX;
+      this.prevMouseY = e.clientY;
+
+      // Se o usuário clicar no espaço 3D, solicita pointer lock para controle FPS livre
+      if (!this.isLocked) {
+        this.requestLock();
+      }
+    }
+  };
+
+  private handleMouseMove = (e: MouseEvent): void => {
+    // CRÍTICO: Quando segurando o CD ou no cinema, a câmera de fundo NUNCA gira!
+    if (this.isHoldingCD || this.isCinemaActive) {
+      return;
+    }
+
+    if (this.isLocked) {
+      // Modo FPS puro com Pointer Lock (Giro livre 360° sem esbarrar nas bordas da janela)
+      const movementX = e.movementX || 0;
+      const movementY = e.movementY || 0;
+
+      if (this.onPlayerActivity && (Math.abs(movementX) > 1 || Math.abs(movementY) > 1)) {
+        this.onPlayerActivity();
+      }
+
+      this.yaw -= movementX * this.config.mouseSensitivity;
+      this.pitch -= movementY * this.config.mouseSensitivity;
+      this.pitch = Math.max(-0.72, Math.min(0.72, this.pitch));
+      return;
+    }
+
+    if (!this.isPointerDown) return;
+
+    // Modo arrasto manual caso o Pointer Lock não esteja ativo
+    const deltaX = e.clientX - this.prevMouseX;
+    const deltaY = e.clientY - this.prevMouseY;
+    this.prevMouseX = e.clientX;
+    this.prevMouseY = e.clientY;
+
+    this.yaw -= deltaX * this.config.mouseSensitivity;
+    this.pitch -= deltaY * this.config.mouseSensitivity;
+    this.pitch = Math.max(-0.72, Math.min(0.72, this.pitch));
+  };
+
+  private handleMouseUp = (): void => {
+    this.isPointerDown = false;
+  };
+
+  private touchStartX = 0;
+  private touchStartY = 0;
+
+  private handleTouchStart = (e: TouchEvent): void => {
+    if (this.isHoldingCD || this.isCinemaActive) return;
+    if (e.touches.length === 1) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      this.isPointerDown = true;
+    }
+  };
+
+  private handleTouchMove = (e: TouchEvent): void => {
+    if (this.isHoldingCD || this.isCinemaActive) return;
+    if (!this.isPointerDown || e.touches.length !== 1) return;
+
+    const deltaX = e.touches[0].clientX - this.touchStartX;
+    const deltaY = e.touches[0].clientY - this.touchStartY;
+    this.touchStartX = e.touches[0].clientX;
+    this.touchStartY = e.touches[0].clientY;
+
+    this.yaw -= deltaX * this.config.mouseSensitivity * 1.5;
+    this.pitch -= deltaY * this.config.mouseSensitivity * 1.5;
+    this.pitch = Math.max(-0.68, Math.min(0.68, this.pitch));
+  };
+
+  private handleTouchEnd = (): void => {
+    this.isPointerDown = false;
+  };
+
+  private handleWheel = (e: WheelEvent): void => {
+    if (this.isHoldingCD) {
+      // Quando estiver segurando o CD na mão, o scroll da roda navega pelas faixas!
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 1 : -1;
+      if (this.onScrollCD) {
+        this.onScrollCD(delta);
+      }
+    } else if (!this.isCinemaActive) {
+      // Quando livre no espaço, roda do mouse permite deslizar suavemente pelo eixo Z (calibrado para Trackpad de Mac e Mouse)
+      e.preventDefault();
+      const clampedDelta = Math.max(-100, Math.min(100, e.deltaY));
+      const force = clampedDelta * 0.006;
+      this.velocity.z += force;
+    }
+  };
+
+  public isMoving(): boolean {
+    return this.velocity.lengthSq() > 0.05;
+  }
+
+  /**
+   * Atualização a cada frame do motor físico (delta time em segundos)
+   */
+  public update(delta: number): void {
+    if (this.isCinemaActive) {
+      this.velocity.set(0, 0, 0);
+      return;
+    }
+
+    // Se estiver segurando o CD, garante que o pointer lock esteja desativado para liberar o mouse
+    if (this.isHoldingCD && this.isLocked) {
+      this.exitLock();
+    }
+
+    const currentSpeed = this.config.walkSpeed * (this.keys.sprint ? this.config.sprintMultiplier : 1.0);
+
+    // Vetores direcionais baseados no ângulo Yaw da câmera
+    const forwardX = -Math.sin(this.yaw);
+    const forwardZ = -Math.cos(this.yaw);
+    const rightX = Math.cos(this.yaw);
+    const rightZ = -Math.sin(this.yaw);
+
+    // Entrada direcional
+    let moveDirX = 0;
+    let moveDirZ = 0;
+
+    if (this.keys.forward) {
+      moveDirX += forwardX;
+      moveDirZ += forwardZ;
+    }
+    if (this.keys.backward) {
+      moveDirX -= forwardX;
+      moveDirZ -= forwardZ;
+    }
+    if (this.keys.left) {
+      moveDirX -= rightX;
+      moveDirZ -= rightZ;
+    }
+    if (this.keys.right) {
+      moveDirX += rightX;
+      moveDirZ += rightZ;
+    }
+
+    // Normaliza vetor de movimento se houver movimento diagonal
+    const len = Math.hypot(moveDirX, moveDirZ);
+    if (len > 0.001) {
+      moveDirX /= len;
+      moveDirZ /= len;
+
+      this.velocity.x += moveDirX * currentSpeed * delta * 4;
+      this.velocity.z += moveDirZ * currentSpeed * delta * 4;
+    }
+
+    // Aplica fricção / amortecimento
+    this.velocity.x *= this.config.friction;
+    this.velocity.z *= this.config.friction;
+
+    // Atualiza posição do jogador
+    this.position.x += this.velocity.x * delta;
+    this.position.z += this.velocity.z * delta;
+
+    // Aplica limites das paredes da galeria
+    this.position.x = Math.max(this.config.minX, Math.min(this.config.maxX, this.position.x));
+    this.position.z = Math.max(this.config.minZ, Math.min(this.config.maxZ, this.position.z));
+
+    // Head bobbing e detecção de passos
+    const speed = Math.hypot(this.velocity.x, this.velocity.z);
+    if (speed > 0.4) {
+      const bobFreq = this.keys.sprint ? 12.0 : 8.5;
+      this.stepTimer += delta * bobFreq;
+      this.headBobY = Math.sin(this.stepTimer) * this.config.bobIntensity;
+      this.headBobX = Math.cos(this.stepTimer * 0.5) * (this.config.bobIntensity * 0.5);
+
+      // Dispara som tátil de passo no piso de concreto
+      const now = performance.now();
+      if (Math.sin(this.stepTimer) < -0.94 && now - this.lastFootstepTime > 280) {
+        soundEngine.playFootstepSound();
+        this.lastFootstepTime = now;
+      }
+    } else {
+      this.headBobY = THREE.MathUtils.lerp(this.headBobY, 0, 0.15);
+      this.headBobX = THREE.MathUtils.lerp(this.headBobX, 0, 0.15);
+    }
+
+    // Aplica na câmera Three.js
+    this.camera.position.x = this.position.x + this.headBobX;
+    this.camera.position.y = 0.0 + this.headBobY; // Altura padrão dos olhos
+    this.camera.position.z = this.position.z;
+
+    // Aplica rotações Euler
+    this.camera.rotation.order = 'YXZ';
+    this.camera.rotation.y = this.yaw;
+    this.camera.rotation.x = this.pitch;
+  }
+}

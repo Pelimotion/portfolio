@@ -15,7 +15,18 @@ export default defineConfig({
       defaultExtension: 'glsl',
       compress: false,
       watch: true
-    })
+    }),
+    {
+      name: 'dev-html-rewrite',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === '/gigantera/' || req.url === '/gigantera' || req.url === '/gigantera/index.html') {
+            req.url = '/gigantera/index.source.html';
+          }
+          next();
+        });
+      }
+    }
   ],
   base: '/gigantera/',
   build: {

@@ -1,159 +1,329 @@
 import { create } from 'zustand';
-import { StratumId, Artwork } from '../types/art';
-import { STRATA_CATALOG } from '../data/artworks';
-
-export type ViewMode = 'explore' | 'gallery';
+import { Artwork, AudioTrackInfo, ThemeMode, ViewMode, MediumType } from '../types/art';
+import { ARTWORKS_CATALOG, AUTHORIAL_TRACKS_CATALOG, SECTORS_CATALOG } from '../data/artworks';
+import { applyThemeTokens, TOKENS } from '../tokens';
 
 interface AppState {
-  // Profundidade e Scroll Estratigráfico (Pilar 3)
-  depthProgress: number; // 0.0 (superfície) a 1.0 (abismo)
-  activeStratum: StratumId;
-  
-  // Coordenadas Espaciais da Câmera 3D
-  cameraTargetY: number; // Y de destino para glide suave (12 a -24)
-  cameraCurrentY: number; // Y atual interpolado
-  cameraVelocity: number; // Taxa de variação para inércia da areia
+  // Tema & Visualização
+  theme: ThemeMode;
   viewMode: ViewMode;
-  hoveredArtwork: Artwork | null;
+  activeFilter: 'all' | MediumType;
 
-  // Sintonia Cimática (Pilar 2)
-  cymaticFrequency: number; // em Hertz
-  isTuned: boolean; // travado em um modo harmônico estável
-  
-  // Áudio Generativo Tone.js
-  isAudioEnabled: boolean;
-  
-  // Acessibilidade & Água Parada (Still Water Mode)
-  isStillWaterMode: boolean;
-  
-  // Transição por Erosão (Pilar 4)
-  selectedArtwork: Artwork | null;
-  erosionProgress: number; // 0.0 (estável) a 1.0 (totalmente erodido)
-  
+  // Navegação Espacial 3D (Eixo Z)
+  cameraTargetZ: number;
+  cameraCurrentZ: number;
+  cameraVelocityZ: number;
+  activeSectorId: string;
+
+  // Interação & Detecção de Proximidade
+  proximityArtwork: Artwork | null;
+  hoveredArtwork: Artwork | null;
+  cinemaArtwork: Artwork | null;
+
+  // Intro & Materialização Sequencial
+  introPhase: 'empty' | 'spawning' | 'ready';
+  introSpawnProgress: number; // 0.0 a 1.0 (materialização ao longo de 4s)
+  tutorialDocked: boolean;
+
+  // Experiência de Áudio & CD em POV (Física de Game 3D)
+  isCDPOVOpen: boolean;
+  isHoldingCD: boolean;
+  cdFlipped: boolean; // false = capa frontal, true = contracapa com faixas (como na referência)
+  currentAudioTrack: AudioTrackInfo;
+  isAudioPlaying: boolean;
+  soundVolume: number;
+
+  // Fidelidade Gráfica Moderna (Light / Med / RTX com Raytracing)
+  graphicsQuality: 'light' | 'med' | 'high';
+  setGraphicsQuality: (quality: 'light' | 'med' | 'high') => void;
+
+  // Jogabilidade e Controles Táteis
+  gameControlPrompt: string | null;
+  isPointerLocked: boolean;
+  hoveredTarget: 'cd' | 'artwork' | 'plaque' | null;
+  hoveredTrackIndex: number | null;
+  lastActionCloseTime: number; // Timestamp do último fechamento de obra/CD (proteção anti-clique fantasma)
+
+  // Inspeção 3D da Obra
+  inspectionZoom: number;
+  setInspectionZoom: (zoom: number) => void;
+
+  // Sistema de Pranchetas de Obras Still (Folheação de Ilustrações)
+  stillArtworksList: Artwork[];
+  currentStillSheetIndex: number;
+  nextStillSheet: () => void;
+  prevStillSheet: () => void;
+  setStillSheetIndex: (idx: number) => void;
+
+  // Sistema de Áudio para Obras em Vídeo (Crossfade com o CD)
+  wasAudioPlayingBeforeVideo: boolean;
+  isVideoAudioMuted: boolean;
+  toggleVideoAudio: () => void;
+
+  // Modo Lupa de Crítico de Arte (Super Zoom & Pan Analítico)
+  isLoupeMode: boolean;
+  toggleLoupeMode: () => void;
+  setLoupeMode: (active: boolean) => void;
+  loupePan: { x: number; y: number };
+  setLoupePan: (pan: { x: number; y: number }) => void;
+
+  // Guia de Controles e Atalhos (Modal)
+  showGuideModal: boolean;
+  setShowGuideModal: (open: boolean) => void;
+  toggleGuideModal: () => void;
+
+  // Detecção de movimentação para auto-ocultação do tutorial
+  hasPlayerMoved: boolean;
+  setHasPlayerMoved: (moved: boolean) => void;
+
+  // Modais de Conteúdo
+  isBioOpen: boolean;
+
   // Ações
-  setDepthProgress: (progress: number) => void;
-  setActiveStratum: (stratum: StratumId) => void;
-  setCameraTargetY: (y: number) => void;
-  updateCameraPosition: (currentY: number, velocity: number) => void;
-  warpToStratum: (stratumId: StratumId) => void;
+  setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
   setViewMode: (mode: ViewMode) => void;
+  setActiveFilter: (filter: 'all' | MediumType) => void;
+  setCameraTargetZ: (z: number) => void;
+  updateCameraZ: (currentZ: number, velocity: number) => void;
+  warpToSector: (sectorId: string) => void;
+  setProximityArtwork: (art: Artwork | null) => void;
   setHoveredArtwork: (art: Artwork | null) => void;
-  setCymaticFrequency: (freq: number) => void;
-  toggleAudio: () => void;
-  setAudioEnabled: (enabled: boolean) => void;
-  toggleStillWaterMode: () => void;
-  selectArtwork: (art: Artwork | null) => void;
-  setErosionProgress: (p: number) => void;
+  openCinema: (art: Artwork) => void;
+  closeCinema: () => void;
+  setBioOpen: (open: boolean) => void;
+  setCDPOVOpen: (open: boolean) => void;
+  takeCD: () => void;
+  stowCD: () => void;
+  flipCD: () => void;
+  setGameControlPrompt: (prompt: string | null) => void;
+  setPointerLocked: (locked: boolean) => void;
+  setHoveredTarget: (target: 'cd' | 'artwork' | 'plaque' | null) => void;
+  setHoveredTrackIndex: (idx: number | null) => void;
+  setCurrentAudioTrack: (track: AudioTrackInfo) => void;
+  setIsAudioPlaying: (playing: boolean) => void;
+  setSoundVolume: (volume: number) => void;
+  setIntroSpawnProgress: (progress: number) => void;
+  setIntroPhase: (phase: 'empty' | 'spawning' | 'ready') => void;
+  setTutorialDocked: (docked: boolean) => void;
 }
 
-// Mapeamento de profundidade Y para cada estrato
-export const STRATA_Y_MAP: Record<StratumId, number> = {
-  epipelagic: 10,
-  mesopelagic: -3,
-  bathypelagic: -18
-};
+const defaultTrack = AUTHORIAL_TRACKS_CATALOG[0];
 
 export const useAppStore = create<AppState>((set, get) => ({
-  depthProgress: 0.0,
-  activeStratum: 'epipelagic',
-  cameraTargetY: 10,
-  cameraCurrentY: 10,
-  cameraVelocity: 0,
-  viewMode: 'explore',
+  theme: 'light', // Tema inicial padrão é o tema claro conforme especificado
+  viewMode: 'spatial',
+  activeFilter: 'all',
+
+  cameraTargetZ: 22,
+  cameraCurrentZ: 22,
+  cameraVelocityZ: 0,
+  activeSectorId: 'entrance-audio',
+
+  proximityArtwork: null,
   hoveredArtwork: null,
-  cymaticFrequency: 174,
-  isTuned: true,
-  isAudioEnabled: false,
-  isStillWaterMode: false,
-  selectedArtwork: null,
-  erosionProgress: 0.0,
+  cinemaArtwork: null,
 
-  setDepthProgress: (progress: number) => {
-    const clamped = Math.max(0, Math.min(1, progress));
-    let currentStratum: StratumId = 'epipelagic';
-    if (clamped > 0.66) {
-      currentStratum = 'bathypelagic';
-    } else if (clamped > 0.33) {
-      currentStratum = 'mesopelagic';
-    }
+  introPhase: 'spawning',
+  introSpawnProgress: 0.0,
+  tutorialDocked: false,
+
+  isCDPOVOpen: false,
+  isHoldingCD: false,
+  cdFlipped: true, // Começa mostrando a contracapa como na imagem de referência!
+  currentAudioTrack: defaultTrack,
+  isAudioPlaying: false,
+  soundVolume: 0.85,
+
+  graphicsQuality: 'high',
+  setGraphicsQuality: (quality) => set({ graphicsQuality: quality }),
+
+  gameControlPrompt: null,
+  isPointerLocked: false,
+  hoveredTarget: null,
+  hoveredTrackIndex: null,
+  lastActionCloseTime: 0,
+
+  stillArtworksList: ARTWORKS_CATALOG.filter((a) => a.medium === 'still'),
+  currentStillSheetIndex: 0,
+
+  nextStillSheet: () => {
+    const list = get().stillArtworksList;
+    if (list.length === 0) return;
+    const nextIdx = (get().currentStillSheetIndex + 1) % list.length;
     set({
-      depthProgress: clamped,
-      activeStratum: currentStratum
+      currentStillSheetIndex: nextIdx,
+      cinemaArtwork: list[nextIdx],
+      inspectionZoom: 1.0
     });
   },
 
-  setActiveStratum: (stratum: StratumId) => {
-    const target = STRATA_CATALOG.find((s) => s.id === stratum);
-    if (target) {
-      set({
-        activeStratum: stratum,
-        cymaticFrequency: target.resonanceFreqHz,
-        isTuned: true,
-        cameraTargetY: STRATA_Y_MAP[stratum]
-      });
-    } else {
-      set({ activeStratum: stratum });
-    }
-  },
-
-  setCameraTargetY: (y: number) => {
-    const clampedY = Math.max(-24, Math.min(14, y));
-    // Converte Y (14 a -24) para depthProgress (0.0 a 1.0)
-    const progress = (14 - clampedY) / 38;
-    get().setDepthProgress(progress);
-    set({ cameraTargetY: clampedY });
-  },
-
-  updateCameraPosition: (currentY: number, velocity: number) => {
+  prevStillSheet: () => {
+    const list = get().stillArtworksList;
+    if (list.length === 0) return;
+    const prevIdx = (get().currentStillSheetIndex - 1 + list.length) % list.length;
     set({
-      cameraCurrentY: currentY,
-      cameraVelocity: velocity
+      currentStillSheetIndex: prevIdx,
+      cinemaArtwork: list[prevIdx],
+      inspectionZoom: 1.0
     });
   },
 
-  warpToStratum: (stratumId: StratumId) => {
-    const targetY = STRATA_Y_MAP[stratumId];
-    get().setActiveStratum(stratumId);
-    get().setCameraTargetY(targetY);
-  },
-
-  setViewMode: (mode: ViewMode) => set({ viewMode: mode }),
-  setHoveredArtwork: (art: Artwork | null) => set({ hoveredArtwork: art }),
-
-  setCymaticFrequency: (freq: number) => {
-    const tunedStratum = STRATA_CATALOG.find(
-      (s) => Math.abs(s.resonanceFreqHz - freq) <= 14
-    );
-
-    if (tunedStratum) {
+  setStillSheetIndex: (idx) => {
+    const list = get().stillArtworksList;
+    if (idx >= 0 && idx < list.length) {
       set({
-        cymaticFrequency: freq,
-        isTuned: true,
-        activeStratum: tunedStratum.id
-      });
-    } else {
-      set({
-        cymaticFrequency: freq,
-        isTuned: false
+        currentStillSheetIndex: idx,
+        cinemaArtwork: list[idx],
+        inspectionZoom: 1.0
       });
     }
   },
 
-  toggleAudio: () => set((state) => ({ isAudioEnabled: !state.isAudioEnabled })),
-  setAudioEnabled: (enabled: boolean) => set({ isAudioEnabled: enabled }),
+  wasAudioPlayingBeforeVideo: false,
+  isVideoAudioMuted: false,
+  toggleVideoAudio: () => set((state) => ({ isVideoAudioMuted: !state.isVideoAudioMuted })),
 
-  toggleStillWaterMode: () => {
-    const next = !get().isStillWaterMode;
-    set({ isStillWaterMode: next });
-    if (typeof document !== 'undefined') {
-      if (next) {
-        document.body.classList.add('still-water-mode');
-      } else {
-        document.body.classList.remove('still-water-mode');
-      }
-    }
+  inspectionZoom: 1.0,
+  setInspectionZoom: (zoom) => set({ inspectionZoom: Math.max(0.5, Math.min(3.5, zoom)) }),
+
+  isLoupeMode: false,
+  loupePan: { x: 0, y: 0 },
+  toggleLoupeMode: () => {
+    const next = !get().isLoupeMode;
+    set({
+      isLoupeMode: next,
+      inspectionZoom: next ? 2.8 : 1.0,
+      loupePan: { x: 0, y: 0 }
+    });
+  },
+  setLoupeMode: (active) => set({ isLoupeMode: active, inspectionZoom: active ? 2.8 : 1.0, loupePan: { x: 0, y: 0 } }),
+  setLoupePan: (pan) => set({ loupePan: pan }),
+
+  showGuideModal: false,
+  setShowGuideModal: (open) => set({ showGuideModal: open }),
+  toggleGuideModal: () => set((s) => ({ showGuideModal: !s.showGuideModal })),
+
+  hasPlayerMoved: false,
+  setHasPlayerMoved: (moved) => set({ hasPlayerMoved: moved }),
+
+  isBioOpen: false,
+
+  setTheme: (theme) => {
+    set({ theme });
+    applyThemeTokens(theme);
   },
 
-  selectArtwork: (art: Artwork | null) => set({ selectedArtwork: art }),
-  setErosionProgress: (p: number) => set({ erosionProgress: Math.max(0, Math.min(1, p)) })
+  toggleTheme: () => {
+    const next = get().theme === 'dark' ? 'light' : 'dark';
+    get().setTheme(next);
+  },
+
+  setViewMode: (mode) => set({ viewMode: mode }),
+  setActiveFilter: (filter) => set({ activeFilter: filter }),
+
+  setCameraTargetZ: (z) => {
+    const clamped = Math.max(TOKENS.navigation.zEnd, Math.min(TOKENS.navigation.zStart, z));
+    let sectorId = 'entrance-audio';
+    if (clamped < -16) {
+      sectorId = 'video';
+    } else if (clamped < 16) {
+      sectorId = 'still';
+    }
+
+    set({ cameraTargetZ: clamped, activeSectorId: sectorId });
+  },
+
+  updateCameraZ: (currentZ, velocity) => {
+    set({ cameraCurrentZ: currentZ, cameraVelocityZ: velocity });
+  },
+
+  warpToSector: (sectorId) => {
+    let targetZ = 22;
+    if (sectorId === 'entrance-audio') targetZ = 20;
+    if (sectorId === 'still') targetZ = 10;
+    if (sectorId === 'video') targetZ = -22;
+
+    get().setCameraTargetZ(targetZ);
+    set({ activeSectorId: sectorId });
+  },
+
+  setProximityArtwork: (art) => set({ proximityArtwork: art }),
+  setHoveredArtwork: (art) => set({ hoveredArtwork: art }),
+
+  openCinema: (art) => {
+    const wasPlaying = get().isAudioPlaying;
+    const isVideo = art.medium === 'video';
+
+    // Se for Still, calcula o índice da prancheta
+    let stillIdx = 0;
+    if (art.medium === 'still') {
+      const idx = get().stillArtworksList.findIndex((a) => a.id === art.id);
+      if (idx !== -1) stillIdx = idx;
+    }
+
+    set({
+      cinemaArtwork: art,
+      inspectionZoom: 1.0,
+      isLoupeMode: false,
+      loupePan: { x: 0, y: 0 },
+      currentStillSheetIndex: stillIdx,
+      // Se for vídeo e o som de fundo estava ativo, fade-out CD e ativa áudio do vídeo
+      wasAudioPlayingBeforeVideo: isVideo ? wasPlaying : false,
+      isAudioPlaying: isVideo && wasPlaying ? false : wasPlaying,
+      isVideoAudioMuted: false
+    });
+  },
+
+  closeCinema: () => {
+    try {
+      document.body.style.cursor = 'default';
+    } catch {}
+    const wasPlayingBefore = get().wasAudioPlayingBeforeVideo;
+    set({
+      cinemaArtwork: null,
+      inspectionZoom: 1.0,
+      isLoupeMode: false,
+      loupePan: { x: 0, y: 0 },
+      lastActionCloseTime: Date.now(),
+      // Se a música do CD estava tocando antes de inspecionar o vídeo, retoma com fade-in
+      isAudioPlaying: wasPlayingBefore ? true : get().isAudioPlaying,
+      wasAudioPlayingBeforeVideo: false
+    });
+  },
+
+  setBioOpen: (open) => set({ isBioOpen: open }),
+  setCDPOVOpen: (open) => set({ isCDPOVOpen: open, isHoldingCD: open }),
+
+  takeCD: () => {
+    set({ isHoldingCD: true, isCDPOVOpen: true });
+  },
+
+  stowCD: () => {
+    try {
+      document.body.style.cursor = 'default';
+    } catch {}
+    set({
+      isHoldingCD: false,
+      isCDPOVOpen: false,
+      hoveredTrackIndex: null,
+      lastActionCloseTime: Date.now()
+    });
+  },
+
+  flipCD: () => {
+    set((state) => ({ cdFlipped: !state.cdFlipped }));
+  },
+
+  setGameControlPrompt: (prompt) => set({ gameControlPrompt: prompt }),
+  setPointerLocked: (locked) => set({ isPointerLocked: locked }),
+  setHoveredTarget: (target) => set({ hoveredTarget: target }),
+  setHoveredTrackIndex: (idx) => set({ hoveredTrackIndex: idx }),
+
+  setCurrentAudioTrack: (track) => set({ currentAudioTrack: track }),
+  setIsAudioPlaying: (playing) => set({ isAudioPlaying: playing }),
+  setSoundVolume: (vol) => set({ soundVolume: Math.max(0, Math.min(1, vol)) }),
+  setIntroSpawnProgress: (progress) => set({ introSpawnProgress: progress }),
+  setIntroPhase: (phase) => set({ introPhase: phase }),
+  setTutorialDocked: (docked) => set({ tutorialDocked: docked })
 }));
