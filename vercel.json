@@ -4,8 +4,7 @@
   "redirects": [
     { "source": "/v1", "destination": "/v1/", "permanent": true },
     { "source": "/curriculum", "destination": "/curriculum/", "permanent": true },
-    { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true },
-    { "source": "/gigantera", "destination": "/gigantera/", "permanent": true }
+    { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
   ],
   "rewrites": [
     { "source": "/gigantera", "destination": "/gigantera/index.html" },
