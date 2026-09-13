@@ -815,7 +815,7 @@ async function generateGIF(clientKey, idx) {
                 out.innerHTML = `<div style="font-size:10px;color:var(--yellow)">Renderizando GIF: ${(progress * 100).toFixed(1)}%</div>
                 <div style="width:100%;height:4px;background:var(--border);margin-top:4px"><div style="width:${progress*100}%;height:100%;background:var(--yellow)"></div></div>`;
             });
-            const baseURL = new URL('/assets/ffmpeg/', window.location.origin).href;
+            const baseURL = 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/';
             await ffmpeg.load({
                 coreURL: baseURL + 'ffmpeg-core.js',
                 wasmURL: baseURL + 'ffmpeg-core.wasm'
@@ -996,7 +996,7 @@ async function runGifConvert() {
         if (!gifConverterFFmpeg) {
             gcSetProgress('Carregando motor FFmpeg.wasm…', 10);
             gifConverterFFmpeg = new FFmpegWASM.FFmpeg();
-            const baseURL = new URL('/assets/ffmpeg/', window.location.origin).href;
+            const baseURL = 'https://pelimotion-portfolio.b-cdn.net/ffmpeg/';
             await gifConverterFFmpeg.load({
                 coreURL: baseURL + 'ffmpeg-core.js',
                 wasmURL: baseURL + 'ffmpeg-core.wasm'

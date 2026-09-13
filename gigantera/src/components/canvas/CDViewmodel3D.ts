@@ -129,7 +129,7 @@ export class CDViewmodel3D {
 
     // Capa Frontal (Front Cover Artwork): Arte impressa de Pelimotion voltada para frente (Z = +0.012)
     const texLoader = new THREE.TextureLoader();
-    const frontTex = texLoader.load('/gigantera/works/espinhaco-cinetica-prata.jpg');
+    const frontTex = texLoader.load('https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-cinetica-prata.jpg');
     frontTex.colorSpace = THREE.SRGBColorSpace;
     const frontInlayMat = new THREE.MeshStandardMaterial({
       map: frontTex,

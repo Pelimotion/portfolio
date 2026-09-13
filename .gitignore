@@ -62,4 +62,14 @@ Site Antigo/
 scratch/
 graphify-out/
 .continue-here.md
+
+# Audio and heavy binaries hosted on Bunny.net CDN
+*.wasm
+*.mp3
+*.wav
+assets/ffmpeg/
+ffmpeg_assets/
+gigantera/works/audio/
 gigantera/public/works/audio/
+gigantera/dist/works/audio/
+

@@ -615,7 +615,7 @@ export const GalleryScene3D: React.FC = () => {
     cdStationGroup.add(cdCaseMesh);
 
     const textureLoader = new THREE.TextureLoader();
-    const cdCoverTex = textureLoader.load('/gigantera/works/espinhaco-cinetica-prata.jpg');
+    const cdCoverTex = textureLoader.load('https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-cinetica-prata.jpg');
     const cdPaperGeo = new THREE.PlaneGeometry(1.3, 1.3);
     const cdPaperMat = new THREE.MeshStandardMaterial({
       map: cdCoverTex,

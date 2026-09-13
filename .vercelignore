@@ -1,14 +1,36 @@
-# Vercel Ignore
+# Vercel Ignore - Zero-Bandwidth Protection
 node_modules
-felipe-workspace
-projetos-app
 .git
 .gemini
 .agents
 .planning
-dashboards_encontrados.json
+.vscode
+.idea
+
+# Dev workspaces and backups
+felipe-workspace
+projetos-app
 scripts/visual-backup/
-projetos-app/
-felipe-workspace/
+dashboards_encontrados.json
+dist/
+scratch/
+graphify-out/
+Site Antigo/
+Medias Portfolio/
+legacy/V1/portfolio/backups/
+
+# Heavy binaries & media hosted on Bunny.net CDN
+assets/ffmpeg/
+ffmpeg_assets/
+gigantera/works/audio/
+gigantera/public/works/audio/
+gigantera/dist/works/audio/
+gigantera/works/video/
+gigantera/public/works/video/
+gigantera/dist/works/video/
 briefing/video_bg_briefing.mp4
 briefing/bg_briefing.gif
+*.wasm
+*.mp3
+*.mp4
+*.wav

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && cp dist/index.source.html ./index.html && cp -r dist/assets ./ && cp -r dist/works ./",
+    "build": "tsc && vite build && cp dist/index.source.html ./index.html && cp -r dist/assets ./",
     "preview": "vite preview"
   },
   "dependencies": {
