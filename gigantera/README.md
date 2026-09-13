@@ -39,12 +39,35 @@ O visitante flutua ("nada") no espaço tridimensional entre vitrines flutuantes 
 - Vitrines translúcidas em `MeshPhysicalMaterial` com transmissão de 92%, suspensas sem cubos amarelos e sem pedestais pesados.
 - Ao pressionar `[E]` ou avançar contra a vitrine, a câmera transpasse o vidro com efeito sonoro harmônico; a iluminação da galeria se apaga suavemente e um **holofote volumétrico focado** ilumina a obra de arte no Modo Cinema, com metadados essenciais e proteções *feathered* suaves.
 
-### 4. Simulação Retro PS1 / PS2 (Tecla `[P]`)
-- Efeito de pós-processamento opcional com matriz de dithering Bayer 4x4, scanlines sutis e vinheta CRT, transformando toda a galeria em uma experiência nostálgica dos anos 90/2000.
+### 4. Modo Loupe & Prancheta Multi-Folha
+- **Modo Loupe (`[R]` ou Botão na Barra Superior):** Ampliação óptica de 2.8x com navegação por arrasto do cursor e telemetria de coordenadas de inspeção, sem necessidade da tecla ESC para sair (fechamento por clique fora ou botão `[VOLTAR AO SALÃO]`).
+- **Prancheta de Estudos Multi-Folha:** Obras Still que contêm pranchetas de ateliê (como Zimbro e Espinhaço) possuem navegação em leque folheando entre pranchetas e estudos técnicos preparatórios com animação fluida.
 
-### 5. Dualidade de Temas
+### 5. Experiência Mobile Espacial Adaptativa
+- **Navegação Táctil por Stepper Glide:** Botões inferiores flutuantes `[◀ ANTERIOR]` e `[PRÓXIMA ▶]` realizam interpolação suave da câmera (glide lerp) até o ponto ideal de contemplação de cada vitrine.
+- **Modo Giroscópio:** Opção de controle imersivo orientando a visão 3D através da inclinação física do smartphone (`DeviceOrientationEvent`).
+- **HUD Compacto:** Interface adaptada para telas verticais com tipografia proporcional e gavetas de controle retráteis.
+
+### 6. Sistema Acústico & Partículas de Distorção de Ar
+- **Acoustic Heat Haze:** Anéis de distorção de calor e vibração que emanam fisicamente das caixas de som no salão, sincronizados com os picos de energia de sub-graves da Web Audio API.
+- **Crossfade Suave:** Ao entrar no Modo Cinema para assistir a uma obra cinética em vídeo, a música ambiente da galeria realiza um fade exponencial imperceptível em vez de um corte abrupto.
+
+### 7. Dualidade de Temas
 - **Obsidiana (Dark Noir):** Salão escuro brutalista com concreto grafite, basalto polido e iluminação dourada de claraboias.
 - **Alabastro (White Cube):** Galeria branca brutalista contemporânea em giz e concreto claro, mantendo a profundidade e sombras realistas.
+
+---
+
+## ☁️ Arquitetura de Mídia & Bunny.net CDN (Zero-Bandwidth)
+
+Para garantir máxima velocidade de carregamento e conformidade absoluta com as cotas da Vercel:
+- **100% dos arquivos de áudio, vídeo e texturas de arte são servidos pela Bunny.net CDN:**
+  - `https://pelimotion-portfolio.b-cdn.net/gigantera/audio/full/` (17 faixas completas)
+  - `https://pelimotion-portfolio.b-cdn.net/gigantera/audio/previews/` (17 previews)
+  - `https://pelimotion-portfolio.b-cdn.net/gigantera/stills/` (Imagens de museu giclée)
+  - `https://pelimotion-portfolio.b-cdn.net/gigantera/videos/` (Vitrines cinéticas)
+- **Streaming Instantâneo (HTTP 206):** Suporte nativo a *Byte-Range Requests* que inicia o áudio em milissegundos sem download prévio.
+- **Deploy Blindado:** Nenhum arquivo pesado é comitado ou transferido no build da Vercel.
 
 ---
 
@@ -58,10 +81,6 @@ gigantera/
 ├── tsconfig.json                ← Configuração do TypeScript
 ├── vite.config.ts               ← Configuração do Vite com HMR e dev-rewrite
 ├── assets/                      ← Bundles compilados JS e CSS de produção
-├── works/                       ← Acervo de mídias otimizadas
-│   ├── audio/                   ← Previews 10s e faixas full das 17 músicas autorais
-│   ├── video/                   ← Loops de vídeo otimizados (.mp4)
-│   └── *.jpg                    ← Obras de arte em alta resolução
 └── src/
     ├── App.tsx                  ← Orquestrador principal da cena e interfaces
     ├── main.tsx                 ← Ponto de entrada React
@@ -70,28 +89,29 @@ gigantera/
     ├── types/
     │   └── art.ts               ← Tipagens de obras e faixas de áudio
     ├── data/
-    │   └── artworks.ts          ← Catálogo oficial das obras e 17 faixas autorais
+    │   └── artworks.ts          ← Catálogo oficial das obras e 17 faixas autorais na CDN
     ├── core/
-    │   ├── store.ts             ← Estado global Zustand (física, câmera, CD, cinema)
-    │   ├── playerController.ts  ← Motor de física FPS (WASD, mouse look, head bob)
-    │   └── soundEngine.ts       ← Web Audio API (previews, upgrade full e SFX procedurais)
+    │   ├── store.ts             ← Estado global Zustand (física, câmera, CD, cinema, loupe)
+    │   ├── playerController.ts  ← Motor de física FPS, giroscópio e stepper glide mobile
+    │   └── soundEngine.ts       ← Web Audio API (previews, streaming CDN, FFT e haze)
     ├── components/
     │   ├── canvas/
-    │   │   ├── GalleryScene3D.tsx    ← Salão 3D, luzes, vitrines e animação a 60 FPS
+    │   │   ├── GalleryScene3D.tsx    ← Salão 3D, luzes, vitrines, névoa e caixas com haze
     │   │   ├── CDViewmodel3D.ts      ← Viewmodel 3D em câmera com mão low-poly e CD
     │   │   └── AudioVisualizer.tsx   ← Espectrograma em tempo real
     │   ├── audio/
     │   │   └── CDJewelCasePOV.tsx    ← HUD tátil minimalista do álbum em POV
     │   ├── modal/
-    │   │   ├── CinemaView.tsx        ← Modo cinema volumétrico focado
-    │   │   └── ArtistBioModal.tsx    ← Declaração conceitual e contato direto
+    │   │   ├── CinemaView.tsx        ← Modo cinema, loupe mode e prancheta multi-folha
+    │   │   ├── ArtistBioModal.tsx    ← Declaração conceitual e contato direto
+    │   │   └── ControlsGuideModal.tsx← Guia interativo gráfico de controles
     │   ├── layout/
-    │   │   ├── GalleryHeader.tsx     ← Top bar minimalista com tema e retro mode
-    │   │   ├── MinimalBottomBar.tsx  ← Bottom dock feathered com Z e setores
+    │   │   ├── GalleryHeader.tsx     ← Top bar minimalista com tema e qualidade gráfica
+    │   │   ├── MinimalBottomBar.tsx  ← Bottom dock feathered com Z, setores e stepper mobile
     │   │   └── ArchiveIndex.tsx      ← Catálogo tradicional em grade
     │   └── ui/
     │       ├── IntroSequence.tsx     ← Intro com materialização em 4s
-    │       └── RetroPSXOverlay.tsx   ← Simulação visual dithered PS1/PS2
+    │       └── MissionHUD.tsx        ← Bússola e telemetria de navegação
 ```
 
 ---
@@ -105,3 +125,4 @@ npm run dev
 # Compilar para produção (Vercel)
 npm run build
 ```
+

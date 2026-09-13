@@ -1,15 +1,15 @@
-# STATUS — PELIMOTION RAIZ (Landing Page + Admin)
+# STATUS — PELIMOTION RAIZ (Landing Page + Admin + Gigantera)
 **Fonte única de verdade. Atualizar ao final de cada sessão.**
 
 ---
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-11
+**Data:** 2026-09-13
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL & ONLINE — Gigantera em produção com documentação completa
-**Próxima Ação:** Próximos upgrades/melhorias de catálogo ou novos recursos conforme roadmap
-**Bloqueadores:** Nenhum
+**Status:** ESTÁVEL, BLINDADO & ONLINE — Produção com Bunny.net CDN Zero-Bandwidth
+**Próxima Ação:** Manutenção contínua e ampliação curatorial
+**Bloqueadores:** Nenhum (Cota da Vercel protegida com 100% da mídia na Bunny CDN)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
 ---
@@ -18,31 +18,35 @@
 
 | Componente | Status | Última Sessão |
 |-----------|--------|--------------|
-| Landing page (`index.html`) | ✅ Estável | 2026-05-16 |
-| Painel admin (`/admin/`) | ✅ Auth migrado para Supabase | 2026-05-16 |
+| Landing page (`index.html`) | ✅ Estável | 2026-09-12 |
+| Painel admin (`/admin/`) | ✅ Auth Supabase + FFmpeg Bunny CDN | 2026-09-12 |
 | Login unificado (`/login/`) | ✅ Funcional | 2026-05-16 |
 | Shared auth (`/shared/auth.js`) | ✅ Funcional | 2026-05-16 |
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
-| `vercel.json` | ✅ Rotas e rewrites `/gigantera` configurados | 2026-09-11 |
-| **Deploy Hub** (`admin-v4.js`) | ✅ Implementado | 2026-05-17 |
-| **Media Scanner** (`api/bunny/scan.js`) | ✅ Implementado | 2026-05-17 |
-| **Gigantera** (`/gigantera/`) | ✅ Em Produção & Online (`pelimotion.art/gigantera`) | 2026-09-11 |
-
-## 🚧 SUBPROJETO ATIVO
-
-| Subprojeto | Status | Próxima Ação |
-|-----------|--------|--------------|
-| `/gigantera` | ✅ Online & Documentado (`gigantera/README.md`) | Iniciar novos updates, curadoria ou melhorias futuras |
+| `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
+| `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
+| **Gigantera** (`/gigantera/`) | ✅ Em Produção (`pelimotion.art/gigantera`) | 2026-09-13 |
+| **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
 
-### 2026-09-11 — Documentação Arquitetural Completa & Deploy Online
-
+### 2026-09-13 — Documentação Master & Atualização de Graphify
 **O que foi feito:**
-- [x] **Criação do Manual Oficial de Gigantera (`gigantera/README.md`):** Documentação técnica abrangente explicando a arquitetura em Three.js, os 4 pilares físicos (cáusticas OGL, cimática Tone.js, hidrodinâmica Lenis, erosão procedual GSAP com Fraunces dinâmica), motor de areia, tokens, catálogo de obras, guia passo-a-passo para adicionar novas obras/estratos e roadmap de updates futuros.
-- [x] **Atualização de Orquestração (`CLAUDE.md`):** Registrado `/gigantera` na matriz de subprojetos ativos e definida a stack React + Vite + TS como exceção autorizada junto a `projetos-app`.
+- [x] **Criação do `README.md` e `ARCHITECTURE.md` na Raiz:** Documentação exaustiva com diagramas Mermaid, especificações de WebGL, topologia de áudio, regras da Bunny CDN e guia passo-a-passo para desenvolvedores sênior e diretores criativos.
+- [x] **Atualização de Orquestração (`CLAUDE.md` e `STATUS.md`):** Matriz de subprojetos alinhada à produção atual.
+- [x] **Atualização do Grafo de Conhecimento (`graphify`):** Reindexação completa de nós, arestas, AST e comunidades para onboarding autônomo de desenvolvedores.
+
+---
+
+### 2026-09-12 — Resolução Crítica de Cota Vercel & Migração Bunny.net CDN
+**O que foi feito:**
+- [x] **Diagnóstico da Cota de 9,23 GB / 10 GB:** Identificado consumo de Fast Origin Transfer causado por 17 faixas de áudio MP3 locais e 62 MB de arquivos WebAssembly (`ffmpeg-core.wasm`).
+- [x] **Upload Completo na Bunny.net CDN:** Todas as 17 faixas full e 17 previews enviados com suporte a *HTTP Byte-Range Requests (206)* e CORS liberado.
+- [x] **Redução de 88,6% do Repositório Git:** Remoção de 133 MB de binários pesados do Git (encolhendo de 149 MB para ~17 MB).
+- [x] **Blindagem do `.vercelignore`:** Exclusão rigorosa de `.wasm`, `.mp3`, `.mp4` e pastas de desenvolvimento. Deploy do site agora transfere apenas ~17 MB.
+- [x] **Mobile Spatial Experience & Modo Loupe:** Navegação adaptativa com giroscópio, *stepper glide* de visualização e prancheta multi-folha.
 - [x] **Garantia de Roteamento Online (`vercel.json`):** Adicionado redirect e rewrites dedicados para `/gigantera` e `/gigantera/` apontando para `/gigantera/index.html` estático, garantindo resolução imediata e sem erro 404 em produção na Vercel (`www.pelimotion.art/gigantera`).
 - [x] **Sincronização Online:** Build de produção validado (`tsc && vite build`) e enviado via GitHub para deploy automático na Vercel.
 
