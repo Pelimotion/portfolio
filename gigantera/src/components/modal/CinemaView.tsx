@@ -8,6 +8,7 @@ export const CinemaView: React.FC = () => {
   const inspectionZoom = useAppStore((s) => s.inspectionZoom);
   const isLoupeMode = useAppStore((s) => s.isLoupeMode);
   const toggleLoupeMode = useAppStore((s) => s.toggleLoupeMode);
+  const isMobile = useAppStore((s) => s.isMobile);
 
   // Still sheets
   const stillArtworksList = useAppStore((s) => s.stillArtworksList);
@@ -15,6 +16,10 @@ export const CinemaView: React.FC = () => {
   const nextStillSheet = useAppStore((s) => s.nextStillSheet);
   const prevStillSheet = useAppStore((s) => s.prevStillSheet);
   const setStillSheetIndex = useAppStore((s) => s.setStillSheetIndex);
+
+  // Detecção de gestos no mobile (toque duplo para lupa e swipe para pranchetas)
+  const lastTapRef = React.useRef(0);
+  const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
 
   // Video audio crossfade
   const wasAudioPlayingBeforeVideo = useAppStore((s) => s.wasAudioPlayingBeforeVideo);
@@ -163,20 +168,93 @@ export const CinemaView: React.FC = () => {
 
   const isStill = cinemaArtwork.medium === 'still';
 
-  return (
-    <div
-      className="cinema-feathered-viewport"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`Inspeção 3D da obra ${cinemaArtwork.title}`}
-    >
-      {/* Vinheta Atmosférica Suave em Feather */}
-      <div className="cinema-volumetric-aura" />
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
 
-      {/* Dica Superior Minimalista com Keycaps Físicas e Ícones Táteis */}
-      <header className="cinema-top-inspection-hud font-mono">
-        <div className="inspection-cue-pill">
-          {isStill ? (
+    const handleTouchEnd = (e: React.TouchEvent) => {
+      const now = performance.now();
+      // Toque duplo (< 300ms) para alternar zoom lupa
+      if (now - lastTapRef.current < 300) {
+        toggleLoupeMode();
+        lastTapRef.current = 0;
+        return;
+      }
+      lastTapRef.current = now;
+
+      // Swipe horizontal para folhear pranchetas de Still
+      if (touchStartRef.current && e.changedTouches.length > 0 && isStill) {
+        const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+        const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+          if (dx < 0) {
+            nextStillSheet();
+          } else {
+            prevStillSheet();
+          }
+        }
+      }
+      touchStartRef.current = null;
+    };
+
+    return (
+      <div
+        className="cinema-feathered-viewport"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Inspeção 3D da obra ${cinemaArtwork.title}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Vinheta Atmosférica Suave em Feather */}
+        <div className="cinema-volumetric-aura" />
+
+        {/* Dica Superior Minimalista com Keycaps Físicas e Ícones Táteis */}
+        <header className="cinema-top-inspection-hud font-mono">
+          <div className="inspection-cue-pill">
+            {isMobile ? (
+              <div className="mobile-cinema-cue-row font-mono">
+                <button
+                  onClick={() => toggleLoupeMode()}
+                  className={`cue-action-btn ${isLoupeMode ? 'is-loupe-active' : ''}`}
+                  title="Modo Lupa"
+                >
+                  <span className="keycap font-bold">⌕</span>
+                  <span className="keycap-label">{isLoupeMode ? '100%' : 'LUPA'}</span>
+                </button>
+
+                {!isStill && (
+                  <button
+                    onClick={() => {
+                      const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
+                      if (vid) {
+                        vid.muted = !vid.muted;
+                        setIsVideoMuted(vid.muted);
+                      }
+                    }}
+                    className="cue-action-btn"
+                    title="Alternar áudio"
+                  >
+                    <span className="keycap font-bold">{isVideoMuted ? '🔇' : '🔈'}</span>
+                    <span className="keycap-label">{isVideoMuted ? 'MUTADO' : 'SOM'}</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => {
+                    try { document.body.style.cursor = 'default'; } catch {}
+                    closeCinema();
+                  }}
+                  className="cue-esc-btn"
+                  title="Fechar"
+                >
+                  <span className="keycap keycap-coral font-bold">✕</span>
+                  <span className="keycap-label">FECHAR</span>
+                </button>
+              </div>
+            ) : isStill ? (
             <>
               <span className="keycap-group">
                 <kbd className="keycap">←</kbd>

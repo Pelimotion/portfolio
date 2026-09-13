@@ -79,9 +79,66 @@ export class PlayerController {
   public onPrevStill?: () => void;
   public onResetStillZoom?: () => void;
   public onToggleVideoAudio?: () => void;
+  public onTouchTap?: (clientX: number, clientY: number) => void;
 
   public isHoldingCD: boolean = false;
   public isCinemaActive: boolean = false;
+
+  // Sistema de Vôo Cinemático Suave (Glide para Waypoints / Obras)
+  public glideTarget: { x: number; z: number; targetYaw?: number } | null = null;
+  public isGliding: boolean = false;
+
+  // Sistema de Giroscópio (Janela Mágica Mobile)
+  public isGyroActive: boolean = false;
+  private gyroCalibrated: boolean = false;
+  private gyroBaseAlpha: number = 0;
+  private gyroBaseBeta: number = 0;
+  private gyroTargetYaw: number = 0;
+  private gyroTargetPitch: number = 0;
+  private curGyroYaw: number = 0;
+  private curGyroPitch: number = 0;
+
+  public triggerHaptic(duration: number | number[] = 12): void {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(duration as any);
+      } catch {}
+    }
+  }
+
+  public glideTo(x: number, z: number, targetYaw?: number): void {
+    this.glideTarget = { x, z, targetYaw };
+    this.isGliding = true;
+    this.triggerHaptic(15);
+  }
+
+  public stopGlide(): void {
+    this.isGliding = false;
+    this.glideTarget = null;
+  }
+
+  public setGyroActive(active: boolean): void {
+    this.isGyroActive = active;
+    if (active) {
+      this.gyroCalibrated = false;
+      this.triggerHaptic([10, 30, 15]);
+    } else {
+      this.curGyroYaw = 0;
+      this.curGyroPitch = 0;
+    }
+  }
+
+  public static async requestOrientationPermission(): Promise<boolean> {
+    if (typeof (DeviceOrientationEvent as any)?.requestPermission === 'function') {
+      try {
+        const response = await (DeviceOrientationEvent as any).requestPermission();
+        return response === 'granted';
+      } catch {
+        return false;
+      }
+    }
+    return true;
+  }
 
   public updateBounds(bounds: { minZ: number; maxZ: number; minX: number; maxX: number }): void {
     this.config.minZ = bounds.minZ;
@@ -116,6 +173,9 @@ export class PlayerController {
     this.domElement.addEventListener('touchstart', this.handleTouchStart, { passive: true });
     this.domElement.addEventListener('touchmove', this.handleTouchMove, { passive: true });
     this.domElement.addEventListener('touchend', this.handleTouchEnd);
+
+    // Giroscópio / Sensor de Movimento Orientacional
+    window.addEventListener('deviceorientation', this.handleDeviceOrientation);
   }
 
   public dispose(): void {
@@ -130,6 +190,7 @@ export class PlayerController {
     this.domElement.removeEventListener('touchstart', this.handleTouchStart);
     this.domElement.removeEventListener('touchmove', this.handleTouchMove);
     this.domElement.removeEventListener('touchend', this.handleTouchEnd);
+    window.removeEventListener('deviceorientation', this.handleDeviceOrientation);
   }
 
   private handlePointerLockChange = (): void => {
@@ -328,14 +389,18 @@ export class PlayerController {
     this.isPointerDown = false;
   };
 
+  private touchStartTime = 0;
   private touchStartX = 0;
   private touchStartY = 0;
+  private touchMoved = false;
 
   private handleTouchStart = (e: TouchEvent): void => {
     if (this.isHoldingCD || this.isCinemaActive) return;
     if (e.touches.length === 1) {
       this.touchStartX = e.touches[0].clientX;
       this.touchStartY = e.touches[0].clientY;
+      this.touchStartTime = performance.now();
+      this.touchMoved = false;
       this.isPointerDown = true;
     }
   };
@@ -346,16 +411,58 @@ export class PlayerController {
 
     const deltaX = e.touches[0].clientX - this.touchStartX;
     const deltaY = e.touches[0].clientY - this.touchStartY;
+
+    if (Math.hypot(deltaX, deltaY) > 8) {
+      this.touchMoved = true;
+      if (this.isGliding) {
+        this.stopGlide();
+      }
+    }
+
     this.touchStartX = e.touches[0].clientX;
     this.touchStartY = e.touches[0].clientY;
 
-    this.yaw -= deltaX * this.config.mouseSensitivity * 1.5;
-    this.pitch -= deltaY * this.config.mouseSensitivity * 1.5;
+    this.yaw -= deltaX * this.config.mouseSensitivity * 1.6;
+    this.pitch -= deltaY * this.config.mouseSensitivity * 1.6;
     this.pitch = Math.max(-0.68, Math.min(0.68, this.pitch));
+
+    if (this.onPlayerActivity && (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1)) {
+      this.onPlayerActivity();
+    }
   };
 
-  private handleTouchEnd = (): void => {
+  private handleTouchEnd = (e: TouchEvent): void => {
     this.isPointerDown = false;
+    const elapsed = performance.now() - this.touchStartTime;
+
+    // Se o toque foi rápido e sem arrasto, dispara Tap tátil para seleção e aproximação
+    if (!this.touchMoved && elapsed < 280 && this.onTouchTap) {
+      const clientX = e.changedTouches?.[0]?.clientX ?? this.touchStartX;
+      const clientY = e.changedTouches?.[0]?.clientY ?? this.touchStartY;
+      this.onTouchTap(clientX, clientY);
+    }
+  };
+
+  private handleDeviceOrientation = (e: DeviceOrientationEvent): void => {
+    if (!this.isGyroActive || this.isHoldingCD || this.isCinemaActive) return;
+    if (e.beta === null || e.gamma === null) return;
+
+    if (!this.gyroCalibrated) {
+      this.gyroBaseAlpha = e.alpha ?? 0;
+      this.gyroBaseBeta = e.beta;
+      this.gyroCalibrated = true;
+      return;
+    }
+
+    const deltaBeta = e.beta - this.gyroBaseBeta;
+    const deltaGamma = e.gamma;
+
+    // Converte inclinação suave do smartphone em offsets radianos
+    const targetP = THREE.MathUtils.degToRad(Math.max(-35, Math.min(35, deltaBeta))) * 0.65;
+    const targetY = THREE.MathUtils.degToRad(Math.max(-50, Math.min(50, deltaGamma))) * 0.75;
+
+    this.gyroTargetPitch = targetP;
+    this.gyroTargetYaw = targetY;
   };
 
   private handleWheel = (e: WheelEvent): void => {
@@ -376,7 +483,7 @@ export class PlayerController {
   };
 
   public isMoving(): boolean {
-    return this.velocity.lengthSq() > 0.05;
+    return this.velocity.lengthSq() > 0.05 || this.isGliding;
   }
 
   /**
@@ -391,6 +498,25 @@ export class PlayerController {
     // Se estiver segurando o CD, garante que o pointer lock esteja desativado para liberar o mouse
     if (this.isHoldingCD && this.isLocked) {
       this.exitLock();
+    }
+
+    // 1. Atualização do Vôo Cinemático Suave (Glide para Waypoints / Obras)
+    if (this.isGliding && this.glideTarget) {
+      const dist = Math.hypot(this.position.x - this.glideTarget.x, this.position.z - this.glideTarget.z);
+      this.position.x = THREE.MathUtils.lerp(this.position.x, this.glideTarget.x, 0.09);
+      this.position.z = THREE.MathUtils.lerp(this.position.z, this.glideTarget.z, 0.09);
+
+      if (this.glideTarget.targetYaw !== undefined) {
+        let diffYaw = this.glideTarget.targetYaw - this.yaw;
+        while (diffYaw > Math.PI) diffYaw -= Math.PI * 2;
+        while (diffYaw < -Math.PI) diffYaw += Math.PI * 2;
+        this.yaw += diffYaw * 0.09;
+      }
+
+      if (dist < 0.12) {
+        this.isGliding = false;
+        this.glideTarget = null;
+      }
     }
 
     const currentSpeed = this.config.walkSpeed * (this.keys.sprint ? this.config.sprintMultiplier : 1.0);
@@ -408,18 +534,22 @@ export class PlayerController {
     if (this.keys.forward) {
       moveDirX += forwardX;
       moveDirZ += forwardZ;
+      if (this.isGliding) this.stopGlide();
     }
     if (this.keys.backward) {
       moveDirX -= forwardX;
       moveDirZ -= forwardZ;
+      if (this.isGliding) this.stopGlide();
     }
     if (this.keys.left) {
       moveDirX -= rightX;
       moveDirZ -= rightZ;
+      if (this.isGliding) this.stopGlide();
     }
     if (this.keys.right) {
       moveDirX += rightX;
       moveDirZ += rightZ;
+      if (this.isGliding) this.stopGlide();
     }
 
     // Normaliza vetor de movimento se houver movimento diagonal
@@ -446,7 +576,7 @@ export class PlayerController {
 
     // Head bobbing e detecção de passos
     const speed = Math.hypot(this.velocity.x, this.velocity.z);
-    if (speed > 0.4) {
+    if (speed > 0.4 && !this.isGliding) {
       const bobFreq = this.keys.sprint ? 12.0 : 8.5;
       this.stepTimer += delta * bobFreq;
       this.headBobY = Math.sin(this.stepTimer) * this.config.bobIntensity;
@@ -463,14 +593,23 @@ export class PlayerController {
       this.headBobX = THREE.MathUtils.lerp(this.headBobX, 0, 0.15);
     }
 
+    // Amortecimento do Giroscópio
+    if (this.isGyroActive) {
+      this.curGyroPitch = THREE.MathUtils.lerp(this.curGyroPitch, this.gyroTargetPitch, 0.12);
+      this.curGyroYaw = THREE.MathUtils.lerp(this.curGyroYaw, this.gyroTargetYaw, 0.12);
+    } else {
+      this.curGyroPitch = THREE.MathUtils.lerp(this.curGyroPitch, 0, 0.15);
+      this.curGyroYaw = THREE.MathUtils.lerp(this.curGyroYaw, 0, 0.15);
+    }
+
     // Aplica na câmera Three.js
     this.camera.position.x = this.position.x + this.headBobX;
     this.camera.position.y = 0.0 + this.headBobY; // Altura padrão dos olhos
     this.camera.position.z = this.position.z;
 
-    // Aplica rotações Euler
+    // Aplica rotações Euler somando a navegação com o sensor de movimento
     this.camera.rotation.order = 'YXZ';
-    this.camera.rotation.y = this.yaw;
-    this.camera.rotation.x = this.pitch;
+    this.camera.rotation.y = this.yaw + this.curGyroYaw;
+    this.camera.rotation.x = this.pitch + this.curGyroPitch;
   }
 }

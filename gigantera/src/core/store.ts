@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Artwork, AudioTrackInfo, ThemeMode, ViewMode, MediumType } from '../types/art';
 import { ARTWORKS_CATALOG, AUTHORIAL_TRACKS_CATALOG, SECTORS_CATALOG } from '../data/artworks';
 import { applyThemeTokens, TOKENS } from '../tokens';
+import { computeModularGalleryLayout } from './modularGallery';
 
 interface AppState {
   // Tema & Visualização
@@ -78,6 +79,20 @@ interface AppState {
 
   // Modais de Conteúdo
   isBioOpen: boolean;
+
+  // Detecção e Experiência Mobile de Alta Sofisticação
+  isMobile: boolean;
+  setIsMobile: (mobile: boolean) => void;
+  isGyroscopeActive: boolean;
+  setGyroscopeActive: (active: boolean) => void;
+  toggleGyroscope: () => void;
+  currentArtworkIndex: number;
+  setCurrentArtworkIndex: (index: number) => void;
+  navigateToArtworkIndex: (index: number) => void;
+  nextArtwork: () => void;
+  prevArtwork: () => void;
+  targetGlideSpot: { x: number; z: number; targetYaw?: number; artworkId?: string } | null;
+  setTargetGlideSpot: (spot: { x: number; z: number; targetYaw?: number; artworkId?: string } | null) => void;
 
   // Ações
   setTheme: (theme: ThemeMode) => void;
@@ -208,6 +223,54 @@ export const useAppStore = create<AppState>((set, get) => ({
   setHasPlayerMoved: (moved) => set({ hasPlayerMoved: moved }),
 
   isBioOpen: false,
+
+  isMobile: typeof window !== 'undefined' ? window.innerWidth <= 960 : false,
+  setIsMobile: (mobile) => set({ isMobile: mobile }),
+
+  isGyroscopeActive: false,
+  setGyroscopeActive: (active) => set({ isGyroscopeActive: active }),
+  toggleGyroscope: () => set((s) => ({ isGyroscopeActive: !s.isGyroscopeActive })),
+
+  currentArtworkIndex: 0,
+  setCurrentArtworkIndex: (idx) => set({ currentArtworkIndex: idx }),
+
+  targetGlideSpot: null,
+  setTargetGlideSpot: (spot) => set({ targetGlideSpot: spot }),
+
+  navigateToArtworkIndex: (idx) => {
+    const layout = computeModularGalleryLayout(ARTWORKS_CATALOG);
+    const list = layout.artworksWithCoords;
+    if (list.length === 0) return;
+    const boundedIdx = (idx + list.length) % list.length;
+    const target = list[boundedIdx];
+    if (!target) return;
+
+    const dx = target.computedCoords.x - target.viewingSpot.x;
+    const dz = target.computedCoords.z - target.viewingSpot.z;
+    const targetYaw = Math.atan2(-dx, -dz);
+
+    set({
+      currentArtworkIndex: boundedIdx,
+      targetGlideSpot: {
+        x: target.viewingSpot.x,
+        z: target.viewingSpot.z,
+        targetYaw,
+        artworkId: target.id
+      },
+      hasPlayerMoved: true
+    });
+    get().setCameraTargetZ(target.viewingSpot.z);
+  },
+
+  nextArtwork: () => {
+    const nextIdx = get().currentArtworkIndex + 1;
+    get().navigateToArtworkIndex(nextIdx);
+  },
+
+  prevArtwork: () => {
+    const prevIdx = get().currentArtworkIndex - 1;
+    get().navigateToArtworkIndex(prevIdx);
+  },
 
   setTheme: (theme) => {
     set({ theme });

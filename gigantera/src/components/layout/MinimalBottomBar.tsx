@@ -1,8 +1,10 @@
 import React from 'react';
 import { useAppStore } from '../../core/store';
 import { SECTORS_CATALOG } from '../../data/artworks';
+import { MobileBottomDock } from './MobileBottomDock';
 
 export const MinimalBottomBar: React.FC = () => {
+  const isMobile = useAppStore((s) => s.isMobile);
   const viewMode = useAppStore((s) => s.viewMode);
   const setViewMode = useAppStore((s) => s.setViewMode);
   const cameraCurrentZ = useAppStore((s) => s.cameraCurrentZ);
@@ -18,7 +20,14 @@ export const MinimalBottomBar: React.FC = () => {
   const activeSector = SECTORS_CATALOG.find((s) => s.id === activeSectorId) || SECTORS_CATALOG[1];
 
   return (
-    <footer className="minimal-feathered-dock" role="toolbar" aria-label="Controles da Galeria">
+    <>
+      {/* Dock Especializado para Smartphone / Mobile na Zona do Polegar */}
+      <div className="mobile-dock-container-wrapper">
+        <MobileBottomDock />
+      </div>
+
+      {/* Dock Minimalista Clássico Desktop com Telemetria Z e Keycaps */}
+      <footer className="minimal-feathered-dock desktop-dock-wrapper" role="toolbar" aria-label="Controles da Galeria">
       {/* Barra Inferior com Proteção Gradiente Feather */}
       <div className="bottom-bar-scrim">
         {/* Bloco Esquerda: Telemetria Z & Setor */}
@@ -104,6 +113,7 @@ export const MinimalBottomBar: React.FC = () => {
         </div>
       </div>
     </footer>
+    </>
   );
 };
 

@@ -202,6 +202,7 @@ export const GalleryScene3D: React.FC = () => {
   const setIsAudioPlaying = useAppStore((s) => s.setIsAudioPlaying);
   const isPointerLocked = useAppStore((s) => s.isPointerLocked);
   const hoveredTarget = useAppStore((s) => s.hoveredTarget);
+  const isMobile = useAppStore((s) => s.isMobile);
 
   const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
 
@@ -227,12 +228,13 @@ export const GalleryScene3D: React.FC = () => {
       powerPreference: 'high-performance'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = isLight ? 1.05 : 1.15;
     renderer.setClearColor(currentThemeTokens.canvasFog);
+    renderer.domElement.style.touchAction = 'none';
     container.appendChild(renderer.domElement);
 
     // 2. Sistema de Iluminação Realista Quase Branco com Sombras Suaves
@@ -881,6 +883,85 @@ export const GalleryScene3D: React.FC = () => {
       }
     };
 
+    playerController.onTouchTap = (clientX: number, clientY: number) => {
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork || state.isHoldingCD) return;
+
+      const rect = container.getBoundingClientRect();
+      const x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+
+      // 1. Toque no CD / Pedestal
+      const cdCandidates = [cdCaseMesh, cdPaperMesh, cdPlaqueMesh, cdStand];
+      const cdHits = raycaster.intersectObjects(cdCandidates, true);
+      if (cdHits.length > 0 && cdHits[0].distance < 15) {
+        if (cdHits[0].distance < 4.8) {
+          state.takeCD();
+          cdViewmodel.take();
+        } else {
+          playerController.glideTo(0, 19.5, 0.08);
+        }
+        return;
+      }
+
+      // 2. Toque em uma vitrine ou obra de arte
+      const artCandidates = [
+        ...artworkItems.map((m) => m.glassMesh),
+        ...artworkItems.map((m) => m.paperMesh),
+        ...artworkItems.map((m) => m.plaqueMesh)
+      ];
+      const artHits = raycaster.intersectObjects(artCandidates, true);
+      if (artHits.length > 0) {
+        const hit = artHits[0];
+        const hitArt = (hit.object as any).artworkData as Artwork | undefined;
+        if (hitArt) {
+          const foundItem = artworkItems.find((a) => a.artwork.id === hitArt.id);
+          if (foundItem) {
+            if (hit.distance <= 5.5) {
+              soundEngine.playGlassPassSound();
+              openCinema(hitArt);
+            } else {
+              const spot = layout.viewingSpots.find((s) => s.artworkId === hitArt.id);
+              if (spot) {
+                const dx = foundItem.group.position.x - spot.x;
+                const dz = foundItem.group.position.z - spot.z;
+                const targetYaw = Math.atan2(-dx, -dz);
+                playerController.glideTo(spot.x, spot.z, targetYaw);
+                const artIdx = layout.artworksWithCoords.findIndex((a) => a.id === hitArt.id);
+                if (artIdx !== -1) {
+                  state.setCurrentArtworkIndex(artIdx);
+                }
+              }
+            }
+            return;
+          }
+        }
+      }
+
+      // 3. Toque nos anéis contemplativos no piso
+      const ringCandidates = viewingSpotRings.map((r) => r.mesh);
+      const ringHits = raycaster.intersectObjects(ringCandidates, true);
+      if (ringHits.length > 0) {
+        const hitRing = viewingSpotRings.find((r) => r.mesh === ringHits[0].object);
+        if (hitRing) {
+          const foundItem = artworkItems.find((a) => a.artwork.id === hitRing.spot.artworkId);
+          if (foundItem) {
+            const dx = foundItem.group.position.x - hitRing.spot.x;
+            const dz = foundItem.group.position.z - hitRing.spot.z;
+            const targetYaw = Math.atan2(-dx, -dz);
+            playerController.glideTo(hitRing.spot.x, hitRing.spot.z, targetYaw);
+            const artIdx = layout.artworksWithCoords.findIndex((a) => a.id === hitRing.spot.artworkId);
+            if (artIdx !== -1) {
+              state.setCurrentArtworkIndex(artIdx);
+            }
+            return;
+          }
+        }
+      }
+    };
+
     playerController.onToggleArchive = () => {
       const cur = useAppStore.getState().viewMode;
       const next = cur === 'spatial' ? 'archive' : 'spatial';
@@ -1207,6 +1288,28 @@ export const GalleryScene3D: React.FC = () => {
     const unsubQuality = useAppStore.subscribe((state) => {
       applyQualitySettings(state.graphicsQuality);
     });
+
+    const unsubGlide = useAppStore.subscribe((state) => {
+      if (state.targetGlideSpot) {
+        playerController.glideTo(
+          state.targetGlideSpot.x,
+          state.targetGlideSpot.z,
+          state.targetGlideSpot.targetYaw
+        );
+        useAppStore.getState().setTargetGlideSpot(null);
+      }
+    });
+
+    const unsubGyro = useAppStore.subscribe((state) => {
+      playerController.setGyroActive(state.isGyroscopeActive);
+    });
+
+    const checkMobile = () => {
+      const isMob = window.innerWidth <= 960 || ('ontouchstart' in window);
+      useAppStore.getState().setIsMobile(isMob);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
 
     // 11. Loop de Animação a 60 FPS com Frustum Culling Otimizado
     let rafId: number;
@@ -1546,8 +1649,11 @@ export const GalleryScene3D: React.FC = () => {
       window.removeEventListener('keydown', onGlobalKeyDown, { capture: true });
       window.removeEventListener('gigantera:request-lock', handleRequestLock);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', checkMobile);
       unsubQuality();
       unsubLoupe();
+      unsubGlide();
+      unsubGyro();
 
       playerController.dispose();
       cdViewmodel.rootGroup.removeFromParent();
@@ -1624,8 +1730,8 @@ export const GalleryScene3D: React.FC = () => {
         </div>
       )}
 
-      {/* Dica discreta de clique para ativar Câmera Livre se não estiver bloqueado */}
-      {!isPointerLocked && !isHoldingCD && !cinemaArtwork && (
+      {/* Dica discreta de clique para ativar Câmera Livre se não estiver bloqueado (Apenas Desktop) */}
+      {!isPointerLocked && !isHoldingCD && !cinemaArtwork && !isMobile && (
         <div
           className="pointer-lock-hint-dock font-mono"
           aria-hidden="true"
