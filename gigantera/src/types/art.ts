@@ -86,3 +86,24 @@ export interface SectorInfo {
   description: string;
   accentColor: string;
 }
+
+export interface OutputClusterItem {
+  id: string;
+  filename: string;
+  proposedTitle: string;
+  format: string;
+  sizeApprox: string;
+  type: 'master' | 'study' | 'mockup' | 'still' | 'simulation';
+  notes?: string;
+  sourceDir: string;
+}
+
+export interface OutputCluster {
+  id: string;
+  clusterName: string;
+  series: string;
+  sourceDir: string;
+  concept: string;
+  items: OutputClusterItem[];
+}
+

@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GIGANTERA // PAINEL CURATORIAL & ADMIN</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0d;
+      --bg-surface: #101217;
+      --bg-surface-alt: #161920;
+      --bg-card: #13151c;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.25);
+      --text-main: #f0f2f5;
+      --text-muted: #8a919e;
+      --text-dim: #505663;
+      --accent-amber: #f59e0b;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* TOP STATUS BAR */
+    .topbar {
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(9, 10, 13, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-title .badge {
+      font-size: 0.65rem;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .node-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-emerald);
+    }
+
+    .node-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      border-radius: 2px;
+    }
+
+    .btn:hover {
+      background: var(--bg-surface-alt);
+      border-color: var(--border-focus);
+      color: #fff;
+    }
+
+    .btn-accent {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.08);
+      color: var(--accent-amber);
+    }
+
+    .btn-accent:hover {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: var(--accent-amber);
+    }
+
+    .btn-cyan {
+      border-color: rgba(6, 182, 212, 0.4);
+      background: rgba(6, 182, 212, 0.08);
+      color: var(--accent-cyan);
+    }
+
+    .btn-cyan:hover {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--accent-cyan);
+    }
+
+    /* MAIN CONTAINER */
+    .admin-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      flex: 1;
+    }
+
+    /* SYSTEM BANNER */
+    .system-banner {
+      background: linear-gradient(90deg, rgba(22, 25, 32, 0.8) 0%, rgba(16, 18, 23, 0.6) 100%);
+      border: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .banner-text h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.3rem;
+    }
+
+    .banner-text p {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.4;
+    }
+
+    .banner-stats {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .stat-box {
+      font-family: var(--font-mono);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* NAV TABS */
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+      overflow-x: auto;
+      padding-bottom: 1px;
+    }
+
+    .tab-btn {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.25rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-amber);
+      border-bottom-color: var(--accent-amber);
+      font-weight: 600;
+    }
+
+    .tab-count {
+      font-size: 0.65rem;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CARD & GRIDS */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .search-filter {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .search-input {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-main);
+      outline: none;
+      border-radius: 2px;
+      min-width: 240px;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-amber);
+    }
+
+    /* CLUSTERS ACCORDION & LIST */
+    .cluster-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+
+    .cluster-block:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .cluster-header {
+      padding: 1rem 1.25rem;
+      background: var(--bg-surface-alt);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cluster-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .cluster-name {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .cluster-series {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      padding: 0.1rem 0.4rem;
+      border-radius: 2px;
+    }
+
+    .cluster-dir {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .cluster-concept {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-style: italic;
+    }
+
+    .output-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.825rem;
+    }
+
+    .output-items-table th {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-align: left;
+      padding: 0.65rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .output-items-table td {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      vertical-align: middle;
+    }
+
+    .output-items-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .item-vertente-c {
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .item-filename {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .item-type-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      padding: 0.15rem 0.35rem;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-master { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-study { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-mockup { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-still { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-sim { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    /* ARTWORKS GRID */
+    .artworks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .artwork-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+    }
+
+    .artwork-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .card-thumb {
+      height: 180px;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    .artwork-card:hover .card-thumb img {
+      opacity: 1;
+    }
+
+    .card-badge-sector {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-badge-ratio {
+      position: absolute;
+      bottom: 0.75rem;
+      right: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      color: var(--text-muted);
+    }
+
+    .card-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-series {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-amber);
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 0.75rem;
+      flex: 1;
+    }
+
+    .card-meta-line {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      padding-top: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* COPY MANAGER FORM */
+    .copy-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .copy-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.25rem;
+    }
+
+    .copy-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .copy-card-label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-amber);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .copy-helper {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .copy-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--text-main);
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+
+    .copy-input:focus {
+      border-color: var(--accent-amber);
+    }
+
+    .copy-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    /* TOAST FEEDBACK */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-surface-alt);
+      color: #fff;
+      border: 1px solid var(--accent-emerald);
+      padding: 0.75rem 1.25rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* FOOTER */
+    .admin-footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .banner-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .artworks-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP STATUS BAR -->
+  <header class="topbar">
+    <div class="brand-section">
+      <div class="brand-title">
+        GIGANTERA
+        <span class="badge">ADMIN // CURADORIA</span>
+      </div>
+      <div class="node-indicator">
+        <span class="node-pulse"></span>
+        STANDALONE ENGINE (gigantera.art)
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <a href="../index.html?view=media" target="_blank" class="btn btn-cyan" id="btnOpenMediaKit">
+        <span>PRESS KIT SECRETO ↗</span>
+      </a>
+      <button class="btn" onclick="copySecretMediaLink()">
+        <span>COPIAR LINK PRESS ⎘</span>
+      </button>
+      <a href="../index.html" target="_blank" class="btn btn-accent">
+        <span>VER PAVILHÃO ↗</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="admin-container">
+
+    <!-- SYSTEM BANNER -->
+    <section class="system-banner">
+      <div class="banner-text">
+        <h1>Painel de Controle Independente // Acervo & Curadoria</h1>
+        <p>
+          Estrutura autônoma desenhada para o domínio <strong>gigantera.art</strong>. Gerenciamento direto das obras do pavilhão, agrupamento por similaridade das saídas (pasta <code>3. Out</code>) e controle de copys em Vertente-C.
+        </p>
+      </div>
+
+      <div class="banner-stats">
+        <div class="stat-box">
+          <span class="stat-num" id="statObras">12</span>
+          <span class="stat-label">Obras no Salão</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="statClusters">7</span>
+          <span class="stat-label">Clusters (3. Out)</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="statOutputs">32</span>
+          <span class="stat-label">Saídas Mapeadas</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">17</span>
+          <span class="stat-label">Faixas Áudio</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-clusters')">
+        1. Clusters de Saídas (3. Out) <span class="tab-count">7</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-obras')">
+        2. Obras no Pavilhão (Vertente-C) <span class="tab-count">12</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-copys')">
+        3. Copys & Metadados
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-audio')">
+        4. Estação de Som <span class="tab-count">17</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-export')">
+        5. Sincronizar & Exportar
+      </button>
+    </nav>
+
+    <!-- TAB 1: CLUSTERS DE SAÍDAS (3. OUT) -->
+    <section id="tab-clusters" class="tab-content active">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Grupos de Saídas Similares // Pasta 3. Out</h2>
+          <p class="section-subtitle">
+            Varredura do pipeline do Gigantera catalogando cada saída individual de render agrupada por coerência conceitual e estética.
+          </p>
+        </div>
+        <div class="search-filter">
+          <input type="text" id="clusterSearch" class="search-input" placeholder="Filtrar por nome, série, formato..." onkeyup="filterClusters()" />
+        </div>
+      </div>
+
+      <div id="clustersContainer">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- TAB 2: OBRAS NO PAVILHÃO -->
+    <section id="tab-obras" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Obras Instaladas no Pavilhão 3D</h2>
+          <p class="section-subtitle">
+            Obras ativas suspensas em vitrines brutalistas ao longo dos setores acústico, cinético (vídeo) e estático (still).
+          </p>
+        </div>
+        <div class="search-filter">
+          <input type="text" id="artworksSearch" class="search-input" placeholder="Buscar obra por título..." onkeyup="filterArtworks()" />
+        </div>
+      </div>
+
+      <div class="artworks-grid" id="artworksContainer">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- TAB 3: COPYS & METADADOS -->
+    <section id="tab-copys" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Copys Oficiais do Pavilhão</h2>
+          <p class="section-subtitle">
+            Textos prontos para colar no código ou materiais de divulgação. Modifique e clique em Salvar para persistir localmente.
+          </p>
+        </div>
+        <button class="btn btn-accent" onclick="saveCopies()">SALVAR ALTERAÇÕES 💾</button>
+      </div>
+
+      <div class="copy-grid">
+        <!-- Title Tag -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Title Tag (Aba do Navegador)</span>
+            <span class="copy-helper">SEO / Indexação</span>
+          </div>
+          <input type="text" id="copyTitle" class="copy-input" value="GIGANTERA | Pavilhão Digital" />
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copyTitle')">COPIAR ⎘</button>
+          </div>
+        </div>
+
+        <!-- Meta Description -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Meta Description (140 Caracteres)</span>
+            <span class="copy-helper">Snippet de busca e compartilhamento</span>
+          </div>
+          <textarea id="copyMeta" class="copy-input" rows="2">Um pavilhão imersivo. Você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral.</textarea>
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copyMeta')">COPIAR ⎘</button>
+          </div>
+        </div>
+
+        <!-- Hero Headline -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Hero Headline (Tela de Entrada)</span>
+            <span class="copy-helper">Primeiro impacto visual</span>
+          </div>
+          <input type="text" id="copyHero" class="copy-input" value="GIGANTERA — Um pavilhão. Não um portfólio." />
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copyHero')">COPIAR ⎘</button>
+          </div>
+        </div>
+
+        <!-- Subhead -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Subhead (Abaixo do Hero)</span>
+            <span class="copy-helper">Instrução espacial</span>
+          </div>
+          <input type="text" id="copySubhead" class="copy-input" value="Concreto, luz e som suspensos no espaço — entre e ande." />
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copySubhead')">COPIAR ⎘</button>
+          </div>
+        </div>
+
+        <!-- CTA de Entrada -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">CTA de Entrada (Botão Principal)</span>
+            <span class="copy-helper">Gatilho de transição 3D</span>
+          </div>
+          <input type="text" id="copyCTA" class="copy-input" value="ENTRAR NO PAVILHÃO" />
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copyCTA')">COPIAR ⎘</button>
+          </div>
+        </div>
+
+        <!-- Blurb Curto -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Blurb Curto pra Bio / Imprensa</span>
+            <span class="copy-helper">Apresentação institucional</span>
+          </div>
+          <textarea id="copyBlurb" class="copy-input" rows="4">Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.</textarea>
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copyBlurb')">COPIAR ⎘</button>
+          </div>
+        </div>
+
+        <!-- Provérbio Caiçara -->
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Provérbio Raiz & Curatorial</span>
+            <span class="copy-helper">Fundação poética</span>
+          </div>
+          <input type="text" id="copyProverbio" class="copy-input" value="Tainhas gigantes só podem ser pescadas com uma tarrafa gigante." />
+          <div class="copy-btn-row">
+            <button class="btn" onclick="copyField('copyProverbio')">COPIAR ⎘</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ESTAÇÃO DE SOM -->
+    <section id="tab-audio" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Estação Física de CD // 17 Faixas Autorais</h2>
+          <p class="section-subtitle">
+            Trilhas originais compostas para a acústica mineral do pavilhão brutalista.
+          </p>
+        </div>
+      </div>
+
+      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; overflow-x: auto;">
+        <table class="output-items-table" id="audioTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Título da Faixa</th>
+              <th>Gênero / Estilo</th>
+              <th>BPM</th>
+              <th>Duração</th>
+              <th>Ano</th>
+              <th>Série</th>
+            </tr>
+          </thead>
+          <tbody id="audioTableBody">
+            <!-- Inserido dinamicamente via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 5: EXPORTAR & SINCRONIZAR -->
+    <section id="tab-export" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Exportar & Sincronizar Código</h2>
+          <p class="section-subtitle">
+            Gere o código limpo TypeScript ou JSON para atualizar o site sem necessidade de ferramentas externas.
+          </p>
+        </div>
+      </div>
+
+      <div class="copy-grid">
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Exportar Catálogo de Clusters (JSON)</span>
+            <span class="copy-helper">Agrupamentos da pasta 3. Out</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Baixe o manifesto estruturado com todos os 7 clusters e 32 arquivos com títulos em Vertente-C.
+          </p>
+          <div class="copy-btn-row" style="justify-content: flex-start;">
+            <button class="btn btn-accent" onclick="downloadJSON('clusters')">BAIXAR CLUSTERS.JSON ↓</button>
+            <button class="btn" onclick="copyJSON('clusters')">COPIAR JSON ⎘</button>
+          </div>
+        </div>
+
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Link Privado do Media Kit</span>
+            <span class="copy-helper">Acesso para curadores, galerias e imprensa</span>
+          </div>
+          <input type="text" id="secretLinkInput" class="copy-input" readonly value="" />
+          <div class="copy-btn-row">
+            <button class="btn btn-cyan" onclick="copySecretMediaLink()">COPIAR LINK PRIVADO ⎘</button>
+            <a href="../index.html?view=media" target="_blank" class="btn">ABRIR ↗</a>
+          </div>
+        </div>
+
+        <div class="copy-card">
+          <div class="copy-card-header">
+            <span class="copy-card-label">Desacoplamento gigantera.art</span>
+            <span class="copy-helper">Instruções para nova infraestrutura</span>
+          </div>
+          <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.6;">
+            <p>1. O diretório <code>/gigantera</code> é 100% autônomo e possui seu próprio <code>package.json</code> e build Vite.</p>
+            <p>2. Ao apontar o domínio <code>gigantera.art</code> para o repositório ou exportar a pasta:</p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+              <li>O site principal roda em <code>https://gigantera.art/</code></li>
+              <li>Este painel administrativo roda direto em <code>https://gigantera.art/admin/</code></li>
+              <li>O kit de imprensa roda em <code>https://gigantera.art/?view=media</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="admin-footer">
+    <div>
+      GIGANTERA © 2026 // FELIPE CONCEIÇÃO — TODOS OS DIREITOS RESERVADOS
+    </div>
+    <div>
+      SISTEMA CURATORIAL AUTÔNOMO v2.4 (STANDALONE ENGINE)
+    </div>
+  </footer>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">
+    <span style="color: var(--accent-emerald);">✓</span>
+    <span id="toastMsg">Copiado para a área de transferência</span>
+  </div>
+
+  <script>
+    // DADOS INICIAIS: CLUSTERS DE SAÍDAS (3. OUT)
+    const CLUSTERS_DATA = [
+      {
+        id: 'cluster-tarrafa-zimbro',
+        clusterName: 'Tarrafa & Zimbro // A Pesca Monumental',
+        series: 'Espinhaço',
+        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out',
+        concept: 'A tradição da tainha e a pesca monumental caiçara transmutada em biologia mecânica fóssil.',
+        items: [
+          { filename: 'GIGANTERA_GIANT_MULLETS.mov', proposedTitle: 'Tarrafa Cega (Master)', format: 'MOV ProRes', sizeApprox: '39.7 MB', type: 'master', notes: 'Master da animação biomecânica da coluna fóssil da tainha' },
+          { filename: 'Gigantera - giant mullets v1.mp4', proposedTitle: 'Tarrafa Cega (Estudo)', format: 'MP4 H.264', sizeApprox: '4.9 MB', type: 'study', notes: 'Estudo inicial de cinética vertebral' },
+          { filename: 'GIGANTERA_ZIMBRO_01.mp4', proposedTitle: 'Cardume Noturno', format: 'MP4 4K', sizeApprox: '183.1 MB', type: 'master', notes: 'Renderização pesada da simulação hidrodinâmica de Zimbro' },
+          { filename: 'criativo 04.mp4', proposedTitle: 'Tração da Rede', format: 'MP4 1080p', sizeApprox: '47.7 MB', type: 'master', notes: 'Tensão de arrasto e flexão vertebral sob carga' },
+          { filename: 'criativo 09.mp4', proposedTitle: 'Arraste Profundo', format: 'MP4 High-Bitrate', sizeApprox: '266.8 MB', type: 'master', notes: 'Variações 09_1 e 09_2 com detalhamento volumétrico abissal' },
+          { filename: 'Gigantera - Zimbro Styleframes.png', proposedTitle: 'Inventário / Pranchas de Ateliê', format: 'PNG 300DPI', sizeApprox: '4.3 MB', type: 'still', notes: 'Prancha de documentação curatorial e fotogramétrica de ateliê' },
+          { filename: 'Gigantera - Zimbro 2_criativo 09_...png', proposedTitle: 'Vértebra Flutuante', format: 'PNG Giclée', sizeApprox: '3.8 MB', type: 'still', notes: 'Isolamento de nódulo biomecânico em fundo neutro' },
+          { filename: 'Gigantera - Zimbro 2_criativo 10_...png', proposedTitle: 'Costela Fóssil', format: 'PNG Giclée', sizeApprox: '3.9 MB', type: 'still', notes: 'Estudo de calcificação e textura ictiológica' }
+        ]
+      },
+      {
+        id: 'cluster-grade-ruido',
+        clusterName: 'Grade & Ruído // Matriz Estocástica',
+        series: 'Espinhaço',
+        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Série Criativo 08)',
+        concept: 'A decomposição da imagem fotográfica em código, ruído e matriz vetorial.',
+        items: [
+          { filename: 'criativo 08 - matrix.mp4', proposedTitle: 'Sumud // Grade Estocástica', format: 'MP4', sizeApprox: '35.9 MB', type: 'master', notes: 'Matriz estocástica e varredura de pontos em tempo real' },
+          { filename: 'criativo 08_1.mp4', proposedTitle: 'Trama Seca', format: 'MP4', sizeApprox: '50.9 MB', type: 'study', notes: 'Densidade alta de partículas sem atenuação' },
+          { filename: 'criativo 08_3.mp4', proposedTitle: 'Frequência Oculta', format: 'MP4', sizeApprox: '50.9 MB', type: 'study', notes: 'Interferência harmônica na distribuição de pontos' },
+          { filename: 'criativo 08_5.mp4', proposedTitle: 'Ruído de Fundo', format: 'MP4', sizeApprox: '51.6 MB', type: 'study', notes: 'Dissolução estocástica em meio líquido' }
+        ]
+      },
+      {
+        id: 'cluster-dispositivos-cenicos',
+        clusterName: 'Dispositivos Cênicos // Vitrines & Mockups',
+        series: 'Espinhaço',
+        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Mockups Teatro & TV)',
+        concept: 'A obra confrontando o espaço cênico brutalista e a tela preta de transmissão.',
+        items: [
+          { filename: 'criativo 06 - mockup teatro.mp4', proposedTitle: 'Câmara Escura', format: 'MP4', sizeApprox: '13.6 MB', type: 'mockup', notes: 'Projeção imersiva simulada em palco escuro teatral' },
+          { filename: 'criativo 06 - mockup tv.mp4', proposedTitle: 'Transmissão Fria', format: 'MP4', sizeApprox: '46.4 MB', type: 'mockup', notes: 'Monitor CRT brutalista exibindo loop da obra' },
+          { filename: 'criativo 07 - mockup teatro.mp4', proposedTitle: 'Palco Mudo', format: 'MP4', sizeApprox: '13.5 MB', type: 'mockup', notes: 'Composição espacial entre iluminação cênica e monolito' },
+          { filename: 'mockup criativo 09_2.mp4', proposedTitle: 'Vitrine Suspensa', format: 'MP4', sizeApprox: '101.7 MB', type: 'mockup', notes: 'Câmara de acrílico flutuante em museu contemporâneo' }
+        ]
+      },
+      {
+        id: 'cluster-pulso-frequencia',
+        clusterName: 'Pulso & Frequência // Cinética Dinâmica',
+        series: 'Espinhaço',
+        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Criativos 13, 03, 05)',
+        concept: 'Ondulações de torque, atrito hidrodinâmico e aceleração contínua de biomotores.',
+        items: [
+          { filename: 'criativo 13b.mp4', proposedTitle: 'Tração 13b', format: 'MP4 60fps', sizeApprox: '82.2 MB', type: 'master', notes: 'Sequência de deformação rápida sob campo de força' },
+          { filename: 'criativo 13c.mp4', proposedTitle: 'Torque Seco', format: 'MP4 60fps', sizeApprox: '82.3 MB', type: 'master', notes: 'Parada súbita com inércia viscoelástica' },
+          { filename: 'criativo 13d.mp4', proposedTitle: 'Envergadura', format: 'MP4 60fps', sizeApprox: '82.1 MB', type: 'master', notes: 'Extensão máxima dos filamentos de titânio' },
+          { filename: 'criativo 03_2.mp4', proposedTitle: 'Fissura Linear', format: 'MP4', sizeApprox: '35.7 MB', type: 'study', notes: 'Micro-rupturas estruturais em tempo real' },
+          { filename: 'criativo 05_2.mov', proposedTitle: 'Atrito Hidrodinâmico', format: 'MOV ProRes', sizeApprox: '172.5 MB', type: 'master', notes: 'Render não-comprimido da passagem do fluxo líquido' }
+        ]
+      },
+      {
+        id: 'cluster-litoral-erosao',
+        clusterName: 'Litoral & Erosão // Broken Marvel Beach',
+        series: 'Notalgia',
+        sourceDir: 'Pipeline Gigantera/Notalgia/3. Out',
+        concept: 'A memória geológica costeira em colapso: resíduo industrial e salitre sobre pedra basáltica.',
+        items: [
+          { filename: 'Broken Marvel Beach.mov', proposedTitle: 'Praia Partida (Master)', format: 'MOV ProRes', sizeApprox: '142.0 MB', type: 'master', notes: 'Master da paisagem costeira desconstruída' },
+          { filename: 'Broken Marvel Beach 3.mp4', proposedTitle: 'Sedimento e Espuma', format: 'MP4', sizeApprox: '48.2 MB', type: 'study', notes: 'Estudo de quebra de onda sobre monolito mineral' },
+          { filename: 'criativo 01.mov', proposedTitle: 'Farol Mudo // Horizonte', format: 'MOV', sizeApprox: '68.4 MB', type: 'master', notes: 'Plano contemplativo com névoa salina' },
+          { filename: 'criativo 04.mp4', proposedTitle: 'Costa Rasa', format: 'MP4', sizeApprox: '38.6 MB', type: 'study', notes: 'Reflexos crepusculares em maré baixa' }
+        ]
+      },
+      {
+        id: 'cluster-abissal-lidar',
+        clusterName: 'Abissal & Lidar // TouchDesigner GPU',
+        series: 'TD First View',
+        sourceDir: 'Pipeline Gigantera/TD First View/exports/videos',
+        concept: 'Nuvens de pontos em tempo real, varredura a laser e bioluminescência sintética calculada por GPU.',
+        items: [
+          { filename: 'sim_round_228_abyssal_particle_vortex_10s.mp4', proposedTitle: 'Vórtice Abissal', format: 'MP4 60fps', sizeApprox: '95.0 MB', type: 'simulation', notes: 'Loop de 10s com 500.000 partículas GPU aceleradas' },
+          { filename: 'sim_round_156_monumental_obsidian_sunbeam.mp4', proposedTitle: 'Feixe de Obsidiana', format: 'MP4 60fps', sizeApprox: '110.4 MB', type: 'simulation', notes: 'Feixe de luz volumétrica atravessando prisma vulcânico' },
+          { filename: 'sim_round_205_hud_cyber_lidar_10s.mp4', proposedTitle: 'Varredura Lidar', format: 'MP4 60fps', sizeApprox: '88.1 MB', type: 'simulation', notes: 'Telemetria espacial e nuvem topográfica marinha' },
+          { filename: 'sim_round_105_bioluminescent_night_swarm.mp4', proposedTitle: 'Enxame Noturno', format: 'MP4 60fps', sizeApprox: '79.3 MB', type: 'simulation', notes: 'Pulsos luminescentes inspirados nas fossas abissais' }
+        ]
+      },
+      {
+        id: 'cluster-memoria-ancestral',
+        clusterName: 'Memória Ancestral // Vô David & Raízes',
+        series: 'Origem',
+        sourceDir: 'Pipeline Gigantera/Vo David & Fisherman',
+        concept: 'A memória oral do pescador artesanal, monitores analógicos e a fundação humana do pavilhão.',
+        items: [
+          { filename: 'fishermanv1.mp4', proposedTitle: 'O Velho e a Rede', format: 'MP4', sizeApprox: '24.5 MB', type: 'master', notes: 'Gesto ancestral do lançamento da tarrafa em câmara lenta' },
+          { filename: 'recrie_de_forma_realista_2026...jpeg', proposedTitle: 'Monitor de Memória', format: 'JPEG Archival', sizeApprox: '3.2 MB', type: 'still', notes: 'Instalação de monitores exibindo arquivo vivo de pesca' },
+          { filename: 'DRINK_ COPO_HORTELA.mp4', proposedTitle: 'Respiro de Terra', format: 'MP4', sizeApprox: '18.1 MB', type: 'study', notes: 'Pausa contemplativa entre as jornadas de mar' }
+        ]
+      }
+    ];
+
+    // DADOS DAS OBRAS NO SALÃO (VERTENTE-C)
+    const ARTWORKS_DATA = [
+      { id: 'video-espinhaco-cinetico', title: 'Tração', series: 'Espinhaço', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a seguinte.', thumb: '../works/espinhaco-descida-crepuscular.jpg' },
+      { id: 'video-stipples-particulas', title: 'Sumud', series: 'Zimbro', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.', thumb: '../works/zimbro-rastreamento-vetorial.jpg' },
+      { id: 'video-espinha-metalica', title: 'Encalhe', series: 'Espinhaço', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Sequência em plano fechado destacando as reflexões metálicas enquanto a estrutura se curva em ciclo contínuo.', thumb: '../works/espinhaco-relevo-neotribal.jpg' },
+      { id: 'video-mapping-led', title: 'Pulso', series: 'Luz & Escultura', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Campos luminescentes projetados em escala monumental com transições dinâmicas entre feixes frios e densidade escura.', thumb: '../works/zimbro-estudo-espectral.jpg' },
+      { id: 'video-onda-padroes', title: 'Maré', series: 'Ressonância', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Padrões rítmicos oscilantes que exploram a propagação acústica em meios materiais.', thumb: '../works/sedimento-litificacao-final.jpg' },
+      { id: 'video-cores-spectrum', title: 'Fissura 26', series: 'Cromia', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Transição aveludada entre frequências cromáticas complementares, quebrando a monocromia mineral do salão.', thumb: '../works/notalgia-monolito-costeiro.jpg' },
+      { id: 'espinhaco-cinetica-prata', title: 'Tarrafa Cega', series: 'Espinhaço', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Estrutura vertebral articulada concebida a partir da biomecânica fóssil. Impresso fosco flutuando sob câmara vítrea.', thumb: '../works/espinhaco-cinetica-prata.jpg' },
+      { id: 'espinhaco-vitrine-aquario', title: 'Tempo de Espera', series: 'Espinhaço', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação hidrodinâmica.', thumb: '../works/espinhaco-vitrine-aquario.jpg' },
+      { id: 'zimbro-estudo-espectral', title: 'Inventário', series: 'Zimbro', medium: 'still', sector: '02 STILL', ratio: '16:9', desc: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão.', thumb: '../works/zimbro-estudo-espectral.jpg' },
+      { id: 'sedimento-litificacao-final', title: 'Fundação Nua', series: 'Sedimento', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Momento de repouso definitivo da peça contra o piso basáltico em processo de litificação.', thumb: '../works/sedimento-litificacao-final.jpg' },
+      { id: 'notalgia-monolito-costeiro', title: 'Farol Mudo', series: 'Notalgia', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre arquitetura bruta e o abismo natural.', thumb: '../works/notalgia-monolito-costeiro.jpg' },
+      { id: 'espinhaco-registro-abissal', title: 'Quilha', series: 'Espinhaço', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica sob compressão sedimentar.', thumb: '../works/espinhaco-registro-abissal.jpg' }
+    ];
+
+    // DADOS DAS FAIXAS DE ÁUDIO (17)
+    const AUDIO_TRACKS_DATA = [
+      { num: '01', title: 'Automar', genre: 'DEEP DUB TECHNO', bpm: 124, duration: '04:15', year: 2026, series: 'Automotaço' },
+      { num: '02', title: 'Danse (v2)', genre: 'MODULAR TECHNO', bpm: 128, duration: '05:32', year: 2026, series: 'Gigantera Acoustic Loops' },
+      { num: '03', title: 'Apenas (v2)', genre: 'AMBIENT MODULAR', bpm: 118, duration: '01:52', year: 2026, series: 'Gigantera Acoustic Loops' },
+      { num: '04', title: 'Giant Mullets (v2)', genre: 'SUB-BASS EXPERIMENTAL', bpm: 122, duration: '04:48', year: 2026, series: 'Giant Mullets Project' },
+      { num: '05', title: 'Notalgia (v2)', genre: 'MINIMAL DOWNTEMPO', bpm: 115, duration: '03:40', year: 2026, series: 'Notalgia Audio Research' },
+      { num: '06', title: 'Un-disney (v4)', genre: 'DARK ELECTRONIC', bpm: 126, duration: '03:15', year: 2026, series: 'Un-disney Explorations' },
+      { num: '07', title: 'Sintetic Olive (v2)', genre: 'JAZZY DEEP HOUSE', bpm: 120, duration: '03:25', year: 2026, series: 'Palestine Sessions' },
+      { num: '08', title: 'Fisherman (v2)', genre: 'BRAZILIAN SLAP MINIMAL', bpm: 125, duration: '04:10', year: 2026, series: 'Fisherman Project' },
+      { num: '09', title: 'Talking Peoplr (v2)', genre: 'VOCAL MICROHOUSE', bpm: 122, duration: '01:45', year: 2026, series: 'Talking Peoplr Sessions' },
+      { num: '10', title: 'Feed Your Soul', genre: 'ORGANIC DEEP GROOVE', bpm: 120, duration: '03:52', year: 2025, series: 'Soul Vision' },
+      { num: '11', title: 'Assuviu', genre: 'EXPERIMENTAL TECH', bpm: 124, duration: '02:40', year: 2025, series: 'Assuviu Research' },
+      { num: '12', title: 'Bicho Malandro (v2)', genre: 'NEO-SAMBA BASS', bpm: 126, duration: '04:30', year: 2025, series: 'Pelichakk Productions' },
+      { num: '13', title: 'Calmaria', genre: 'CHILLOUT ELECTRONIC', bpm: 110, duration: '03:10', year: 2025, series: 'Calmaria Tape Loops' },
+      { num: '14', title: 'Todas Línguas (v2)', genre: 'POLYRHYTHMIC TECHNO', bpm: 127, duration: '04:20', year: 2025, series: 'Languages Project' },
+      { num: '15', title: 'Trança (v3)', genre: 'MICRO MODULAR LOOP', bpm: 122, duration: '01:10', year: 2025, series: 'Trança Modular' },
+      { num: '16', title: 'Techno 1', genre: 'HYPNOTIC CUMBIA TECHNO', bpm: 126, duration: '01:50', year: 2025, series: 'Cumbia Tech Studies' },
+      { num: '17', title: 'Sobnome', genre: 'AMBIENT TECHNO', bpm: 119, duration: '01:40', year: 2025, series: 'Sobnome Sketches' }
+    ];
+
+    // RENDERIZADORES
+    function renderClusters(clusters) {
+      const container = document.getElementById('clustersContainer');
+      container.innerHTML = '';
+
+      clusters.forEach(c => {
+        const badgeColor = c.series === 'Espinhaço' ? 'var(--accent-amber)' : (c.series === 'Zimbro' ? 'var(--accent-cyan)' : 'var(--accent-emerald)');
+        
+        const html = `
+          <div class="cluster-block">
+            <div class="cluster-header">
+              <div class="cluster-title-wrap">
+                <span class="cluster-name">${c.clusterName}</span>
+                <span class="cluster-series" style="color: ${badgeColor}; border-color: ${badgeColor}33; background: ${badgeColor}15;">${c.series}</span>
+                <span class="cluster-dir">${c.sourceDir}</span>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">
+                ${c.items.length} saídas
+              </span>
+            </div>
+            <div class="cluster-concept">
+              ${c.concept}
+            </div>
+            <table class="output-items-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Título Vertente-C</th>
+                  <th style="width: 30%;">Arquivo de Origem</th>
+                  <th style="width: 10%;">Tipo</th>
+                  <th style="width: 12%;">Formato</th>
+                  <th style="width: 10%;">Tamanho</th>
+                  <th style="width: 13%;">Notas</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${c.items.map(item => {
+                  let bClass = 'badge-master';
+                  if (item.type === 'study') bClass = 'badge-study';
+                  else if (item.type === 'mockup') bClass = 'badge-mockup';
+                  else if (item.type === 'still') bClass = 'badge-still';
+                  else if (item.type === 'simulation') bClass = 'badge-sim';
+
+                  return `
+                    <tr>
+                      <td class="item-vertente-c">${item.proposedTitle}</td>
+                      <td class="item-filename">${item.filename}</td>
+                      <td><span class="item-type-badge ${bClass}">${item.type}</span></td>
+                      <td style="font-family: var(--font-mono); color: var(--text-muted);">${item.format}</td>
+                      <td style="font-family: var(--font-mono); color: var(--text-dim);">${item.sizeApprox}</td>
+                      <td style="color: var(--text-muted); font-size: 0.75rem;">${item.notes || '-'}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    function renderArtworks(arts) {
+      const container = document.getElementById('artworksContainer');
+      container.innerHTML = '';
+
+      arts.forEach(a => {
+        const html = `
+          <div class="artwork-card">
+            <div class="card-thumb">
+              <img src="${a.thumb}" alt="${a.title}" onerror="this.src='../works/espinhaco-cinetica-prata.jpg'" />
+              <div class="card-badge-sector">${a.sector}</div>
+              <div class="card-badge-ratio">${a.ratio}</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-row">
+                <h3 class="card-title">${a.title}</h3>
+                <span class="card-series">${a.series}</span>
+              </div>
+              <p class="card-desc">${a.desc}</p>
+              <div class="card-meta-line">
+                <span>FORMATO: ${a.medium.toUpperCase()}</span>
+                <span>ID: ${a.id}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    function renderAudio() {
+      const tbody = document.getElementById('audioTableBody');
+      tbody.innerHTML = '';
+
+      AUDIO_TRACKS_DATA.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family: var(--font-mono); color: var(--accent-amber); font-weight: 600;">${t.num}</td>
+          <td style="font-weight: 600; color: #fff;">${t.title}</td>
+          <td style="font-family: var(--font-mono); color: var(--accent-cyan);">${t.genre}</td>
+          <td style="font-family: var(--font-mono); color: var(--text-muted);">${t.bpm}</td>
+          <td style="font-family: var(--font-mono); color: var(--text-dim);">${t.duration}</td>
+          <td style="font-family: var(--font-mono); color: var(--text-dim);">${t.year}</td>
+          <td style="font-size: 0.75rem; color: var(--text-muted);">${t.series}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // NAVEGAÇÃO DE ABAS
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    // TOAST
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => {
+        t.classList.remove('show');
+      }, 2500);
+    }
+
+    // COPIAR CAMPOS
+    function copyField(elementId) {
+      const input = document.getElementById(elementId);
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        showToast('Texto copiado para a área de transferência');
+      });
+    }
+
+    function copySecretMediaLink() {
+      const url = window.location.origin + window.location.pathname.replace(/\/admin\/?$/, '') + '/index.html?view=media';
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Link do Media Kit copiado: ' + url);
+      });
+    }
+
+    // PERSISTÊNCIA DE COPYS (LocalStorage)
+    function saveCopies() {
+      const copies = {
+        title: document.getElementById('copyTitle').value,
+        meta: document.getElementById('copyMeta').value,
+        hero: document.getElementById('copyHero').value,
+        subhead: document.getElementById('copySubhead').value,
+        cta: document.getElementById('copyCTA').value,
+        blurb: document.getElementById('copyBlurb').value,
+        proverbio: document.getElementById('copyProverbio').value
+      };
+      localStorage.setItem('gigantera_copies', JSON.stringify(copies));
+      showToast('Copys salvas localmente no navegador');
+    }
+
+    function loadCopies() {
+      const saved = localStorage.getItem('gigantera_copies');
+      if (saved) {
+        try {
+          const c = JSON.parse(saved);
+          if (c.title) document.getElementById('copyTitle').value = c.title;
+          if (c.meta) document.getElementById('copyMeta').value = c.meta;
+          if (c.hero) document.getElementById('copyHero').value = c.hero;
+          if (c.subhead) document.getElementById('copySubhead').value = c.subhead;
+          if (c.cta) document.getElementById('copyCTA').value = c.cta;
+          if (c.blurb) document.getElementById('copyBlurb').value = c.blurb;
+          if (c.proverbio) document.getElementById('copyProverbio').value = c.proverbio;
+        } catch(e) {}
+      }
+    }
+
+    // FILTROS
+    function filterClusters() {
+      const q = document.getElementById('clusterSearch').value.toLowerCase();
+      const filtered = CLUSTERS_DATA.map(c => {
+        const matchesHeader = c.clusterName.toLowerCase().includes(q) || c.series.toLowerCase().includes(q) || c.sourceDir.toLowerCase().includes(q);
+        const filteredItems = c.items.filter(i => 
+          i.proposedTitle.toLowerCase().includes(q) || 
+          i.filename.toLowerCase().includes(q) || 
+          i.type.toLowerCase().includes(q) ||
+          i.format.toLowerCase().includes(q)
+        );
+        if (matchesHeader || filteredItems.length > 0) {
+          return {
+            ...c,
+            items: matchesHeader && filteredItems.length === 0 ? c.items : filteredItems
+          };
+        }
+        return null;
+      }).filter(Boolean);
+
+      renderClusters(filtered);
+    }
+
+    function filterArtworks() {
+      const q = document.getElementById('artworksSearch').value.toLowerCase();
+      const filtered = ARTWORKS_DATA.filter(a => 
+        a.title.toLowerCase().includes(q) || 
+        a.series.toLowerCase().includes(q) || 
+        a.sector.toLowerCase().includes(q) ||
+        a.desc.toLowerCase().includes(q)
+      );
+      renderArtworks(filtered);
+    }
+
+    // EXPORTAR
+    function downloadJSON(type) {
+      let data = type === 'clusters' ? CLUSTERS_DATA : ARTWORKS_DATA;
+      const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", str);
+      a.setAttribute("download", `gigantera_${type}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast(`Arquivo gigantera_${type}.json gerado com sucesso`);
+    }
+
+    function copyJSON(type) {
+      let data = type === 'clusters' ? CLUSTERS_DATA : ARTWORKS_DATA;
+      navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+        showToast(`JSON copiado para a área de transferência`);
+      });
+    }
+
+    // INICIALIZAÇÃO
+    window.addEventListener('DOMContentLoaded', () => {
+      renderClusters(CLUSTERS_DATA);
+      renderArtworks(ARTWORKS_DATA);
+      renderAudio();
+      loadCopies();
+
+      // Ajustar link secreto
+      const secretUrl = window.location.origin + window.location.pathname.replace(/\/admin\/?$/, '') + '/index.html?view=media';
+      const secretInput = document.getElementById('secretLinkInput');
+      if (secretInput) secretInput.value = secretUrl;
+      const openBtn = document.getElementById('btnOpenMediaKit');
+      if (openBtn) openBtn.href = secretUrl;
+    });
+  </script>
+</body>
+</html>

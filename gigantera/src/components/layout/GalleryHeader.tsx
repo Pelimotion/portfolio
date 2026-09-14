@@ -65,23 +65,17 @@ export const GalleryHeader: React.FC = () => {
 
   return (
     <header className="minimal-feathered-header" role="banner">
-      {/* Esquerda: Marca Gigantera & Retorno ao Portfólio */}
+      {/* Esquerda: Marca GIGANTERA // Pavilhão Digital */}
       <div className="header-brand-group">
-        <a
-          href="/"
-          className="header-home-subtle font-mono"
-          title="Retornar ao site principal Pelimotion"
-        >
-          ↖ PELIMOTION
-        </a>
-        <span className="header-slash font-mono">/</span>
         <button
           onClick={() => warpToSector('entrance-audio')}
           className="header-brand-name"
-          title="Reiniciar posição na entrada da galeria"
+          title="Reiniciar posição no início do pavilhão"
         >
           GIGANTERA
         </button>
+        <span className="header-slash font-mono">/</span>
+        <span className="header-pavilion-tag font-mono">PAVILHÃO DIGITAL</span>
       </div>
 
       {/* Centro: Cápsula Dinâmica "Now Playing" — APARECE SOMENTE QUANDO HÁ ÁUDIO TOCANDO */}

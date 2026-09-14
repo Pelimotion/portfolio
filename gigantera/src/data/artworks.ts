@@ -1,4 +1,4 @@
-import { Artwork, AudioTrackInfo, SectorInfo } from '../types/art';
+import { Artwork, AudioTrackInfo, SectorInfo, OutputCluster } from '../types/art';
 
 export const SECTORS_CATALOG: SectorInfo[] = [
   {
@@ -278,17 +278,17 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
 
 export const ARTWORKS_CATALOG: Artwork[] = [
   // ==========================================
-  // SETOR 01: VÍDEOS (6 Vitrines Cinéticas com loops animados em tempo real)
+  // SETOR 01: VÍDEOS (Vitrines Cinéticas em Loop Contínuo)
   // ==========================================
   {
     id: 'video-espinhaco-cinetico',
-    title: 'Espinhaço II: Flexão Biomecânica',
-    series: 'Espinhaço Cinético',
+    title: 'Tração',
+    series: 'Espinhaço',
     medium: 'video',
     categoryLabel: 'VITRINE CINÉTICA // LOOP',
     year: 2026,
     materials: 'Vitrine de vidro flutuante, simulação hidrodinâmica em tempo real e renderização volumétrica',
-    description: 'Movimento ondular da coluna de prata em meio denso. Cada vértebra transmite torque desacelerado para a vértebra seguinte.',
+    description: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a vértebra seguinte.',
     imageSrc: getWorkAssetUrl('espinhaco-descida-crepuscular.jpg'),
     videoSrc: getWorkAssetUrl('video/video-01-kinetic-spine.mp4'),
     duration: '00:06 (Loop Contínuo)',
@@ -299,8 +299,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'video-stipples-particulas',
-    title: 'Zimbro: Dispersão Estocástica',
-    series: 'Zimbro & Física Granular',
+    title: 'Sumud',
+    series: 'Zimbro',
     medium: 'video',
     categoryLabel: 'VITRINE CINÉTICA // ESTOCÁSTICA',
     year: 2026,
@@ -316,8 +316,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'video-espinha-metalica',
-    title: 'Matriz Metálica: Ondulação Laminar',
-    series: 'Espinhaço & Morfologia',
+    title: 'Encalhe',
+    series: 'Espinhaço',
     medium: 'video',
     categoryLabel: 'VITRINE CINÉTICA // 3D',
     year: 2026,
@@ -333,8 +333,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'video-mapping-led',
-    title: 'BC Mapping: Escultura de Luz & Led',
-    series: 'Espaço & Luminotécnica',
+    title: 'Pulso',
+    series: 'Luz & Escultura',
     medium: 'video',
     categoryLabel: 'VITRINE CINÉTICA // LIGHT SCULPTURE',
     year: 2026,
@@ -350,8 +350,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'video-onda-padroes',
-    title: 'Padrões de Onda: Campo Vetorial',
-    series: 'Mapeamento Fluídico',
+    title: 'Maré',
+    series: 'Ressonância',
     medium: 'video',
     categoryLabel: 'VITRINE CINÉTICA // FLUID DYNAMICS',
     year: 2026,
@@ -367,8 +367,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'video-cores-spectrum',
-    title: 'Espectro Cromático: Cinética Generativa',
-    series: 'Cromia Experimental',
+    title: 'Fissura 26',
+    series: 'Cromia',
     medium: 'video',
     categoryLabel: 'VITRINE CINÉTICA // CHROMATIC',
     year: 2026,
@@ -384,12 +384,12 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
 
   // ==========================================
-  // SETOR 02: STILL (6 Obras Físicas Únicas em Vitrines de Vidro com Pôster de Papel Mate)
+  // SETOR 02: STILL (Obras Físicas Únicas em Vitrines de Vidro com Pôster de Papel Mate)
   // ==========================================
   {
     id: 'espinhaco-cinetica-prata',
-    title: 'Espinhaço I: Cinética de Prata',
-    series: 'Espinhaço & Biomimética',
+    title: 'Tarrafa Cega',
+    series: 'Espinhaço',
     medium: 'still',
     categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
     year: 2026,
@@ -403,8 +403,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'espinhaco-vitrine-aquario',
-    title: 'Espinhaço: Contenção Vítrea',
-    series: 'Espinhaço & Biomimética',
+    title: 'Tempo de Espera',
+    series: 'Espinhaço',
     medium: 'still',
     categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
     year: 2026,
@@ -418,8 +418,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'zimbro-estudo-espectral',
-    title: 'Zimbro: Atlas Fotogramétrico',
-    series: 'Zimbro Espinhaço',
+    title: 'Inventário',
+    series: 'Zimbro',
     medium: 'still',
     categoryLabel: 'MURAL WIDESCREEN EM VIDRO',
     year: 2026,
@@ -433,8 +433,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'sedimento-litificacao-final',
-    title: 'Sedimentação & Litificação',
-    series: 'Zimbro Espinhaço',
+    title: 'Fundação Nua',
+    series: 'Sedimento',
     medium: 'still',
     categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
     year: 2026,
@@ -448,7 +448,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'notalgia-monolito-costeiro',
-    title: 'Notalgia: O Monolito Terminal',
+    title: 'Farol Mudo',
     series: 'Notalgia',
     medium: 'still',
     categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
@@ -463,8 +463,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   },
   {
     id: 'espinhaco-registro-abissal',
-    title: 'Espinhaço: Cartografia Abissal',
-    series: 'Espinhaço & Biomimética',
+    title: 'Quilha',
+    series: 'Espinhaço',
     medium: 'still',
     categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
     year: 2026,
@@ -477,3 +477,390 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     curatorialNotes: 'Cartografia gráfica que detalha os pontos de flexão e fadiga de materiais no fundo oceânico.'
   }
 ];
+
+export const PIPELINE_CLUSTERS: OutputCluster[] = [
+  {
+    id: 'cluster-tarrafa-zimbro',
+    clusterName: 'Tarrafa & Zimbro // A Pesca Monumental',
+    series: 'Espinhaço',
+    sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out',
+    concept: 'A tradição da tainha e a pesca monumental caiçara transmutada em biologia mecânica fóssil.',
+    items: [
+      {
+        id: 'out-01-master',
+        filename: 'GIGANTERA_GIANT_MULLETS.mov',
+        proposedTitle: 'Tarrafa Cega (Master)',
+        format: 'MOV ProRes',
+        sizeApprox: '39.7 MB',
+        type: 'master',
+        notes: 'Master da animação biomecânica da coluna fóssil da tainha',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-01-study',
+        filename: 'Gigantera - giant mullets v1.mp4',
+        proposedTitle: 'Tarrafa Cega (Estudo)',
+        format: 'MP4 H.264',
+        sizeApprox: '4.9 MB',
+        type: 'study',
+        notes: 'Estudo inicial de cinética vertebral',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-02-zimbro',
+        filename: 'GIGANTERA_ZIMBRO_01.mp4',
+        proposedTitle: 'Cardume Noturno',
+        format: 'MP4 4K',
+        sizeApprox: '183.1 MB',
+        type: 'master',
+        notes: 'Renderização pesada da simulação hidrodinâmica completa de Zimbro',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-03-rede',
+        filename: 'criativo 04.mp4',
+        proposedTitle: 'Tração da Rede',
+        format: 'MP4 1080p',
+        sizeApprox: '47.7 MB',
+        type: 'master',
+        notes: 'Tensão de arrasto e flexão vertebral sob carga',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-04-arraste',
+        filename: 'criativo 09.mp4',
+        proposedTitle: 'Arraste Profundo',
+        format: 'MP4 High-Bitrate',
+        sizeApprox: '266.8 MB',
+        type: 'master',
+        notes: 'Variações 09_1 e 09_2 com detalhamento volumétrico abissal',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-05-styleframes',
+        filename: 'Gigantera - Zimbro Styleframes.png',
+        proposedTitle: 'Inventário / Pranchas de Ateliê',
+        format: 'PNG 300DPI',
+        sizeApprox: '4.3 MB',
+        type: 'still',
+        notes: 'Prancha de documentação curatorial e fotogramétrica de ateliê',
+        sourceDir: 'Espinhaço/3. Out/STILL'
+      },
+      {
+        id: 'out-06-still-vertebra',
+        filename: 'Gigantera - Zimbro 2_criativo 09_2026-08-12_18.01.24.png',
+        proposedTitle: 'Vértebra Flutuante',
+        format: 'PNG Giclée',
+        sizeApprox: '3.8 MB',
+        type: 'still',
+        notes: 'Isolamento de nódulo biomecânico em fundo neutro',
+        sourceDir: 'Espinhaço/3. Out/STILL'
+      },
+      {
+        id: 'out-07-still-costela',
+        filename: 'Gigantera - Zimbro 2_criativo 10_2026-08-12_18.01.17.png',
+        proposedTitle: 'Costela Fóssil',
+        format: 'PNG Giclée',
+        sizeApprox: '3.9 MB',
+        type: 'still',
+        notes: 'Estudo de calcificação e textura ictiológica',
+        sourceDir: 'Espinhaço/3. Out/STILL'
+      }
+    ]
+  },
+  {
+    id: 'cluster-grade-ruido',
+    clusterName: 'Grade & Ruído // Matriz Estocástica',
+    series: 'Espinhaço',
+    sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Série Criativo 08)',
+    concept: 'A decomposição da imagem fotográfica em código, ruído e matriz vetorial.',
+    items: [
+      {
+        id: 'out-08-matrix',
+        filename: 'criativo 08 - matrix.mp4',
+        proposedTitle: 'Sumud // Grade Estocástica',
+        format: 'MP4',
+        sizeApprox: '35.9 MB',
+        type: 'master',
+        notes: 'Matriz estocástica e varredura de pontos em tempo real',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-08-var-1',
+        filename: 'criativo 08_1.mp4',
+        proposedTitle: 'Trama Seca',
+        format: 'MP4',
+        sizeApprox: '50.9 MB',
+        type: 'study',
+        notes: 'Densidade alta de partículas sem atenuação',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-08-var-3',
+        filename: 'criativo 08_3.mp4',
+        proposedTitle: 'Frequência Oculta',
+        format: 'MP4',
+        sizeApprox: '50.9 MB',
+        type: 'study',
+        notes: 'Interferência harmônica na distribuição de pontos',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-08-var-5',
+        filename: 'criativo 08_5.mp4',
+        proposedTitle: 'Ruído de Fundo',
+        format: 'MP4',
+        sizeApprox: '51.6 MB',
+        type: 'study',
+        notes: 'Dissolução estocástica em meio líquido',
+        sourceDir: 'Espinhaço/3. Out'
+      }
+    ]
+  },
+  {
+    id: 'cluster-dispositivos-cenicos',
+    clusterName: 'Dispositivos Cênicos // Vitrines & Mockups',
+    series: 'Espinhaço',
+    sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Mockups Teatro & TV)',
+    concept: 'A obra confrontando o espaço cênico brutalista e a tela preta de transmissão.',
+    items: [
+      {
+        id: 'out-mock-teatro-06',
+        filename: 'criativo 06 - mockup teatro.mp4',
+        proposedTitle: 'Câmara Escura',
+        format: 'MP4',
+        sizeApprox: '13.6 MB',
+        type: 'mockup',
+        notes: 'Projeção imersiva simulada em palco escuro teatral',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-mock-tv-06',
+        filename: 'criativo 06 - mockup tv.mp4',
+        proposedTitle: 'Transmissão Fria',
+        format: 'MP4',
+        sizeApprox: '46.4 MB',
+        type: 'mockup',
+        notes: 'Monitor CRT brutalista exibindo loop da obra',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-mock-teatro-07',
+        filename: 'criativo 07 - mockup teatro.mp4',
+        proposedTitle: 'Palco Mudo',
+        format: 'MP4',
+        sizeApprox: '13.5 MB',
+        type: 'mockup',
+        notes: 'Composição espacial entre iluminação cênica e monolito',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-mock-vitrine-09',
+        filename: 'mockup criativo 09_2.mp4',
+        proposedTitle: 'Vitrine Suspensa',
+        format: 'MP4',
+        sizeApprox: '101.7 MB',
+        type: 'mockup',
+        notes: 'Câmara de acrílico flutuante em museu contemporâneo',
+        sourceDir: 'Espinhaço/3. Out'
+      }
+    ]
+  },
+  {
+    id: 'cluster-pulso-frequencia',
+    clusterName: 'Pulso & Frequência // Cinética Dinâmica',
+    series: 'Espinhaço',
+    sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Criativos 13, 03, 05)',
+    concept: 'Ondulações de torque, atrito hidrodinâmico e aceleração contínua de biomotores.',
+    items: [
+      {
+        id: 'out-13b',
+        filename: 'criativo 13b.mp4',
+        proposedTitle: 'Tração 13b',
+        format: 'MP4 60fps',
+        sizeApprox: '82.2 MB',
+        type: 'master',
+        notes: 'Sequência de deformação rápida sob campo de força',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-13c',
+        filename: 'criativo 13c.mp4',
+        proposedTitle: 'Torque Seco',
+        format: 'MP4 60fps',
+        sizeApprox: '82.3 MB',
+        type: 'master',
+        notes: 'Parada súbita com inércia viscoelástica',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-13d',
+        filename: 'criativo 13d.mp4',
+        proposedTitle: 'Envergadura',
+        format: 'MP4 60fps',
+        sizeApprox: '82.1 MB',
+        type: 'master',
+        notes: 'Extensão máxima dos filamentos de titânio',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-03-2',
+        filename: 'criativo 03_2.mp4',
+        proposedTitle: 'Fissura Linear',
+        format: 'MP4',
+        sizeApprox: '35.7 MB',
+        type: 'study',
+        notes: 'Micro-rupturas estruturais em tempo real',
+        sourceDir: 'Espinhaço/3. Out'
+      },
+      {
+        id: 'out-05-2',
+        filename: 'criativo 05_2.mov',
+        proposedTitle: 'Atrito Hidrodinâmico',
+        format: 'MOV ProRes',
+        sizeApprox: '172.5 MB',
+        type: 'master',
+        notes: 'Render não-comprimido da passagem do fluxo líquido',
+        sourceDir: 'Espinhaço/3. Out'
+      }
+    ]
+  },
+  {
+    id: 'cluster-litoral-erosao',
+    clusterName: 'Litoral & Erosão // Broken Marvel Beach',
+    series: 'Notalgia',
+    sourceDir: 'Pipeline Gigantera/Notalgia/3. Out',
+    concept: 'A memória geológica costeira em colapso: resíduo industrial e salitre sobre pedra basáltica.',
+    items: [
+      {
+        id: 'out-broken-beach-mov',
+        filename: 'Broken Marvel Beach.mov',
+        proposedTitle: 'Praia Partida (Master)',
+        format: 'MOV ProRes',
+        sizeApprox: '142.0 MB',
+        type: 'master',
+        notes: 'Master da paisagem costeira desconstruída',
+        sourceDir: 'Notalgia/3. Out'
+      },
+      {
+        id: 'out-broken-beach-3',
+        filename: 'Broken Marvel Beach 3.mp4',
+        proposedTitle: 'Sedimento e Espuma',
+        format: 'MP4',
+        sizeApprox: '48.2 MB',
+        type: 'study',
+        notes: 'Estudo de quebra de onda sobre monolito mineral',
+        sourceDir: 'Notalgia/3. Out'
+      },
+      {
+        id: 'out-notalgia-cr01',
+        filename: 'criativo 01.mov',
+        proposedTitle: 'Farol Mudo // Horizonte',
+        format: 'MOV',
+        sizeApprox: '68.4 MB',
+        type: 'master',
+        notes: 'Plano contemplativo com névoa salina',
+        sourceDir: 'Notalgia/3. Out'
+      },
+      {
+        id: 'out-notalgia-cr04',
+        filename: 'criativo 04.mp4',
+        proposedTitle: 'Costa Rasa',
+        format: 'MP4',
+        sizeApprox: '38.6 MB',
+        type: 'study',
+        notes: 'Reflexos crepusculares em maré baixa',
+        sourceDir: 'Notalgia/3. Out'
+      }
+    ]
+  },
+  {
+    id: 'cluster-abissal-lidar',
+    clusterName: 'Abissal & Lidar // TouchDesigner GPU',
+    series: 'TD First View',
+    sourceDir: 'Pipeline Gigantera/TD First View/exports/videos',
+    concept: 'Nuvens de pontos em tempo real, varredura a laser e bioluminescência sintética calculada por GPU.',
+    items: [
+      {
+        id: 'out-td-vortex',
+        filename: 'sim_round_228_abyssal_particle_vortex_10s.mp4',
+        proposedTitle: 'Vórtice Abissal',
+        format: 'MP4 60fps',
+        sizeApprox: '95.0 MB',
+        type: 'simulation',
+        notes: 'Loop de 10 segundos com 500.000 partículas GPU aceleradas',
+        sourceDir: 'TD First View/exports/videos'
+      },
+      {
+        id: 'out-td-sunbeam',
+        filename: 'sim_round_156_monumental_obsidian_sunbeam.mp4',
+        proposedTitle: 'Feixe de Obsidiana',
+        format: 'MP4 60fps',
+        sizeApprox: '110.4 MB',
+        type: 'simulation',
+        notes: 'Feixe de luz volumétrica atravessando prisma de pedra vulcânica',
+        sourceDir: 'TD First View/exports/videos'
+      },
+      {
+        id: 'out-td-lidar',
+        filename: 'sim_round_205_hud_cyber_lidar_10s.mp4',
+        proposedTitle: 'Varredura Lidar',
+        format: 'MP4 60fps',
+        sizeApprox: '88.1 MB',
+        type: 'simulation',
+        notes: 'Telemetria espacial e nuvem topográfica marinha',
+        sourceDir: 'TD First View/exports/videos'
+      },
+      {
+        id: 'out-td-biolum',
+        filename: 'sim_round_105_bioluminescent_night_swarm.mp4',
+        proposedTitle: 'Enxame Noturno',
+        format: 'MP4 60fps',
+        sizeApprox: '79.3 MB',
+        type: 'simulation',
+        notes: 'Pulsos luminescentes orgânicos inspirados na fauna das fossas abissais',
+        sourceDir: 'TD First View/exports/videos'
+      }
+    ]
+  },
+  {
+    id: 'cluster-memoria-ancestral',
+    clusterName: 'Memória Ancestral // Vô David & Raízes',
+    series: 'Origem',
+    sourceDir: 'Pipeline Gigantera/Vo David & Fisherman',
+    concept: 'A memória oral do pescador artesanal, monitores de tubo de raios catódicos e a fundação humana do pavilhão.',
+    items: [
+      {
+        id: 'out-fish-v1',
+        filename: 'fishermanv1.mp4',
+        proposedTitle: 'O Velho e a Rede',
+        format: 'MP4',
+        sizeApprox: '24.5 MB',
+        type: 'master',
+        notes: 'Gesto ancestral do lançamento da tarrafa em câmara lenta',
+        sourceDir: 'Fisherman'
+      },
+      {
+        id: 'out-david-monitors',
+        filename: 'recrie_de_forma_realista_com_202605031554.jpeg',
+        proposedTitle: 'Monitor de Memória',
+        format: 'JPEG Archival',
+        sizeApprox: '3.2 MB',
+        type: 'still',
+        notes: 'Instalação de monitores industriais analógicos exibindo arquivo vivo de pesca',
+        sourceDir: 'Vo David/1. In'
+      },
+      {
+        id: 'out-fish-drink',
+        filename: 'DRINK_ COPO_HORTELA.mp4',
+        proposedTitle: 'Respiro de Terra',
+        format: 'MP4',
+        sizeApprox: '18.1 MB',
+        type: 'study',
+        notes: 'Pausa contemplativa entre as jornadas de mar',
+        sourceDir: 'Fisherman'
+      }
+    ]
+  }
+];
+

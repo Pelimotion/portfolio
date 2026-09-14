@@ -72,19 +72,18 @@ export const IntroSequence: React.FC = () => {
     >
       <div className="intro-floating-cue font-mono">
         <div className="intro-badge-row">
-          <span className="cue-badge">[PELIMOTION // GIGANTERA]</span>
+          <span className="cue-badge">[GIGANTERA]</span>
           <span className="intro-session-dot" />
-          <span className="intro-session-text">ARQUIVO ESPACIAL 2026</span>
+          <span className="intro-session-text">PAVILHÃO DIGITAL</span>
         </div>
 
+        <h1 className="cue-hero-title">GIGANTERA</h1>
         <h2 className="cue-statement">
-          BEM-VINDO AO ESPAÇO CINÉTICO DE ARTE E SOM
+          Um pavilhão. Não um portfólio.
         </h2>
 
         <p className="cue-narrative-text">
-          A galeria ganha vida em ressonância. Se desejar uma experiência completa,
-          aproxime-se do console à direita e escolha uma faixa sonora para acompanhar seu percurso,
-          ou explore livremente pelas obras suspensas no salão.
+          Concreto, luz e som suspensos no espaço — entre e ande.
         </p>
 
         <div className="cue-quick-tips-cluster">
@@ -113,7 +112,7 @@ export const IntroSequence: React.FC = () => {
             setTimeout(() => setIsDone(true), 350);
           }}
         >
-          [ENTRAR NA GALERIA ↵]
+          [ENTRAR NO PAVILHÃO ↵]
         </button>
       </div>
     </div>

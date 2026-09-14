@@ -3,20 +3,20 @@ import { ARTWORKS_CATALOG, AUTHORIAL_TRACKS_CATALOG } from './artworks';
 
 export const ARTIST_INFO = {
   name: 'Felipe Conceição',
-  alias: 'Pelimotion',
-  role: 'Diretor de Arte, Artista 3D & Sound Designer',
+  alias: 'Gigantera',
+  role: 'Artista Digital, Escultura Computacional & Som',
   location: 'Brasil / Global',
-  contactEmail: 'felipe@pelimotion.art',
-  portfolioUrl: 'https://pelimotion.art',
-  galleryUrl: 'https://pelimotion.art/gigantera',
+  contactEmail: 'felipe@gigantera.art',
+  portfolioUrl: 'https://gigantera.art',
+  galleryUrl: 'https://gigantera.art',
   cloudDriveUrl: 'https://drive.google.com/drive/folders/1w7u6jDqj8r3l9m8s2?usp=sharing'
 };
 
 export const CURATORIAL_STATEMENTS = {
-  bioPt: `Felipe Conceição (Pelimotion) é diretor de arte, artista 3D e sound designer brasileiro. Sua pesquisa visual explora a interseção entre o brutalismo digital contemporâneo, simulações físicas hiper-realistas, tipografia escultural e paisagens sonoras modulares imersivas. Com mais de uma década de atuação multidisciplinar, concebe ecossistemas estéticos que fundem arquitetura minimalista, cinemática de alta velocidade e design de áudio tátil.`,
-  bioEn: `Felipe Conceição (Pelimotion) is a Brazilian art director, 3D artist, and sound designer. His visual research investigates the intersection of contemporary digital brutalism, hyper-realistic physical simulations, sculptural typography, and immersive modular soundscapes. With over a decade of multidisciplinary practice, he crafts aesthetic ecosystems fusing minimalist architecture, high-velocity cinematics, and tactile audio design.`,
-  statementPt: `GIGANTERA é um manifesto espacial em brutalismo digital que rejeita a efemeridade das interfaces bidimensionais. Ao articular três matérias fundamentais — a rigidez escultural da imagem estática (Still), a cinemática fluida do vídeo em loop (Motion) e a materialidade analógica de um álbum físico em jewel case acrílico (Sound) —, a exposição propõe uma experiência contemplativa onde o espectador navega fisicamente pela densidade e pelo ritmo de cada obra.`,
-  statementEn: `GIGANTERA is a spatial manifesto in digital brutalism rejecting the transience of flat 2D feeds. By articulating three core matters — the sculptural stillness of static prints, the fluid kinematics of looping video, and the analog materiality of a physical CD jewel case —, the exhibition delivers a contemplative environment where visitors physically navigate through the density and sonic weight of each creation.`
+  bioPt: `Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.\n\nFelipe Conceição atua como Gigantera, articulando código, mídias generativas e projeção com a fisicalidade da prata, aço, areia e redes de pesca. Sua pesquisa fricciona o acabamento polido da indústria de imagens com o apagamento de sua herança territorial caiçara, investigando a perda do tempo orgânico na aceleração do nosso modelo econômico.`,
+  bioEn: `Gigantera is the digital pavilion of Felipe Conceição. A three-dimensional brutalist space where still works, kinetic video, and original sound float between glass vitrines. You don't browse. You traverse.\n\nFelipe Conceição works as Gigantera, articulating code, generative media, and projection with the physicality of silver, steel, sand, and fishing nets. His research rubs the polished finish of the commercial image industry against the erasure of his coastal heritage, investigating the loss of organic time within the acceleration of our economic model.`,
+  statementPt: `GIGANTERA: Um pavilhão. Não um portfólio.\n\nConcreto, luz e som suspensos no espaço — entre e ande. Um pavilhão imersivo onde você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral. A tainha evoca os ritmos da pesca coletiva caiçara, herança direta da família do artista; a espinha, desgastada e isolada, é o que resta quando a lógica da escala industrial avança sobre o que não cabe em planilha.`,
+  statementEn: `GIGANTERA: A pavilion. Not a portfolio.\n\nConcrete, light, and sound suspended in space — enter and walk. An immersive pavilion where you float between suspended vitrines featuring provocative works and an original sound room. The mullet evokes the collective rhythms of artisanal coastal fishing; the spine, worn and isolated, is what remains when industrial scale advances over what cannot fit in a spreadsheet.`
 };
 
 export const PRESS_KIT_ASSETS: PressKitAsset[] = [
@@ -51,7 +51,7 @@ export const PRESS_KIT_ASSETS: PressKitAsset[] = [
   {
     id: 'press-logos-vector',
     category: 'logos',
-    title: 'Pack de Identidade Visual (Pelimotion & Gigantera)',
+    title: 'Pack de Identidade Visual (GIGANTERA)',
     description: 'Logotipos e tipogramas oficiais em vetor escalável e PNGs transparentes (Modo Claro & Escuro).',
     format: 'SVG / PNG',
     resolutionOrSize: 'Vetor Escalável · 1.2 MB',

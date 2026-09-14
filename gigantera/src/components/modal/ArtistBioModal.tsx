@@ -60,15 +60,15 @@ export const ArtistBioModal: React.FC = () => {
               Felipe Conceição
             </h2>
             <div className="bio-role-badge font-mono">
-              PELIMOTION · ARTISTA DIGITAL, MOTION & PRODUTOR MUSICAL
+              GIGANTERA · ARTISTA DIGITAL, ESCULTURA COMPUTACIONAL & SOM
             </div>
 
             <p className="bio-paragraph">
-              A pesquisa de <strong>Gigantera</strong> investiga a colisão entre a biomecânica orgânica e a computação gráfica tridimensional. Cada escultura nasce do estudo anatômico de colunas vertebrais ictiológicas, fundidas em prata, titânio e silte geológico sob atrito viscoso.
+              <strong>Gigantera</strong> é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.
             </p>
 
             <p className="bio-paragraph">
-              Recusando a estética tecnológica esterilizada, o trabalho adota um <strong>Brutalismo Escultural Contemporâneo</strong>: monólitos de peso físico tangível, fiação industrial exposta e síntese sonora analógica onde cada frequência de som modula a matéria luminosa do espaço.
+              Felipe Conceição atua como <strong>Gigantera</strong>, articulando código, mídias generativas e projeção com a fisicalidade da prata, aço, areia e redes de pesca. Sua pesquisa fricciona o acabamento polido da indústria de imagens com o apagamento de sua herança territorial caiçara, investigando a perda do tempo orgânico na aceleração do nosso modelo econômico.
             </p>
 
             <div className="bio-pillars-strip">

@@ -7,6 +7,8 @@
     { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/gigantera/admin", "destination": "/gigantera/admin/index.html" },
+    { "source": "/gigantera/admin/", "destination": "/gigantera/admin/index.html" },
     { "source": "/gigantera", "destination": "/gigantera/index.html" },
     { "source": "/gigantera/", "destination": "/gigantera/index.html" },
     { "source": "/pelispace", "destination": "https://pelispace.vercel.app/pelispace" },
