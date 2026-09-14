@@ -4312,6 +4312,37 @@ a {
   border-color: var(--text-primary);
 }
 
+.master-download-btn.is-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.master-download-btn.is-ghost:hover {
+  border-color: var(--accent-coral);
+  color: var(--accent-coral);
+}
+
+.master-expanded-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-subtle);
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+.master-size-tag {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
 .masters-empty-state {
   text-align: center;
   padding: 64px 20px;

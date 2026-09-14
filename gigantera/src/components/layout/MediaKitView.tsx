@@ -20,6 +20,7 @@ export const MediaKitView: React.FC = () => {
   const [statementLang, setStatementLang] = useState<'pt' | 'en'>('pt');
   const [masterFilter, setMasterFilter] = useState<'all' | 'video' | 'still' | 'sound'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({});
 
   // Unifica o catálogo de obras visuais e de áudio para a aba de masters
   const allMasterItems: MasterWorkAsset[] = useMemo(() => {
@@ -43,6 +44,13 @@ export const MediaKitView: React.FC = () => {
     });
   }, [allMasterItems, masterFilter, searchQuery]);
 
+  const toggleDetails = (id: string) => {
+    setExpandedDetails((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   const handleCopy = (text: string, label: string) => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
@@ -50,7 +58,18 @@ export const MediaKitView: React.FC = () => {
     }
   };
 
-  const handleDownloadBlob = (filename: string, content: string, mimeType = 'text/plain') => {
+  const handleDirectDownload = (e: React.MouseEvent, url: string, filename: string) => {
+    e.stopPropagation();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setCopiedFeedback(`Download de "${filename}" iniciado!`);
+  };
+
+  const handleDownloadBlob = (filename: string, content: string, mimeType = 'text/plain;charset=utf-8') => {
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -64,7 +83,7 @@ export const MediaKitView: React.FC = () => {
   };
 
   return (
-    <section className="media-kit-section" aria-label="Central de Mídia e Download de Masters">
+    <section className="media-kit-section" aria-label="Central de Mídia e Acervo de Obras">
       {/* Toast flutuante de feedback de cópia */}
       {copiedFeedback && (
         <div className="media-kit-toast font-mono" role="status" aria-live="polite">
@@ -74,37 +93,30 @@ export const MediaKitView: React.FC = () => {
       )}
 
       <div className="media-kit-inner">
-        {/* Cabeçalho Editorial da Central de Mídia */}
+        {/* Cabeçalho Editorial Limpo */}
         <header className="media-kit-header">
           <div className="media-kit-header-top">
             <div className="media-kit-tag font-mono">
               <span className="live-status-dot" />
-              <span>[CURATORIAL PRESS KIT & MASTER ARCHIVES // GIGANTERA]</span>
+              <span>GIGANTERA // IMPRENSA & ACERVO</span>
             </div>
 
             <div className="media-kit-nav-actions font-mono">
               <button
                 onClick={() => setViewMode('spatial')}
                 className="media-nav-btn is-accent"
-                title="Voltar ao espaço 3D da galeria"
+                title="Voltar ao espaço 3D do pavilhão"
               >
-                ← SALA 3D
-              </button>
-              <button
-                onClick={() => setViewMode('archive')}
-                className="media-nav-btn"
-                title="Ir para a grade de acervo tradicional"
-              >
-                ACERVO
+                ← VOLTAR AO PAVILHÃO 3D
               </button>
             </div>
           </div>
 
           <div className="media-kit-title-row">
             <div>
-              <h1 className="media-kit-heading">Central de Mídia & Downloads</h1>
+              <h1 className="media-kit-heading">Material de Imprensa & Acervo</h1>
               <p className="media-kit-lead">
-                Área reservada para <strong>galeristas, curadores, editais, agentes e imprensa</strong>. Obtenha arquivos brutos em alta resolução (4K ProRes, TIFF 300 DPI, WAV 24-bit), pacotes promocionais, fichas técnicas e citações prontas para catálogos.
+                Área reservada para <strong>galeristas, curadores, editais e imprensa</strong>. Baixe os arquivos brutos das obras em alta definição e materiais oficiais de divulgação.
               </p>
             </div>
 
@@ -114,16 +126,16 @@ export const MediaKitView: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="media-drive-btn font-mono"
-                title="Abrir pasta completa no Google Drive com todos os arquivos compactados"
+                title="Abrir pasta completa no Google Drive"
               >
                 <span className="drive-btn-icon">📁</span>
-                <span>BAIXAR PACOTE COMPLETO (DRIVE) ↗</span>
+                <span>PASTA COMPLETA NO DRIVE ↗</span>
               </a>
-              <span className="drive-hint font-mono">Estrutura completa organizada em pastas · Acesso liberado</span>
+              <span className="drive-hint font-mono">Arquivos brutos e masters descompactados</span>
             </div>
           </div>
 
-          {/* Abas Principais: 01. DIVULGAÇÃO | 02. OBRAS COMPLETAS */}
+          {/* Seletor de Abas Limpo */}
           <nav className="media-kit-tabs font-mono" role="tablist" aria-label="Abas de mídia">
             <button
               role="tab"
@@ -132,7 +144,7 @@ export const MediaKitView: React.FC = () => {
               className={`media-tab-btn ${activeMediaTab === 'promo' ? 'is-active' : ''}`}
             >
               <span className="tab-number">01</span>
-              <span>MATERIAL DE DIVULGAÇÃO (PRESS KIT)</span>
+              <span>MATERIAL DE DIVULGAÇÃO</span>
               <span className="tab-count">[{PRESS_KIT_ASSETS.length}]</span>
             </button>
 
@@ -143,54 +155,24 @@ export const MediaKitView: React.FC = () => {
               className={`media-tab-btn ${activeMediaTab === 'masters' ? 'is-active' : ''}`}
             >
               <span className="tab-number">02</span>
-              <span>OBRAS COMPLETAS & MASTERS BRUTOS</span>
+              <span>OBRAS COMPLETAS & MASTERS</span>
               <span className="tab-count">[{allMasterItems.length}]</span>
             </button>
           </nav>
         </header>
 
         {/* ========================================================================= */}
-        {/* ABA 01: MATERIAL DE DIVULGAÇÃO (PRESS KIT & CURATORIAL)                   */}
+        {/* ABA 01: MATERIAL DE DIVULGAÇÃO (PRESS KIT)                                */}
         {/* ========================================================================= */}
         {activeMediaTab === 'promo' && (
           <div className="media-tab-content promo-tab-content">
-            {/* Bloco 1: Identificação & Ficha Rápida do Artista */}
-            <div className="media-curator-card font-mono">
-              <div className="curator-card-header">
-                <span className="curator-tag">[IDENTIFICAÇÃO CURATORIAL DO ARTISTA]</span>
-                <span className="curator-badge">PELIMOTION STUDIO</span>
-              </div>
-              <div className="curator-grid">
-                <div className="curator-item">
-                  <span className="curator-label">ARTISTA:</span>
-                  <strong className="curator-val">{ARTIST_INFO.name} ({ARTIST_INFO.alias})</strong>
-                </div>
-                <div className="curator-item">
-                  <span className="curator-label">ATUAÇÃO:</span>
-                  <span className="curator-val">{ARTIST_INFO.role}</span>
-                </div>
-                <div className="curator-item">
-                  <span className="curator-label">E-MAIL DIRETO:</span>
-                  <a href={`mailto:${ARTIST_INFO.contactEmail}`} className="curator-val is-link">
-                    {ARTIST_INFO.contactEmail}
-                  </a>
-                </div>
-                <div className="curator-item">
-                  <span className="curator-label">PORTFÓLIO:</span>
-                  <a href={ARTIST_INFO.portfolioUrl} target="_blank" rel="noreferrer" className="curator-val is-link">
-                    {ARTIST_INFO.portfolioUrl}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Bloco 2: Biografia Curatorial e Declaração Conceitual (Artist Statement) */}
+            {/* Bloco 1: Textos Oficiais (Biografia e Statement) */}
             <div className="media-texts-row">
               {/* Card de Biografia */}
               <article className="media-text-box">
                 <div className="text-box-header font-mono">
                   <div className="text-box-title-group">
-                    <span className="text-box-tag">[TEXTO 01]</span>
+                    <span className="text-box-tag">[TEXTO OFICIAL]</span>
                     <h2 className="text-box-title">Biografia Curatorial</h2>
                   </div>
                   <div className="text-box-lang-switch">
@@ -198,7 +180,7 @@ export const MediaKitView: React.FC = () => {
                       onClick={() => setStatementLang('pt')}
                       className={`lang-btn ${statementLang === 'pt' ? 'is-active' : ''}`}
                     >
-                      PT-BR
+                      PT
                     </button>
                     <button
                       onClick={() => setStatementLang('en')}
@@ -225,18 +207,18 @@ export const MediaKitView: React.FC = () => {
                     }
                     className="box-action-btn"
                   >
-                    [COPIAR TEXTO]
+                    COPIAR TEXTO 📋
                   </button>
                   <button
                     onClick={() =>
                       handleDownloadBlob(
-                        `felipe-conceicao-biografia-${statementLang}.txt`,
+                        `gigantera-biografia-${statementLang}.txt`,
                         statementLang === 'pt' ? CURATORIAL_STATEMENTS.bioPt : CURATORIAL_STATEMENTS.bioEn
                       )
                     }
                     className="box-action-btn is-secondary"
                   >
-                    [BAIXAR .TXT]
+                    BAIXAR .TXT ↓
                   </button>
                 </div>
               </article>
@@ -245,15 +227,15 @@ export const MediaKitView: React.FC = () => {
               <article className="media-text-box">
                 <div className="text-box-header font-mono">
                   <div className="text-box-title-group">
-                    <span className="text-box-tag">[TEXTO 02]</span>
-                    <h2 className="text-box-title">Artist Statement (GIGANTERA)</h2>
+                    <span className="text-box-tag">[TEXTO CONCEITUAL]</span>
+                    <h2 className="text-box-title">Artist Statement</h2>
                   </div>
                   <div className="text-box-lang-switch">
                     <button
                       onClick={() => setStatementLang('pt')}
                       className={`lang-btn ${statementLang === 'pt' ? 'is-active' : ''}`}
                     >
-                      PT-BR
+                      PT
                     </button>
                     <button
                       onClick={() => setStatementLang('en')}
@@ -280,7 +262,7 @@ export const MediaKitView: React.FC = () => {
                     }
                     className="box-action-btn"
                   >
-                    [COPIAR STATEMENT]
+                    COPIAR STATEMENT 📋
                   </button>
                   <button
                     onClick={() =>
@@ -291,27 +273,22 @@ export const MediaKitView: React.FC = () => {
                     }
                     className="box-action-btn is-secondary"
                   >
-                    [BAIXAR .TXT]
+                    BAIXAR .TXT ↓
                   </button>
                 </div>
               </article>
             </div>
 
-            {/* Bloco 3: Grid de Assets Gráficos, Logos, Fotos e Releases */}
+            {/* Bloco 2: Arquivos e Pacotes para Download */}
             <div className="media-assets-section">
               <div className="section-title-row font-mono">
-                <span className="sec-tag">[PACOTES GRÁFICOS & ARQUIVOS PARA IMPRENSA]</span>
-                <span className="sec-sub">DOWNLOADS DIRETOS EM ALTA DEFINIÇÃO</span>
+                <span className="sec-tag">[DOWNLOADS DE ARQUIVOS OFICIAIS]</span>
+                <span className="sec-sub">FOTOS, IDENTIDADE VISUAL E DOCUMENTOS</span>
               </div>
 
               <div className="media-assets-grid">
                 {PRESS_KIT_ASSETS.map((asset) => (
                   <article key={asset.id} className="press-asset-card font-mono">
-                    <span className="card-bracket cb-tl">+</span>
-                    <span className="card-bracket cb-tr">+</span>
-                    <span className="card-bracket cb-bl">+</span>
-                    <span className="card-bracket cb-br">+</span>
-
                     <div className="press-card-top">
                       <div className="press-format-pill">
                         <span className="format-name">{asset.format}</span>
@@ -349,7 +326,7 @@ export const MediaKitView: React.FC = () => {
                           onClick={() => handleCopy(asset.copyableContent!, asset.title)}
                           className="press-action-btn is-secondary"
                         >
-                          COPIAR CONTEÚDO
+                          COPIAR TEXTO 📋
                         </button>
                       )}
                     </div>
@@ -361,11 +338,11 @@ export const MediaKitView: React.FC = () => {
         )}
 
         {/* ========================================================================= */}
-        {/* ABA 02: OBRAS COMPLETAS & MASTERS BRUTOS                                  */}
+        {/* ABA 02: OBRAS COMPLETAS & MASTERS                                         */}
         {/* ========================================================================= */}
         {activeMediaTab === 'masters' && (
           <div className="media-tab-content masters-tab-content">
-            {/* Controles de Filtro e Barra de Busca */}
+            {/* Barra de Filtro Rápido e Busca */}
             <div className="masters-filter-bar font-mono">
               <div className="masters-search-wrap">
                 <span className="search-icon">🔍</span>
@@ -373,7 +350,7 @@ export const MediaKitView: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="BUSCAR OBRA, SÉRIE OU ESPECIFICAÇÃO TÉCNICA..."
+                  placeholder="Buscar obra pelo título..."
                   className="masters-search-input"
                   aria-label="Buscar obra no catálogo master"
                 />
@@ -384,7 +361,7 @@ export const MediaKitView: React.FC = () => {
                 )}
               </div>
 
-              <div className="masters-filter-buttons" role="group" aria-label="Filtro por tipo de master">
+              <div className="masters-filter-buttons" role="group" aria-label="Filtro por tipo de obra">
                 {(['all', 'video', 'still', 'sound'] as const).map((filter) => {
                   const count =
                     filter === 'all'
@@ -393,12 +370,12 @@ export const MediaKitView: React.FC = () => {
 
                   const label =
                     filter === 'all'
-                      ? 'TODOS'
+                      ? 'TODAS'
                       : filter === 'video'
-                      ? 'VÍDEO (4K PRORES)'
+                      ? 'VÍDEOS'
                       : filter === 'still'
-                      ? 'STILL (300 DPI)'
-                      : 'SOM (24-BIT WAV)';
+                      ? 'STILLS'
+                      : 'SOM';
 
                   const isActive = masterFilter === filter;
 
@@ -416,115 +393,123 @@ export const MediaKitView: React.FC = () => {
               </div>
             </div>
 
-            {/* Grid de Master Assets com Fichas Técnicas & Citação Curatorial */}
+            {/* Grid de Obras: Limpo, Visual e Prático */}
             <div className="masters-grid">
               {filteredMasters.length === 0 ? (
                 <div className="masters-empty-state font-mono">
                   <span>[NENHUMA OBRA ENCONTRADA PARA OS CRITÉRIOS DE BUSCA]</span>
                 </div>
               ) : (
-                filteredMasters.map((master, idx) => (
-                  <article key={master.id} className="master-item-card">
-                    <span className="card-bracket cb-tl">+</span>
-                    <span className="card-bracket cb-tr">+</span>
-                    <span className="card-bracket cb-bl">+</span>
-                    <span className="card-bracket cb-br">+</span>
+                filteredMasters.map((master) => {
+                  const isExpanded = !!expandedDetails[master.id];
+                  const filename = master.downloadUrl.split('/').pop() || `${master.title}.${master.medium === 'video' ? 'mp4' : master.medium === 'sound' ? 'mp3' : 'jpg'}`;
 
-                    <div className="master-card-layout">
-                      {/* Lado Esquerdo: Preview da Obra */}
-                      <div className="master-media-col">
-                        <div className="master-thumb-frame">
-                          <img
-                            src={master.previewSrc}
-                            alt={master.title}
-                            loading="lazy"
-                            className="master-thumb-image"
-                          />
-                          <div className="master-media-badge font-mono">
-                            {master.medium.toUpperCase()} // 0{idx + 1}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Lado Direito: Especificações Técnicas e Citação Curatorial */}
-                      <div className="master-info-col">
-                        <div className="master-header-row font-mono">
-                          <div className="master-series-tag">
-                            <span>[{master.series.toUpperCase()}]</span>
-                            <span>{master.year}</span>
-                          </div>
-                          <div className="master-format-pill">
-                            <span>{master.masterFormat}</span>
+                  return (
+                    <article key={master.id} className="master-item-card">
+                      <div className="master-card-layout">
+                        {/* Preview da Obra */}
+                        <div className="master-media-col">
+                          <div className="master-thumb-frame">
+                            <img
+                              src={master.previewSrc}
+                              alt={master.title}
+                              loading="lazy"
+                              className="master-thumb-image"
+                            />
+                            <div className="master-media-badge font-mono">
+                              {master.medium === 'video' ? 'VÍDEO LOOP' : master.medium === 'sound' ? 'ÁUDIO' : 'IMPRESSO GICLÉE'}
+                            </div>
                           </div>
                         </div>
 
-                        <h2 className="master-title">{master.title}</h2>
-                        <p className="master-materials font-mono">{master.materials}</p>
-                        <p className="master-statement">{master.curatorialStatement}</p>
+                        {/* Informações Principais & Botão de Download */}
+                        <div className="master-info-col">
+                          <div className="master-header-row font-mono">
+                            <div className="master-series-tag">
+                              <span>[{master.series.toUpperCase()}]</span>
+                              <span>{master.year}</span>
+                            </div>
+                            <span className="master-size-tag font-mono">
+                              {master.fileSizeApprox}
+                            </span>
+                          </div>
 
-                        {/* Tabela de Metadados Técnicos */}
-                        <div className="master-specs-grid font-mono">
-                          <div className="spec-item">
-                            <span className="spec-k">DIMENSÕES / DURAÇÃO:</span>
-                            <span className="spec-v">{master.dimensionsOrDuration}</span>
-                          </div>
-                          <div className="spec-item">
-                            <span className="spec-k">ESPAÇO DE COR:</span>
-                            <span className="spec-v">{master.colorSpace}</span>
-                          </div>
-                          <div className="spec-item">
-                            <span className="spec-k">PESO ESTIMADO:</span>
-                            <span className="spec-v">{master.fileSizeApprox}</span>
-                          </div>
-                          <div className="spec-item">
-                            <span className="spec-k">STATUS DE ACERVO:</span>
-                            <span className="spec-v is-ready">✓ DISPONÍVEL P/ DOWNLOAD</span>
-                          </div>
-                        </div>
+                          <h2 className="master-title">{master.title}</h2>
+                          <p className="master-statement">{master.curatorialStatement}</p>
 
-                        {/* Caixa de Citação para Catálogo com Botão 1-Clique */}
-                        <div className="master-citation-box font-mono">
-                          <div className="citation-header">
-                            <span className="citation-label">[CRÉDITO PADRONIZADO P/ CATÁLOGO E EDITAL]</span>
-                            <button
-                              onClick={() => handleCopy(master.citationCredit, `Crédito de "${master.title}"`)}
-                              className="citation-copy-btn"
-                              title="Copiar citação formatada para a área de transferência"
-                            >
-                              [COPIAR CRÉDITO 📋]
-                            </button>
-                          </div>
-                          <p className="citation-text">{master.citationCredit}</p>
-                        </div>
-
-                        {/* Ações de Download Direto e Nuvem */}
-                        <div className="master-actions-row font-mono">
-                          <a
-                            href={master.downloadUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="master-download-btn is-primary"
-                          >
-                            <span>BAIXAR MASTER ({master.medium === 'video' ? 'VÍDEO' : master.medium === 'sound' ? 'ÁUDIO' : 'IMAGEM'}) ↓</span>
-                          </a>
-
-                          {master.cloudStorageUrl && (
+                          {/* Botões de Ação Direta */}
+                          <div className="master-actions-row font-mono">
                             <a
-                              href={master.cloudStorageUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="master-download-btn is-secondary"
-                              title="Abrir no Google Drive da Coleção"
+                              href={master.downloadUrl}
+                              download={filename}
+                              onClick={(e) => handleDirectDownload(e, master.downloadUrl, filename)}
+                              className="master-download-btn is-primary"
                             >
-                              <span>VER NO DRIVE ↗</span>
+                              <span>BAIXAR ARQUIVO ↓</span>
                             </a>
+
+                            <button
+                              type="button"
+                              onClick={() => toggleDetails(master.id)}
+                              className="master-download-btn is-secondary"
+                            >
+                              <span>{isExpanded ? '▲ OCULTAR DETALHES' : '▼ FICHA TÉCNICA & CITAÇÃO'}</span>
+                            </button>
+
+                            {master.cloudStorageUrl && (
+                              <a
+                                href={master.cloudStorageUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="master-download-btn is-ghost"
+                                title="Abrir pasta completa no Google Drive"
+                              >
+                                <span>DRIVE ↗</span>
+                              </a>
+                            )}
+                          </div>
+
+                          {/* Gaveta Expansível de Detalhes (Oculta por padrão para manter a página limpa) */}
+                          {isExpanded && (
+                            <div className="master-expanded-drawer font-mono">
+                              <div className="master-specs-grid">
+                                <div className="spec-item">
+                                  <span className="spec-k">FORMATO MASTER:</span>
+                                  <span className="spec-v">{master.masterFormat}</span>
+                                </div>
+                                <div className="spec-item">
+                                  <span className="spec-k">DIMENSÕES / DURAÇÃO:</span>
+                                  <span className="spec-v">{master.dimensionsOrDuration}</span>
+                                </div>
+                                <div className="spec-item">
+                                  <span className="spec-k">ESPAÇO DE COR:</span>
+                                  <span className="spec-v">{master.colorSpace}</span>
+                                </div>
+                                <div className="spec-item">
+                                  <span className="spec-k">MATERIAIS:</span>
+                                  <span className="spec-v">{master.materials}</span>
+                                </div>
+                              </div>
+
+                              <div className="master-citation-box">
+                                <div className="citation-header">
+                                  <span className="citation-label">[CRÉDITO P/ EDITAL & CATÁLOGO]</span>
+                                  <button
+                                    onClick={() => handleCopy(master.citationCredit, `Crédito de "${master.title}"`)}
+                                    className="citation-copy-btn"
+                                  >
+                                    COPIAR CRÉDITO 📋
+                                  </button>
+                                </div>
+                                <p className="citation-text">{master.citationCredit}</p>
+                              </div>
+                            </div>
                           )}
                         </div>
                       </div>
-                    </div>
-                  </article>
-                ))
+                    </article>
+                  );
+                })
               )}
             </div>
           </div>
