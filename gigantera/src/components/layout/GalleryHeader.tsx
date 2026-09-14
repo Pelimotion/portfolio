@@ -173,15 +173,16 @@ export const GalleryHeader: React.FC = () => {
           <kbd className="header-keycap-hint">T</kbd>
         </button>
 
-        {/* Central de Mídia & Masters para Galeristas / Imprensa / Editais com atalho [M] */}
-        <button
-          onClick={() => setViewMode(viewMode === 'media' ? 'spatial' : 'media')}
-          className={`header-minimal-btn header-media-btn ${viewMode === 'media' ? 'is-active' : ''}`}
-          title="Central de Download de Mídia, Press Kit e Masters para Galeristas (M)"
-        >
-          <span>{viewMode === 'media' ? '[✕ SAIR MÍDIA]' : '[PRESS / MÍDIA]'}</span>
-          <kbd className="header-keycap-hint">M</kbd>
-        </button>
+        {/* Botão de saída visível apenas quando o usuário está dentro da Área de Mídia */}
+        {viewMode === 'media' && (
+          <button
+            onClick={() => setViewMode('spatial')}
+            className="header-minimal-btn header-media-btn is-active"
+            title="Sair da Área de Mídia e voltar para a Sala 3D"
+          >
+            <span>[✕ SAIR DA MÍDIA]</span>
+          </button>
+        )}
 
         {/* Bio do Artista e Contato com atalho [B] */}
         <button

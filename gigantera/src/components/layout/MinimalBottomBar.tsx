@@ -93,15 +93,6 @@ export const MinimalBottomBar: React.FC = () => {
               <span>GUIA [?]</span>
             </button>
 
-            {/* Central de Mídia & Download de Obras (M) */}
-            <button
-              onClick={() => setViewMode(viewMode === 'media' ? 'spatial' : 'media')}
-              className={`tool-media-switch-btn ${viewMode === 'media' ? 'is-active' : ''}`}
-              title="Central de Download de Mídia e Masters (M)"
-            >
-              <kbd className="keycap keycap-sm">M</kbd>
-              <span>{viewMode === 'media' ? 'SALA 3D' : 'MÍDIA'}</span>
-            </button>
 
             {/* Alternador de Modo de Visualização (TAB) */}
             <button

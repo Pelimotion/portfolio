@@ -176,15 +176,6 @@ export const MobileBottomDock: React.FC = () => {
             <span className="tool-text">ACERVO</span>
           </button>
 
-          {/* Central de Mídia / Download para Galeristas */}
-          <button
-            onClick={() => setViewMode(viewMode === 'media' ? 'spatial' : 'media')}
-            className={`mobile-tool-pill ${viewMode === 'media' ? 'is-active' : ''}`}
-            title="Central de Mídia e Downloads"
-          >
-            <span className="tool-icon">↓</span>
-            <span className="tool-text">MÍDIA</span>
-          </button>
 
           {/* Guia de Ajuda Tátil */}
           <button
