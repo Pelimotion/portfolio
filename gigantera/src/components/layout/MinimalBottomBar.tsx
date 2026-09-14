@@ -4,20 +4,12 @@ import { SECTORS_CATALOG } from '../../data/artworks';
 import { MobileBottomDock } from './MobileBottomDock';
 
 export const MinimalBottomBar: React.FC = () => {
-  const isMobile = useAppStore((s) => s.isMobile);
   const viewMode = useAppStore((s) => s.viewMode);
   const setViewMode = useAppStore((s) => s.setViewMode);
-  const cameraCurrentZ = useAppStore((s) => s.cameraCurrentZ);
   const activeSectorId = useAppStore((s) => s.activeSectorId);
   const warpToSector = useAppStore((s) => s.warpToSector);
-  const setCDPOVOpen = useAppStore((s) => s.setCDPOVOpen);
-  const currentAudioTrack = useAppStore((s) => s.currentAudioTrack);
-  const isAudioPlaying = useAppStore((s) => s.isAudioPlaying);
-  const tutorialDocked = useAppStore((s) => s.tutorialDocked);
   const hasPlayerMoved = useAppStore((s) => s.hasPlayerMoved);
   const toggleGuideModal = useAppStore((s) => s.toggleGuideModal);
-
-  const activeSector = SECTORS_CATALOG.find((s) => s.id === activeSectorId) || SECTORS_CATALOG[1];
 
   return (
     <>
@@ -26,94 +18,93 @@ export const MinimalBottomBar: React.FC = () => {
         <MobileBottomDock />
       </div>
 
-      {/* Dock Minimalista Clássico Desktop com Telemetria Z e Keycaps */}
-      <footer className="minimal-feathered-dock desktop-dock-wrapper" role="toolbar" aria-label="Controles da Galeria">
-      {/* Barra Inferior com Proteção Gradiente Feather */}
-      <div className="bottom-bar-scrim">
-        {/* Bloco Esquerda: Telemetria Z & Setor */}
-        <div className="bottom-left-telemetry font-mono">
-          <span className="telemetry-sector">{activeSector.title.split('//')[0].trim()}</span>
-          <span className="telemetry-divider">/</span>
-          <span className="telemetry-z">
-            Z: {cameraCurrentZ >= 0 ? `+${cameraCurrentZ.toFixed(1)}` : cameraCurrentZ.toFixed(1)}M
-          </span>
+      {/* Dock Minimalista Desktop com Proteção Feather Escura e Alta Sofisticação */}
+      <footer
+        className="minimal-feathered-dock desktop-dock-wrapper"
+        role="toolbar"
+        aria-label="Controles da Galeria"
+      >
+        <div className="bottom-bar-scrim">
+          {/* Esquerda: Navegador de Setores Arquiteturais (SOM · STILLS · VÍDEOS) */}
+          <div className="bottom-sectors-navigator font-mono">
+            <span className="sector-nav-tag">SETOR:</span>
+            <div className="sector-pills-cluster" role="tablist" aria-label="Navegação por setores">
+              {SECTORS_CATALOG.map((sec) => {
+                const isActive = activeSectorId === sec.id;
+                const label =
+                  sec.id === 'entrance-audio'
+                    ? '00 · SOM'
+                    : sec.id === 'video'
+                    ? '01 · VÍDEOS'
+                    : '02 · STILLS';
 
-          <div className="quick-sectors-row">
-            {SECTORS_CATALOG.map((sec) => (
-              <button
-                key={sec.id}
-                onClick={() => warpToSector(sec.id)}
-                className={`sector-mini-dot ${activeSectorId === sec.id ? 'is-active' : ''}`}
-                title={`Ir para ${sec.title}`}
-              >
-                {sec.sectorCode}
-              </button>
-            ))}
+                return (
+                  <button
+                    key={sec.id}
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => warpToSector(sec.id)}
+                    className={`sector-nav-pill ${isActive ? 'is-active' : ''}`}
+                    title={`Navegar para ${sec.title}`}
+                  >
+                    <span className="sector-pill-dot" />
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Centro: Dica de Navegação Inicial — Desvanece suavemente assim que o jogador dá o 1º passo */}
+          <div
+            className={`bottom-dynamic-controls font-mono ${hasPlayerMoved ? 'is-faded-away' : 'is-visible'}`}
+            aria-hidden={hasPlayerMoved}
+          >
+            <div className="controls-hint-capsule">
+              <span className="keycap-cluster">
+                <kbd className="keycap">W</kbd>
+                <kbd className="keycap">A</kbd>
+                <kbd className="keycap">S</kbd>
+                <kbd className="keycap">D</kbd>
+                <span className="keycap-label">ANDAR</span>
+              </span>
+              <span className="hint-sep">·</span>
+              <span className="mouse-badge">
+                <span className="mouse-icon mouse-look" />
+                <span className="keycap-label">MIRA</span>
+              </span>
+              <span className="hint-sep">·</span>
+              <span className="keycap-combo">
+                <kbd className="keycap">E</kbd>
+                <span className="keycap-label">INTERAGIR</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Direita: Acessos Rápidos — Guia de Comandos On-Demand e Alternador 3D / Grade */}
+          <div className="bottom-right-tools font-mono">
+            {/* Guia de Atalhos Completo (H) */}
+            <button
+              onClick={() => toggleGuideModal()}
+              className="tool-guide-modal-btn"
+              title="Abrir guia completo de controles táteis e atalhos (H)"
+            >
+              <kbd className="keycap keycap-sm">H</kbd>
+              <span>GUIA [?]</span>
+            </button>
+
+            {/* Alternador de Modo de Visualização (TAB) */}
+            <button
+              onClick={() => setViewMode(viewMode === 'spatial' ? 'archive' : 'spatial')}
+              className="tool-view-switch-btn"
+              title="Alternar entre galeria espacial 3D e catálogo tradicional (TAB)"
+            >
+              <kbd className="keycap keycap-sm">TAB</kbd>
+              <span>{viewMode === 'spatial' ? 'ACERVO' : 'SALA 3D'}</span>
+            </button>
           </div>
         </div>
-
-        {/* Bloco Central: Guia Táctil Acoplado de Game — some suavemente quando o jogador começa a andar */}
-        <div
-          className={`bottom-center-guide font-mono ${tutorialDocked ? 'is-docked' : ''} ${hasPlayerMoved ? 'is-faded-away' : ''}`}
-          aria-hidden={hasPlayerMoved}
-        >
-          <span className="keycap-cluster">
-            <kbd className="keycap">W</kbd>
-            <kbd className="keycap">A</kbd>
-            <kbd className="keycap">S</kbd>
-            <kbd className="keycap">D</kbd>
-            <span className="keycap-label">ANDAR</span>
-          </span>
-          <span className="guide-dot">·</span>
-          <span className="mouse-badge">
-            <span className="mouse-icon mouse-look" />
-            <span className="keycap-label">MIRA</span>
-          </span>
-          <span className="guide-dot">·</span>
-          <span className="keycap-combo">
-            <kbd className="keycap">E</kbd>
-            <span className="keycap-label">INTERAGIR</span>
-          </span>
-        </div>
-
-        {/* Bloco Direita: Botão de Ajuda de Controles, CD Player & Alternador 3D / Índice com TAB */}
-        <div className="bottom-right-tools font-mono">
-          {/* Botão de Guia de Controles On-Demand */}
-          <button
-            onClick={() => toggleGuideModal()}
-            className="tool-guide-modal-btn"
-            title="Abrir painel completo de controles e atalhos táteis (H)"
-          >
-            <kbd className="keycap" style={{ fontSize: '10px', height: '18px', padding: '0 5px' }}>H</kbd>
-            <span>GUIA [?]</span>
-          </button>
-
-          {/* Botão de Estojo de CD em POV */}
-          <button
-            onClick={() => setCDPOVOpen(true)}
-            className={`tool-cd-player-pill ${isAudioPlaying ? 'is-playing' : ''}`}
-            title="Pegar o álbum de CD em primeira pessoa e folhear a contracapa"
-          >
-            <span className="cd-icon">{isAudioPlaying ? '❚❚' : '☊'}</span>
-            <span className="cd-title">
-              {currentAudioTrack.trackNumber}. {currentAudioTrack.title.toUpperCase()}
-            </span>
-            <kbd className="keycap" style={{ fontSize: '9px', height: '18px', padding: '0 4px' }}>CD</kbd>
-          </button>
-
-          {/* Alternador 3D / Arquivo em Grade com indicação de tecla TAB */}
-          <button
-            onClick={() => setViewMode(viewMode === 'spatial' ? 'archive' : 'spatial')}
-            className="tool-view-switch-btn"
-            title="Alternar entre visualização espacial 3D e catálogo tradicional (TAB)"
-          >
-            <kbd className="keycap" style={{ fontSize: '9px', height: '18px', padding: '0 4px', marginRight: '5px' }}>TAB</kbd>
-            <span>{viewMode === 'spatial' ? 'ACERVO' : 'SALA 3D'}</span>
-          </button>
-        </div>
-      </div>
-    </footer>
+      </footer>
     </>
   );
 };
-

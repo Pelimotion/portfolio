@@ -5,22 +5,23 @@ export const IntroSequence: React.FC = () => {
   const introPhase = useAppStore((s) => s.introPhase);
   const setIntroPhase = useAppStore((s) => s.setIntroPhase);
   const setTutorialDocked = useAppStore((s) => s.setTutorialDocked);
+  const hasPlayerMoved = useAppStore((s) => s.hasPlayerMoved);
+  const isHoldingCD = useAppStore((s) => s.isHoldingCD);
 
   const [isGlidingDown, setIsGlidingDown] = useState(false);
   const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
-    // 0s a 3.2s: Obras materializando-se no 3D, tutorial flutuando no centro
+    // Transição suave inicial após 4.2s ou ao primeiro comando
     const tGlide = setTimeout(() => {
       setIsGlidingDown(true);
       setTutorialDocked(true);
-    }, 3400);
+    }, 4500);
 
-    // 4.0s: Conclusão da descida para a bottom bar
     const tFinish = setTimeout(() => {
       setIsDone(true);
       setIntroPhase('ready');
-    }, 4200);
+    }, 5500);
 
     const handleEarlyDismiss = () => {
       setIsGlidingDown(true);
@@ -28,7 +29,7 @@ export const IntroSequence: React.FC = () => {
       setTimeout(() => {
         setIsDone(true);
         setIntroPhase('ready');
-      }, 400);
+      }, 500);
     };
 
     window.addEventListener('wheel', handleEarlyDismiss, { once: true });
@@ -44,6 +45,19 @@ export const IntroSequence: React.FC = () => {
     };
   }, [setIntroPhase, setTutorialDocked]);
 
+  // Se o jogador começou a andar ou pegou o CD, encerra a introdução imediatamente
+  useEffect(() => {
+    if ((hasPlayerMoved || isHoldingCD) && !isDone) {
+      setIsGlidingDown(true);
+      setTutorialDocked(true);
+      const t = setTimeout(() => {
+        setIsDone(true);
+        setIntroPhase('ready');
+      }, 350);
+      return () => clearTimeout(t);
+    }
+  }, [hasPlayerMoved, isHoldingCD, isDone, setIntroPhase, setTutorialDocked]);
+
   if (isDone || introPhase === 'ready') return null;
 
   return (
@@ -54,14 +68,53 @@ export const IntroSequence: React.FC = () => {
         setTutorialDocked(true);
         setTimeout(() => setIsDone(true), 400);
       }}
-      aria-label="Tutorial de Navegação Espacial"
+      aria-label="Introdução Imersiva de Gigantera"
     >
       <div className="intro-floating-cue font-mono">
-        <span className="cue-badge">[ESPACIAL // NAVEGAÇÃO LIVRE]</span>
+        <div className="intro-badge-row">
+          <span className="cue-badge">[PELIMOTION // GIGANTERA]</span>
+          <span className="intro-session-dot" />
+          <span className="intro-session-text">ARQUIVO ESPACIAL 2026</span>
+        </div>
+
         <h2 className="cue-statement">
-          RODE O SCROLL OU ARRASTE PARA FLUTUAR ENTRE AS OBRAS
+          BEM-VINDO AO ESPAÇO CINÉTICO DE ARTE E SOM
         </h2>
-        <span className="cue-cinema-tip">CLIQUE EM QUALQUER VITRINE DE VIDRO P/ ENTRAR NO MODO CINEMA</span>
+
+        <p className="cue-narrative-text">
+          A galeria ganha vida em ressonância. Se desejar uma experiência completa,
+          aproxime-se do console à direita e escolha uma faixa sonora para acompanhar seu percurso,
+          ou explore livremente pelas obras suspensas no salão.
+        </p>
+
+        <div className="cue-quick-tips-cluster">
+          <span className="cue-tip-chip">
+            <kbd className="keycap keycap-xs">WASD</kbd>
+            <span>CAMINHAR</span>
+          </span>
+          <span className="chip-sep">·</span>
+          <span className="cue-tip-chip">
+            <kbd className="keycap keycap-xs">E</kbd>
+            <span>PEGAR ÁLBUM / INSPECIONAR</span>
+          </span>
+          <span className="chip-sep">·</span>
+          <span className="cue-tip-chip">
+            <kbd className="keycap keycap-xs">H</kbd>
+            <span>GUIA TÁTIL</span>
+          </span>
+        </div>
+
+        <button
+          className="intro-dismiss-cta-btn font-mono"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsGlidingDown(true);
+            setTutorialDocked(true);
+            setTimeout(() => setIsDone(true), 350);
+          }}
+        >
+          [ENTRAR NA GALERIA ↵]
+        </button>
       </div>
     </div>
   );

@@ -27,6 +27,16 @@ export const CinemaView: React.FC = () => {
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
+  // Função unificada para encerramento gracioso e retomada imediata da mira
+  const handleCloseCinema = () => {
+    try {
+      (document.activeElement as HTMLElement)?.blur?.();
+      document.body.style.cursor = 'default';
+    } catch {}
+    closeCinema();
+    window.dispatchEvent(new CustomEvent('gigantera:request-lock'));
+  };
+
   // Crossfade de áudio aveludado e cinematográfico ao inspecionar obra de vídeo
   useEffect(() => {
     if (!cinemaArtwork) return;
@@ -103,18 +113,11 @@ export const CinemaView: React.FC = () => {
       const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
       if (tag === 'input' || tag === 'textarea') return;
 
-      // Atalhos táteis dedicados: E ou Q para devolver a obra sem sair do POV
-      if (e.key === 'e' || e.key === 'E' || e.key === 'q' || e.key === 'Q') {
+      // Atalhos táteis dedicados: E, Q ou ESC para devolver a obra e retornar ao salão
+      if (e.key === 'e' || e.key === 'E' || e.key === 'q' || e.key === 'Q' || e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
-        try {
-          document.body.style.cursor = 'default';
-        } catch {}
-        closeCinema();
-      } else if (e.key === 'Escape') {
-        // Fallback gracioso para ESC mantendo segurança
-        e.preventDefault();
-        closeCinema();
+        handleCloseCinema();
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         e.stopPropagation();
@@ -243,12 +246,9 @@ export const CinemaView: React.FC = () => {
                 )}
 
                 <button
-                  onClick={() => {
-                    try { document.body.style.cursor = 'default'; } catch {}
-                    closeCinema();
-                  }}
+                  onClick={handleCloseCinema}
                   className="cue-esc-btn"
-                  title="Fechar"
+                  title="Fechar (ESC, E ou Q)"
                 >
                   <span className="keycap keycap-coral font-bold">✕</span>
                   <span className="keycap-label">FECHAR</span>
@@ -286,14 +286,9 @@ export const CinemaView: React.FC = () => {
               )}
               <span className="cue-sep">·</span>
               <button
-                onClick={() => {
-                  try {
-                    document.body.style.cursor = 'default';
-                  } catch {}
-                  closeCinema();
-                }}
+                onClick={handleCloseCinema}
                 className="cue-esc-btn"
-                title="Sair da inspeção e devolver a prancheta à vitrine (E ou Q)"
+                title="Sair da inspeção e devolver a prancheta à vitrine (ESC, E ou Q)"
               >
                 <kbd className="keycap keycap-coral">E</kbd>
                 <span className="keycap-label">/</span>
@@ -335,7 +330,7 @@ export const CinemaView: React.FC = () => {
                 title="Alternar áudio da obra (M)"
               >
                 <kbd className="keycap">M</kbd>
-                <span className="keycap-label">{isVideoMuted ? 'MUTADO' : 'ÁUDIO'}</span>
+                <span className="keycap-label">{isVideoMuted ? 'ÁUDIO MUTADO' : 'ÁUDIO ATIVO'}</span>
               </button>
               <span className="cue-sep">·</span>
               <span className="mouse-badge">
@@ -353,14 +348,9 @@ export const CinemaView: React.FC = () => {
               </button>
               <span className="cue-sep">·</span>
               <button
-                onClick={() => {
-                  try {
-                    document.body.style.cursor = 'default';
-                  } catch {}
-                  closeCinema();
-                }}
+                onClick={handleCloseCinema}
                 className="cue-esc-btn"
-                title="Sair da tela cinema (E ou Q)"
+                title="Sair da tela cinema (ESC, E ou Q)"
               >
                 <kbd className="keycap keycap-coral">E</kbd>
                 <span className="keycap-label">/</span>
@@ -427,14 +417,9 @@ export const CinemaView: React.FC = () => {
 
         <div className="cinema-info-right font-mono">
           <button
-            onClick={() => {
-              try {
-                document.body.style.cursor = 'default';
-              } catch {}
-              closeCinema();
-            }}
+            onClick={handleCloseCinema}
             className="cinema-return-btn font-mono"
-            aria-label="Sair do modo de inspeção e retornar à galeria livre (E ou Q)"
+            aria-label="Sair do modo de inspeção e retornar à galeria livre (ESC, E ou Q)"
           >
             <kbd className="keycap keycap-coral">E</kbd>
             <span className="keycap-label">/</span>

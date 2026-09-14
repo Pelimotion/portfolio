@@ -12,7 +12,7 @@ import { computeModularGalleryLayout, ViewingSpotInfo } from '../../core/modular
 
 /**
  * Gerador procedural de textura de piso: Microcimento / Marmorite Alabastro claro
- * com juntas de dilatação de placas de 2x2 metros e reflexo aveludado suave.
+ * com juntas de dilatação de placas de 2x2 metros, agregados minerais finos e reflexo aveludado suave.
  */
 function createFloorTexture(isLight: boolean): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
@@ -20,20 +20,23 @@ function createFloorTexture(isLight: boolean): THREE.CanvasTexture {
   canvas.height = 1024;
   const ctx = canvas.getContext('2d')!;
 
-  ctx.fillStyle = isLight ? '#f2f1ec' : '#131615';
+  // Tom de base marmorite alabastro contemporâneo (nunca branco estourado)
+  ctx.fillStyle = isLight ? '#eae7df' : '#121514';
   ctx.fillRect(0, 0, 1024, 1024);
 
   const imgData = ctx.getImageData(0, 0, 1024, 1024);
   const data = imgData.data;
   for (let i = 0; i < data.length; i += 4) {
-    const noise = (Math.random() - 0.5) * (isLight ? 10 : 7);
+    // Micro-granulação mineral e agregados de quartzo/calcário
+    const noise = (Math.random() - 0.5) * (isLight ? 14 : 9);
     data[i] = Math.min(255, Math.max(0, data[i] + noise));
     data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
     data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
   }
   ctx.putImageData(imgData, 0, 0);
 
-  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.05)';
+  // Juntas de dilatação sutis e elegantes
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.06)';
   ctx.lineWidth = 2;
   ctx.strokeRect(0, 0, 1024, 1024);
   ctx.beginPath();
@@ -52,21 +55,33 @@ function createFloorTexture(isLight: boolean): THREE.CanvasTexture {
 }
 
 /**
- * Gerador procedural de textura de parede: Gesso mate de museu com micro-grão tátil
+ * Gerador procedural de textura de parede: Gesso arquitectural mate de museu
+ * com micro-relevo tátil, leve textura de rolo e suave oclusão ambiental vertical
  */
 function createWallTexture(isLight: boolean): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
+  canvas.width = 1024;
+  canvas.height = 1024;
   const ctx = canvas.getContext('2d')!;
 
-  ctx.fillStyle = isLight ? '#faf9f6' : '#0e1110';
-  ctx.fillRect(0, 0, 512, 512);
+  // Tom de cal/gesso arquitetural contemporâneo acolhedor e sólido
+  const baseFill = isLight ? '#edeae2' : '#111413';
+  ctx.fillStyle = baseFill;
+  ctx.fillRect(0, 0, 1024, 1024);
 
-  const imgData = ctx.getImageData(0, 0, 512, 512);
+  // Leve gradiente vertical de oclusão ambiental (base e topo suavemente mais profundos)
+  const grad = ctx.createLinearGradient(0, 0, 0, 1024);
+  grad.addColorStop(0.0, isLight ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.22)');
+  grad.addColorStop(0.12, 'rgba(0,0,0,0)');
+  grad.addColorStop(0.88, 'rgba(0,0,0,0)');
+  grad.addColorStop(1.0, isLight ? 'rgba(0,0,0,0.07)' : 'rgba(0,0,0,0.25)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  const imgData = ctx.getImageData(0, 0, 1024, 1024);
   const data = imgData.data;
   for (let i = 0; i < data.length; i += 4) {
-    const grain = (Math.random() - 0.5) * (isLight ? 7 : 5);
+    const grain = (Math.random() - 0.5) * (isLight ? 9 : 6);
     data[i] = Math.min(255, Math.max(0, data[i] + grain));
     data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain));
     data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain));
@@ -76,8 +91,58 @@ function createWallTexture(isLight: boolean): THREE.CanvasTexture {
   const tex = new THREE.CanvasTexture(canvas);
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(20, 4);
+  tex.repeat.set(16, 4);
   tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Gerador procedural de mapa de rugosidade para os vidros das vitrines:
+ * Simula a presença física do vidro com sutis impressões digitais nas bordas,
+ * leves marcas de limpeza de museu e reflexo não uniforme.
+ */
+function createGlassRoughnessTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+
+  // Base com rugosidade baixa (vidro polido limpo)
+  ctx.fillStyle = '#101010';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Micro-marcas e manchas táteis suaves de visitantes nas bordas inferiores
+  for (let b = 0; b < 14; b++) {
+    const rx = 30 + Math.random() * 452;
+    const ry = 340 + Math.random() * 150;
+    const rad = 15 + Math.random() * 32;
+    const smg = ctx.createRadialGradient(rx, ry, 0, rx, ry, rad);
+    smg.addColorStop(0, 'rgba(80, 80, 80, 0.42)');
+    smg.addColorStop(0.5, 'rgba(50, 50, 50, 0.22)');
+    smg.addColorStop(1, 'rgba(16, 16, 16, 0)');
+    ctx.fillStyle = smg;
+    ctx.beginPath();
+    ctx.arc(rx, ry, rad, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Marcas de flanela / limpeza suave de museu
+  ctx.strokeStyle = 'rgba(60, 60, 60, 0.15)';
+  ctx.lineWidth = 18;
+  for (let s = 0; s < 4; s++) {
+    ctx.beginPath();
+    ctx.moveTo(Math.random() * 512, Math.random() * 512);
+    ctx.bezierCurveTo(
+      Math.random() * 512, Math.random() * 512,
+      Math.random() * 512, Math.random() * 512,
+      Math.random() * 512, Math.random() * 512
+    );
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
   return tex;
 }
 
@@ -232,22 +297,22 @@ export const GalleryScene3D: React.FC = () => {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = isLight ? 1.05 : 1.15;
+    renderer.toneMappingExposure = isLight ? 0.98 : 1.08;
     renderer.setClearColor(currentThemeTokens.canvasFog);
     renderer.domElement.style.touchAction = 'none';
     container.appendChild(renderer.domElement);
 
-    // 2. Sistema de Iluminação Realista Quase Branco com Sombras Suaves
+    // 2. Sistema de Iluminação Realista Contemporâneo com Sombras Suaves e Contraste Arquitetural
     const hemiLight = new THREE.HemisphereLight(
-      isLight ? 0xffffff : 0x181c1a,
-      isLight ? 0xf0eee6 : 0x0a0c0b,
-      isLight ? 1.45 : 0.85
+      isLight ? 0xf4f2ea : 0x181c1a,
+      isLight ? 0xdcd8cd : 0x0a0c0b,
+      isLight ? 0.90 : 0.75
     );
     scene.add(hemiLight);
 
     const ambientLight = new THREE.AmbientLight(
-      isLight ? 0xfcfbfa : 0x141716,
-      isLight ? 0.75 : 0.55
+      isLight ? 0xf0ede4 : 0x141716,
+      isLight ? 0.38 : 0.42
     );
     scene.add(ambientLight);
 
@@ -257,8 +322,8 @@ export const GalleryScene3D: React.FC = () => {
     const hallLen = layout.hallLength;
 
     const sunLight = new THREE.DirectionalLight(
-      isLight ? 0xfffdf7 : 0xffedd0,
-      isLight ? 1.9 : 2.2
+      isLight ? 0xfff8ed : 0xffebd0,
+      isLight ? 1.65 : 1.95
     );
     sunLight.position.set(12, 24, hallCenterZ + 30);
     sunLight.castShadow = true;
@@ -274,19 +339,21 @@ export const GalleryScene3D: React.FC = () => {
     scene.add(sunLight);
 
     const visitorLight = new THREE.PointLight(
-      isLight ? 0xfffaea : 0xe4c379,
-      isLight ? 0.8 : 1.4,
+      isLight ? 0xfff3d8 : 0xe4c379,
+      isLight ? 0.55 : 0.95,
       32
     );
     scene.add(visitorLight);
 
-    const floorTexture = createFloorTexture(isLight);
-    const wallTexture = createWallTexture(isLight);
+    const floorLightTex = createFloorTexture(true);
+    const floorDarkTex = createFloorTexture(false);
+    const wallLightTex = createWallTexture(true);
+    const wallDarkTex = createWallTexture(false);
 
     const floorGeo = new THREE.PlaneGeometry(layout.roomWidth + 6, hallLen + 12, 1, 1);
     floorGeo.rotateX(-Math.PI / 2);
     const floorMat = new THREE.MeshStandardMaterial({
-      map: floorTexture,
+      map: isLight ? floorLightTex : floorDarkTex,
       roughness: isLight ? 0.38 : 0.45,
       metalness: isLight ? 0.08 : 0.12
     });
@@ -310,7 +377,7 @@ export const GalleryScene3D: React.FC = () => {
 
     const wallGeo = new THREE.PlaneGeometry(hallLen + 12, 24);
     const wallMat = new THREE.MeshStandardMaterial({
-      map: wallTexture,
+      map: isLight ? wallLightTex : wallDarkTex,
       roughness: 0.88,
       metalness: 0.02
     });
@@ -446,6 +513,24 @@ export const GalleryScene3D: React.FC = () => {
     hctx.fillRect(0, 0, 128, 128);
     const hazeTexture = new THREE.CanvasTexture(hazeCanvas);
 
+    // Materiais compartilhados das caixas acústicas (alta performance e suporte a troca de tema instantânea)
+    const bracketMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0x666866 : 0x242826,
+      metalness: 0.8,
+      roughness: 0.25
+    });
+    const spkBodyMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0xeeece5 : 0x181a19,
+      roughness: 0.75,
+      metalness: 0.15
+    });
+    const baffleMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x242725 : 0x0c0e0d });
+    const coneMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0xd0cec7 : 0x333635,
+      roughness: 0.45,
+      metalness: 0.3
+    });
+
     layout.speakers.forEach((spk, sIdx) => {
       const spkGroup = new THREE.Group();
       spkGroup.position.set(spk.x, spk.y, spk.z);
@@ -453,48 +538,32 @@ export const GalleryScene3D: React.FC = () => {
 
       // Suporte metálico de ancoragem na parede de concreto
       const bracketGeo = new THREE.BoxGeometry(0.16, 0.26, 0.22);
-      const bracketMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0x666866 : 0x242826,
-        metalness: 0.8,
-        roughness: 0.25
-      });
       const bracket = new THREE.Mesh(bracketGeo, bracketMat);
       bracket.position.z = -0.25;
       spkGroup.add(bracket);
 
       // Gabinete acústico elegante
       const spkBodyGeo = new THREE.BoxGeometry(0.52, 0.78, 0.38);
-      const spkBodyMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0xeeece5 : 0x181a19,
-        roughness: 0.75,
-        metalness: 0.15
-      });
       const spkBody = new THREE.Mesh(spkBodyGeo, spkBodyMat);
       spkBody.castShadow = true;
       spkGroup.add(spkBody);
 
       // Baffle frontal rebaixado
       const baffleGeo = new THREE.PlaneGeometry(0.46, 0.72);
-      const baffleMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x242725 : 0x0c0e0d });
       const baffle = new THREE.Mesh(baffleGeo, baffleMat);
       baffle.position.z = 0.191;
       spkGroup.add(baffle);
 
-      // Cones de alto-falante (Woofer & Tweeter)
+      // Cones de alto-falante (Woofer & Tweeter) — Woofer fixo em z = 0.196 eliminando Z-fighting e piscamento
       const wooferGeo = new THREE.CircleGeometry(0.15, 24);
-      const coneMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0xd0cec7 : 0x333635,
-        roughness: 0.45,
-        metalness: 0.3
-      });
       const woofer = new THREE.Mesh(wooferGeo, coneMat);
-      woofer.position.set(0, -0.13, 0.193);
+      woofer.position.set(0, -0.13, 0.196);
       spkGroup.add(woofer);
       speakerWoofers.push(woofer);
 
       const tweeterGeo = new THREE.CircleGeometry(0.065, 20);
       const tweeter = new THREE.Mesh(tweeterGeo, coneMat);
-      tweeter.position.set(0, 0.17, 0.193);
+      tweeter.position.set(0, 0.17, 0.196);
       spkGroup.add(tweeter);
 
       // LED indicador acústico
@@ -504,9 +573,12 @@ export const GalleryScene3D: React.FC = () => {
       led.position.set(0, -0.3, 0.193);
       spkGroup.add(led);
 
-      // Efeito de Distorção de Ar / Onda de Calor Térmico Acústico (suave, sem vetores rígidos)
+      // Efeito Acústico Volumétrico 3D (Cúpula hemisférica visível tanto de frente quanto de perfil/lado)
       for (let p = 0; p < 4; p++) {
-        const puffGeo = new THREE.PlaneGeometry(0.55, 0.55);
+        // Hemisfério 3D aberto apontando para fora da caixa de som (+Z)
+        const domeGeo = new THREE.SphereGeometry(0.25, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.5);
+        domeGeo.rotateX(Math.PI * 0.5);
+
         const puffMat = new THREE.MeshBasicMaterial({
           map: hazeTexture,
           color: isLight ? 0xc8baa8 : 0xdfd2b8,
@@ -516,8 +588,8 @@ export const GalleryScene3D: React.FC = () => {
           blending: THREE.AdditiveBlending,
           side: THREE.DoubleSide
         });
-        const puffMesh = new THREE.Mesh(puffGeo, puffMat);
-        puffMesh.position.set(0, -0.13, 0.22);
+        const puffMesh = new THREE.Mesh(domeGeo, puffMat);
+        puffMesh.position.set(0, -0.13, 0.20);
         spkGroup.add(puffMesh);
         acousticAirHaze.push({ mesh: puffMesh, speakerIdx: sIdx, puffIdx: p });
       }
@@ -564,73 +636,126 @@ export const GalleryScene3D: React.FC = () => {
     });
     scene.add(viewingSpotsGroup);
 
-    // 4. Estação do CD Jewel Case logo na Entrada (Z = +18)
+    // 4. Estação do CD Jewel Case logo na Entrada (Z = +18, X = 2.8)
     const cdStationGroup = new THREE.Group();
-    cdStationGroup.position.set(2.8, -0.4, 18);
-    cdStationGroup.rotation.y = -0.3;
+    cdStationGroup.position.set(2.8, -0.6, 18);
+    cdStationGroup.rotation.y = -0.32;
 
-    const cdStandGeo = new THREE.CylinderGeometry(0.38, 0.48, 2.4, 24);
-    const cdStandMat = new THREE.MeshStandardMaterial({
-      color: isLight ? 0xdcdad2 : 0x222624,
-      metalness: 0.75,
-      roughness: 0.22
+    // Plinto Monolítico de Concreto Grafite Arquitetural
+    const plinthGeo = new THREE.BoxGeometry(0.86, 1.9, 0.72);
+    const plinthMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0x222625 : 0x161918,
+      roughness: 0.88,
+      metalness: 0.12
     });
-    const cdStand = new THREE.Mesh(cdStandGeo, cdStandMat);
-    cdStand.position.y = -1.2;
+    const cdStand = new THREE.Mesh(plinthGeo, plinthMat);
+    cdStand.position.y = -0.95;
     cdStand.castShadow = true;
     cdStand.receiveShadow = true;
-    (cdStand as any).isCDStation = true;
     cdStationGroup.add(cdStand);
 
-    const cdPlaqueGeo = new THREE.BoxGeometry(1.9, 0.48, 0.04);
+    // Rodapé de Sombra Negativa da Base
+    const plinthBaseGeo = new THREE.BoxGeometry(0.76, 0.12, 0.62);
+    const plinthBaseMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x0c0e0d : 0x050606 });
+    const plinthBase = new THREE.Mesh(plinthBaseGeo, plinthBaseMat);
+    plinthBase.position.y = -1.94;
+    cdStationGroup.add(plinthBase);
+
+    // Tampo Cantilever em Titânio Escovado
+    const deckGeo = new THREE.BoxGeometry(0.82, 0.08, 0.64);
+    const deckMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0x333836 : 0x242826,
+      roughness: 0.35,
+      metalness: 0.78
+    });
+    const deckMesh = new THREE.Mesh(deckGeo, deckMat);
+    deckMesh.position.y = 0.04;
+    deckMesh.castShadow = true;
+    deckMesh.receiveShadow = true;
+    cdStationGroup.add(deckMesh);
+
+    // Plaquinha Arquitetural Metálica Embutida no Plinto
+    const cdPlaqueGeo = new THREE.BoxGeometry(0.72, 0.22, 0.02);
     const cdPlaqueTex = createPedestalPlaqueTexture(isLight);
     const cdPlaqueMat = new THREE.MeshStandardMaterial({
       map: cdPlaqueTex,
-      roughness: 0.82,
-      metalness: 0.08
+      roughness: 0.75,
+      metalness: 0.15
     });
     const cdPlaqueMesh = new THREE.Mesh(cdPlaqueGeo, cdPlaqueMat);
-    cdPlaqueMesh.position.set(0, -0.65, 0.38);
-    cdPlaqueMesh.rotation.x = -0.35;
+    cdPlaqueMesh.position.set(0, -0.22, 0.365);
     cdPlaqueMesh.castShadow = true;
     cdPlaqueMesh.receiveShadow = true;
-    (cdPlaqueMesh as any).isCDStation = true;
     cdStationGroup.add(cdPlaqueMesh);
 
-    const cdCaseGeo = new THREE.BoxGeometry(1.4, 1.4, 0.12);
-    const cdCaseMat = new THREE.MeshPhysicalMaterial({
+    // ESTOJO DE CD FÍSICO REALISTA REPOUSANDO NO SUPORTE (sem caixa de vidro externa!)
+    const restingCDGroup = new THREE.Group();
+    restingCDGroup.position.set(0, 0.36, 0.02);
+    restingCDGroup.rotation.x = -0.42;
+
+    const restingCaseGeo = new THREE.BoxGeometry(0.56, 0.56, 0.045);
+    const restingCaseMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      transmission: 0.94,
-      roughness: 0.04,
+      transmission: 0.95,
+      roughness: 0.06,
       ior: 1.52,
-      thickness: 0.2,
+      thickness: 0.06,
       transparent: true,
-      opacity: 0.92
+      opacity: 0.94,
+      reflectivity: 0.75
     });
-    const cdCaseMesh = new THREE.Mesh(cdCaseGeo, cdCaseMat);
-    cdCaseMesh.position.y = 0.2;
-    cdCaseMesh.rotation.x = -0.2;
+    const cdCaseMesh = new THREE.Mesh(restingCaseGeo, restingCaseMat);
     cdCaseMesh.castShadow = true;
     (cdCaseMesh as any).isCDStation = true;
-    cdStationGroup.add(cdCaseMesh);
+    restingCDGroup.add(cdCaseMesh);
+
+    const restingSpineGeo = new THREE.BoxGeometry(0.026, 0.54, 0.04);
+    const restingSpineMat = new THREE.MeshStandardMaterial({ color: 0x111312, roughness: 0.4 });
+    const restingSpine = new THREE.Mesh(restingSpineGeo, restingSpineMat);
+    restingSpine.position.set(-0.27, 0, 0);
+    restingCDGroup.add(restingSpine);
+
+    const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/gigantera/';
+    const cleanBase = base.endsWith('/') ? base : base + '/';
+    const getCDAssetUrl = (fileName: string) => `${cleanBase}cd/${fileName}`;
 
     const textureLoader = new THREE.TextureLoader();
-    const cdCoverTex = textureLoader.load('https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-cinetica-prata.jpg');
-    const cdPaperGeo = new THREE.PlaneGeometry(1.3, 1.3);
+    const cdCoverTex = textureLoader.load(getCDAssetUrl('capa-opt.jpg'), undefined, undefined, () => {
+      textureLoader.load(getCDAssetUrl('CAPA.jpeg'));
+    });
+    cdCoverTex.colorSpace = THREE.SRGBColorSpace;
+    const cdPaperGeo = new THREE.PlaneGeometry(0.53, 0.53);
     const cdPaperMat = new THREE.MeshStandardMaterial({
       map: cdCoverTex,
-      roughness: 0.95,
-      metalness: 0.0
+      roughness: 0.88,
+      metalness: 0.04
     });
     const cdPaperMesh = new THREE.Mesh(cdPaperGeo, cdPaperMat);
-    cdPaperMesh.position.set(0, 0.2, 0.01);
-    cdPaperMesh.rotation.x = -0.2;
+    cdPaperMesh.position.set(0.005, 0, 0.013);
     (cdPaperMesh as any).isCDStation = true;
-    cdStationGroup.add(cdPaperMesh);
+    restingCDGroup.add(cdPaperMesh);
 
+    const cdBackTex = textureLoader.load(getCDAssetUrl('contracapa-opt.jpg'), undefined, undefined, () => {
+      textureLoader.load(getCDAssetUrl('CONTRACAPA.jpeg'));
+    });
+    cdBackTex.colorSpace = THREE.SRGBColorSpace;
+    const cdBackMat = new THREE.MeshStandardMaterial({
+      map: cdBackTex,
+      roughness: 0.88,
+      metalness: 0.04
+    });
+    const cdBackMesh = new THREE.Mesh(cdPaperGeo, cdBackMat);
+    cdBackMesh.position.set(0.005, 0, -0.013);
+    cdBackMesh.rotation.y = Math.PI;
+    (cdBackMesh as any).isCDStation = true;
+    restingCDGroup.add(cdBackMesh);
+
+    cdStationGroup.add(restingCDGroup);
     scene.add(cdStationGroup);
 
     // 5. Vitrines de Vidro Flutuantes & Plaquinhas Físicas 3D em Baixo de Cada Obra
+    const glassRoughnessTex = createGlassRoughnessTexture();
+
     const artworkItems: {
       group: THREE.Group;
       glassMesh: THREE.Mesh;
@@ -669,13 +794,16 @@ export const GalleryScene3D: React.FC = () => {
       const glassGeo = new THREE.BoxGeometry(glassW, glassH, glassD);
       const glassMat = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        transmission: 0.92,
-        roughness: 0.04,
+        transmission: 0.95,
+        roughness: isLight ? 0.07 : 0.09,
+        roughnessMap: glassRoughnessTex,
         ior: 1.52,
-        thickness: 0.8,
+        thickness: 0.65,
+        attenuationColor: new THREE.Color(0xe0fff3),
+        attenuationDistance: 3.5,
         transparent: true,
-        opacity: 0.88,
-        reflectivity: 0.6
+        opacity: 0.92,
+        reflectivity: 0.72
       });
       const glassMesh = new THREE.Mesh(glassGeo, glassMat);
       glassMesh.castShadow = true;
@@ -686,7 +814,7 @@ export const GalleryScene3D: React.FC = () => {
       const edgeMat = new THREE.LineBasicMaterial({
         color: currentThemeTokens.wireframe,
         transparent: true,
-        opacity: isLight ? 0.35 : 0.4
+        opacity: isLight ? 0.22 : 0.28
       });
       const wireframe = new THREE.LineSegments(edgeGeo, edgeMat);
       group.add(wireframe);
@@ -713,7 +841,7 @@ export const GalleryScene3D: React.FC = () => {
           map: videoTex,
           roughness: 0.95,
           metalness: 0.0,
-          side: THREE.FrontSide
+          side: THREE.DoubleSide
         });
         videoElement = vid;
       } else {
@@ -724,13 +852,32 @@ export const GalleryScene3D: React.FC = () => {
           map: tex,
           roughness: 0.96,
           metalness: 0.0,
-          side: THREE.FrontSide
+          side: THREE.DoubleSide
         });
       }
 
-      const paperGeo = new THREE.PlaneGeometry(paperW, paperH);
-      const paperMesh = new THREE.Mesh(paperGeo, paperMat);
-      paperMesh.position.z = 0.02;
+      // Painel Físico 3D da Obra (espessura de 3.2cm, passepartout e visibilidade bilateral 360°)
+      const boardThickness = 0.032;
+      const paperGeo = new THREE.BoxGeometry(paperW, paperH, boardThickness);
+      const panelEdgeMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0xc8c6be : 0x161817,
+        roughness: 0.92,
+        metalness: 0.02
+      });
+
+      // BoxGeometry (6 faces: Right, Left, Top, Bottom, Front, Back)
+      // Front (+Z) e Back (-Z) exibem a arte, enquanto as laterais têm acabamento fosco de papelaria
+      const panelMaterials = [
+        panelEdgeMat,
+        panelEdgeMat,
+        panelEdgeMat,
+        panelEdgeMat,
+        paperMat,
+        paperMat
+      ];
+      const paperMesh = new THREE.Mesh(paperGeo, panelMaterials);
+      // Posição no centro físico e geométrico absoluto da caixa de vidro (Z = 0)
+      paperMesh.position.set(0, 0, 0);
       (paperMesh as any).artworkData = art;
       (glassMesh as any).artworkData = art;
       group.add(paperMesh);
@@ -824,6 +971,16 @@ export const GalleryScene3D: React.FC = () => {
     });
     playerController.updateBounds(layout.playerBounds);
 
+    // Enquadramento cinematográfico inicial na entrada: CD em primeiro plano e galeria em perspectiva
+    camera.position.set(0, 0.4, 23.5);
+    playerController.position.set(0, 0.4, 23.5);
+    playerController.yaw = -0.16;
+    camera.rotation.y = -0.16;
+
+    playerController.onStepTrackCD = (step) => {
+      cdViewmodel.stepTrack(step);
+    };
+
     playerController.onPointerLockChange = (locked) => {
       useAppStore.getState().setPointerLocked(locked);
     };
@@ -840,19 +997,15 @@ export const GalleryScene3D: React.FC = () => {
         return;
       }
 
-      const distToCD = Math.hypot(camera.position.x - 2.8, camera.position.z - 18);
-      if (distToCD < 4.8) {
-        state.takeCD();
-        cdViewmodel.take();
-        return;
-      }
-
-      // Raycast frontal central com alcance máximo estrito de 6.5m
+      // 1. Raycast frontal central com prioridade estrita para obras de arte
       raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
       const candidates = [
         ...artworkItems.map((m) => m.glassMesh),
         ...artworkItems.map((m) => m.paperMesh),
-        ...artworkItems.map((m) => m.plaqueMesh)
+        ...artworkItems.map((m) => m.plaqueMesh),
+        cdCaseMesh,
+        cdPaperMesh,
+        cdBackMesh
       ];
       const hits = raycaster.intersectObjects(candidates);
       const validHits = hits.filter((h) => h.distance <= 6.5);
@@ -862,14 +1015,28 @@ export const GalleryScene3D: React.FC = () => {
           soundEngine.playGlassPassSound();
           openCinema(hitObj.artworkData as Artwork);
           return;
+        } else if (hitObj.isCDStation && validHits[0].distance <= 3.5) {
+          const isFirst = !useAppStore.getState().hasInspectedCDBefore;
+          state.takeCD();
+          cdViewmodel.take(isFirst);
+          return;
         }
       }
 
-      // Se estiver próximo ao ponto contemplativo ideal
+      // 2. Se estiver próximo ao ponto contemplativo ideal de uma obra
       const closest = useAppStore.getState().proximityArtwork;
       if (closest) {
         soundEngine.playGlassPassSound();
         openCinema(closest);
+        return;
+      }
+
+      // 3. Somente se não houver obra e estiver mirando na estação do CD a menos de 2.5m
+      const distToCD = Math.hypot(camera.position.x - 2.8, camera.position.z - 18);
+      if (distToCD < 2.5) {
+        const isFirst = !useAppStore.getState().hasInspectedCDBefore;
+        state.takeCD();
+        cdViewmodel.take(isFirst);
       }
     };
 
@@ -894,12 +1061,13 @@ export const GalleryScene3D: React.FC = () => {
       raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
 
       // 1. Toque no CD / Pedestal
-      const cdCandidates = [cdCaseMesh, cdPaperMesh, cdPlaqueMesh, cdStand];
+      const cdCandidates = [restingCDGroup, cdPlaqueMesh, cdStand, deckMesh];
       const cdHits = raycaster.intersectObjects(cdCandidates, true);
       if (cdHits.length > 0 && cdHits[0].distance < 15) {
         if (cdHits[0].distance < 4.8) {
+          const isFirst = !useAppStore.getState().hasInspectedCDBefore;
           state.takeCD();
-          cdViewmodel.take();
+          cdViewmodel.take(isFirst);
         } else {
           playerController.glideTo(0, 19.5, 0.08);
         }
@@ -1065,8 +1233,7 @@ export const GalleryScene3D: React.FC = () => {
 
       // Se estiver segurando o CD na mão
       if (holding) {
-        cdViewmodel.addSway(e.movementX, e.movementY);
-
+        // Sem sway de cursor para manter a precisão e estabilidade total do clique nas faixas!
         if (cdViewmodel.backInlayMesh) {
           raycaster.setFromCamera(mouseCoord, camera);
           const cdHits = raycaster.intersectObject(cdViewmodel.backInlayMesh);
@@ -1096,7 +1263,10 @@ export const GalleryScene3D: React.FC = () => {
         ...artworkItems.map((m) => m.plaqueMesh),
         cdCaseMesh,
         cdPaperMesh,
-        cdPlaqueMesh
+        cdBackMesh,
+        cdPlaqueMesh,
+        cdStand,
+        deckMesh
       ];
       const hits = raycaster.intersectObjects(candidates);
       const validHits = hits.filter((h) => h.distance <= 6.5);
@@ -1122,14 +1292,18 @@ export const GalleryScene3D: React.FC = () => {
     };
 
     const onClick = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-bottom-feather-bar, .cinema-top-inspection-hud, .still-prancheta-dock, .modal-backdrop, .controls-guide-card, header, footer')) {
+      if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-bottom-feather-bar, .cinema-top-inspection-hud, .still-prancheta-dock, .modal-backdrop, .controls-guide-card, .controls-guide-card-graphic, header, footer, [role="dialog"]')) {
         return;
       }
 
+      try {
+        (document.activeElement as HTMLElement)?.blur?.();
+      } catch {}
+
       const state = useAppStore.getState();
 
-      // Se uma ação acabou de ser fechada (cooldown anti-clique fantasma de 400ms)
-      if (Date.now() - state.lastActionCloseTime < 400) {
+      // Se uma ação acabou de ser fechada (cooldown anti-clique fantasma de 250ms)
+      if (Date.now() - state.lastActionCloseTime < 250) {
         return;
       }
 
@@ -1151,37 +1325,44 @@ export const GalleryScene3D: React.FC = () => {
             }
           }
         }
-        return;
-      }
-
-      // Se o Pointer Lock NÃO estiver ativo, o clique no canvas reativa o Pointer Lock
-      if (!playerController.isLocked) {
+        // Se clicou fora da tracklist, guarda o CD e volta a controlar a mira
+        state.stowCD();
+        cdViewmodel.stow();
         playerController.requestLock();
         return;
       }
 
-      // Se o Pointer Lock já estava ativo, raycasting a partir do retículo central (0, 0)
-      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      // Raycast dinâmico: se Pointer Lock estiver ativo usa retículo central (0,0); se livre, usa a posição real do mouse
+      const clickCoord = playerController.isLocked ? new THREE.Vector2(0, 0) : mouseCoord;
+      raycaster.setFromCamera(clickCoord, camera);
       const candidates = [
         ...artworkItems.map((m) => m.glassMesh),
         ...artworkItems.map((m) => m.paperMesh),
         ...artworkItems.map((m) => m.plaqueMesh),
         cdCaseMesh,
         cdPaperMesh,
-        cdPlaqueMesh
+        cdBackMesh
       ];
       const hits = raycaster.intersectObjects(candidates);
       const validHits = hits.filter((h) => h.distance <= 6.5);
 
       if (validHits.length > 0) {
         const hitObj = validHits[0].object as any;
-        if (hitObj.isCDStation) {
-          useAppStore.getState().takeCD();
-          cdViewmodel.take();
-        } else if (hitObj.artworkData) {
+        if (hitObj.artworkData) {
           soundEngine.playGlassPassSound();
           openCinema(hitObj.artworkData as Artwork);
+          return;
+        } else if (hitObj.isCDStation && validHits[0].distance <= 3.5) {
+          const isFirst = !useAppStore.getState().hasInspectedCDBefore;
+          useAppStore.getState().takeCD();
+          cdViewmodel.take(isFirst);
+          return;
         }
+      }
+
+      // Se clicou no espaço vazio, reativa o Pointer Lock para mira livre
+      if (!playerController.isLocked) {
+        playerController.requestLock();
       }
     };
 
@@ -1202,7 +1383,7 @@ export const GalleryScene3D: React.FC = () => {
       }
     };
 
-    // Escuta global para atalhos táteis de jogabilidade (R e Q)
+    // Escuta global para atalhos táteis de jogabilidade (R, Q, E, Escape)
     const onGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'r' || e.key === 'R') {
         const state = useAppStore.getState();
@@ -1211,7 +1392,7 @@ export const GalleryScene3D: React.FC = () => {
           e.stopPropagation();
           state.toggleLoupeMode();
         }
-      } else if (e.key === 'q' || e.key === 'Q') {
+      } else if (e.key === 'q' || e.key === 'Q' || e.key === 'Escape' || e.key === 'e' || e.key === 'E') {
         const state = useAppStore.getState();
         if (state.cinemaArtwork || state.isHoldingCD) {
           e.preventDefault();
@@ -1221,6 +1402,8 @@ export const GalleryScene3D: React.FC = () => {
             state.stowCD();
             cdViewmodel.stow();
           }
+          playerController.resumeAimControl();
+          handleRequestLock();
         }
       }
     };
@@ -1243,7 +1426,13 @@ export const GalleryScene3D: React.FC = () => {
     });
 
     const handleRequestLock = () => {
-      playerController.requestLock();
+      try {
+        (document.activeElement as HTMLElement)?.blur?.();
+      } catch {}
+      playerController.resumeAimControl();
+      setTimeout(() => {
+        playerController.requestLock();
+      }, 20);
     };
 
     window.addEventListener('mousedown', onMouseDown);
@@ -1289,6 +1478,51 @@ export const GalleryScene3D: React.FC = () => {
       applyQualitySettings(state.graphicsQuality);
     });
 
+    // Função de transição instantânea de tema sem recriar a cena Three.js nem o PlayerController
+    const applyTheme3D = (currentTheme: 'light' | 'dark') => {
+      const isL = currentTheme === 'light';
+      const tokens = TOKENS.themes[currentTheme];
+      scene.fog = new THREE.FogExp2(tokens.canvasFog, 0.014);
+      renderer.setClearColor(tokens.canvasFog);
+      renderer.toneMappingExposure = isL ? 0.98 : 1.08;
+
+      hemiLight.color.set(isL ? 0xf4f2ea : 0x181c1a);
+      hemiLight.groundColor.set(isL ? 0xdcd8cd : 0x0a0c0b);
+      hemiLight.intensity = isL ? 0.90 : 0.75;
+
+      ambientLight.color.set(isL ? 0xf0ede4 : 0x141716);
+      ambientLight.intensity = isL ? 0.38 : 0.42;
+
+      sunLight.color.set(isL ? 0xfff8ed : 0xffebd0);
+      sunLight.intensity = isL ? 1.65 : 1.95;
+
+      visitorLight.color.set(isL ? 0xfff3d8 : 0xe4c379);
+      visitorLight.intensity = isL ? 0.85 : 1.45;
+
+      floorMat.map = isL ? floorLightTex : floorDarkTex;
+      floorMat.roughness = isL ? 0.38 : 0.45;
+      floorMat.metalness = isL ? 0.08 : 0.12;
+      floorMat.needsUpdate = true;
+
+      wallMat.map = isL ? wallLightTex : wallDarkTex;
+      wallMat.needsUpdate = true;
+
+      (floorReflector.material as any).opacity = isL ? 0.38 : 0.44;
+
+      plinthMat.color.set(isL ? 0x222625 : 0x161918);
+      deckMat.color.set(isL ? 0x333836 : 0x242826);
+      spkBodyMat.color.set(isL ? 0xeeece5 : 0x181a19);
+      baffleMat.color.set(isL ? 0x242725 : 0x0c0e0d);
+      coneMat.color.set(isL ? 0xd0cec7 : 0x333635);
+      bracketMat.color.set(isL ? 0x666866 : 0x242826);
+    };
+
+    const unsubTheme = useAppStore.subscribe((state, prev) => {
+      if (state.theme !== prev.theme) {
+        applyTheme3D(state.theme);
+      }
+    });
+
     const unsubGlide = useAppStore.subscribe((state) => {
       if (state.targetGlideSpot) {
         playerController.glideTo(
@@ -1311,7 +1545,7 @@ export const GalleryScene3D: React.FC = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // 11. Loop de Animação a 60 FPS com Frustum Culling Otimizado
+    // 11. Loop de Animação a 60 FPS com Frustum Culling Otimizado e Monitor de Performance
     let rafId: number;
     let prevCamZ = camera.position.z;
     let prevTargetZ = useAppStore.getState().cameraTargetZ;
@@ -1319,6 +1553,11 @@ export const GalleryScene3D: React.FC = () => {
     const clock = new THREE.Clock();
     const cameraFrustum = new THREE.Frustum();
     const cameraProjScreenMatrix = new THREE.Matrix4();
+
+    const fpsRingBuffer: number[] = [];
+    let lastFpsReportTime = performance.now();
+    const benchmarkStartTime = performance.now();
+    let benchmarkEvaluated = false;
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
@@ -1335,8 +1574,36 @@ export const GalleryScene3D: React.FC = () => {
       playerController.isCinemaActive = Boolean(currentCinemaArt);
 
       // Oculta o CD no pedestal quando estiver na mão
-      cdCaseMesh.visible = !holdingCD;
-      cdPaperMesh.visible = !holdingCD;
+      restingCDGroup.visible = !holdingCD;
+
+      // Monitor de performance rolling FPS e auto-benchmark inicial
+      const now = performance.now();
+      fpsRingBuffer.push(delta);
+      if (fpsRingBuffer.length > 60) fpsRingBuffer.shift();
+
+      if (now - lastFpsReportTime > 300) {
+        const avgD = fpsRingBuffer.reduce((a, b) => a + b, 0) / fpsRingBuffer.length;
+        const curFps = Math.round(1 / Math.max(0.001, avgD));
+        useAppStore.getState().setCurrentFps(curFps);
+        lastFpsReportTime = now;
+
+        if (!benchmarkEvaluated && now - benchmarkStartTime > 3500) {
+          benchmarkEvaluated = true;
+          if (curFps < 45 && storeState.graphicsQuality === 'high') {
+            useAppStore.getState().setGraphicsQuality('med');
+            useAppStore.getState().setPerformanceSuggestion('Performance ajustada para Médio');
+            setTimeout(() => useAppStore.getState().setPerformanceSuggestion(null), 5000);
+          }
+        } else if (benchmarkEvaluated) {
+          if (curFps < 40 && storeState.graphicsQuality === 'high') {
+            useAppStore.getState().setPerformanceSuggestion('Taxa reduzida — Recomendamos Médio');
+          } else if (curFps < 32 && storeState.graphicsQuality === 'med') {
+            useAppStore.getState().setPerformanceSuggestion('Taxa reduzida — Recomendamos Baixo');
+          } else if (curFps >= 57 && storeState.performanceSuggestion) {
+            useAppStore.getState().setPerformanceSuggestion(null);
+          }
+        }
+      }
 
       // Transição suave de Z por botões da interface
       const currentStoreTargetZ = storeState.cameraTargetZ;
@@ -1502,23 +1769,23 @@ export const GalleryScene3D: React.FC = () => {
       if (isAudioPlaying) {
         const energy = soundEngine.getEnergy();
 
-        // Vibração física do cone do woofer com as frequências sonoras
-        speakerWoofers.forEach((w) => {
-          w.position.z = 0.193 + Math.sin(elapsedTime * 38.0) * (energy * 0.014);
-        });
-
-        // Efeito elegante de ar quente / refração sônica saindo das caixas em direção ao salão
+        // Efeito elegante de cúpula sônica 3D saindo das caixas (visível de frente e de lado)
+        // Nota: O cone do woofer permanece estático em z = 0.196 eliminando qualquer Z-fighting ou piscamento
         acousticAirHaze.forEach(({ mesh, puffIdx }) => {
-          const progress = ((elapsedTime * 0.75 + puffIdx * 0.25) % 1.0);
-          mesh.scale.setScalar(0.75 + progress * 2.3);
-          // O ar avança para fora da parede em direção ao salão
-          mesh.position.z = 0.22 + progress * 2.5;
-          // Turbulência de ar suave e elevação térmica sutil
-          mesh.position.x = Math.sin(elapsedTime * 2.2 + puffIdx * 1.7) * 0.06 * progress;
-          mesh.position.y = -0.13 + Math.cos(elapsedTime * 1.8 + puffIdx * 1.3) * 0.05 * progress + progress * 0.12;
-          mesh.rotation.z = Math.sin(elapsedTime * 0.5 + puffIdx) * 0.35;
-          // Opacidade ultra sutil e elegante (calor/vento imperceptível a olho nu, sem linhas duras de vetor)
-          (mesh.material as THREE.MeshBasicMaterial).opacity = Math.sin(progress * Math.PI) * (0.06 + energy * 0.10);
+          const progress = ((elapsedTime * 0.70 + puffIdx * 0.25) % 1.0);
+          // Expansão volumétrica tridimensional (X, Y e Z)
+          mesh.scale.set(
+            0.65 + progress * 2.8,
+            0.65 + progress * 2.8,
+            0.45 + progress * 2.3
+          );
+          // O domo avança para fora da parede em direção ao salão
+          mesh.position.z = 0.20 + progress * 2.6;
+          // Turbulência de ar sutil
+          mesh.position.x = Math.sin(elapsedTime * 1.8 + puffIdx * 1.5) * 0.04 * progress;
+          mesh.position.y = -0.13 + Math.cos(elapsedTime * 1.4 + puffIdx * 1.2) * 0.03 * progress;
+          // Opacidade acústica sutil (sem linhas duras)
+          (mesh.material as THREE.MeshBasicMaterial).opacity = Math.sin(progress * Math.PI) * (0.05 + energy * 0.09);
         });
 
         // Atualização de áudio espacial físico com atenuação e panner estéreo
@@ -1533,9 +1800,6 @@ export const GalleryScene3D: React.FC = () => {
           const mat = mesh.material as THREE.MeshBasicMaterial;
           mat.opacity = THREE.MathUtils.lerp(mat.opacity, 0, 0.15);
         });
-        speakerWoofers.forEach((w) => {
-          w.position.z = THREE.MathUtils.lerp(w.position.z, 0.193, 0.1);
-        });
       }
 
       // Telemetria Z
@@ -1544,11 +1808,8 @@ export const GalleryScene3D: React.FC = () => {
       updateCameraZ(camera.position.z, velocityZ);
 
       visitorLight.position.set(camera.position.x, camera.position.y + 1.0, camera.position.z);
-
-      if (isAudioPlaying) {
-        const energy = soundEngine.getEnergy();
-        visitorLight.intensity = (isLight ? 0.8 : 1.4) + energy * 1.2;
-      }
+      // Luz do visitante firme e constante (elimina oscilação/piscamento dos alto-falantes e paredes)
+      visitorLight.intensity = isLight ? 0.85 : 1.45;
 
       // Atualiza matriz de frustum para culling de vídeos e objetos fora do campo de visão
       cameraProjScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
@@ -1651,6 +1912,7 @@ export const GalleryScene3D: React.FC = () => {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('resize', checkMobile);
       unsubQuality();
+      unsubTheme();
       unsubLoupe();
       unsubGlide();
       unsubGyro();
@@ -1670,8 +1932,10 @@ export const GalleryScene3D: React.FC = () => {
         }
       });
 
-      floorTexture.dispose();
-      wallTexture.dispose();
+      floorLightTex.dispose();
+      floorDarkTex.dispose();
+      wallLightTex.dispose();
+      wallDarkTex.dispose();
       renderer.dispose();
       floorGeo.dispose();
       floorMat.dispose();
@@ -1681,7 +1945,7 @@ export const GalleryScene3D: React.FC = () => {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
     };
-  }, [theme]);
+  }, []);
 
   return (
     <div

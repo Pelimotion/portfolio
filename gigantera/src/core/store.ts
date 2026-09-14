@@ -34,9 +34,17 @@ interface AppState {
   isAudioPlaying: boolean;
   soundVolume: number;
 
-  // Fidelidade Gráfica Moderna (Light / Med / RTX com Raytracing)
+  // Fidelidade Gráfica Moderna (Baixo / Médio / Alto)
   graphicsQuality: 'light' | 'med' | 'high';
   setGraphicsQuality: (quality: 'light' | 'med' | 'high') => void;
+  currentFps: number;
+  setCurrentFps: (fps: number) => void;
+  performanceSuggestion: string | null;
+  setPerformanceSuggestion: (suggestion: string | null) => void;
+
+  // Estado de inspeção inicial do CD (animação de 2s apenas na primeira vez)
+  hasInspectedCDBefore: boolean;
+  setHasInspectedCDBefore: (inspected: boolean) => void;
 
   // Jogabilidade e Controles Táteis
   gameControlPrompt: string | null;
@@ -152,6 +160,13 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   graphicsQuality: 'high',
   setGraphicsQuality: (quality) => set({ graphicsQuality: quality }),
+  currentFps: 60,
+  setCurrentFps: (fps) => set({ currentFps: fps }),
+  performanceSuggestion: null,
+  setPerformanceSuggestion: (suggestion) => set({ performanceSuggestion: suggestion }),
+
+  hasInspectedCDBefore: false,
+  setHasInspectedCDBefore: (inspected) => set({ hasInspectedCDBefore: inspected }),
 
   gameControlPrompt: null,
   isPointerLocked: false,
@@ -304,8 +319,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   warpToSector: (sectorId) => {
     let targetZ = 22;
     if (sectorId === 'entrance-audio') targetZ = 20;
-    if (sectorId === 'still') targetZ = 10;
-    if (sectorId === 'video') targetZ = -22;
+    if (sectorId === 'video') targetZ = 5;
+    if (sectorId === 'still') targetZ = -24;
 
     get().setCameraTargetZ(targetZ);
     set({ activeSectorId: sectorId });
@@ -359,7 +374,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCDPOVOpen: (open) => set({ isCDPOVOpen: open, isHoldingCD: open }),
 
   takeCD: () => {
-    set({ isHoldingCD: true, isCDPOVOpen: true });
+    set({ isHoldingCD: true, isCDPOVOpen: true, cdFlipped: false });
   },
 
   stowCD: () => {

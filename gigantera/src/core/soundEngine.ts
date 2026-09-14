@@ -184,16 +184,21 @@ class SoundEngine {
       if (d < minDist) minDist = d;
     }
 
+    if (this.isFading) return;
+
     const presence = Math.max(0.38, Math.min(1.0, 1.0 - (minDist - 3.0) / 22.0));
     const finalVol = Math.max(0.01, Math.min(1.0, masterVolume * presence));
     this.gainNode.gain.setTargetAtTime(finalVol, this.audioCtx.currentTime, 0.06);
   }
+
+  private isFading = false;
 
   public async fadeOut(durationMs = 1200): Promise<void> {
     if (!this.gainNode || !this.audioCtx) {
       this.pause();
       return;
     }
+    this.isFading = true;
     const t = this.audioCtx.currentTime;
     const currentGain = Math.max(0.001, this.gainNode.gain.value);
     this.gainNode.gain.cancelScheduledValues(t);
@@ -202,6 +207,7 @@ class SoundEngine {
     return new Promise((resolve) => {
       setTimeout(() => {
         this.pause();
+        this.isFading = false;
         resolve();
       }, durationMs);
     });
@@ -212,6 +218,7 @@ class SoundEngine {
       await this.resume();
       return;
     }
+    this.isFading = true;
     const t = this.audioCtx.currentTime;
     this.gainNode.gain.cancelScheduledValues(t);
     this.gainNode.gain.setValueAtTime(0.0001, t);
@@ -220,6 +227,9 @@ class SoundEngine {
       Math.max(0.01, Math.min(1, targetVolume)),
       t + durationMs / 1000
     );
+    setTimeout(() => {
+      this.isFading = false;
+    }, durationMs);
   }
 
   public getFrequencyData(): Uint8Array | null {

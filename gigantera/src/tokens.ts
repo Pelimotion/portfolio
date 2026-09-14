@@ -51,9 +51,9 @@ export const TOKENS = {
       wireframe: 0xe4c379
     },
     light: {
-      bgPrimary: createToken('#FBFBFA'),
-      bgSurface: createToken('#F3F2EE'),
-      bgSurfaceElevated: createToken('#EAE9E3'),
+      bgPrimary: createToken('#F5F4EE'),
+      bgSurface: createToken('#ECEAE3'),
+      bgSurfaceElevated: createToken('#E2DFD6'),
       borderSubtle: 'rgba(0, 0, 0, 0.08)',
       borderStrong: 'rgba(0, 0, 0, 0.22)',
       textPrimary: createToken('#0D0F0E'),
@@ -62,9 +62,9 @@ export const TOKENS = {
       accentGold: createToken('#B88D34'),
       accentCyan: createToken('#1A8B67'),
       accentCoral: createToken('#D94726'),
-      canvasFog: 0xfbfbfa,
-      canvasPlinth: 0xf0efe9,
-      canvasFrame: 0xe8e6de,
+      canvasFog: 0xf5f4ee,
+      canvasPlinth: 0xeae8df,
+      canvasFrame: 0xdcd8cd,
       wireframe: 0x0d0f0e
     }
   },

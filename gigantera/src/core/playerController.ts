@@ -55,11 +55,10 @@ export class PlayerController {
 
   // Head Bobbing e passos
   private stepTimer: number = 0;
-  public headBobY: number = 0;
   public headBobX: number = 0;
+  public headBobY: number = 0;
   private lastFootstepTime: number = 0;
-
-  // Controle de mouse e Pointer Lock
+  private forwardHoldTime: number = 0; // Aceleração dinâmica e orgânica de passada ao caminhar continuo
   private isPointerDown: boolean = false;
   private prevMouseX: number = 0;
   private prevMouseY: number = 0;
@@ -74,6 +73,7 @@ export class PlayerController {
   public onFlipCD?: () => void;
   public onEscape?: () => void;
   public onScrollCD?: (delta: number) => void;
+  public onStepTrackCD?: (step: number) => void;
   public onPointerLockChange?: (locked: boolean) => void;
   public onNextStill?: () => void;
   public onPrevStill?: () => void;
@@ -233,11 +233,19 @@ export class PlayerController {
     switch (e.code) {
       case 'KeyW':
       case 'ArrowUp':
+        if (this.isHoldingCD) {
+          if (this.onStepTrackCD) this.onStepTrackCD(-1);
+          return;
+        }
         this.keys.forward = true;
         if (this.onPlayerActivity) this.onPlayerActivity();
         break;
       case 'KeyS':
       case 'ArrowDown':
+        if (this.isHoldingCD) {
+          if (this.onStepTrackCD) this.onStepTrackCD(1);
+          return;
+        }
         this.keys.backward = true;
         if (this.onPlayerActivity) this.onPlayerActivity();
         break;
@@ -247,6 +255,10 @@ export class PlayerController {
           if (this.onPrevStill) this.onPrevStill();
           return;
         }
+        if (this.isHoldingCD) {
+          if (this.onFlipCD) this.onFlipCD();
+          return;
+        }
         this.keys.left = true;
         if (this.onPlayerActivity) this.onPlayerActivity();
         break;
@@ -254,6 +266,10 @@ export class PlayerController {
       case 'ArrowRight':
         if (this.isCinemaActive) {
           if (this.onNextStill) this.onNextStill();
+          return;
+        }
+        if (this.isHoldingCD) {
+          if (this.onFlipCD) this.onFlipCD();
           return;
         }
         this.keys.right = true;
@@ -266,13 +282,25 @@ export class PlayerController {
         break;
       case 'KeyE':
         if (this.isCinemaActive || this.isHoldingCD) {
+          this.isCinemaActive = false;
+          this.isHoldingCD = false;
+          this.prevMouseX = 0;
+          this.prevMouseY = 0;
           if (this.onCancelAction) this.onCancelAction();
+          this.requestLock();
         } else if (this.onInteract) {
           this.onInteract();
         }
         break;
       case 'KeyQ':
-        if (this.onCancelAction) this.onCancelAction();
+        if (this.isCinemaActive || this.isHoldingCD) {
+          this.isCinemaActive = false;
+          this.isHoldingCD = false;
+          this.prevMouseX = 0;
+          this.prevMouseY = 0;
+          if (this.onCancelAction) this.onCancelAction();
+          this.requestLock();
+        }
         break;
       case 'Tab':
         e.preventDefault();
@@ -295,12 +323,30 @@ export class PlayerController {
         }
         break;
       case 'Escape':
+        if (this.isCinemaActive || this.isHoldingCD) {
+          this.isCinemaActive = false;
+          this.isHoldingCD = false;
+          this.prevMouseX = 0;
+          this.prevMouseY = 0;
+          if (this.onCancelAction) this.onCancelAction();
+          return;
+        }
+        if (this.onEscape) {
+          this.onEscape();
+        }
         if (this.isLocked) {
           this.exitLock();
         }
         break;
     }
   };
+
+  public resumeAimControl(): void {
+    this.isHoldingCD = false;
+    this.isCinemaActive = false;
+    this.prevMouseX = 0;
+    this.prevMouseY = 0;
+  }
 
   private handleKeyUp = (e: KeyboardEvent): void => {
     switch (e.code) {
@@ -335,7 +381,7 @@ export class PlayerController {
     }
 
     // Não captura se o clique foi em um elemento de interface
-    if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-backdrop, .modal-backdrop, header, footer')) {
+    if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-backdrop, .modal-backdrop, header, footer, [role="dialog"]')) {
       return;
     }
 
@@ -354,6 +400,8 @@ export class PlayerController {
   private handleMouseMove = (e: MouseEvent): void => {
     // CRÍTICO: Quando segurando o CD ou no cinema, a câmera de fundo NUNCA gira!
     if (this.isHoldingCD || this.isCinemaActive) {
+      this.prevMouseX = 0;
+      this.prevMouseY = 0;
       return;
     }
 
@@ -372,17 +420,41 @@ export class PlayerController {
       return;
     }
 
-    if (!this.isPointerDown) return;
+    // Controle de mira contínuo (Desktop sem Pointer Lock):
+    // Quando o usuário sai de uma obra ou CD, ou quando o cursor está sobre o salão,
+    // o mouse já controla a mira suavemente sem forçar um novo clique.
+    const target = e.target as HTMLElement | null;
+    const isInteractiveUI = !!target?.closest?.('header, nav, aside, button, a, [role="dialog"], input, select, textarea, .modal-backdrop');
+    if (isInteractiveUI) {
+      this.prevMouseX = 0;
+      this.prevMouseY = 0;
+      return;
+    }
 
-    // Modo arrasto manual caso o Pointer Lock não esteja ativo
-    const deltaX = e.clientX - this.prevMouseX;
-    const deltaY = e.clientY - this.prevMouseY;
+    let moveX = 0;
+    let moveY = 0;
+
+    if (typeof e.movementX === 'number' && (e.movementX !== 0 || e.movementY !== 0) && Math.abs(e.movementX) < 120 && Math.abs(e.movementY) < 120) {
+      moveX = e.movementX;
+      moveY = e.movementY;
+    } else if (this.prevMouseX > 0 && this.prevMouseY > 0) {
+      const dx = e.clientX - this.prevMouseX;
+      const dy = e.clientY - this.prevMouseY;
+      if (Math.abs(dx) < 120 && Math.abs(dy) < 120) {
+        moveX = dx;
+        moveY = dy;
+      }
+    }
+
     this.prevMouseX = e.clientX;
     this.prevMouseY = e.clientY;
 
-    this.yaw -= deltaX * this.config.mouseSensitivity;
-    this.pitch -= deltaY * this.config.mouseSensitivity;
-    this.pitch = Math.max(-0.72, Math.min(0.72, this.pitch));
+    if (moveX !== 0 || moveY !== 0) {
+      if (this.onPlayerActivity) this.onPlayerActivity();
+      this.yaw -= moveX * this.config.mouseSensitivity;
+      this.pitch -= moveY * this.config.mouseSensitivity;
+      this.pitch = Math.max(-0.72, Math.min(0.72, this.pitch));
+    }
   };
 
   private handleMouseUp = (): void => {
@@ -465,19 +537,28 @@ export class PlayerController {
     this.gyroTargetYaw = targetY;
   };
 
+  private wheelCDAccumulator = 0;
+  private lastCDWheelTime = 0;
+
   private handleWheel = (e: WheelEvent): void => {
     if (this.isHoldingCD) {
-      // Quando estiver segurando o CD na mão, o scroll da roda navega pelas faixas!
+      // Quando estiver segurando o CD na mão, o scroll da roda navega pelas faixas de forma suave e calibrada
       e.preventDefault();
-      const delta = e.deltaY > 0 ? 1 : -1;
-      if (this.onScrollCD) {
-        this.onScrollCD(delta);
+      const now = performance.now();
+      this.wheelCDAccumulator += e.deltaY;
+      if (Math.abs(this.wheelCDAccumulator) >= 35 || (now - this.lastCDWheelTime > 160 && Math.abs(this.wheelCDAccumulator) > 6)) {
+        const step = this.wheelCDAccumulator > 0 ? 1 : -1;
+        this.wheelCDAccumulator = 0;
+        this.lastCDWheelTime = now;
+        if (this.onScrollCD) {
+          this.onScrollCD(step);
+        }
       }
     } else if (!this.isCinemaActive) {
       // Quando livre no espaço, roda do mouse permite deslizar suavemente pelo eixo Z (calibrado para Trackpad de Mac e Mouse)
       e.preventDefault();
       const clampedDelta = Math.max(-100, Math.min(100, e.deltaY));
-      const force = clampedDelta * 0.006;
+      const force = clampedDelta * 0.009; // Scroll mais responsivo e suave
       this.velocity.z += force;
     }
   };
@@ -490,14 +571,13 @@ export class PlayerController {
    * Atualização a cada frame do motor físico (delta time em segundos)
    */
   public update(delta: number): void {
-    if (this.isCinemaActive) {
+    if (this.isCinemaActive || this.isHoldingCD) {
       this.velocity.set(0, 0, 0);
+      this.forwardHoldTime = 0;
+      if (this.isHoldingCD && this.isLocked) {
+        this.exitLock();
+      }
       return;
-    }
-
-    // Se estiver segurando o CD, garante que o pointer lock esteja desativado para liberar o mouse
-    if (this.isHoldingCD && this.isLocked) {
-      this.exitLock();
     }
 
     // 1. Atualização do Vôo Cinemático Suave (Glide para Waypoints / Obras)
@@ -519,7 +599,21 @@ export class PlayerController {
       }
     }
 
-    const currentSpeed = this.config.walkSpeed * (this.keys.sprint ? this.config.sprintMultiplier : 1.0);
+    // Aceleração Contínua de Passada (Dynamic Stride):
+    // Ao segurar W continuamente por mais de 0.8s, o passo do visitante ganha
+    // embalo suave (até 1.85x), permitindo cruzar o corredor com dinamismo
+    // sem exigir botões/teclas extras (Shift/Corrida). Ao soltar, reseta imediatamente.
+    if (this.keys.forward && !this.keys.backward) {
+      this.forwardHoldTime += delta;
+    } else {
+      this.forwardHoldTime = Math.max(0, this.forwardHoldTime - delta * 4.0);
+    }
+
+    const strideMultiplier = this.forwardHoldTime > 0.8
+      ? Math.min(1.85, 1.0 + (this.forwardHoldTime - 0.8) * 0.85)
+      : 1.0;
+
+    const currentSpeed = this.config.walkSpeed * strideMultiplier * (this.keys.sprint ? this.config.sprintMultiplier : 1.0);
 
     // Vetores direcionais baseados no ângulo Yaw da câmera
     const forwardX = -Math.sin(this.yaw);
