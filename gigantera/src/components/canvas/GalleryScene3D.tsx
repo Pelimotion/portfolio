@@ -1457,7 +1457,7 @@ export const GalleryScene3D: React.FC = () => {
       if (q === 'high') {
         floorReflector.visible = true;
         (floorReflector.material as any).opacity = isLight ? 0.38 : 0.44;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
       } else if (q === 'med') {
         floorReflector.visible = true;

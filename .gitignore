@@ -37,6 +37,12 @@ node_modules/
 !gigantera/public/works/*.jpg
 !gigantera/public/works/*.png
 !gigantera/public/works/*.jpeg
+!gigantera/cd/*.jpg
+!gigantera/cd/*.png
+!gigantera/cd/*.jpeg
+!gigantera/public/cd/*.jpg
+!gigantera/public/cd/*.png
+!gigantera/public/cd/*.jpeg
 
 # Patch scripts and temp files
 patch_*.py

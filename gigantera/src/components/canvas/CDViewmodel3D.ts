@@ -79,16 +79,23 @@ export class CDViewmodel3D {
     const cleanBase = base.endsWith('/') ? base : base + '/';
     const getCDAssetUrl = (fileName: string) => `${cleanBase}cd/${fileName}`;
 
-    // Carrega a imagem oficial da contracapa
+    // Carrega a imagem oficial da contracapa com proteção contra loops de retry
     this.backCoverImage = new Image();
     this.backCoverImage.crossOrigin = 'anonymous';
     this.backCoverImage.onload = () => {
       this.backCoverLoaded = true;
       this.renderBackCover();
     };
+    let attemptedBackCoverFallback = false;
     this.backCoverImage.onerror = () => {
-      // Fallback para arquivo original se necessário
-      this.backCoverImage.src = getCDAssetUrl('CONTRACAPA.jpeg');
+      if (!attemptedBackCoverFallback) {
+        attemptedBackCoverFallback = true;
+        this.backCoverImage.src = getCDAssetUrl('CONTRACAPA.jpeg');
+      } else {
+        this.backCoverImage.onerror = null;
+        // Fallback gráfico padrão caso a imagem não esteja disponível
+        this.renderBackCover();
+      }
     };
     this.backCoverImage.src = getCDAssetUrl('contracapa-opt.jpg');
 
