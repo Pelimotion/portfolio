@@ -93,14 +93,24 @@ export const MinimalBottomBar: React.FC = () => {
               <span>GUIA [?]</span>
             </button>
 
+            {/* Central de Mídia & Download de Obras (M) */}
+            <button
+              onClick={() => setViewMode(viewMode === 'media' ? 'spatial' : 'media')}
+              className={`tool-media-switch-btn ${viewMode === 'media' ? 'is-active' : ''}`}
+              title="Central de Download de Mídia e Masters (M)"
+            >
+              <kbd className="keycap keycap-sm">M</kbd>
+              <span>{viewMode === 'media' ? 'SALA 3D' : 'MÍDIA'}</span>
+            </button>
+
             {/* Alternador de Modo de Visualização (TAB) */}
             <button
               onClick={() => setViewMode(viewMode === 'spatial' ? 'archive' : 'spatial')}
-              className="tool-view-switch-btn"
+              className={`tool-view-switch-btn ${viewMode === 'archive' ? 'is-active' : ''}`}
               title="Alternar entre galeria espacial 3D e catálogo tradicional (TAB)"
             >
               <kbd className="keycap keycap-sm">TAB</kbd>
-              <span>{viewMode === 'spatial' ? 'ACERVO' : 'SALA 3D'}</span>
+              <span>{viewMode === 'archive' ? 'SALA 3D' : 'ACERVO'}</span>
             </button>
           </div>
         </div>

@@ -126,6 +126,13 @@ interface AppState {
   setCurrentAudioTrack: (track: AudioTrackInfo) => void;
   setIsAudioPlaying: (playing: boolean) => void;
   setSoundVolume: (volume: number) => void;
+  // Central de Mídia & Download de Masters (Press Kit & Curatorial)
+  activeMediaTab: 'promo' | 'masters';
+  setActiveMediaTab: (tab: 'promo' | 'masters') => void;
+  copiedFeedback: string | null;
+  setCopiedFeedback: (msg: string | null) => void;
+  openMediaKit: (tab?: 'promo' | 'masters') => void;
+
   setIntroSpawnProgress: (progress: number) => void;
   setIntroPhase: (phase: 'empty' | 'spawning' | 'ready') => void;
   setTutorialDocked: (docked: boolean) => void;
@@ -133,10 +140,44 @@ interface AppState {
 
 const defaultTrack = AUTHORIAL_TRACKS_CATALOG[0];
 
+const getInitialViewMode = (): ViewMode => {
+  if (typeof window === 'undefined') return 'spatial';
+  const params = new URLSearchParams(window.location.search);
+  const v = params.get('view');
+  if (v === 'media' || v === 'press') return 'media';
+  if (v === 'archive' || v === 'catalogo') return 'archive';
+  return 'spatial';
+};
+
 export const useAppStore = create<AppState>((set, get) => ({
   theme: 'light', // Tema inicial padrão é o tema claro conforme especificado
-  viewMode: 'spatial',
+  viewMode: getInitialViewMode(),
   activeFilter: 'all',
+
+  activeMediaTab: 'promo',
+  setActiveMediaTab: (tab) => set({ activeMediaTab: tab }),
+  copiedFeedback: null,
+  setCopiedFeedback: (msg) => {
+    set({ copiedFeedback: msg });
+    if (msg) {
+      setTimeout(() => {
+        if (get().copiedFeedback === msg) {
+          set({ copiedFeedback: null });
+        }
+      }, 2500);
+    }
+  },
+  openMediaKit: (tab = 'promo') => {
+    set({
+      viewMode: 'media',
+      activeMediaTab: tab,
+      cinemaArtwork: null,
+      isCDPOVOpen: false,
+      isHoldingCD: false,
+      showGuideModal: false,
+      isBioOpen: false
+    });
+  },
 
   cameraTargetZ: 22,
   cameraCurrentZ: 22,

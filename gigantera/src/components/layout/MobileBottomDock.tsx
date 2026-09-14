@@ -168,12 +168,22 @@ export const MobileBottomDock: React.FC = () => {
 
           {/* Alternador de Modo de Visualização (Grade do Acervo) */}
           <button
-            onClick={() => setViewMode(viewMode === 'spatial' ? 'archive' : 'spatial')}
+            onClick={() => setViewMode(viewMode === 'archive' ? 'spatial' : 'archive')}
             className={`mobile-tool-pill ${viewMode === 'archive' ? 'is-active' : ''}`}
             title="Alternar para catálogo em grade"
           >
             <span className="tool-icon">⊞</span>
-            <span className="tool-text">{viewMode === 'spatial' ? 'ACERVO' : '3D'}</span>
+            <span className="tool-text">ACERVO</span>
+          </button>
+
+          {/* Central de Mídia / Download para Galeristas */}
+          <button
+            onClick={() => setViewMode(viewMode === 'media' ? 'spatial' : 'media')}
+            className={`mobile-tool-pill ${viewMode === 'media' ? 'is-active' : ''}`}
+            title="Central de Mídia e Downloads"
+          >
+            <span className="tool-icon">↓</span>
+            <span className="tool-text">MÍDIA</span>
           </button>
 
           {/* Guia de Ajuda Tátil */}

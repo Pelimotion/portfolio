@@ -7,6 +7,9 @@ export const GalleryHeader: React.FC = () => {
   const toggleTheme = useAppStore((s) => s.toggleTheme);
   const setBioOpen = useAppStore((s) => s.setBioOpen);
   const warpToSector = useAppStore((s) => s.warpToSector);
+  const viewMode = useAppStore((s) => s.viewMode);
+  const setViewMode = useAppStore((s) => s.setViewMode);
+  const openMediaKit = useAppStore((s) => s.openMediaKit);
 
   const graphicsQuality = useAppStore((s) => s.graphicsQuality);
   const setGraphicsQuality = useAppStore((s) => s.setGraphicsQuality);
@@ -33,12 +36,14 @@ export const GalleryHeader: React.FC = () => {
         toggleTheme();
       } else if (e.code === 'KeyB' && !e.metaKey && !e.ctrlKey) {
         setBioOpen(true);
+      } else if (e.code === 'KeyM' && !e.metaKey && !e.ctrlKey) {
+        setViewMode(viewMode === 'media' ? 'spatial' : 'media');
       }
     };
 
     window.addEventListener('keydown', handleHeaderKey);
     return () => window.removeEventListener('keydown', handleHeaderKey);
-  }, [graphicsQuality, setGraphicsQuality, toggleTheme, setBioOpen]);
+  }, [graphicsQuality, setGraphicsQuality, toggleTheme, setBioOpen, viewMode, setViewMode]);
 
   const handleAudioToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -166,6 +171,16 @@ export const GalleryHeader: React.FC = () => {
         >
           <span>{theme === 'dark' ? '☼ CLARO' : '☾ ESCURO'}</span>
           <kbd className="header-keycap-hint">T</kbd>
+        </button>
+
+        {/* Central de Mídia & Masters para Galeristas / Imprensa / Editais com atalho [M] */}
+        <button
+          onClick={() => setViewMode(viewMode === 'media' ? 'spatial' : 'media')}
+          className={`header-minimal-btn header-media-btn ${viewMode === 'media' ? 'is-active' : ''}`}
+          title="Central de Download de Mídia, Press Kit e Masters para Galeristas (M)"
+        >
+          <span>{viewMode === 'media' ? '[✕ SAIR MÍDIA]' : '[PRESS / MÍDIA]'}</span>
+          <kbd className="header-keycap-hint">M</kbd>
         </button>
 
         {/* Bio do Artista e Contato com atalho [B] */}

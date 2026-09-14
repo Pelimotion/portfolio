@@ -5,6 +5,7 @@ import { applyThemeTokens } from './tokens';
 import { GalleryHeader } from './components/layout/GalleryHeader';
 import { GalleryScene3D } from './components/canvas/GalleryScene3D';
 import { ArchiveIndex } from './components/layout/ArchiveIndex';
+import { MediaKitView } from './components/layout/MediaKitView';
 import { MinimalBottomBar } from './components/layout/MinimalBottomBar';
 import { CDJewelCasePOV } from './components/audio/CDJewelCasePOV';
 import { CinemaView } from './components/modal/CinemaView';
@@ -33,6 +34,9 @@ export const App: React.FC = () => {
 
       {/* 4. Modo Catálogo Tradicional em Grade */}
       {viewMode === 'archive' && <ArchiveIndex />}
+
+      {/* 5. Central de Mídia & Download de Masters Curatorial */}
+      {viewMode === 'media' && <MediaKitView />}
 
       {/* 6. Bottom Bar Unificada com Proteção Feathered e Controles Essenciais */}
       <MinimalBottomBar />
