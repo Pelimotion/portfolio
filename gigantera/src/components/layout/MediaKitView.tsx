@@ -1,13 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAppStore } from '../../core/store';
 import {
-  ARTIST_INFO,
-  CURATORIAL_STATEMENTS,
-  PRESS_KIT_ASSETS,
-  MASTER_WORKS_CATALOG,
+  ARTIST_INFO as DEFAULT_ARTIST_INFO,
+  CURATORIAL_STATEMENTS as DEFAULT_STATEMENTS,
+  PRESS_KIT_ASSETS as DEFAULT_PRESS_ASSETS,
   MASTER_AUDIO_CATALOG
 } from '../../data/mediaKitData';
-import { MasterWorkAsset } from '../../types/art';
+import {
+  getMergedArtworks,
+  getMergedPressKitAssets,
+  getMergedArtistInfo,
+  getMergedCuratorialStatements
+} from '../../data/configBridge';
+import { MasterWorkAsset, Artwork } from '../../types/art';
 
 export const MediaKitView: React.FC = () => {
   const setViewMode = useAppStore((s) => s.setViewMode);
@@ -16,16 +21,74 @@ export const MediaKitView: React.FC = () => {
   const copiedFeedback = useAppStore((s) => s.copiedFeedback);
   const setCopiedFeedback = useAppStore((s) => s.setCopiedFeedback);
 
+  // Gatilho reativo para atualizações do Admin
+  const [configVersion, setConfigVersion] = useState(0);
+
+  useEffect(() => {
+    const handleUpdate = () => setConfigVersion((v) => v + 1);
+    window.addEventListener('gigantera:config-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('gigantera:config-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  // Dados mesclados reativos
+  const artistInfo = useMemo(() => getMergedArtistInfo(), [configVersion]);
+  const curatorialStatements = useMemo(() => getMergedCuratorialStatements(), [configVersion]);
+  const pressAssets = useMemo(() => {
+    const assets = getMergedPressKitAssets();
+    return assets.filter((a) => a.status !== 'hidden');
+  }, [configVersion]);
+
+  const rawArtworks = useMemo(() => getMergedArtworks(), [configVersion]);
+
   // Estados locais da view
   const [statementLang, setStatementLang] = useState<'pt' | 'en'>('pt');
   const [masterFilter, setMasterFilter] = useState<'all' | 'video' | 'still' | 'sound'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({});
 
-  // Unifica o catálogo de obras visuais e de áudio para a aba de masters
+  // Monta o catálogo de masters filtrando apenas as obras autorizadas
+  const masterVisuals: MasterWorkAsset[] = useMemo(() => {
+    return rawArtworks
+      .filter((art: Artwork) => art.availableInMediaKit !== false && art.status !== 'hidden')
+      .map((art: Artwork) => {
+        const isVideo = art.medium === 'video';
+        const masterFormat = art.masterFormat || (isVideo
+          ? 'Apple ProRes 422 HQ (4K UHD 60fps) + Master Áudio PCM'
+          : 'TIFF 16-bit Não-Comprimido (300 DPI)');
+        const dimensions = art.dimensionsOrDuration || (isVideo ? '3840x2160 UHD (16:9)' : '4000x5000 px (4:5) / 300 DPI');
+        const colorSpace = isVideo ? 'Rec.709 / BT.1886' : 'Adobe RGB (1998) / sRGB';
+        const fileSizeApprox = isVideo ? '1.85 GB' : '64.2 MB';
+        const citationCredit = `CONCEIÇÃO, Felipe. ${art.title}, ${art.year}. ${art.materials}. ${dimensions}. Coleção Gigantera. Disponível em: https://pelimotion.art/gigantera.`;
+
+        return {
+          id: `master-${art.id}`,
+          artworkId: art.id,
+          title: art.title,
+          series: art.series,
+          medium: art.medium,
+          year: art.year,
+          materials: art.materials,
+          masterFormat,
+          dimensionsOrDuration: dimensions,
+          colorSpace,
+          fileSizeApprox,
+          previewSrc: art.imageSrc,
+          downloadUrl: art.videoSrc || art.imageSrc,
+          cloudStorageUrl: art.cloudStorageUrl || artistInfo.cloudDriveUrl,
+          citationCredit,
+          curatorialStatement: art.description,
+          availableInMediaKit: true
+        };
+      });
+  }, [rawArtworks, artistInfo]);
+
   const allMasterItems: MasterWorkAsset[] = useMemo(() => {
-    return [...MASTER_WORKS_CATALOG, ...MASTER_AUDIO_CATALOG];
-  }, []);
+    return [...masterVisuals, ...MASTER_AUDIO_CATALOG];
+  }, [masterVisuals]);
 
   // Filtro e busca em tempo real
   const filteredMasters = useMemo(() => {
@@ -120,19 +183,21 @@ export const MediaKitView: React.FC = () => {
               </p>
             </div>
 
-            <div className="media-kit-drive-callout">
-              <a
-                href={ARTIST_INFO.cloudDriveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="media-drive-btn font-mono"
-                title="Abrir pasta completa no Google Drive"
-              >
-                <span className="drive-btn-icon">📁</span>
-                <span>PASTA COMPLETA NO DRIVE ↗</span>
-              </a>
-              <span className="drive-hint font-mono">Arquivos brutos e masters descompactados</span>
-            </div>
+            {artistInfo.cloudDriveUrl && (
+              <div className="media-kit-drive-callout">
+                <a
+                  href={artistInfo.cloudDriveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="media-drive-btn font-mono"
+                  title="Abrir pasta completa no Google Drive"
+                >
+                  <span className="drive-btn-icon">📁</span>
+                  <span>PASTA COMPLETA NO DRIVE ↗</span>
+                </a>
+                <span className="drive-hint font-mono">Arquivos brutos e masters descompactados</span>
+              </div>
+            )}
           </div>
 
           {/* Seletor de Abas Limpo */}
@@ -145,7 +210,7 @@ export const MediaKitView: React.FC = () => {
             >
               <span className="tab-number">01</span>
               <span>MATERIAL DE DIVULGAÇÃO</span>
-              <span className="tab-count">[{PRESS_KIT_ASSETS.length}]</span>
+              <span className="tab-count">[{pressAssets.length}]</span>
             </button>
 
             <button
@@ -193,7 +258,7 @@ export const MediaKitView: React.FC = () => {
 
                 <div className="text-box-body">
                   <p className="curatorial-paragraph">
-                    {statementLang === 'pt' ? CURATORIAL_STATEMENTS.bioPt : CURATORIAL_STATEMENTS.bioEn}
+                    {statementLang === 'pt' ? curatorialStatements.bioPt : curatorialStatements.bioEn}
                   </p>
                 </div>
 
@@ -201,7 +266,7 @@ export const MediaKitView: React.FC = () => {
                   <button
                     onClick={() =>
                       handleCopy(
-                        statementLang === 'pt' ? CURATORIAL_STATEMENTS.bioPt : CURATORIAL_STATEMENTS.bioEn,
+                        statementLang === 'pt' ? curatorialStatements.bioPt : curatorialStatements.bioEn,
                         `Biografia (${statementLang.toUpperCase()})`
                       )
                     }
@@ -213,7 +278,7 @@ export const MediaKitView: React.FC = () => {
                     onClick={() =>
                       handleDownloadBlob(
                         `gigantera-biografia-${statementLang}.txt`,
-                        statementLang === 'pt' ? CURATORIAL_STATEMENTS.bioPt : CURATORIAL_STATEMENTS.bioEn
+                        statementLang === 'pt' ? curatorialStatements.bioPt : curatorialStatements.bioEn
                       )
                     }
                     className="box-action-btn is-secondary"
@@ -248,7 +313,7 @@ export const MediaKitView: React.FC = () => {
 
                 <div className="text-box-body">
                   <p className="curatorial-paragraph">
-                    {statementLang === 'pt' ? CURATORIAL_STATEMENTS.statementPt : CURATORIAL_STATEMENTS.statementEn}
+                    {statementLang === 'pt' ? curatorialStatements.statementPt : curatorialStatements.statementEn}
                   </p>
                 </div>
 
@@ -256,7 +321,7 @@ export const MediaKitView: React.FC = () => {
                   <button
                     onClick={() =>
                       handleCopy(
-                        statementLang === 'pt' ? CURATORIAL_STATEMENTS.statementPt : CURATORIAL_STATEMENTS.statementEn,
+                        statementLang === 'pt' ? curatorialStatements.statementPt : curatorialStatements.statementEn,
                         `Artist Statement (${statementLang.toUpperCase()})`
                       )
                     }
@@ -268,7 +333,7 @@ export const MediaKitView: React.FC = () => {
                     onClick={() =>
                       handleDownloadBlob(
                         `gigantera-artist-statement-${statementLang}.txt`,
-                        statementLang === 'pt' ? CURATORIAL_STATEMENTS.statementPt : CURATORIAL_STATEMENTS.statementEn
+                        statementLang === 'pt' ? curatorialStatements.statementPt : curatorialStatements.statementEn
                       )
                     }
                     className="box-action-btn is-secondary"
@@ -287,51 +352,78 @@ export const MediaKitView: React.FC = () => {
               </div>
 
               <div className="media-assets-grid">
-                {PRESS_KIT_ASSETS.map((asset) => (
-                  <article key={asset.id} className="press-asset-card font-mono">
-                    <div className="press-card-top">
-                      <div className="press-format-pill">
-                        <span className="format-name">{asset.format}</span>
-                        {asset.resolutionOrSize && (
-                          <span className="format-size">· {asset.resolutionOrSize}</span>
+                {pressAssets.map((asset) => {
+                  const isPending = asset.status === 'pending';
+                  const hasFile = !!asset.fileUrl && !isPending;
+                  const hasCopyText = !!asset.copyableContent;
+
+                  return (
+                    <article key={asset.id} className="press-asset-card font-mono">
+                      <div className="press-card-top">
+                        <div className="press-format-pill">
+                          <span className="format-name">{asset.format}</span>
+                          {asset.resolutionOrSize && (
+                            <span className="format-size">· {asset.resolutionOrSize}</span>
+                          )}
+                        </div>
+                        {isPending ? (
+                          <span className="press-cat-label" style={{ color: 'var(--accent-gold)' }}>
+                            [EM PREPARAÇÃO]
+                          </span>
+                        ) : (
+                          <span className="press-cat-label">[{asset.category.toUpperCase()}]</span>
                         )}
                       </div>
-                      <span className="press-cat-label">[{asset.category.toUpperCase()}]</span>
-                    </div>
 
-                    <div className="press-card-body">
-                      {asset.previewUrl && (
-                        <div className="press-thumb-wrap">
-                          <img src={asset.previewUrl} alt={asset.title} className="press-thumb-img" />
-                        </div>
-                      )}
-                      <h3 className="press-asset-title">{asset.title}</h3>
-                      <p className="press-asset-desc">{asset.description}</p>
-                    </div>
+                      <div className="press-card-body">
+                        {asset.previewUrl && (
+                          <div className="press-thumb-wrap">
+                            <img src={asset.previewUrl} alt={asset.title} className="press-thumb-img" />
+                          </div>
+                        )}
+                        <h3 className="press-asset-title">{asset.title}</h3>
+                        <p className="press-asset-desc">{asset.description}</p>
+                      </div>
 
-                    <div className="press-card-actions">
-                      {asset.fileUrl && (
-                        <a
-                          href={asset.fileUrl}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="press-action-btn is-primary"
-                        >
-                          BAIXAR ARQUIVO ↓
-                        </a>
-                      )}
-                      {asset.copyableContent && (
-                        <button
-                          onClick={() => handleCopy(asset.copyableContent!, asset.title)}
-                          className="press-action-btn is-secondary"
-                        >
-                          COPIAR TEXTO 📋
-                        </button>
-                      )}
-                    </div>
-                  </article>
-                ))}
+                      <div className="press-card-actions">
+                        {hasFile && (
+                          <a
+                            href={asset.fileUrl}
+                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="press-action-btn is-primary"
+                          >
+                            BAIXAR ARQUIVO ↓
+                          </a>
+                        )}
+
+                        {hasCopyText && (
+                          <>
+                            <button
+                              onClick={() => handleCopy(asset.copyableContent!, asset.title)}
+                              className="press-action-btn is-secondary"
+                            >
+                              COPIAR TEXTO 📋
+                            </button>
+                            <button
+                              onClick={() => handleDownloadBlob(`${asset.id}.txt`, asset.copyableContent!)}
+                              className="press-action-btn is-secondary"
+                            >
+                              BAIXAR .TXT ↓
+                            </button>
+                          </>
+                        )}
+
+                        {isPending && !hasFile && !hasCopyText && (
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '6px 0' }}>
+                            Arquivo em produção pelo ateliê
+                          </span>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -397,7 +489,7 @@ export const MediaKitView: React.FC = () => {
             <div className="masters-grid">
               {filteredMasters.length === 0 ? (
                 <div className="masters-empty-state font-mono">
-                  <span>[NENHUMA OBRA ENCONTRADA PARA OS CRITÉRIOS DE BUSCA]</span>
+                  <span>[NENHUMA OBRA DISPONÍVEL NO MEDIA KIT PARA ESTA SELEÇÃO]</span>
                 </div>
               ) : (
                 filteredMasters.map((master) => {
@@ -469,7 +561,7 @@ export const MediaKitView: React.FC = () => {
                             )}
                           </div>
 
-                          {/* Gaveta Expansível de Detalhes (Oculta por padrão para manter a página limpa) */}
+                          {/* Gaveta Expansível de Detalhes */}
                           {isExpanded && (
                             <div className="master-expanded-drawer font-mono">
                               <div className="master-specs-grid">

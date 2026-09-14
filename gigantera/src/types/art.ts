@@ -13,6 +13,7 @@ export interface PressKitAsset {
   previewUrl?: string;
   copyableContent?: string;
   externalDriveUrl?: string;
+  status?: 'ready' | 'pending' | 'hidden'; // 'ready' = disponível, 'pending' = em preparação, 'hidden' = oculto
 }
 
 export interface MasterWorkAsset {
@@ -32,6 +33,7 @@ export interface MasterWorkAsset {
   cloudStorageUrl?: string;
   citationCredit: string;
   curatorialStatement: string;
+  availableInMediaKit?: boolean;
 }
 
 export interface SpatialCoordinates {
@@ -60,7 +62,13 @@ export interface Artwork {
   aspectRatioNum?: number;
   spatialCoords?: SpatialCoordinates;
   curatorialNotes?: string;
+  availableInMediaKit?: boolean;
+  masterFormat?: string;
+  dimensionsOrDuration?: string;
+  cloudStorageUrl?: string;
+  status?: 'active' | 'hidden';
 }
+
 
 export interface AudioTrackInfo {
   id: string;

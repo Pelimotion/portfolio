@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAppStore } from '../../core/store';
+import { getMergedSiteConfig } from '../../data/configBridge';
 
 export const IntroSequence: React.FC = () => {
   const introPhase = useAppStore((s) => s.introPhase);
@@ -58,6 +59,8 @@ export const IntroSequence: React.FC = () => {
     }
   }, [hasPlayerMoved, isHoldingCD, isDone, setIntroPhase, setTutorialDocked]);
 
+  const siteConfig = useMemo(() => getMergedSiteConfig(), []);
+
   if (isDone || introPhase === 'ready') return null;
 
   return (
@@ -79,11 +82,11 @@ export const IntroSequence: React.FC = () => {
 
         <h1 className="cue-hero-title">GIGANTERA</h1>
         <h2 className="cue-statement">
-          Um pavilhão. Não um portfólio.
+          {siteConfig.heroHeadline.replace(/^GIGANTERA\s*[\n\r—–-]*\s*/i, '') || 'Um pavilhão. Não um portfólio.'}
         </h2>
 
         <p className="cue-narrative-text">
-          Concreto, luz e som suspensos no espaço — entre e ande.
+          {siteConfig.subhead}
         </p>
 
         <div className="cue-quick-tips-cluster">
@@ -109,10 +112,14 @@ export const IntroSequence: React.FC = () => {
             e.stopPropagation();
             setIsGlidingDown(true);
             setTutorialDocked(true);
-            setTimeout(() => setIsDone(true), 350);
+            setTimeout(() => {
+              setIsDone(true);
+              setIntroPhase('ready');
+            }, 400);
           }}
+          aria-label="Entrar no Pavilhão 3D"
         >
-          [ENTRAR NO PAVILHÃO ↵]
+          [ {siteConfig.ctaText} ↵ ]
         </button>
       </div>
     </div>

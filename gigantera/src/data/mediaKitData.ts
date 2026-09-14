@@ -28,7 +28,8 @@ export const PRESS_KIT_ASSETS: PressKitAsset[] = [
     description: 'Versões completa e resumida em terceira pessoa para catálogos, editais e matérias de imprensa.',
     format: 'TXT / MD',
     resolutionOrSize: '2.4 KB',
-    copyableContent: `${CURATORIAL_STATEMENTS.bioPt}\n\n---\n\n${CURATORIAL_STATEMENTS.bioEn}`
+    copyableContent: `${CURATORIAL_STATEMENTS.bioPt}\n\n---\n\n${CURATORIAL_STATEMENTS.bioEn}`,
+    status: 'ready'
   },
   {
     id: 'press-statement-gigantera',
@@ -37,79 +38,88 @@ export const PRESS_KIT_ASSETS: PressKitAsset[] = [
     description: 'Texto curatorial integral sobre o conceito arquitetural, sonoro e cinético da exposição.',
     format: 'TXT / MD',
     resolutionOrSize: '1.8 KB',
-    copyableContent: `${CURATORIAL_STATEMENTS.statementPt}\n\n---\n\n${CURATORIAL_STATEMENTS.statementEn}`
+    copyableContent: `${CURATORIAL_STATEMENTS.statementPt}\n\n---\n\n${CURATORIAL_STATEMENTS.statementEn}`,
+    status: 'ready'
   },
   {
     id: 'press-headshot-hi-res',
     category: 'photos',
     title: 'Retrato Oficial do Artista (300 DPI / Print)',
-    description: 'Fotografia de estúdio em alta resolução pronta para publicação impressa e digital.',
+    description: 'Fotografia de estúdio em alta resolução para catálogos impressos e matérias jornalísticas.',
     format: 'JPG / TIFF',
     resolutionOrSize: '300 DPI · 4000x5000 px · 14.2 MB',
-    fileUrl: 'https://pelimotion-portfolio.b-cdn.net/press/felipe-conceicao-headshot-300dpi.jpg',
-    previewUrl: '/avatar/avatar.png'
+    fileUrl: '',
+    previewUrl: '/avatar/avatar.png',
+    status: 'pending' // Em preparação até o usuário subir sua foto definitiva
   },
   {
     id: 'press-logos-vector',
     category: 'logos',
-    title: 'Pack de Identidade Visual (GIGANTERA)',
-    description: 'Logotipos e tipogramas oficiais em vetor escalável e PNGs transparentes (Modo Claro & Escuro).',
+    title: 'Pack de Identidade Visual (Logos & Tipogramas)',
+    description: 'Logotipos e assinaturas oficiais em vetor escalável e PNGs transparentes.',
     format: 'SVG / PNG',
-    resolutionOrSize: 'Vetor Escalável · 1.2 MB',
+    resolutionOrSize: 'Vetor Escalável',
     fileUrl: '/logo.svg',
-    previewUrl: '/logo.svg'
+    previewUrl: '/logo.svg',
+    status: 'pending' // Em preparação
   },
   {
     id: 'press-exhibition-release',
     category: 'release',
     title: 'Press Release Oficial da Exposição GIGANTERA',
-    description: 'Documento completo com ficha técnica, datas, sinopses das 4 séries e lista das 17 faixas autorais.',
-    format: 'PDF / MD',
-    resolutionOrSize: 'Documento Editorial · 185 KB',
-    fileUrl: 'https://pelimotion-portfolio.b-cdn.net/press/press-release-gigantera-2026.pdf',
-    copyableContent: `# PRESS RELEASE // GIGANTERA — PELIMOTION\nExposição Espacial de Brutalismo Digital & Arquitetura Sonora\nArtista: Felipe Conceição (Pelimotion)\nAno: 2026\nCuradoria & Direção: Felipe Conceição\nURL Oficial: https://pelimotion.art/gigantera\n\nSÉRIES EM EXIBIÇÃO:\n- Espinhaço (Matriz Mineral & Cinética)\n- Notalgia (Topografia & Subaquático)\n- Sedimento (Litificação & Fósseis 3D)\n- Zimbro (Rastreamento Espectral & Vetores)\n- Discografia CD: 17 faixas autorais em Estojo Físico Jewel Case.`
+    description: 'Documento oficial com contextualização, sinopses das séries e ficha técnica.',
+    format: 'PDF / TXT',
+    resolutionOrSize: 'Documento Editorial',
+    fileUrl: '',
+    copyableContent: `# PRESS RELEASE // GIGANTERA\nExposição Espacial de Brutalismo Digital & Arquitetura Sonora\nArtista: Felipe Conceição\nAno: 2026\n\nConcreto, luz e som suspensos no espaço — entre e ande.\nUm espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.\n\nSÉRIES EM EXIBIÇÃO:\n- Espinhaço (Matriz Mineral & Cinética)\n- Notalgia (Topografia & Subaquático)\n- Sedimento (Litificação & Fósseis 3D)\n- Zimbro (Rastreamento Espectral & Vetores)\n- Discografia: 17 faixas autorais em Estação de Áudio física.`,
+    status: 'ready' // Texto pronto para cópia e download .txt
   },
   {
     id: 'press-social-promo-pack',
     category: 'promopack',
     title: 'Pacote de Divulgação para Mídias Sociais & Telões',
-    description: 'Crops padronizados em 16:9 (Landscape 4K), 1:1 (Feed HD) e 9:16 (Stories/Reels 1080x1920) das obras.',
+    description: 'Crops padronizados em 16:9 (Landscape), 1:1 (Feed) e 9:16 (Stories/Reels) das obras.',
     format: 'ZIP (JPG/MP4)',
-    resolutionOrSize: 'Pacote Pronto · 128 MB',
-    fileUrl: 'https://pelimotion-portfolio.b-cdn.net/press/gigantera-social-promo-pack-2026.zip'
+    resolutionOrSize: 'Pacote Compactado',
+    fileUrl: '',
+    status: 'pending' // Em preparação no Drive
   }
 ];
 
-export const MASTER_WORKS_CATALOG: MasterWorkAsset[] = ARTWORKS_CATALOG.map((art) => {
-  const isVideo = art.medium === 'video';
-  const masterFormat = isVideo
-    ? 'Apple ProRes 422 HQ (4K UHD 60fps) + Master Áudio PCM'
-    : 'TIFF 16-bit Não-Comprimido (300 DPI)';
-  const dimensions = isVideo ? '3840x2160 UHD (16:9)' : '4000x5000 px (4:5) / 300 DPI';
-  const colorSpace = isVideo ? 'Rec.709 / BT.1886' : 'Adobe RGB (1998) / sRGB';
-  const fileSizeApprox = isVideo ? '1.85 GB' : '64.2 MB';
+export const MASTER_WORKS_CATALOG: MasterWorkAsset[] = ARTWORKS_CATALOG
+  .filter((art) => art.availableInMediaKit !== false)
+  .map((art) => {
+    const isVideo = art.medium === 'video';
+    const masterFormat = isVideo
+      ? 'Apple ProRes 422 HQ (4K UHD 60fps) + Master Áudio PCM'
+      : 'TIFF 16-bit Não-Comprimido (300 DPI)';
+    const dimensions = isVideo ? '3840x2160 UHD (16:9)' : '4000x5000 px (4:5) / 300 DPI';
+    const colorSpace = isVideo ? 'Rec.709 / BT.1886' : 'Adobe RGB (1998) / sRGB';
+    const fileSizeApprox = isVideo ? '1.85 GB' : '64.2 MB';
 
-  const citationCredit = `CONCEIÇÃO, Felipe (Pelimotion). ${art.title}, ${art.year}. ${art.materials}. ${dimensions}. Coleção Gigantera. Disponível em: https://pelimotion.art/gigantera.`;
+    const citationCredit = `CONCEIÇÃO, Felipe. ${art.title}, ${art.year}. ${art.materials}. ${dimensions}. Coleção Gigantera. Disponível em: https://pelimotion.art/gigantera.`;
 
-  return {
-    id: `master-${art.id}`,
-    artworkId: art.id,
-    title: art.title,
-    series: art.series,
-    medium: art.medium,
-    year: art.year,
-    materials: art.materials,
-    masterFormat,
-    dimensionsOrDuration: dimensions,
-    colorSpace,
-    fileSizeApprox,
-    previewSrc: art.imageSrc,
-    downloadUrl: art.videoSrc || art.imageSrc,
-    cloudStorageUrl: `https://drive.google.com/drive/folders/1w7u6jDqj8r3l9m8s2?usp=sharing`,
-    citationCredit,
-    curatorialStatement: art.description
-  };
-});
+    return {
+      id: `master-${art.id}`,
+      artworkId: art.id,
+      title: art.title,
+      series: art.series,
+      medium: art.medium,
+      year: art.year,
+      materials: art.materials,
+      masterFormat,
+      dimensionsOrDuration: dimensions,
+      colorSpace,
+      fileSizeApprox,
+      previewSrc: art.imageSrc,
+      downloadUrl: art.videoSrc || art.imageSrc,
+      cloudStorageUrl: ARTIST_INFO.cloudDriveUrl,
+      citationCredit,
+      curatorialStatement: art.description,
+      availableInMediaKit: art.availableInMediaKit !== false
+    };
+  });
+
 
 // Adiciona também as faixas autorais ao catálogo de masters
 export const MASTER_AUDIO_CATALOG: MasterWorkAsset[] = AUTHORIAL_TRACKS_CATALOG.map((track) => {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GIGANTERA // PAINEL CURATORIAL & ADMIN</title>
+  <title>GIGANTERA // PAINEL GERAL & CURADORIA</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,15 +23,12 @@
       --accent-cyan: #06b6d4;
       --accent-emerald: #10b981;
       --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
       --font-mono: 'IBM Plex Mono', monospace;
       --font-sans: 'Inter', sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background-color: var(--bg);
@@ -106,15 +103,16 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      flex-wrap: wrap;
     }
 
     .btn {
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      padding: 0.45rem 0.85rem;
+      padding: 0.5rem 0.9rem;
       border: 1px solid var(--border);
       background: var(--bg-surface);
       color: var(--text-main);
@@ -131,6 +129,18 @@
       background: var(--bg-surface-alt);
       border-color: var(--border-focus);
       color: #fff;
+    }
+
+    .btn-primary {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-emerald);
+      color: #000;
+      border-color: var(--accent-emerald);
     }
 
     .btn-accent {
@@ -153,6 +163,17 @@
     .btn-cyan:hover {
       background: rgba(6, 182, 212, 0.2);
       border-color: var(--accent-cyan);
+    }
+
+    .btn-danger {
+      border-color: rgba(244, 63, 94, 0.4);
+      background: rgba(244, 63, 94, 0.08);
+      color: var(--accent-rose);
+    }
+
+    .btn-danger:hover {
+      background: var(--accent-rose);
+      color: #fff;
     }
 
     /* MAIN CONTAINER */
@@ -196,6 +217,7 @@
       display: flex;
       align-items: center;
       gap: 1.5rem;
+      flex-wrap: wrap;
     }
 
     .stat-box {
@@ -205,7 +227,7 @@
     }
 
     .stat-num {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: #fff;
     }
@@ -245,10 +267,7 @@
       white-space: nowrap;
     }
 
-    .tab-btn:hover {
-      color: var(--text-main);
-    }
-
+    .tab-btn:hover { color: var(--text-main); }
     .tab-btn.active {
       color: var(--accent-amber);
       border-bottom-color: var(--accent-amber);
@@ -262,10 +281,7 @@
       border-radius: 999px;
     }
 
-    .tab-content {
-      display: none;
-    }
-
+    .tab-content { display: none; }
     .tab-content.active {
       display: block;
       animation: fadeIn 0.2s ease;
@@ -276,13 +292,14 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* CARD & GRIDS */
+    /* SECTION HEADERS */
     .section-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 1.25rem;
       gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .section-title {
@@ -302,10 +319,11 @@
       margin-top: 0.25rem;
     }
 
-    .search-filter {
+    .header-controls {
       display: flex;
       gap: 0.5rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .search-input {
@@ -317,312 +335,282 @@
       color: var(--text-main);
       outline: none;
       border-radius: 2px;
-      min-width: 240px;
+      min-width: 220px;
     }
 
-    .search-input:focus {
-      border-color: var(--accent-amber);
-    }
+    .search-input:focus { border-color: var(--accent-amber); }
 
-    /* CLUSTERS ACCORDION & LIST */
-    .cluster-block {
+    /* TABLE LAYOUTS */
+    .data-table-wrap {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 4px;
+      overflow-x: auto;
       margin-bottom: 1.5rem;
-      overflow: hidden;
-      transition: border-color 0.2s ease;
     }
 
-    .cluster-block:hover {
-      border-color: rgba(255, 255, 255, 0.14);
-    }
-
-    .cluster-header {
-      padding: 1rem 1.25rem;
-      background: var(--bg-surface-alt);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .cluster-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .cluster-name {
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .cluster-series {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--accent-cyan);
-      background: rgba(6, 182, 212, 0.1);
-      border: 1px solid rgba(6, 182, 212, 0.25);
-      padding: 0.1rem 0.4rem;
-      border-radius: 2px;
-    }
-
-    .cluster-dir {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-
-    .cluster-concept {
-      font-size: 0.825rem;
-      color: var(--text-muted);
-      padding: 0.75rem 1.25rem;
-      background: rgba(0, 0, 0, 0.2);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      font-style: italic;
-    }
-
-    .output-items-table {
+    .data-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.825rem;
+      text-align: left;
     }
 
-    .output-items-table th {
+    .data-table th {
       font-family: var(--font-mono);
       font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-dim);
-      text-align: left;
-      padding: 0.65rem 1.25rem;
+      padding: 0.75rem 1rem;
       border-bottom: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
     }
 
-    .output-items-table td {
-      padding: 0.75rem 1.25rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    .data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       vertical-align: middle;
     }
 
-    .output-items-table tr:hover {
-      background: rgba(255, 255, 255, 0.02);
+    .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    /* THUMBNAIL MINI */
+    .table-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 2px;
+      object-fit: cover;
+      background: #000;
+      border: 1px solid var(--border);
+      display: block;
     }
 
-    .item-vertente-c {
-      font-weight: 600;
-      color: #fff;
-      display: flex;
+    /* SWITCH / TOGGLE */
+    .switch-label {
+      position: relative;
+      display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      cursor: pointer;
+      gap: 0.5rem;
+      user-select: none;
     }
 
-    .item-filename {
+    .switch-input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .switch-slider {
+      width: 34px;
+      height: 18px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: .2s;
+      position: relative;
+    }
+
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--text-muted);
+      border-radius: 50%;
+      transition: .2s;
+    }
+
+    .switch-input:checked + .switch-slider {
+      background-color: rgba(16, 185, 129, 0.25);
+      border-color: var(--accent-emerald);
+    }
+
+    .switch-input:checked + .switch-slider:before {
+      transform: translateX(16px);
+      background-color: var(--accent-emerald);
+    }
+
+    .switch-text {
       font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.72rem;
     }
 
-    .item-type-badge {
+    /* BADGES */
+    .badge-pill {
       font-family: var(--font-mono);
       font-size: 0.65rem;
       text-transform: uppercase;
-      padding: 0.15rem 0.35rem;
-      border-radius: 2px;
-      letter-spacing: 0.05em;
-    }
-
-    .badge-master { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-study { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
-    .badge-mockup { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-still { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
-    .badge-sim { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-
-    /* ARTWORKS GRID */
-    .artworks-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .artwork-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.2s ease;
-    }
-
-    .artwork-card:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .card-thumb {
-      height: 180px;
-      background: #000;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.85;
-      transition: opacity 0.2s;
-    }
-
-    .artwork-card:hover .card-thumb img {
-      opacity: 1;
-    }
-
-    .card-badge-sector {
-      position: absolute;
-      top: 0.75rem;
-      left: 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      background: rgba(0, 0, 0, 0.75);
-      border: 1px solid var(--border);
-      padding: 0.2rem 0.5rem;
-      border-radius: 2px;
-      backdrop-filter: blur(4px);
-    }
-
-    .card-badge-ratio {
-      position: absolute;
-      bottom: 0.75rem;
-      right: 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      background: rgba(0, 0, 0, 0.75);
-      border: 1px solid var(--border);
       padding: 0.15rem 0.4rem;
       border-radius: 2px;
-      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      display: inline-block;
     }
 
-    .card-body {
-      padding: 1rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
+    .badge-video { background: rgba(99, 226, 183, 0.12); color: #63e2b7; border: 1px solid rgba(99, 226, 183, 0.3); }
+    .badge-still { background: rgba(228, 195, 121, 0.12); color: #e4c379; border: 1px solid rgba(228, 195, 121, 0.3); }
+    .badge-audio { background: rgba(255, 107, 74, 0.12); color: #ff6b4a; border: 1px solid rgba(255, 107, 74, 0.3); }
+    .badge-ready { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-hidden { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); border: 1px solid var(--border); }
 
-    .card-title-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 0.5rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .card-series {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--accent-amber);
-    }
-
-    .card-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      margin-bottom: 0.75rem;
-      flex: 1;
-    }
-
-    .card-meta-line {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      border-top: 1px solid var(--border);
-      padding-top: 0.6rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* COPY MANAGER FORM */
-    .copy-grid {
+    /* CARD GRID FOR PRESS */
+    .press-admin-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 1.25rem;
+      margin-bottom: 2rem;
     }
 
-    .copy-card {
+    .press-admin-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 4px;
       padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .copy-card-header {
+    .press-admin-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
-    }
-
-    .copy-card-label {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent-amber);
-      display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.5rem;
     }
 
-    .copy-helper {
-      font-size: 0.75rem;
+    .press-card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .press-card-cat {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
       color: var(--text-dim);
     }
 
-    .copy-input {
+    /* FORM FIELDS */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-input, .form-textarea, .form-select {
       width: 100%;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 2px;
-      padding: 0.75rem;
+      padding: 0.6rem 0.75rem;
       font-family: var(--font-sans);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-main);
-      line-height: 1.5;
-      resize: vertical;
       outline: none;
+      transition: border-color 0.15s;
     }
 
-    .copy-input:focus {
+    .form-textarea {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.45;
+      resize: vertical;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
       border-color: var(--accent-amber);
     }
 
-    .copy-btn-row {
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.active { display: flex; }
+
+    .modal-window {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-focus);
+      border-radius: 4px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .modal-close-btn:hover { color: #fff; }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-footer {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
+      gap: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
     }
 
     /* TOAST FEEDBACK */
@@ -654,7 +642,6 @@
       pointer-events: auto;
     }
 
-    /* FOOTER */
     .admin-footer {
       border-top: 1px solid var(--border);
       padding: 1.5rem;
@@ -671,21 +658,9 @@
     }
 
     @media (max-width: 768px) {
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .top-actions {
-        width: 100%;
-        justify-content: space-between;
-      }
-      .banner-stats {
-        width: 100%;
-        justify-content: space-between;
-      }
-      .artworks-grid {
-        grid-template-columns: 1fr;
-      }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .top-actions { width: 100%; justify-content: space-between; }
+      .form-grid-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -696,81 +671,152 @@
     <div class="brand-section">
       <div class="brand-title">
         GIGANTERA
-        <span class="badge">ADMIN // CURADORIA</span>
+        <span class="badge">ADMIN // CONTROLE GERAL</span>
       </div>
       <div class="node-indicator">
         <span class="node-pulse"></span>
-        SISTEMA AUTÔNOMO // PAINEL INDEPENDENTE
+        SISTEMA AUTÔNOMO // SINCRONIA ATIVA
       </div>
     </div>
 
     <div class="top-actions">
-      <a href="../index.html?view=media" target="_blank" class="btn btn-cyan" id="btnOpenMediaKit">
-        <span>PRESS KIT SECRETO ↗</span>
-      </a>
-      <button class="btn" onclick="copySecretMediaLink()">
-        <span>COPIAR LINK PRESS ⎘</span>
+      <button class="btn btn-primary" onclick="persistAndPublish()">
+        <span>SALVAR & PUBLICAR ⚡</span>
       </button>
+      <a href="../index.html?view=media" target="_blank" class="btn btn-cyan" id="btnOpenMediaKit">
+        <span>PRESS KIT PRIVADO ↗</span>
+      </a>
       <a href="../index.html" target="_blank" class="btn btn-accent">
         <span>VER PAVILHÃO ↗</span>
       </a>
     </div>
   </header>
 
-  <!-- MAIN WRAPPER -->
+  <!-- MAIN CONTAINER -->
   <main class="admin-container">
 
-    <!-- SYSTEM BANNER -->
+    <!-- SYSTEM BANNER & METRICS -->
     <section class="system-banner">
       <div class="banner-text">
-        <h1>Painel de Controle Independente // Acervo & Curadoria</h1>
+        <h1>Centro Curatorial & Gestão Completa de Obras</h1>
         <p>
-          Estrutura autônoma e desacoplada. Gerenciamento direto das obras do pavilhão, agrupamento por similaridade das saídas (pasta <code>3. Out</code>) e controle de copys em Vertente-C.
+          Adicione, edite e remova obras do pavilhão. Selecione quais obras têm download liberado no Media Kit e gerencie o status dos assets de imprensa sem quebrar links.
         </p>
       </div>
-
 
       <div class="banner-stats">
         <div class="stat-box">
           <span class="stat-num" id="statObras">12</span>
-          <span class="stat-label">Obras no Salão</span>
+          <span class="stat-label">Obras no Pavilhão</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="statMediaKitObras" style="color: var(--accent-emerald);">12</span>
+          <span class="stat-label">Download Liberado</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="statPressProntos" style="color: var(--accent-cyan);">3/6</span>
+          <span class="stat-label">Press Assets Prontos</span>
         </div>
         <div class="stat-box">
           <span class="stat-num" id="statClusters">7</span>
-          <span class="stat-label">Clusters (3. Out)</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-num" id="statOutputs">32</span>
-          <span class="stat-label">Saídas Mapeadas</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-num">17</span>
-          <span class="stat-label">Faixas Áudio</span>
+          <span class="stat-label">Clusters 3. Out</span>
         </div>
       </div>
     </section>
 
     <!-- NAVIGATION TABS -->
     <nav class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('tab-clusters')">
-        1. Clusters de Saídas (3. Out) <span class="tab-count">7</span>
+      <button class="tab-btn active" onclick="switchTab('tab-obras')">
+        1. Catálogo & Obras (CRUD) <span class="tab-count" id="tabCountObras">12</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-obras')">
-        2. Obras no Pavilhão (Vertente-C) <span class="tab-count">12</span>
+      <button class="tab-btn" onclick="switchTab('tab-press')">
+        2. Configuração do Media Kit <span class="tab-count">6</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-clusters')">
+        3. Clusters da Pasta 3. Out <span class="tab-count">7</span>
       </button>
       <button class="tab-btn" onclick="switchTab('tab-copys')">
-        3. Copys & Metadados
+        4. Copys & SEO do Site
       </button>
       <button class="tab-btn" onclick="switchTab('tab-audio')">
-        4. Estação de Som <span class="tab-count">17</span>
+        5. Estação de Som <span class="tab-count">17</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-export')">
-        5. Sincronizar & Exportar
+      <button class="tab-btn" onclick="switchTab('tab-sync')">
+        6. Backup & Código
       </button>
     </nav>
 
-    <!-- TAB 1: CLUSTERS DE SAÍDAS (3. OUT) -->
-    <section id="tab-clusters" class="tab-content active">
+    <!-- ========================================================================= -->
+    <!-- TAB 1: GESTÃO DE OBRAS (CRUD COMPLETO)                                    -->
+    <!-- ========================================================================= -->
+    <section id="tab-obras" class="tab-content active">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Obras do Pavilhão & Liberação de Download</h2>
+          <p class="section-subtitle">
+            Configure quais obras aparecem no espaço 3D e use a chave "No Media Kit" para liberar ou reter o download dos arquivos brutos para galeristas e editais.
+          </p>
+        </div>
+        <div class="header-controls">
+          <input type="text" id="obrasSearch" class="search-input" placeholder="Buscar por título ou série..." onkeyup="filterObrasTable()" />
+          <button class="btn btn-primary" onclick="openNewArtworkModal()">+ NOVA OBRA</button>
+        </div>
+      </div>
+
+      <div class="data-table-wrap">
+        <table class="data-table" id="obrasTable">
+          <thead>
+            <tr>
+              <th style="width: 50px;">Prévia</th>
+              <th>Título (Vertente-C)</th>
+              <th>Série / Ciclo</th>
+              <th>Mídia / Setor</th>
+              <th>Formato Master</th>
+              <th style="text-align: center;">No Media Kit?</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="obrasTableBody">
+            <!-- Renderizado dinamicamente via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: CONFIGURAÇÃO DO MEDIA KIT & PRESS (SEM LINKS QUEBRADOS)            -->
+    <!-- ========================================================================= -->
+    <section id="tab-press" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Gerenciador de Materiais de Imprensa</h2>
+          <p class="section-subtitle">
+            Defina o status de cada item (Disponível, Em Preparação ou Oculto). Itens sem arquivo pronto não exibirão links quebrados na página de mídia.
+          </p>
+        </div>
+        <button class="btn btn-primary" onclick="persistAndPublish()">SALVAR ALTERAÇÕES 💾</button>
+      </div>
+
+      <div class="press-admin-grid" id="pressAssetsAdminContainer">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <!-- PASTA GERAL DO GOOGLE DRIVE -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin-top: 1.5rem;">
+        <h3 class="section-title" style="margin-bottom: 0.5rem;">Link Geral da Pasta Mãe do Google Drive</h3>
+        <p class="section-subtitle" style="margin-bottom: 1rem;">
+          Este link alimenta o botão "Pasta Completa no Drive" no topo do Media Kit. Cole aqui o link compartilhável da sua pasta do Google Drive.
+        </p>
+        <div class="form-group">
+          <input type="url" id="inputCloudDriveUrl" class="form-input" placeholder="https://drive.google.com/drive/folders/..." />
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: CLUSTERS DA PASTA 3. OUT                                           -->
+    <!-- ========================================================================= -->
+    <section id="tab-clusters" class="tab-content">
       <div class="section-header">
         <div>
           <h2 class="section-title">Grupos de Saídas Similares // Pasta 3. Out</h2>
@@ -778,9 +824,7 @@
             Varredura do pipeline do Gigantera catalogando cada saída individual de render agrupada por coerência conceitual e estética.
           </p>
         </div>
-        <div class="search-filter">
-          <input type="text" id="clusterSearch" class="search-input" placeholder="Filtrar por nome, série, formato..." onkeyup="filterClusters()" />
-        </div>
+        <input type="text" id="clusterSearch" class="search-input" placeholder="Filtrar clusters..." onkeyup="filterClusters()" />
       </div>
 
       <div id="clustersContainer">
@@ -788,125 +832,61 @@
       </div>
     </section>
 
-    <!-- TAB 2: OBRAS NO PAVILHÃO -->
-    <section id="tab-obras" class="tab-content">
-      <div class="section-header">
-        <div>
-          <h2 class="section-title">Obras Instaladas no Pavilhão 3D</h2>
-          <p class="section-subtitle">
-            Obras ativas suspensas em vitrines brutalistas ao longo dos setores acústico, cinético (vídeo) e estático (still).
-          </p>
-        </div>
-        <div class="search-filter">
-          <input type="text" id="artworksSearch" class="search-input" placeholder="Buscar obra por título..." onkeyup="filterArtworks()" />
-        </div>
-      </div>
-
-      <div class="artworks-grid" id="artworksContainer">
-        <!-- Renderizado dinamicamente via JS -->
-      </div>
-    </section>
-
-    <!-- TAB 3: COPYS & METADADOS -->
+    <!-- ========================================================================= -->
+    <!-- TAB 4: COPYS & SEO DO SITE                                                -->
+    <!-- ========================================================================= -->
     <section id="tab-copys" class="tab-content">
       <div class="section-header">
         <div>
           <h2 class="section-title">Copys Oficiais do Pavilhão</h2>
           <p class="section-subtitle">
-            Textos prontos para colar no código ou materiais de divulgação. Modifique e clique em Salvar para persistir localmente.
+            Textos do Hero, Subhead, CTA de entrada e metadados SEO. Modifique e clique em salvar para aplicar diretamente.
           </p>
         </div>
-        <button class="btn btn-accent" onclick="saveCopies()">SALVAR ALTERAÇÕES 💾</button>
+        <button class="btn btn-primary" onclick="persistAndPublish()">SALVAR COPYS 💾</button>
       </div>
 
-      <div class="copy-grid">
-        <!-- Title Tag -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Title Tag (Aba do Navegador)</span>
-            <span class="copy-helper">SEO / Indexação</span>
-          </div>
-          <input type="text" id="copyTitle" class="copy-input" value="GIGANTERA | Pavilhão Digital" />
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copyTitle')">COPIAR ⎘</button>
-          </div>
+      <div style="display: grid; gap: 1.25rem;">
+        <div class="form-group">
+          <label class="form-label">Title Tag (Aba do Navegador)</label>
+          <input type="text" id="copyTitle" class="form-input" value="GIGANTERA | Pavilhão Digital" />
         </div>
 
-        <!-- Meta Description -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Meta Description (140 Caracteres)</span>
-            <span class="copy-helper">Snippet de busca e compartilhamento</span>
-          </div>
-          <textarea id="copyMeta" class="copy-input" rows="2">Um pavilhão imersivo. Você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral.</textarea>
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copyMeta')">COPIAR ⎘</button>
-          </div>
+        <div class="form-group">
+          <label class="form-label">Meta Description (140 Caracteres)</label>
+          <textarea id="copyMeta" class="form-textarea" rows="2">Um pavilhão imersivo. Você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral.</textarea>
         </div>
 
-        <!-- Hero Headline -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Hero Headline (Tela de Entrada)</span>
-            <span class="copy-helper">Primeiro impacto visual</span>
-          </div>
-          <input type="text" id="copyHero" class="copy-input" value="GIGANTERA — Um pavilhão. Não um portfólio." />
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copyHero')">COPIAR ⎘</button>
-          </div>
+        <div class="form-group">
+          <label class="form-label">Hero Headline (Tela de Entrada)</label>
+          <input type="text" id="copyHero" class="form-input" value="GIGANTERA — Um pavilhão. Não um portfólio." />
         </div>
 
-        <!-- Subhead -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Subhead (Abaixo do Hero)</span>
-            <span class="copy-helper">Instrução espacial</span>
-          </div>
-          <input type="text" id="copySubhead" class="copy-input" value="Concreto, luz e som suspensos no espaço — entre e ande." />
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copySubhead')">COPIAR ⎘</button>
-          </div>
+        <div class="form-group">
+          <label class="form-label">Subhead (Abaixo do Hero)</label>
+          <input type="text" id="copySubhead" class="form-input" value="Concreto, luz e som suspensos no espaço — entre e ande." />
         </div>
 
-        <!-- CTA de Entrada -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">CTA de Entrada (Botão Principal)</span>
-            <span class="copy-helper">Gatilho de transição 3D</span>
-          </div>
-          <input type="text" id="copyCTA" class="copy-input" value="ENTRAR NO PAVILHÃO" />
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copyCTA')">COPIAR ⎘</button>
-          </div>
+        <div class="form-group">
+          <label class="form-label">CTA de Entrada (Botão Principal)</label>
+          <input type="text" id="copyCTA" class="form-input" value="ENTRAR NO PAVILHÃO" />
         </div>
 
-        <!-- Blurb Curto -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Blurb Curto pra Bio / Imprensa</span>
-            <span class="copy-helper">Apresentação institucional</span>
-          </div>
-          <textarea id="copyBlurb" class="copy-input" rows="4">Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.</textarea>
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copyBlurb')">COPIAR ⎘</button>
-          </div>
+        <div class="form-group">
+          <label class="form-label">Blurb Curto pra Bio / Imprensa</label>
+          <textarea id="copyBlurb" class="form-textarea" rows="4">Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.</textarea>
         </div>
 
-        <!-- Provérbio Caiçara -->
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Provérbio Raiz & Curatorial</span>
-            <span class="copy-helper">Fundação poética</span>
-          </div>
-          <input type="text" id="copyProverbio" class="copy-input" value="Tainhas gigantes só podem ser pescadas com uma tarrafa gigante." />
-          <div class="copy-btn-row">
-            <button class="btn" onclick="copyField('copyProverbio')">COPIAR ⎘</button>
-          </div>
+        <div class="form-group">
+          <label class="form-label">Provérbio Curatorial Raiz</label>
+          <input type="text" id="copyProverbio" class="form-input" value="Tainhas gigantes só podem ser pescadas com uma tarrafa gigante." />
         </div>
       </div>
     </section>
 
-    <!-- TAB 4: ESTAÇÃO DE SOM -->
+    <!-- ========================================================================= -->
+    <!-- TAB 5: ESTAÇÃO DE SOM                                                     -->
+    <!-- ========================================================================= -->
     <section id="tab-audio" class="tab-content">
       <div class="section-header">
         <div>
@@ -917,8 +897,8 @@
         </div>
       </div>
 
-      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; overflow-x: auto;">
-        <table class="output-items-table" id="audioTable">
+      <div class="data-table-wrap">
+        <table class="data-table">
           <thead>
             <tr>
               <th>#</th>
@@ -931,205 +911,270 @@
             </tr>
           </thead>
           <tbody id="audioTableBody">
-            <!-- Inserido dinamicamente via JS -->
+            <!-- Renderizado dinamicamente via JS -->
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 5: EXPORTAR & SINCRONIZAR -->
-    <section id="tab-export" class="tab-content">
+    <!-- ========================================================================= -->
+    <!-- TAB 6: BACKUP & CÓDIGO                                                    -->
+    <!-- ========================================================================= -->
+    <section id="tab-sync" class="tab-content">
       <div class="section-header">
         <div>
-          <h2 class="section-title">Exportar & Sincronizar Código</h2>
+          <h2 class="section-title">Central de Backup & Sincronização</h2>
           <p class="section-subtitle">
-            Gere o código limpo TypeScript ou JSON para atualizar o site sem necessidade de ferramentas externas.
+            Exporte as configurações em JSON para backup ou gere o código TypeScript definitivo para congelar no repositório.
           </p>
         </div>
       </div>
 
-      <div class="copy-grid">
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Exportar Catálogo de Clusters (JSON)</span>
-            <span class="copy-helper">Agrupamentos da pasta 3. Out</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Baixe o manifesto estruturado com todos os 7 clusters e 32 arquivos com títulos em Vertente-C.
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem;">
+          <h3 class="section-title" style="margin-bottom: 0.5rem;">Backup Completo (JSON)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Salve todas as obras cadastradas, textos de release e configurações em um único arquivo portátil.
           </p>
-          <div class="copy-btn-row" style="justify-content: flex-start;">
-            <button class="btn btn-accent" onclick="downloadJSON('clusters')">BAIXAR CLUSTERS.JSON ↓</button>
-            <button class="btn" onclick="copyJSON('clusters')">COPIAR JSON ⎘</button>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="exportBackupJSON()">BAIXAR BACKUP (JSON) ↓</button>
+            <label class="btn btn-accent" style="cursor: pointer;">
+              IMPORTAR BACKUP ↑
+              <input type="file" id="importBackupInput" accept=".json" style="display: none;" onchange="importBackupJSON(event)" />
+            </label>
           </div>
         </div>
 
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Link Privado do Media Kit</span>
-            <span class="copy-helper">Acesso para curadores, galerias e imprensa</span>
-          </div>
-          <input type="text" id="secretLinkInput" class="copy-input" readonly value="" />
-          <div class="copy-btn-row">
-            <button class="btn btn-cyan" onclick="copySecretMediaLink()">COPIAR LINK PRIVADO ⎘</button>
-            <a href="../index.html?view=media" target="_blank" class="btn">ABRIR ↗</a>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem;">
+          <h3 class="section-title" style="margin-bottom: 0.5rem;">Link Secreto do Media Kit</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Link direto para envio exclusivo a galeristas, curadores de editais e jornalistas.
+          </p>
+          <div style="display: flex; gap: 0.75rem;">
+            <input type="text" id="secretLinkDisplay" class="form-input" readonly />
+            <button class="btn btn-cyan" onclick="copySecretLink()">COPIAR ⎘</button>
           </div>
         </div>
 
-        <div class="copy-card">
-          <div class="copy-card-header">
-            <span class="copy-card-label">Arquitetura Autônoma & Futura Migração</span>
-            <span class="copy-helper">Instruções para nova infraestrutura</span>
-          </div>
-          <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.6;">
-            <p>1. O diretório <code>/gigantera</code> é 100% autônomo e possui seu próprio <code>package.json</code> e build Vite.</p>
-            <p>2. Ao apontar um domínio próprio exclusivo no futuro:</p>
-            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-              <li>O site principal roda na raiz <code>/</code></li>
-              <li>Este painel administrativo roda direto em <code>/admin/</code></li>
-              <li>O kit de imprensa roda em <code>/?view=media</code></li>
-            </ul>
-          </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem;">
+          <h3 class="section-title" style="margin-bottom: 0.5rem;">Restaurar Padrões de Fábrica</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Limpa customizações salvas no navegador e retorna o catálogo para as 12 obras iniciais de fábrica.
+          </p>
+          <button class="btn btn-danger" onclick="resetToDefaults()">RESTAURAR PADRÕES ↺</button>
         </div>
       </div>
     </section>
 
-
   </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE CRIAÇÃO / EDIÇÃO DE OBRA                                         -->
+  <!-- ========================================================================= -->
+  <div class="modal-backdrop" id="artworkModalBackdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title" id="artworkModalTitle">NOVA OBRA // PAVILHÃO</h3>
+        <button class="modal-close-btn" onclick="closeArtworkModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="editArtworkId" />
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Título da Obra (Vertente-C) *</label>
+            <input type="text" id="editArtworkTitle" class="form-input" placeholder="Ex: Tarrafa Cega, Tração" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Série / Ciclo *</label>
+            <input type="text" id="editArtworkSeries" class="form-input" placeholder="Ex: Espinhaço, Zimbro, Notalgia" required />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Mídia / Formato *</label>
+            <select id="editArtworkMedium" class="form-select" onchange="handleMediumChange()">
+              <option value="video">Vídeo Cinético (Loop)</option>
+              <option value="still">Impresso Still (Giclée / Mineral)</option>
+              <option value="sound">Instalação Sonora</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Ano de Produção</label>
+            <input type="number" id="editArtworkYear" class="form-input" value="2026" />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Proporção Visual</label>
+            <select id="editArtworkRatio" class="form-select">
+              <option value="9 / 16">9:16 (Vertical)</option>
+              <option value="16 / 9">16:9 (Widescreen)</option>
+              <option value="1 / 1">1:1 (Quadrado)</option>
+              <option value="4 / 5">4:5 (Exposição)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Disponibilidade no Media Kit</label>
+            <div style="padding-top: 0.4rem;">
+              <label class="switch-label">
+                <input type="checkbox" id="editArtworkAvailable" class="switch-input" checked />
+                <span class="switch-slider"></span>
+                <span class="switch-text">Download Liberado</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Materiais / Especificação Técnica</label>
+          <input type="text" id="editArtworkMaterials" class="form-input" placeholder="Ex: Papel de algodão mate 310g/m², vitrine de vidro temperado" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Declaração Curatorial / Sinopse</label>
+          <textarea id="editArtworkDesc" class="form-textarea" rows="3" placeholder="Descrição poética e conceitual da obra..."></textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Caminho da Imagem / Capa *</label>
+            <input type="text" id="editArtworkImage" class="form-input" placeholder="works/espinhaco-cinetica-prata.jpg" />
+          </div>
+
+          <div class="form-group" id="groupVideoSrc">
+            <label class="form-label">Caminho do Vídeo (MP4)</label>
+            <input type="text" id="editArtworkVideo" class="form-input" placeholder="works/video/video-01-kinetic-spine.mp4" />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Formato Master para Download</label>
+            <input type="text" id="editArtworkMasterFormat" class="form-input" placeholder="Apple ProRes 422 HQ (4K) ou TIFF 300 DPI" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Link do Arquivo no Google Drive (Opcional)</label>
+            <input type="url" id="editArtworkDrive" class="form-input" placeholder="https://drive.google.com/file/d/..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" onclick="closeArtworkModal()">CANCELAR</button>
+        <button class="btn btn-primary" onclick="saveArtworkFromModal()">SALVAR OBRA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST FEEDBACK -->
+  <div id="toast" class="toast">
+    <span style="color: var(--accent-emerald);">✓</span>
+    <span id="toastMsg">Alterações salvas com sucesso</span>
+  </div>
 
   <!-- FOOTER -->
   <footer class="admin-footer">
-    <div>
-      GIGANTERA © 2026 // FELIPE CONCEIÇÃO — TODOS OS DIREITOS RESERVADOS
-    </div>
-    <div>
-      SISTEMA CURATORIAL AUTÔNOMO v2.4 (STANDALONE ENGINE)
-    </div>
+    <div>GIGANTERA © 2026 // FELIPE CONCEIÇÃO — TODOS OS DIREITOS RESERVADOS</div>
+    <div>PAINEL CURATORIAL AUTÔNOMO v3.0 (GESTÃO TOTAL DO PAVILHÃO)</div>
   </footer>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="toast">
-    <span style="color: var(--accent-emerald);">✓</span>
-    <span id="toastMsg">Copiado para a área de transferência</span>
-  </div>
-
   <script>
-    // DADOS INICIAIS: CLUSTERS DE SAÍDAS (3. OUT)
+    const CONFIG_KEY = 'gigantera_custom_config';
+
+    // DADOS PADRÃO DE FÁBRICA
+    const DEFAULT_ARTWORKS = [
+      { id: 'video-espinhaco-cinetico', title: 'Tração', series: 'Espinhaço', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // LOOP', year: 2026, materials: 'Vitrine de vidro flutuante, simulação hidrodinâmica em tempo real', description: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a seguinte.', imageSrc: 'works/espinhaco-descida-crepuscular.jpg', videoSrc: 'works/video/video-01-kinetic-spine.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-stipples-particulas', title: 'Sumud', series: 'Zimbro', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // ESTOCÁSTICA', year: 2026, materials: 'Vitrine de vidro flutuante, sistema estocástico de pontos (stippling)', description: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.', imageSrc: 'works/zimbro-rastreamento-vetorial.jpg', videoSrc: 'works/video/video-02-stipples-simulation.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-espinha-metalica', title: 'Encalhe', series: 'Espinhaço', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // 3D', year: 2026, materials: 'Vitrine de vidro flutuante, liga cromo-níquel virtual e reflexão anisotrópica', description: 'Sequência em plano fechado destacando as reflexões metálicas enquanto a estrutura se curva em ciclo contínuo.', imageSrc: 'works/espinhaco-relevo-neotribal.jpg', videoSrc: 'works/video/video-03-metallic-spine.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-mapping-led', title: 'Pulso', series: 'Luz & Escultura', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // LIGHT SCULPTURE', year: 2026, materials: 'Instalação visual em painéis de LED volumétricos, animação vetorial', description: 'Campos luminescentes projetados em escala monumental com transições dinâmicas entre feixes frios e densidade escura.', imageSrc: 'works/zimbro-estudo-espectral.jpg', videoSrc: 'works/video/video-04-mapping-led.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-onda-padroes', title: 'Maré', series: 'Ressonância', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // FLUID DYNAMICS', year: 2026, materials: 'Simulação vetorial contínua, interferência ondulatória em matriz 2D', description: 'Padrões rítmicos oscilantes que exploram a propagação acústica em meios materiais, gerando relevos ópticos contínuos.', imageSrc: 'works/sedimento-litificacao-final.jpg', videoSrc: 'works/video/video-05-onda-padroes.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-cores-spectrum', title: 'Fissura 26', series: 'Cromia', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // CHROMATIC', year: 2026, materials: 'Gradientes ópticos generativos de alta saturação sob vidro acrílico', description: 'Transição aveludada entre frequências cromáticas complementares, quebrando a monocromia mineral do salão.', imageSrc: 'works/notalgia-monolito-costeiro.jpg', videoSrc: 'works/video/video-06-cores-spectrum.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'espinhaco-cinetica-prata', title: 'Tarrafa Cega', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel de algodão mate 310g/m², vitrine de vidro temperado e liga de prata', description: 'Estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.', imageSrc: 'works/espinhaco-cinetica-prata.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'espinhaco-vitrine-aquario', title: 'Tempo de Espera', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel arquivístico mate sem brilho, vitrine de vidro óptico e titânio', description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação do fluxo hidrodinâmico.', imageSrc: 'works/espinhaco-vitrine-aquario.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'zimbro-estudo-espectral', title: 'Inventário', series: 'Zimbro', medium: 'still', categoryLabel: 'MURAL WIDESCREEN EM VIDRO', year: 2026, materials: 'Papel mate panorâmico de museu, coordenadas fotogramétricas e vitrine selada', description: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão.', imageSrc: 'works/zimbro-estudo-espectral.jpg', aspectRatio: '16 / 9', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Panorâmico (300 DPI)', dimensionsOrDuration: '5000x2812 px (300 DPI)', status: 'active' },
+      { id: 'sedimento-litificacao-final', title: 'Fundação Nua', series: 'Sedimento', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel mate aveludado, silte basáltico e vitrine de vidro ultra-claro', description: 'Momento de repouso definitivo da peça contra o piso basáltico; a matéria inerte entra em contato com silte em processo de litificação.', imageSrc: 'works/sedimento-litificacao-final.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'notalgia-monolito-costeiro', title: 'Farol Mudo', series: 'Notalgia', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel mate de alta gramatura, vitrine de vidro arquitetural e fiação industrial', description: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre a arquitetura bruta e o abismo natural.', imageSrc: 'works/notalgia-monolito-costeiro.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'espinhaco-registro-abissal', title: 'Quilha', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel de algodão fosco 310g/m², vitrine de vidro selada e pigmentos minerais', description: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica sob compressão sedimentar marinha.', imageSrc: 'works/espinhaco-registro-abissal.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' }
+    ];
+
+    const DEFAULT_PRESS_ASSETS = [
+      { id: 'press-bio-full', category: 'bio', title: 'Biografia Curatorial Oficial (PT & EN)', description: 'Versões completa e resumida em terceira pessoa para catálogos, editais e matérias de imprensa.', format: 'TXT / MD', resolutionOrSize: '2.4 KB', fileUrl: '', status: 'ready', copyableContent: 'Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.' },
+      { id: 'press-statement-gigantera', category: 'statement', title: 'Declaração Conceitual — GIGANTERA (Artist Statement)', description: 'Texto curatorial integral sobre o conceito arquitetural, sonoro e cinético da exposição.', format: 'TXT / MD', resolutionOrSize: '1.8 KB', fileUrl: '', status: 'ready', copyableContent: 'GIGANTERA: Um pavilhão. Não um portfólio.\n\nConcreto, luz e som suspensos no espaço — entre e ande.' },
+      { id: 'press-headshot-hi-res', category: 'photos', title: 'Retrato Oficial do Artista (300 DPI / Print)', description: 'Fotografia de estúdio em alta resolução para catálogos impressos e matérias jornalísticas.', format: 'JPG / TIFF', resolutionOrSize: '300 DPI · 4000x5000 px', fileUrl: '', status: 'pending', previewUrl: '/avatar/avatar.png' },
+      { id: 'press-logos-vector', category: 'logos', title: 'Pack de Identidade Visual (Logos & Tipogramas)', description: 'Logotipos e assinaturas oficiais em vetor escalável e PNGs transparentes.', format: 'SVG / PNG', resolutionOrSize: 'Vetor Escalável', fileUrl: '/logo.svg', status: 'pending', previewUrl: '/logo.svg' },
+      { id: 'press-exhibition-release', category: 'release', title: 'Press Release Oficial da Exposição GIGANTERA', description: 'Documento oficial com contextualização, sinopses das séries e ficha técnica.', format: 'PDF / TXT', resolutionOrSize: 'Documento Editorial', fileUrl: '', status: 'ready', copyableContent: '# PRESS RELEASE // GIGANTERA\nExposição Espacial de Brutalismo Digital & Arquitetura Sonora\nArtista: Felipe Conceição\nAno: 2026\n\nConcreto, luz e som suspensos no espaço — entre e ande.\nUm espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro.' },
+      { id: 'press-social-promo-pack', category: 'promopack', title: 'Pacote de Divulgação para Mídias Sociais & Telões', description: 'Crops padronizados em 16:9 (Landscape), 1:1 (Feed) e 9:16 (Stories/Reels) das obras.', format: 'ZIP (JPG/MP4)', resolutionOrSize: 'Pacote Compactado', fileUrl: '', status: 'pending' }
+    ];
+
+    const DEFAULT_SITE_CONFIG = {
+      title: 'GIGANTERA | Pavilhão Digital',
+      metaDescription: 'Um pavilhão imersivo. Você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral.',
+      heroHeadline: 'GIGANTERA — Um pavilhão. Não um portfólio.',
+      subhead: 'Concreto, luz e som suspensos no espaço — entre e ande.',
+      ctaText: 'ENTRAR NO PAVILHÃO',
+      blurb: 'Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.',
+      curatorialProverb: 'Tainhas gigantes só podem ser pescadas com uma tarrafa gigante.',
+      cloudDriveUrl: 'https://drive.google.com/drive/folders/1w7u6jDqj8r3l9m8s2?usp=sharing'
+    };
+
     const CLUSTERS_DATA = [
-      {
-        id: 'cluster-tarrafa-zimbro',
-        clusterName: 'Tarrafa & Zimbro // A Pesca Monumental',
-        series: 'Espinhaço',
-        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out',
-        concept: 'A tradição da tainha e a pesca monumental caiçara transmutada em biologia mecânica fóssil.',
-        items: [
-          { filename: 'GIGANTERA_GIANT_MULLETS.mov', proposedTitle: 'Tarrafa Cega (Master)', format: 'MOV ProRes', sizeApprox: '39.7 MB', type: 'master', notes: 'Master da animação biomecânica da coluna fóssil da tainha' },
-          { filename: 'Gigantera - giant mullets v1.mp4', proposedTitle: 'Tarrafa Cega (Estudo)', format: 'MP4 H.264', sizeApprox: '4.9 MB', type: 'study', notes: 'Estudo inicial de cinética vertebral' },
-          { filename: 'GIGANTERA_ZIMBRO_01.mp4', proposedTitle: 'Cardume Noturno', format: 'MP4 4K', sizeApprox: '183.1 MB', type: 'master', notes: 'Renderização pesada da simulação hidrodinâmica de Zimbro' },
-          { filename: 'criativo 04.mp4', proposedTitle: 'Tração da Rede', format: 'MP4 1080p', sizeApprox: '47.7 MB', type: 'master', notes: 'Tensão de arrasto e flexão vertebral sob carga' },
-          { filename: 'criativo 09.mp4', proposedTitle: 'Arraste Profundo', format: 'MP4 High-Bitrate', sizeApprox: '266.8 MB', type: 'master', notes: 'Variações 09_1 e 09_2 com detalhamento volumétrico abissal' },
-          { filename: 'Gigantera - Zimbro Styleframes.png', proposedTitle: 'Inventário / Pranchas de Ateliê', format: 'PNG 300DPI', sizeApprox: '4.3 MB', type: 'still', notes: 'Prancha de documentação curatorial e fotogramétrica de ateliê' },
-          { filename: 'Gigantera - Zimbro 2_criativo 09_...png', proposedTitle: 'Vértebra Flutuante', format: 'PNG Giclée', sizeApprox: '3.8 MB', type: 'still', notes: 'Isolamento de nódulo biomecânico em fundo neutro' },
-          { filename: 'Gigantera - Zimbro 2_criativo 10_...png', proposedTitle: 'Costela Fóssil', format: 'PNG Giclée', sizeApprox: '3.9 MB', type: 'still', notes: 'Estudo de calcificação e textura ictiológica' }
-        ]
-      },
-      {
-        id: 'cluster-grade-ruido',
-        clusterName: 'Grade & Ruído // Matriz Estocástica',
-        series: 'Espinhaço',
-        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Série Criativo 08)',
-        concept: 'A decomposição da imagem fotográfica em código, ruído e matriz vetorial.',
-        items: [
-          { filename: 'criativo 08 - matrix.mp4', proposedTitle: 'Sumud // Grade Estocástica', format: 'MP4', sizeApprox: '35.9 MB', type: 'master', notes: 'Matriz estocástica e varredura de pontos em tempo real' },
-          { filename: 'criativo 08_1.mp4', proposedTitle: 'Trama Seca', format: 'MP4', sizeApprox: '50.9 MB', type: 'study', notes: 'Densidade alta de partículas sem atenuação' },
-          { filename: 'criativo 08_3.mp4', proposedTitle: 'Frequência Oculta', format: 'MP4', sizeApprox: '50.9 MB', type: 'study', notes: 'Interferência harmônica na distribuição de pontos' },
-          { filename: 'criativo 08_5.mp4', proposedTitle: 'Ruído de Fundo', format: 'MP4', sizeApprox: '51.6 MB', type: 'study', notes: 'Dissolução estocástica em meio líquido' }
-        ]
-      },
-      {
-        id: 'cluster-dispositivos-cenicos',
-        clusterName: 'Dispositivos Cênicos // Vitrines & Mockups',
-        series: 'Espinhaço',
-        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Mockups Teatro & TV)',
-        concept: 'A obra confrontando o espaço cênico brutalista e a tela preta de transmissão.',
-        items: [
-          { filename: 'criativo 06 - mockup teatro.mp4', proposedTitle: 'Câmara Escura', format: 'MP4', sizeApprox: '13.6 MB', type: 'mockup', notes: 'Projeção imersiva simulada em palco escuro teatral' },
-          { filename: 'criativo 06 - mockup tv.mp4', proposedTitle: 'Transmissão Fria', format: 'MP4', sizeApprox: '46.4 MB', type: 'mockup', notes: 'Monitor CRT brutalista exibindo loop da obra' },
-          { filename: 'criativo 07 - mockup teatro.mp4', proposedTitle: 'Palco Mudo', format: 'MP4', sizeApprox: '13.5 MB', type: 'mockup', notes: 'Composição espacial entre iluminação cênica e monolito' },
-          { filename: 'mockup criativo 09_2.mp4', proposedTitle: 'Vitrine Suspensa', format: 'MP4', sizeApprox: '101.7 MB', type: 'mockup', notes: 'Câmara de acrílico flutuante em museu contemporâneo' }
-        ]
-      },
-      {
-        id: 'cluster-pulso-frequencia',
-        clusterName: 'Pulso & Frequência // Cinética Dinâmica',
-        series: 'Espinhaço',
-        sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Criativos 13, 03, 05)',
-        concept: 'Ondulações de torque, atrito hidrodinâmico e aceleração contínua de biomotores.',
-        items: [
-          { filename: 'criativo 13b.mp4', proposedTitle: 'Tração 13b', format: 'MP4 60fps', sizeApprox: '82.2 MB', type: 'master', notes: 'Sequência de deformação rápida sob campo de força' },
-          { filename: 'criativo 13c.mp4', proposedTitle: 'Torque Seco', format: 'MP4 60fps', sizeApprox: '82.3 MB', type: 'master', notes: 'Parada súbita com inércia viscoelástica' },
-          { filename: 'criativo 13d.mp4', proposedTitle: 'Envergadura', format: 'MP4 60fps', sizeApprox: '82.1 MB', type: 'master', notes: 'Extensão máxima dos filamentos de titânio' },
-          { filename: 'criativo 03_2.mp4', proposedTitle: 'Fissura Linear', format: 'MP4', sizeApprox: '35.7 MB', type: 'study', notes: 'Micro-rupturas estruturais em tempo real' },
-          { filename: 'criativo 05_2.mov', proposedTitle: 'Atrito Hidrodinâmico', format: 'MOV ProRes', sizeApprox: '172.5 MB', type: 'master', notes: 'Render não-comprimido da passagem do fluxo líquido' }
-        ]
-      },
-      {
-        id: 'cluster-litoral-erosao',
-        clusterName: 'Litoral & Erosão // Broken Marvel Beach',
-        series: 'Notalgia',
-        sourceDir: 'Pipeline Gigantera/Notalgia/3. Out',
-        concept: 'A memória geológica costeira em colapso: resíduo industrial e salitre sobre pedra basáltica.',
-        items: [
-          { filename: 'Broken Marvel Beach.mov', proposedTitle: 'Praia Partida (Master)', format: 'MOV ProRes', sizeApprox: '142.0 MB', type: 'master', notes: 'Master da paisagem costeira desconstruída' },
-          { filename: 'Broken Marvel Beach 3.mp4', proposedTitle: 'Sedimento e Espuma', format: 'MP4', sizeApprox: '48.2 MB', type: 'study', notes: 'Estudo de quebra de onda sobre monolito mineral' },
-          { filename: 'criativo 01.mov', proposedTitle: 'Farol Mudo // Horizonte', format: 'MOV', sizeApprox: '68.4 MB', type: 'master', notes: 'Plano contemplativo com névoa salina' },
-          { filename: 'criativo 04.mp4', proposedTitle: 'Costa Rasa', format: 'MP4', sizeApprox: '38.6 MB', type: 'study', notes: 'Reflexos crepusculares em maré baixa' }
-        ]
-      },
-      {
-        id: 'cluster-abissal-lidar',
-        clusterName: 'Abissal & Lidar // TouchDesigner GPU',
-        series: 'TD First View',
-        sourceDir: 'Pipeline Gigantera/TD First View/exports/videos',
-        concept: 'Nuvens de pontos em tempo real, varredura a laser e bioluminescência sintética calculada por GPU.',
-        items: [
-          { filename: 'sim_round_228_abyssal_particle_vortex_10s.mp4', proposedTitle: 'Vórtice Abissal', format: 'MP4 60fps', sizeApprox: '95.0 MB', type: 'simulation', notes: 'Loop de 10s com 500.000 partículas GPU aceleradas' },
-          { filename: 'sim_round_156_monumental_obsidian_sunbeam.mp4', proposedTitle: 'Feixe de Obsidiana', format: 'MP4 60fps', sizeApprox: '110.4 MB', type: 'simulation', notes: 'Feixe de luz volumétrica atravessando prisma vulcânico' },
-          { filename: 'sim_round_205_hud_cyber_lidar_10s.mp4', proposedTitle: 'Varredura Lidar', format: 'MP4 60fps', sizeApprox: '88.1 MB', type: 'simulation', notes: 'Telemetria espacial e nuvem topográfica marinha' },
-          { filename: 'sim_round_105_bioluminescent_night_swarm.mp4', proposedTitle: 'Enxame Noturno', format: 'MP4 60fps', sizeApprox: '79.3 MB', type: 'simulation', notes: 'Pulsos luminescentes inspirados nas fossas abissais' }
-        ]
-      },
-      {
-        id: 'cluster-memoria-ancestral',
-        clusterName: 'Memória Ancestral // Vô David & Raízes',
-        series: 'Origem',
-        sourceDir: 'Pipeline Gigantera/Vo David & Fisherman',
-        concept: 'A memória oral do pescador artesanal, monitores analógicos e a fundação humana do pavilhão.',
-        items: [
-          { filename: 'fishermanv1.mp4', proposedTitle: 'O Velho e a Rede', format: 'MP4', sizeApprox: '24.5 MB', type: 'master', notes: 'Gesto ancestral do lançamento da tarrafa em câmara lenta' },
-          { filename: 'recrie_de_forma_realista_2026...jpeg', proposedTitle: 'Monitor de Memória', format: 'JPEG Archival', sizeApprox: '3.2 MB', type: 'still', notes: 'Instalação de monitores exibindo arquivo vivo de pesca' },
-          { filename: 'DRINK_ COPO_HORTELA.mp4', proposedTitle: 'Respiro de Terra', format: 'MP4', sizeApprox: '18.1 MB', type: 'study', notes: 'Pausa contemplativa entre as jornadas de mar' }
-        ]
-      }
+      { id: 'cluster-tarrafa-zimbro', clusterName: 'Tarrafa & Zimbro // A Pesca Monumental', series: 'Espinhaço', sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out', concept: 'A tradição da tainha e a pesca monumental caiçara transmutada em biologia mecânica fóssil.', items: [
+        { filename: 'GIGANTERA_GIANT_MULLETS.mov', proposedTitle: 'Tarrafa Cega (Master)', format: 'MOV ProRes', sizeApprox: '39.7 MB', type: 'master' },
+        { filename: 'Gigantera - giant mullets v1.mp4', proposedTitle: 'Tarrafa Cega (Estudo)', format: 'MP4 H.264', sizeApprox: '4.9 MB', type: 'study' },
+        { filename: 'GIGANTERA_ZIMBRO_01.mp4', proposedTitle: 'Cardume Noturno', format: 'MP4 4K', sizeApprox: '183.1 MB', type: 'master' },
+        { filename: 'criativo 04.mp4', proposedTitle: 'Tração da Rede', format: 'MP4 1080p', sizeApprox: '47.7 MB', type: 'master' },
+        { filename: 'criativo 09.mp4', proposedTitle: 'Arraste Profundo', format: 'MP4 High-Bitrate', sizeApprox: '266.8 MB', type: 'master' },
+        { filename: 'Gigantera - Zimbro Styleframes.png', proposedTitle: 'Inventário / Pranchas de Ateliê', format: 'PNG 300DPI', sizeApprox: '4.3 MB', type: 'still' },
+        { filename: 'Gigantera - Zimbro 2_criativo 09...png', proposedTitle: 'Vértebra Flutuante', format: 'PNG Giclée', sizeApprox: '3.8 MB', type: 'still' },
+        { filename: 'Gigantera - Zimbro 2_criativo 10...png', proposedTitle: 'Costela Fóssil', format: 'PNG Giclée', sizeApprox: '3.9 MB', type: 'still' }
+      ]},
+      { id: 'cluster-grade-ruido', clusterName: 'Grade & Ruído // Matriz Estocástica', series: 'Espinhaço', sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Série Criativo 08)', concept: 'A decomposição da imagem fotográfica em código, ruído e matriz vetorial.', items: [
+        { filename: 'criativo 08 - matrix.mp4', proposedTitle: 'Sumud // Grade Estocástica', format: 'MP4', sizeApprox: '35.9 MB', type: 'master' },
+        { filename: 'criativo 08_1.mp4', proposedTitle: 'Trama Seca', format: 'MP4', sizeApprox: '50.9 MB', type: 'study' },
+        { filename: 'criativo 08_3.mp4', proposedTitle: 'Frequência Oculta', format: 'MP4', sizeApprox: '50.9 MB', type: 'study' },
+        { filename: 'criativo 08_5.mp4', proposedTitle: 'Ruído de Fundo', format: 'MP4', sizeApprox: '51.6 MB', type: 'study' }
+      ]},
+      { id: 'cluster-dispositivos-cenicos', clusterName: 'Dispositivos Cênicos // Vitrines & Mockups', series: 'Espinhaço', sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (Mockups)', concept: 'A obra confrontando o espaço cênico brutalista e a tela preta de transmissão.', items: [
+        { filename: 'criativo 06 - mockup teatro.mp4', proposedTitle: 'Câmara Escura', format: 'MP4', sizeApprox: '13.6 MB', type: 'mockup' },
+        { filename: 'criativo 06 - mockup tv.mp4', proposedTitle: 'Transmissão Fria', format: 'MP4', sizeApprox: '46.4 MB', type: 'mockup' },
+        { filename: 'criativo 07 - mockup teatro.mp4', proposedTitle: 'Palco Mudo', format: 'MP4', sizeApprox: '13.5 MB', type: 'mockup' },
+        { filename: 'mockup criativo 09_2.mp4', proposedTitle: 'Vitrine Suspensa', format: 'MP4', sizeApprox: '101.7 MB', type: 'mockup' }
+      ]},
+      { id: 'cluster-pulso-frequencia', clusterName: 'Pulso & Frequência // Cinética Dinâmica', series: 'Espinhaço', sourceDir: 'Pipeline Gigantera/Espinhaço/3. Out (13, 03, 05)', concept: 'Ondulações de torque, atrito hidrodinâmico e aceleração contínua de biomotores.', items: [
+        { filename: 'criativo 13b.mp4', proposedTitle: 'Tração 13b', format: 'MP4 60fps', sizeApprox: '82.2 MB', type: 'master' },
+        { filename: 'criativo 13c.mp4', proposedTitle: 'Torque Seco', format: 'MP4 60fps', sizeApprox: '82.3 MB', type: 'master' },
+        { filename: 'criativo 13d.mp4', proposedTitle: 'Envergadura', format: 'MP4 60fps', sizeApprox: '82.1 MB', type: 'master' },
+        { filename: 'criativo 03_2.mp4', proposedTitle: 'Fissura Linear', format: 'MP4', sizeApprox: '35.7 MB', type: 'study' },
+        { filename: 'criativo 05_2.mov', proposedTitle: 'Atrito Hidrodinâmico', format: 'MOV ProRes', sizeApprox: '172.5 MB', type: 'master' }
+      ]},
+      { id: 'cluster-litoral-erosao', clusterName: 'Litoral & Erosão // Broken Marvel Beach', series: 'Notalgia', sourceDir: 'Pipeline Gigantera/Notalgia/3. Out', concept: 'A memória geológica costeira em colapso: resíduo industrial e salitre sobre pedra basáltica.', items: [
+        { filename: 'Broken Marvel Beach.mov', proposedTitle: 'Praia Partida (Master)', format: 'MOV ProRes', sizeApprox: '142.0 MB', type: 'master' },
+        { filename: 'Broken Marvel Beach 3.mp4', proposedTitle: 'Sedimento e Espuma', format: 'MP4', sizeApprox: '48.2 MB', type: 'study' },
+        { filename: 'criativo 01.mov', proposedTitle: 'Farol Mudo // Horizonte', format: 'MOV', sizeApprox: '68.4 MB', type: 'master' },
+        { filename: 'criativo 04.mp4', proposedTitle: 'Costa Rasa', format: 'MP4', sizeApprox: '38.6 MB', type: 'study' }
+      ]},
+      { id: 'cluster-abissal-lidar', clusterName: 'Abissal & Lidar // TouchDesigner GPU', series: 'TD First View', sourceDir: 'Pipeline Gigantera/TD First View/exports/videos', concept: 'Nuvens de pontos em tempo real, varredura a laser e bioluminescência sintética calculada por GPU.', items: [
+        { filename: 'sim_round_228_abyssal_particle_vortex_10s.mp4', proposedTitle: 'Vórtice Abissal', format: 'MP4 60fps', sizeApprox: '95.0 MB', type: 'simulation' },
+        { filename: 'sim_round_156_monumental_obsidian_sunbeam.mp4', proposedTitle: 'Feixe de Obsidiana', format: 'MP4 60fps', sizeApprox: '110.4 MB', type: 'simulation' },
+        { filename: 'sim_round_205_hud_cyber_lidar_10s.mp4', proposedTitle: 'Varredura Lidar', format: 'MP4 60fps', sizeApprox: '88.1 MB', type: 'simulation' },
+        { filename: 'sim_round_105_bioluminescent_night_swarm.mp4', proposedTitle: 'Enxame Noturno', format: 'MP4 60fps', sizeApprox: '79.3 MB', type: 'simulation' }
+      ]},
+      { id: 'cluster-memoria-ancestral', clusterName: 'Memória Ancestral // Vô David & Raízes', series: 'Origem', sourceDir: 'Pipeline Gigantera/Vo David & Fisherman', concept: 'A memória oral do pescador artesanal, monitores analógicos e a fundação humana do pavilhão.', items: [
+        { filename: 'fishermanv1.mp4', proposedTitle: 'O Velho e a Rede', format: 'MP4', sizeApprox: '24.5 MB', type: 'master' },
+        { filename: 'recrie_de_forma_realista_2026...jpeg', proposedTitle: 'Monitor de Memória', format: 'JPEG Archival', sizeApprox: '3.2 MB', type: 'still' },
+        { filename: 'DRINK_ COPO_HORTELA.mp4', proposedTitle: 'Respiro de Terra', format: 'MP4', sizeApprox: '18.1 MB', type: 'study' }
+      ]}
     ];
 
-    // DADOS DAS OBRAS NO SALÃO (VERTENTE-C)
-    const ARTWORKS_DATA = [
-      { id: 'video-espinhaco-cinetico', title: 'Tração', series: 'Espinhaço', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a seguinte.', thumb: '../works/espinhaco-descida-crepuscular.jpg' },
-      { id: 'video-stipples-particulas', title: 'Sumud', series: 'Zimbro', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.', thumb: '../works/zimbro-rastreamento-vetorial.jpg' },
-      { id: 'video-espinha-metalica', title: 'Encalhe', series: 'Espinhaço', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Sequência em plano fechado destacando as reflexões metálicas enquanto a estrutura se curva em ciclo contínuo.', thumb: '../works/espinhaco-relevo-neotribal.jpg' },
-      { id: 'video-mapping-led', title: 'Pulso', series: 'Luz & Escultura', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Campos luminescentes projetados em escala monumental com transições dinâmicas entre feixes frios e densidade escura.', thumb: '../works/zimbro-estudo-espectral.jpg' },
-      { id: 'video-onda-padroes', title: 'Maré', series: 'Ressonância', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Padrões rítmicos oscilantes que exploram a propagação acústica em meios materiais.', thumb: '../works/sedimento-litificacao-final.jpg' },
-      { id: 'video-cores-spectrum', title: 'Fissura 26', series: 'Cromia', medium: 'video', sector: '01 VÍDEO', ratio: '9:16', desc: 'Transição aveludada entre frequências cromáticas complementares, quebrando a monocromia mineral do salão.', thumb: '../works/notalgia-monolito-costeiro.jpg' },
-      { id: 'espinhaco-cinetica-prata', title: 'Tarrafa Cega', series: 'Espinhaço', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Estrutura vertebral articulada concebida a partir da biomecânica fóssil. Impresso fosco flutuando sob câmara vítrea.', thumb: '../works/espinhaco-cinetica-prata.jpg' },
-      { id: 'espinhaco-vitrine-aquario', title: 'Tempo de Espera', series: 'Espinhaço', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação hidrodinâmica.', thumb: '../works/espinhaco-vitrine-aquario.jpg' },
-      { id: 'zimbro-estudo-espectral', title: 'Inventário', series: 'Zimbro', medium: 'still', sector: '02 STILL', ratio: '16:9', desc: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão.', thumb: '../works/zimbro-estudo-espectral.jpg' },
-      { id: 'sedimento-litificacao-final', title: 'Fundação Nua', series: 'Sedimento', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Momento de repouso definitivo da peça contra o piso basáltico em processo de litificação.', thumb: '../works/sedimento-litificacao-final.jpg' },
-      { id: 'notalgia-monolito-costeiro', title: 'Farol Mudo', series: 'Notalgia', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre arquitetura bruta e o abismo natural.', thumb: '../works/notalgia-monolito-costeiro.jpg' },
-      { id: 'espinhaco-registro-abissal', title: 'Quilha', series: 'Espinhaço', medium: 'still', sector: '02 STILL', ratio: '9:16', desc: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica sob compressão sedimentar.', thumb: '../works/espinhaco-registro-abissal.jpg' }
-    ];
-
-    // DADOS DAS FAIXAS DE ÁUDIO (17)
-    const AUDIO_TRACKS_DATA = [
+    const AUDIO_TRACKS = [
       { num: '01', title: 'Automar', genre: 'DEEP DUB TECHNO', bpm: 124, duration: '04:15', year: 2026, series: 'Automotaço' },
       { num: '02', title: 'Danse (v2)', genre: 'MODULAR TECHNO', bpm: 128, duration: '05:32', year: 2026, series: 'Gigantera Acoustic Loops' },
       { num: '03', title: 'Apenas (v2)', genre: 'AMBIENT MODULAR', bpm: 118, duration: '01:52', year: 2026, series: 'Gigantera Acoustic Loops' },
@@ -1149,90 +1194,361 @@
       { num: '17', title: 'Sobnome', genre: 'AMBIENT TECHNO', bpm: 119, duration: '01:40', year: 2025, series: 'Sobnome Sketches' }
     ];
 
-    // RENDERIZADORES
+    // ESTADO ATIVO DO ADMIN
+    let currentArtworks = [];
+    let currentPressAssets = [];
+    let currentSiteConfig = {};
+
+    // INICIALIZAÇÃO & LEITURA DO STORAGE
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(CONFIG_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          currentArtworks = (parsed.artworks && parsed.artworks.length > 0) ? parsed.artworks : JSON.parse(JSON.stringify(DEFAULT_ARTWORKS));
+          currentPressAssets = (parsed.pressKitAssets && parsed.pressKitAssets.length > 0) ? parsed.pressKitAssets : JSON.parse(JSON.stringify(DEFAULT_PRESS_ASSETS));
+          currentSiteConfig = parsed.siteConfig ? { ...DEFAULT_SITE_CONFIG, ...parsed.siteConfig } : { ...DEFAULT_SITE_CONFIG };
+        } else {
+          currentArtworks = JSON.parse(JSON.stringify(DEFAULT_ARTWORKS));
+          currentPressAssets = JSON.parse(JSON.stringify(DEFAULT_PRESS_ASSETS));
+          currentSiteConfig = { ...DEFAULT_SITE_CONFIG };
+        }
+      } catch (e) {
+        currentArtworks = JSON.parse(JSON.stringify(DEFAULT_ARTWORKS));
+        currentPressAssets = JSON.parse(JSON.stringify(DEFAULT_PRESS_ASSETS));
+        currentSiteConfig = { ...DEFAULT_SITE_CONFIG };
+      }
+    }
+
+    function saveStateToStorage() {
+      const configToSave = {
+        artworks: currentArtworks,
+        pressKitAssets: currentPressAssets,
+        siteConfig: {
+          title: document.getElementById('copyTitle').value,
+          metaDescription: document.getElementById('copyMeta').value,
+          heroHeadline: document.getElementById('copyHero').value,
+          subhead: document.getElementById('copySubhead').value,
+          ctaText: document.getElementById('copyCTA').value,
+          blurb: document.getElementById('copyBlurb').value,
+          curatorialProverb: document.getElementById('copyProverbio').value,
+          cloudDriveUrl: document.getElementById('inputCloudDriveUrl').value
+        },
+        artistInfo: {
+          cloudDriveUrl: document.getElementById('inputCloudDriveUrl').value
+        },
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(configToSave));
+      window.dispatchEvent(new CustomEvent('gigantera:config-updated', { detail: configToSave }));
+      showToast('Configurações salvas e aplicadas ao vivo no site!');
+      updateStats();
+    }
+
+    function persistAndPublish() {
+      saveStateToStorage();
+    }
+
+    // RENDERIZADOR: TABELA DE OBRAS
+    function renderObrasTable(artworks) {
+      const tbody = document.getElementById('obrasTableBody');
+      tbody.innerHTML = '';
+
+      if (artworks.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Nenhuma obra encontrada.</td></tr>`;
+        return;
+      }
+
+      artworks.forEach((art, index) => {
+        const isVid = art.medium === 'video';
+        const badgeClass = isVid ? 'badge-video' : (art.medium === 'sound' ? 'badge-audio' : 'badge-still');
+        const badgeLabel = isVid ? 'VÍDEO LOOP' : (art.medium === 'sound' ? 'ÁUDIO' : 'STILL GICLÉE');
+        const isAvailable = art.availableInMediaKit !== false;
+        const thumbUrl = '../' + (art.imageSrc.startsWith('/') ? art.imageSrc.slice(1) : art.imageSrc);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <img src="${thumbUrl}" alt="${art.title}" class="table-thumb" onerror="this.src='../works/espinhaco-cinetica-prata.jpg'" />
+          </td>
+          <td>
+            <strong style="color: #fff; font-size: 0.9rem;">${art.title}</strong>
+            <div style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">${art.year} · ${art.aspectRatio || '9:16'}</div>
+          </td>
+          <td>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);">${art.series}</span>
+          </td>
+          <td>
+            <span class="badge-pill ${badgeClass}">${badgeLabel}</span>
+          </td>
+          <td>
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">${art.masterFormat || 'Master 4K'}</span>
+          </td>
+          <td style="text-align: center;">
+            <label class="switch-label" style="justify-content: center;">
+              <input type="checkbox" class="switch-input" ${isAvailable ? 'checked' : ''} onchange="toggleArtworkMediaKit('${art.id}', this.checked)" />
+              <span class="switch-slider"></span>
+            </label>
+          </td>
+          <td style="text-align: right; white-space: nowrap;">
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.7rem;" onclick="openEditArtworkModal('${art.id}')">EDITAR ✎</button>
+            <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.7rem; margin-left: 0.3rem;" onclick="deleteArtwork('${art.id}')">✕</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function toggleArtworkMediaKit(artId, available) {
+      const art = currentArtworks.find(a => a.id === artId);
+      if (art) {
+        art.availableInMediaKit = available;
+        saveStateToStorage();
+        showToast(`"${art.title}": Download ${available ? 'liberado' : 'retido'} no Media Kit`);
+      }
+    }
+
+    // RENDERIZADOR: PRESS ASSETS (COM STATUS READY / PENDING / HIDDEN)
+    function renderPressAdmin() {
+      const container = document.getElementById('pressAssetsAdminContainer');
+      container.innerHTML = '';
+
+      currentPressAssets.forEach(asset => {
+        const isReady = asset.status === 'ready';
+        const isPending = asset.status === 'pending';
+        const isHidden = asset.status === 'hidden';
+
+        const card = document.createElement('div');
+        card.className = 'press-admin-card';
+        card.innerHTML = `
+          <div class="press-admin-header">
+            <div>
+              <div class="press-card-cat">[${asset.category.toUpperCase()}] · ${asset.format}</div>
+              <h3 class="press-card-title">${asset.title}</h3>
+            </div>
+            <select class="form-select" style="width: auto; font-family: var(--font-mono); font-size: 0.7rem;" onchange="updatePressStatus('${asset.id}', this.value)">
+              <option value="ready" ${isReady ? 'selected' : ''}>● DISPONÍVEL</option>
+              <option value="pending" ${isPending ? 'selected' : ''}>▲ EM PREPARAÇÃO</option>
+              <option value="hidden" ${isHidden ? 'selected' : ''}>○ OCULTO</option>
+            </select>
+          </div>
+
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">${asset.description}</p>
+
+          ${asset.copyableContent !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Conteúdo de Texto (Copiável / Baixável como .txt)</label>
+              <textarea class="form-textarea" rows="4" onchange="updatePressContent('${asset.id}', this.value)">${asset.copyableContent}</textarea>
+            </div>
+          ` : ''}
+
+          <div class="form-group">
+            <label class="form-label">Link do Arquivo de Download (Drive ou CDN)</label>
+            <input type="text" class="form-input" value="${asset.fileUrl || ''}" placeholder="Deixe em branco se ainda não tiver o arquivo" onchange="updatePressUrl('${asset.id}', this.value)" />
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updatePressStatus(assetId, status) {
+      const asset = currentPressAssets.find(a => a.id === assetId);
+      if (asset) {
+        asset.status = status;
+        saveStateToStorage();
+        showToast(`Status de "${asset.title}" alterado para ${status.toUpperCase()}`);
+      }
+    }
+
+    function updatePressContent(assetId, content) {
+      const asset = currentPressAssets.find(a => a.id === assetId);
+      if (asset) {
+        asset.copyableContent = content;
+        saveStateToStorage();
+      }
+    }
+
+    function updatePressUrl(assetId, url) {
+      const asset = currentPressAssets.find(a => a.id === assetId);
+      if (asset) {
+        asset.fileUrl = url;
+        if (url && asset.status === 'pending') {
+          asset.status = 'ready'; // auto-ativa se colocar a url
+        }
+        saveStateToStorage();
+        renderPressAdmin();
+      }
+    }
+
+    // MODAL DE NOVA OBRA / EDIÇÃO
+    function openNewArtworkModal() {
+      document.getElementById('artworkModalTitle').innerText = 'NOVA OBRA // PAVILHÃO';
+      document.getElementById('editArtworkId').value = '';
+      document.getElementById('editArtworkTitle').value = '';
+      document.getElementById('editArtworkSeries').value = 'Espinhaço';
+      document.getElementById('editArtworkMedium').value = 'video';
+      document.getElementById('editArtworkYear').value = '2026';
+      document.getElementById('editArtworkRatio').value = '9 / 16';
+      document.getElementById('editArtworkAvailable').checked = true;
+      document.getElementById('editArtworkMaterials').value = 'Vitrine de vidro flutuante, render volumétrico';
+      document.getElementById('editArtworkDesc').value = '';
+      document.getElementById('editArtworkImage').value = 'works/espinhaco-descida-crepuscular.jpg';
+      document.getElementById('editArtworkVideo').value = 'works/video/video-01-kinetic-spine.mp4';
+      document.getElementById('editArtworkMasterFormat').value = 'Apple ProRes 422 HQ (4K)';
+      document.getElementById('editArtworkDrive').value = '';
+      handleMediumChange();
+      document.getElementById('artworkModalBackdrop').classList.add('active');
+    }
+
+    function openEditArtworkModal(artId) {
+      const art = currentArtworks.find(a => a.id === artId);
+      if (!art) return;
+
+      document.getElementById('artworkModalTitle').innerText = `EDITAR: ${art.title.toUpperCase()}`;
+      document.getElementById('editArtworkId').value = art.id;
+      document.getElementById('editArtworkTitle').value = art.title;
+      document.getElementById('editArtworkSeries').value = art.series;
+      document.getElementById('editArtworkMedium').value = art.medium;
+      document.getElementById('editArtworkYear').value = art.year || 2026;
+      document.getElementById('editArtworkRatio').value = art.aspectRatio || '9 / 16';
+      document.getElementById('editArtworkAvailable').checked = art.availableInMediaKit !== false;
+      document.getElementById('editArtworkMaterials').value = art.materials || '';
+      document.getElementById('editArtworkDesc').value = art.description || '';
+      document.getElementById('editArtworkImage').value = art.imageSrc || '';
+      document.getElementById('editArtworkVideo').value = art.videoSrc || '';
+      document.getElementById('editArtworkMasterFormat').value = art.masterFormat || '';
+      document.getElementById('editArtworkDrive').value = art.cloudStorageUrl || '';
+      handleMediumChange();
+      document.getElementById('artworkModalBackdrop').classList.add('active');
+    }
+
+    function closeArtworkModal() {
+      document.getElementById('artworkModalBackdrop').classList.remove('active');
+    }
+
+    function handleMediumChange() {
+      const med = document.getElementById('editArtworkMedium').value;
+      const grp = document.getElementById('groupVideoSrc');
+      if (med === 'video') {
+        grp.style.display = 'flex';
+      } else {
+        grp.style.display = 'none';
+      }
+    }
+
+    function saveArtworkFromModal() {
+      const id = document.getElementById('editArtworkId').value || `art-${Date.now()}`;
+      const title = document.getElementById('editArtworkTitle').value.trim();
+      const series = document.getElementById('editArtworkSeries').value.trim();
+      const medium = document.getElementById('editArtworkMedium').value;
+      const year = parseInt(document.getElementById('editArtworkYear').value) || 2026;
+      const aspectRatio = document.getElementById('editArtworkRatio').value;
+      const availableInMediaKit = document.getElementById('editArtworkAvailable').checked;
+      const materials = document.getElementById('editArtworkMaterials').value.trim();
+      const description = document.getElementById('editArtworkDesc').value.trim();
+      const imageSrc = document.getElementById('editArtworkImage').value.trim() || 'works/espinhaco-cinetica-prata.jpg';
+      const videoSrc = medium === 'video' ? document.getElementById('editArtworkVideo').value.trim() : undefined;
+      const masterFormat = document.getElementById('editArtworkMasterFormat').value.trim();
+      const cloudStorageUrl = document.getElementById('editArtworkDrive').value.trim() || undefined;
+
+      if (!title || !series) {
+        alert('Por favor preencha o título e a série da obra.');
+        return;
+      }
+
+      const existingIdx = currentArtworks.findIndex(a => a.id === id);
+      const artObj = {
+        id,
+        title,
+        series,
+        medium,
+        categoryLabel: medium === 'video' ? 'VITRINE CINÉTICA // LOOP' : (medium === 'sound' ? 'INSTALAÇÃO SONORA' : 'IMPRESSO GICLÉE EM VIDRO'),
+        year,
+        aspectRatio,
+        availableInMediaKit,
+        materials,
+        description,
+        imageSrc,
+        videoSrc,
+        masterFormat,
+        cloudStorageUrl,
+        status: 'active'
+      };
+
+      if (existingIdx >= 0) {
+        currentArtworks[existingIdx] = { ...currentArtworks[existingIdx], ...artObj };
+      } else {
+        currentArtworks.unshift(artObj);
+      }
+
+      saveStateToStorage();
+      closeArtworkModal();
+      renderObrasTable(currentArtworks);
+      showToast(`Obra "${title}" salva com sucesso!`);
+    }
+
+    function deleteArtwork(artId) {
+      const art = currentArtworks.find(a => a.id === artId);
+      if (!art) return;
+      if (confirm(`Tem certeza que deseja remover a obra "${art.title}"?`)) {
+        currentArtworks = currentArtworks.filter(a => a.id !== artId);
+        saveStateToStorage();
+        renderObrasTable(currentArtworks);
+        showToast(`Obra "${art.title}" removida.`);
+      }
+    }
+
+    function filterObrasTable() {
+      const q = document.getElementById('obrasSearch').value.toLowerCase();
+      const filtered = currentArtworks.filter(a =>
+        a.title.toLowerCase().includes(q) ||
+        a.series.toLowerCase().includes(q) ||
+        a.medium.toLowerCase().includes(q)
+      );
+      renderObrasTable(filtered);
+    }
+
+    // CLUSTERS & AUDIO RENDER
     function renderClusters(clusters) {
       const container = document.getElementById('clustersContainer');
       container.innerHTML = '';
 
       clusters.forEach(c => {
-        const badgeColor = c.series === 'Espinhaço' ? 'var(--accent-amber)' : (c.series === 'Zimbro' ? 'var(--accent-cyan)' : 'var(--accent-emerald)');
-        
         const html = `
-          <div class="cluster-block">
-            <div class="cluster-header">
-              <div class="cluster-title-wrap">
-                <span class="cluster-name">${c.clusterName}</span>
-                <span class="cluster-series" style="color: ${badgeColor}; border-color: ${badgeColor}33; background: ${badgeColor}15;">${c.series}</span>
-                <span class="cluster-dir">${c.sourceDir}</span>
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1.5rem; overflow: hidden;">
+            <div style="padding: 1rem 1.25rem; background: var(--bg-surface-alt); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-family: var(--font-mono); font-weight: 700; color: #fff;">${c.clusterName}</span>
+                <span class="badge-pill badge-video" style="margin-left: 0.5rem;">${c.series}</span>
               </div>
-              <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">
-                ${c.items.length} saídas
-              </span>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">${c.items.length} saídas</span>
             </div>
-            <div class="cluster-concept">
+            <div style="padding: 0.75rem 1.25rem; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.2); font-style: italic;">
               ${c.concept}
             </div>
-            <table class="output-items-table">
+            <table class="data-table">
               <thead>
                 <tr>
-                  <th style="width: 25%;">Título Vertente-C</th>
-                  <th style="width: 30%;">Arquivo de Origem</th>
-                  <th style="width: 10%;">Tipo</th>
-                  <th style="width: 12%;">Formato</th>
-                  <th style="width: 10%;">Tamanho</th>
-                  <th style="width: 13%;">Notas</th>
+                  <th>Título Vertente-C</th>
+                  <th>Arquivo de Render</th>
+                  <th>Tipo</th>
+                  <th>Formato</th>
+                  <th>Tamanho</th>
                 </tr>
               </thead>
               <tbody>
-                ${c.items.map(item => {
-                  let bClass = 'badge-master';
-                  if (item.type === 'study') bClass = 'badge-study';
-                  else if (item.type === 'mockup') bClass = 'badge-mockup';
-                  else if (item.type === 'still') bClass = 'badge-still';
-                  else if (item.type === 'simulation') bClass = 'badge-sim';
-
-                  return `
-                    <tr>
-                      <td class="item-vertente-c">${item.proposedTitle}</td>
-                      <td class="item-filename">${item.filename}</td>
-                      <td><span class="item-type-badge ${bClass}">${item.type}</span></td>
-                      <td style="font-family: var(--font-mono); color: var(--text-muted);">${item.format}</td>
-                      <td style="font-family: var(--font-mono); color: var(--text-dim);">${item.sizeApprox}</td>
-                      <td style="color: var(--text-muted); font-size: 0.75rem;">${item.notes || '-'}</td>
-                    </tr>
-                  `;
-                }).join('')}
+                ${c.items.map(item => `
+                  <tr>
+                    <td style="font-weight: 600; color: #fff;">${item.proposedTitle}</td>
+                    <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">${item.filename}</td>
+                    <td><span class="badge-pill badge-ready">${item.type}</span></td>
+                    <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">${item.format}</td>
+                    <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">${item.sizeApprox}</td>
+                  </tr>
+                `).join('')}
               </tbody>
             </table>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', html);
-      });
-    }
-
-    function renderArtworks(arts) {
-      const container = document.getElementById('artworksContainer');
-      container.innerHTML = '';
-
-      arts.forEach(a => {
-        const html = `
-          <div class="artwork-card">
-            <div class="card-thumb">
-              <img src="${a.thumb}" alt="${a.title}" onerror="this.src='../works/espinhaco-cinetica-prata.jpg'" />
-              <div class="card-badge-sector">${a.sector}</div>
-              <div class="card-badge-ratio">${a.ratio}</div>
-            </div>
-            <div class="card-body">
-              <div class="card-title-row">
-                <h3 class="card-title">${a.title}</h3>
-                <span class="card-series">${a.series}</span>
-              </div>
-              <p class="card-desc">${a.desc}</p>
-              <div class="card-meta-line">
-                <span>FORMATO: ${a.medium.toUpperCase()}</span>
-                <span>ID: ${a.id}</span>
-              </div>
-            </div>
           </div>
         `;
         container.insertAdjacentHTML('beforeend', html);
@@ -1242,13 +1558,12 @@
     function renderAudio() {
       const tbody = document.getElementById('audioTableBody');
       tbody.innerHTML = '';
-
-      AUDIO_TRACKS_DATA.forEach(t => {
+      AUDIO_TRACKS.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-family: var(--font-mono); color: var(--accent-amber); font-weight: 600;">${t.num}</td>
           <td style="font-weight: 600; color: #fff;">${t.title}</td>
-          <td style="font-family: var(--font-mono); color: var(--accent-cyan);">${t.genre}</td>
+          <td style="font-family: var(--font-mono); color: var(--accent-cyan); font-size: 0.75rem;">${t.genre}</td>
           <td style="font-family: var(--font-mono); color: var(--text-muted);">${t.bpm}</td>
           <td style="font-family: var(--font-mono); color: var(--text-dim);">${t.duration}</td>
           <td style="font-family: var(--font-mono); color: var(--text-dim);">${t.year}</td>
@@ -1258,139 +1573,115 @@
       });
     }
 
-    // NAVEGAÇÃO DE ABAS
+    // NAVEGAÇÃO & TABS
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
       document.getElementById(tabId).classList.add('active');
       event.currentTarget.classList.add('active');
     }
 
-    // TOAST
+    function updateStats() {
+      document.getElementById('statObras').innerText = currentArtworks.length;
+      document.getElementById('tabCountObras').innerText = currentArtworks.length;
+      const mediaKitCount = currentArtworks.filter(a => a.availableInMediaKit !== false).length;
+      document.getElementById('statMediaKitObras').innerText = mediaKitCount;
+      const readyPress = currentPressAssets.filter(a => a.status === 'ready').length;
+      document.getElementById('statPressProntos').innerText = `${readyPress}/${currentPressAssets.length}`;
+    }
+
     function showToast(msg) {
       const t = document.getElementById('toast');
       document.getElementById('toastMsg').innerText = msg;
       t.classList.add('show');
-      setTimeout(() => {
-        t.classList.remove('show');
-      }, 2500);
+      setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    // COPIAR CAMPOS
-    function copyField(elementId) {
-      const input = document.getElementById(elementId);
-      input.select();
-      navigator.clipboard.writeText(input.value).then(() => {
-        showToast('Texto copiado para a área de transferência');
-      });
-    }
-
-    function copySecretMediaLink() {
-      const url = window.location.origin + window.location.pathname.replace(/\/admin\/?$/, '') + '/index.html?view=media';
-      navigator.clipboard.writeText(url).then(() => {
-        showToast('Link do Media Kit copiado: ' + url);
-      });
-    }
-
-    // PERSISTÊNCIA DE COPYS (LocalStorage)
-    function saveCopies() {
-      const copies = {
-        title: document.getElementById('copyTitle').value,
-        meta: document.getElementById('copyMeta').value,
-        hero: document.getElementById('copyHero').value,
-        subhead: document.getElementById('copySubhead').value,
-        cta: document.getElementById('copyCTA').value,
-        blurb: document.getElementById('copyBlurb').value,
-        proverbio: document.getElementById('copyProverbio').value
+    // BACKUP EM JSON
+    function exportBackupJSON() {
+      const config = {
+        artworks: currentArtworks,
+        pressKitAssets: currentPressAssets,
+        siteConfig: currentSiteConfig,
+        exportedAt: new Date().toISOString()
       };
-      localStorage.setItem('gigantera_copies', JSON.stringify(copies));
-      showToast('Copys salvas localmente no navegador');
-    }
-
-    function loadCopies() {
-      const saved = localStorage.getItem('gigantera_copies');
-      if (saved) {
-        try {
-          const c = JSON.parse(saved);
-          if (c.title) document.getElementById('copyTitle').value = c.title;
-          if (c.meta) document.getElementById('copyMeta').value = c.meta;
-          if (c.hero) document.getElementById('copyHero').value = c.hero;
-          if (c.subhead) document.getElementById('copySubhead').value = c.subhead;
-          if (c.cta) document.getElementById('copyCTA').value = c.cta;
-          if (c.blurb) document.getElementById('copyBlurb').value = c.blurb;
-          if (c.proverbio) document.getElementById('copyProverbio').value = c.proverbio;
-        } catch(e) {}
-      }
-    }
-
-    // FILTROS
-    function filterClusters() {
-      const q = document.getElementById('clusterSearch').value.toLowerCase();
-      const filtered = CLUSTERS_DATA.map(c => {
-        const matchesHeader = c.clusterName.toLowerCase().includes(q) || c.series.toLowerCase().includes(q) || c.sourceDir.toLowerCase().includes(q);
-        const filteredItems = c.items.filter(i => 
-          i.proposedTitle.toLowerCase().includes(q) || 
-          i.filename.toLowerCase().includes(q) || 
-          i.type.toLowerCase().includes(q) ||
-          i.format.toLowerCase().includes(q)
-        );
-        if (matchesHeader || filteredItems.length > 0) {
-          return {
-            ...c,
-            items: matchesHeader && filteredItems.length === 0 ? c.items : filteredItems
-          };
-        }
-        return null;
-      }).filter(Boolean);
-
-      renderClusters(filtered);
-    }
-
-    function filterArtworks() {
-      const q = document.getElementById('artworksSearch').value.toLowerCase();
-      const filtered = ARTWORKS_DATA.filter(a => 
-        a.title.toLowerCase().includes(q) || 
-        a.series.toLowerCase().includes(q) || 
-        a.sector.toLowerCase().includes(q) ||
-        a.desc.toLowerCase().includes(q)
-      );
-      renderArtworks(filtered);
-    }
-
-    // EXPORTAR
-    function downloadJSON(type) {
-      let data = type === 'clusters' ? CLUSTERS_DATA : ARTWORKS_DATA;
-      const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+      const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
       const a = document.createElement('a');
-      a.setAttribute("href", str);
-      a.setAttribute("download", `gigantera_${type}.json`);
+      a.href = str;
+      a.download = `gigantera_backup_${new Date().toISOString().slice(0,10)}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      showToast(`Arquivo gigantera_${type}.json gerado com sucesso`);
+      showToast('Backup JSON exportado com sucesso!');
     }
 
-    function copyJSON(type) {
-      let data = type === 'clusters' ? CLUSTERS_DATA : ARTWORKS_DATA;
-      navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
-        showToast(`JSON copiado para a área de transferência`);
+    function importBackupJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.artworks) currentArtworks = parsed.artworks;
+          if (parsed.pressKitAssets) currentPressAssets = parsed.pressKitAssets;
+          if (parsed.siteConfig) currentSiteConfig = parsed.siteConfig;
+          saveStateToStorage();
+          renderObrasTable(currentArtworks);
+          renderPressAdmin();
+          loadCopysUI();
+          showToast('Backup importado com sucesso!');
+        } catch (err) {
+          alert('Arquivo JSON inválido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetToDefaults() {
+      if (confirm('Tem certeza que deseja restaurar as configurações padrão de fábrica? Todas as edições locais serão resetadas.')) {
+        localStorage.removeItem(CONFIG_KEY);
+        loadState();
+        renderObrasTable(currentArtworks);
+        renderPressAdmin();
+        loadCopysUI();
+        showToast('Catálogo e configurações restaurados para os padrões!');
+      }
+    }
+
+    function copySecretLink() {
+      const display = document.getElementById('secretLinkDisplay');
+      display.select();
+      navigator.clipboard.writeText(display.value).then(() => {
+        showToast('Link secreto do Media Kit copiado!');
       });
+    }
+
+    function loadCopysUI() {
+      if (currentSiteConfig.title) document.getElementById('copyTitle').value = currentSiteConfig.title;
+      if (currentSiteConfig.metaDescription) document.getElementById('copyMeta').value = currentSiteConfig.metaDescription;
+      if (currentSiteConfig.heroHeadline) document.getElementById('copyHero').value = currentSiteConfig.heroHeadline;
+      if (currentSiteConfig.subhead) document.getElementById('copySubhead').value = currentSiteConfig.subhead;
+      if (currentSiteConfig.ctaText) document.getElementById('copyCTA').value = currentSiteConfig.ctaText;
+      if (currentSiteConfig.blurb) document.getElementById('copyBlurb').value = currentSiteConfig.blurb;
+      if (currentSiteConfig.curatorialProverb) document.getElementById('copyProverbio').value = currentSiteConfig.curatorialProverb;
+      if (currentSiteConfig.cloudDriveUrl) document.getElementById('inputCloudDriveUrl').value = currentSiteConfig.cloudDriveUrl;
+
+      const secretUrl = window.location.origin + window.location.pathname.replace(/\/admin\/?$/, '') + '/index.html?view=media';
+      const secretInput = document.getElementById('secretLinkDisplay');
+      if (secretInput) secretInput.value = secretUrl;
+      const openBtn = document.getElementById('btnOpenMediaKit');
+      if (openBtn) openBtn.href = secretUrl;
     }
 
     // INICIALIZAÇÃO
     window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderObrasTable(currentArtworks);
+      renderPressAdmin();
       renderClusters(CLUSTERS_DATA);
-      renderArtworks(ARTWORKS_DATA);
       renderAudio();
-      loadCopies();
-
-      // Ajustar link secreto
-      const secretUrl = window.location.origin + window.location.pathname.replace(/\/admin\/?$/, '') + '/index.html?view=media';
-      const secretInput = document.getElementById('secretLinkInput');
-      if (secretInput) secretInput.value = secretUrl;
-      const openBtn = document.getElementById('btnOpenMediaKit');
-      if (openBtn) openBtn.href = secretUrl;
+      loadCopysUI();
+      updateStats();
     });
   </script>
 </body>
