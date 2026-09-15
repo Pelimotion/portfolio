@@ -21,6 +21,7 @@ export const GalleryHeader: React.FC = () => {
   const setIsAudioPlaying = useAppStore((s) => s.setIsAudioPlaying);
   const takeCD = useAppStore((s) => s.takeCD);
   const isHoldingCD = useAppStore((s) => s.isHoldingCD);
+  const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
 
   // Atalhos de teclado intuitivos para não obrigar o usuário a apertar ESC para clicar com o mouse
   useEffect(() => {
@@ -67,7 +68,7 @@ export const GalleryHeader: React.FC = () => {
   };
 
   return (
-    <header className="minimal-feathered-header" role="banner">
+    <header className={`minimal-feathered-header ${cinemaArtwork ? 'is-hidden-in-cinema' : ''}`} role="banner">
       {/* Esquerda: Marca GIGANTERA // Pavilhão Digital */}
       <div className="header-brand-group">
         <button

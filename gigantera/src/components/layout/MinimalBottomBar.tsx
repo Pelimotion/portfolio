@@ -11,6 +11,31 @@ export const MinimalBottomBar: React.FC = () => {
   const hasPlayerMoved = useAppStore((s) => s.hasPlayerMoved);
   const toggleGuideModal = useAppStore((s) => s.toggleGuideModal);
 
+  // Navegação de setores via teclas 1, 2 e 3
+  React.useEffect(() => {
+    const handleSectorKeys = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork || state.viewMode !== 'spatial') return;
+
+      if (e.code === 'Digit1' || e.code === 'Numpad1' || e.key === '1') {
+        e.preventDefault();
+        warpToSector('entrance-audio');
+      } else if (e.code === 'Digit2' || e.code === 'Numpad2' || e.key === '2') {
+        e.preventDefault();
+        warpToSector('video');
+      } else if (e.code === 'Digit3' || e.code === 'Numpad3' || e.key === '3') {
+        e.preventDefault();
+        warpToSector('still');
+      }
+    };
+
+    window.addEventListener('keydown', handleSectorKeys);
+    return () => window.removeEventListener('keydown', handleSectorKeys);
+  }, [warpToSector]);
+
   return (
     <>
       {/* Dock Especializado para Smartphone / Mobile na Zona do Polegar */}
@@ -25,18 +50,18 @@ export const MinimalBottomBar: React.FC = () => {
         aria-label="Controles da Galeria"
       >
         <div className="bottom-bar-scrim">
-          {/* Esquerda: Navegador de Setores Arquiteturais (SOM · STILLS · VÍDEOS) */}
+          {/* Esquerda: Navegador de Setores Arquiteturais (1 · SOM · 2 · VÍDEOS · 3 · STILLS) */}
           <div className="bottom-sectors-navigator font-mono">
             <span className="sector-nav-tag">SETOR:</span>
-            <div className="sector-pills-cluster" role="tablist" aria-label="Navegação por setores">
+            <div className="sector-pills-cluster" role="tablist" aria-label="Navegação por setores (Teclas 1, 2, 3)">
               {SECTORS_CATALOG.map((sec) => {
                 const isActive = activeSectorId === sec.id;
-                const label =
+                const info =
                   sec.id === 'entrance-audio'
-                    ? '00 · SOM'
+                    ? { num: '1', name: 'SOM' }
                     : sec.id === 'video'
-                    ? '01 · VÍDEOS'
-                    : '02 · STILLS';
+                    ? { num: '2', name: 'VÍDEOS' }
+                    : { num: '3', name: 'STILLS' };
 
                 return (
                   <button
@@ -45,10 +70,11 @@ export const MinimalBottomBar: React.FC = () => {
                     aria-selected={isActive}
                     onClick={() => warpToSector(sec.id)}
                     className={`sector-nav-pill ${isActive ? 'is-active' : ''}`}
-                    title={`Navegar para ${sec.title}`}
+                    title={`Navegar para ${sec.title} (Atalho: Tecla ${info.num})`}
                   >
                     <span className="sector-pill-dot" />
-                    <span>{label}</span>
+                    <span className="sector-pill-title">{info.num} · {info.name}</span>
+                    <kbd className="sector-keycap-badge">{info.num}</kbd>
                   </button>
                 );
               })}

@@ -3,8 +3,8 @@ import { Artwork, AudioTrackInfo, SectorInfo, OutputCluster } from '../types/art
 export const SECTORS_CATALOG: SectorInfo[] = [
   {
     id: 'entrance-audio',
-    sectorCode: '00',
-    title: 'ACOUSTIC POV // ESTAÇÃO DE CD',
+    sectorCode: '01',
+    title: 'SOM // ESTAÇÃO DE CD',
     medium: 'sound',
     zRange: 'Z: +24m → +18m',
     description: 'Estação física de áudio logo na entrada. Pegue o estojo acrílico de CD e folheie a contracapa com 17 faixas autorais.',
@@ -12,8 +12,8 @@ export const SECTORS_CATALOG: SectorInfo[] = [
   },
   {
     id: 'video',
-    sectorCode: '01',
-    title: 'VIDEO // CINÉTICA & MOTION',
+    sectorCode: '02',
+    title: 'VÍDEOS // CINÉTICA & MOTION',
     medium: 'video',
     zRange: 'Z: +15m → -14m',
     description: 'Vitrines cinéticas onde os impressos ganham vida em loops animados contínuos em tempo real.',
@@ -21,8 +21,8 @@ export const SECTORS_CATALOG: SectorInfo[] = [
   },
   {
     id: 'still',
-    sectorCode: '02',
-    title: 'STILL // MATRIZ & ESCULTURA',
+    sectorCode: '03',
+    title: 'STILLS // MATRIZ & ESCULTURA',
     medium: 'still',
     zRange: 'Z: -18m → -50m',
     description: 'Vitrines arquiteturais de vidro flutuante contendo impressos suspensos em papel mate giclée de alta densidade.',

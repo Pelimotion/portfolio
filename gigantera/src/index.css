@@ -564,11 +564,34 @@ a {
   box-shadow: 0 0 6px var(--accent-gold);
 }
 
-/* Controles Minimalistas Centrais com Auto-fade inteligente */
+.sector-keycap-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: var(--text-primary);
+  font-size: 8.5px;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+.sector-nav-pill.is-active .sector-keycap-badge {
+  background: rgba(228, 195, 121, 0.25);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* Controles Minimalistas Centrais com Auto-fade inteligente e Alta Legibilidade */
 .bottom-dynamic-controls {
   display: flex;
   align-items: center;
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s ease;
+  justify-content: center;
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .bottom-dynamic-controls.is-visible {
@@ -1076,266 +1099,385 @@ a {
   to   { opacity: 1; }
 }
 
-/* Vinheta Atmosférica — Escurece as bordas sem tocar no centro onde está a obra */
+/* Vinheta Atmosférica Pura — Escurece as bordas sem cortes lineares no centro */
 .cinema-volumetric-aura {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 60% 60% at 50% 50%, transparent 40%, rgba(4, 6, 5, 0.70) 100%),
-    linear-gradient(180deg, rgba(4,6,5,0.40) 0%, transparent 18%, transparent 72%, rgba(4,6,5,0.92) 100%);
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 45%, rgba(4, 6, 5, 0.88) 100%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* ─── ZONA B — Painel Curatorial Inferior Esquerdo ─── */
-.cinema-info-panel-left {
-  pointer-events: auto;
+/* Ocultação total do header principal durante a inspeção de obras */
+.minimal-feathered-header.is-hidden-in-cinema {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+/* ─── BOTÃO SAIR / FECHAR TOPO DIREITO (SEMPRE CLICÁVEL) ─── */
+.cinema-top-actions {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: min(500px, 42vw);
-  padding: 0 44px 28px;
+  top: 20px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+}
+
+.cinema-top-close-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(12, 16, 14, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  pointer-events: auto !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
+}
+
+.cinema-top-close-btn:hover {
+  background: rgba(255, 107, 74, 0.22);
+  border-color: var(--accent-coral);
+  color: #ffffff;
+  transform: scale(1.04);
+  box-shadow: 0 6px 24px rgba(255, 107, 74, 0.35);
+}
+
+.cinema-top-close-btn .top-close-icon {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.cinema-top-close-btn .keycap {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ─── DOCK UNIFICADO DE INSPEÇÃO (Mesmo Padrão do MinimalBottomBar) ─── */
+.cinema-unified-dock-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  width: min(1040px, calc(100vw - 48px));
+  z-index: 90;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cinema-unified-dock-container.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cinema-unified-dock-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 24px;
+  background: rgba(10, 14, 12, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* Identificação Curatorial Esquerda */
+.cinema-dock-info {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  z-index: 55;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  gap: 4px;
+  max-width: 440px;
+  flex: 1;
 }
 
-.cinema-info-panel-left.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+.cinema-dock-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.cinema-series-tag {
-  font-size: 10px;
-  letter-spacing: 0.5px;
+.cinema-dock-series {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   color: var(--accent-gold);
-  font-weight: 600;
   text-transform: uppercase;
 }
 
-.cinema-title {
+.cinema-dock-category {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #a4b0ab;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+.cinema-dock-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 800;
-  color: #f4f3ef;
+  color: #ffffff;
   letter-spacing: -0.01em;
-  line-height: 1.1;
+  line-height: 1.15;
   margin: 0;
 }
 
-.cinema-desc {
-  font-size: 10.5px;
-  color: #8a9490;
-  line-height: 1.55;
-  max-width: 380px;
+.cinema-dock-desc {
+  font-size: 11px;
+  color: #b0bcba;
+  line-height: 1.45;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.cinema-meta-row {
+.cinema-dock-materials {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 10px;
-  color: #5a6360;
+  color: #7a8782;
   margin-top: 2px;
 }
 
-.meta-disc  { color: #9ea4a1; }
-.meta-sep   { color: #3a4340; }
-.meta-mat   { color: #7a8480; }
-
-/* ─── ZONA C — Controles Mínimos Inferior Direito ─── */
-.cinema-controls-panel-right {
-  pointer-events: auto;
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 0 36px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-  z-index: 55;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.cinema-controls-panel-right.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Navegação de Pranchetas (Stills) */
-.cinema-sheet-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cinema-sheet-counter {
-  font-size: 10px;
-  color: #8a9490;
+.cinema-dock-materials .materials-label {
+  color: #55615d;
+  font-weight: 700;
   letter-spacing: 0.05em;
-  min-width: 28px;
-  text-align: right;
 }
 
-.cinema-sheet-dots {
+/* Controles Centrais (Mídia, Zoom, Pranchetas) */
+.cinema-dock-controls {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 14px;
 }
 
-.cinema-dot-btn {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.22);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  pointer-events: auto;
-  padding: 0;
-}
-
-.cinema-dot-btn.is-active {
-  background: var(--accent-gold);
-  transform: scale(1.3);
-}
-
-.cinema-dot-btn:hover {
-  background: rgba(255,255,255,0.5);
-}
-
-/* Controles de vídeo */
-.cinema-video-controls {
+.cinema-dock-media-group,
+.cinema-dock-sheets-group,
+.cinema-dock-zoom-group {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* Botão de controle genérico */
-.cinema-ctrl-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 11px;
-  background: rgba(16, 20, 19, 0.70);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 3px;
-  color: rgba(255,255,255,0.72);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  pointer-events: auto;
-}
-
-.cinema-ctrl-btn:hover {
-  background: rgba(255,255,255,0.10);
-  color: #f4f3ef;
-  border-color: rgba(255,255,255,0.15);
-}
-
-.cinema-btn-label {
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* Botão de Lupa — ativo = dourado */
-.cinema-lupa-btn.is-active {
-  background: rgba(228, 195, 121, 0.15);
-  border-color: rgba(228, 195, 121, 0.35);
-  color: var(--accent-gold);
-}
-
-/* Botão de Fechar — coral no hover */
-.cinema-close-btn:hover {
-  background: rgba(255, 107, 74, 0.18);
-  border-color: rgba(255, 107, 74, 0.35);
-  color: var(--accent-coral);
-}
-
-.cinema-action-btns {
+/* Botão de Ação Genérico com Estilo MinimalBottomBar */
+.cinema-action-btn {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.cinema-persistent-hud {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  z-index: 50;
-  pointer-events: auto;
+.cinema-action-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
 }
 
-/* Barra de Zoom Visual */
-.cinema-zoom-row {
+.cinema-action-btn .btn-label {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.cinema-action-btn .keycap {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Botão de Lupa Ativo */
+.cinema-loupe-btn.is-active {
+  background: rgba(228, 195, 121, 0.20);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 14px rgba(228, 195, 121, 0.25);
+}
+
+.cinema-action-btn.is-muted {
+  background: rgba(255, 107, 74, 0.15);
+  border-color: rgba(255, 107, 74, 0.3);
+  color: var(--accent-coral);
+}
+
+/* Medidor de Zoom */
+.cinema-zoom-meter {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 9.5px;
-  color: #5a6360;
-  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  font-size: 10px;
 }
 
-.cinema-zoom-label {
-  color: #6a7470;
+.cinema-zoom-meter .meter-label {
   font-size: 9px;
+  font-weight: 700;
+  color: #6d7874;
   letter-spacing: 0.08em;
 }
 
-.cinema-zoom-track {
-  width: 72px;
-  height: 2px;
-  background: rgba(255,255,255,0.10);
+.cinema-zoom-meter .meter-track {
+  width: 60px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
   overflow: hidden;
   position: relative;
 }
 
-.cinema-zoom-fill {
+.cinema-zoom-meter .meter-fill {
   position: absolute;
   inset-block: 0;
   left: 0;
-  background: rgba(255,255,255,0.45);
+  background: var(--accent-gold);
   border-radius: 2px;
   transition: width 0.12s ease;
 }
 
-.cinema-zoom-pct {
-  color: #8a9490;
-  font-size: 9px;
-  min-width: 30px;
+.cinema-zoom-meter .meter-val {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  min-width: 32px;
   text-align: right;
 }
 
-/* Hints de teclado */
-.cinema-key-hints {
-  font-size: 9px;
-  color: #3a4340;
-  letter-spacing: 0.04em;
+/* Navegação de Pranchetas */
+.cinema-sheet-arrow-btn {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cinema-sheet-arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.cinema-sheet-dots-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.cinema-sheet-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.cinema-sheet-dot.is-active {
+  background: var(--accent-gold);
+  transform: scale(1.35);
+  box-shadow: 0 0 8px var(--accent-gold);
+}
+
+.cinema-sheet-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.cinema-sheet-badge {
+  font-size: 10px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+/* Lado Direito: Ação de Saída */
+.cinema-dock-actions {
+  display: flex;
+  align-items: center;
+}
+
+.cinema-dock-close-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cinema-dock-close-btn:hover {
+  background: rgba(255, 107, 74, 0.22);
+  border-color: var(--accent-coral);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 107, 74, 0.3);
+}
+
+.cinema-dock-close-btn .close-x {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.cinema-dock-close-btn .keycap {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 /* Drag hint — aparece no GalleryScene3D via .cinema-drag-hint */
@@ -5085,32 +5227,8 @@ a {
 }
 
 /* ==========================================================================
-   CINEMA PERSISTENT BADGE & IDLE HINT
+   CINEMA IDLE HINT
    ========================================================================== */
-.cinema-persistent-badge {
-  position: fixed;
-  top: 18px;
-  right: 22px;
-  z-index: 58;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.28);
-  pointer-events: none;
-  transition: color 0.2s ease;
-}
-
-.cinema-persistent-badge:hover {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.cinema-persistent-sep {
-  color: rgba(255, 255, 255, 0.12);
-}
-
 .cinema-idle-hint {
   position: fixed;
   bottom: 24px;
@@ -5118,9 +5236,14 @@ a {
   transform: translateX(-50%);
   z-index: 55;
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 10px;
+  font-weight: 500;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(10, 14, 12, 0.7);
+  padding: 4px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   pointer-events: none;
   animation: cinemaSmoothIn 0.4s ease;
 }

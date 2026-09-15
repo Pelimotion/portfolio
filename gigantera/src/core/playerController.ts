@@ -80,6 +80,7 @@ export class PlayerController {
   public onResetStillZoom?: () => void;
   public onToggleVideoAudio?: () => void;
   public onTouchTap?: (clientX: number, clientY: number) => void;
+  public onSectorSelect?: (sectorNum: 1 | 2 | 3) => void;
 
   public isHoldingCD: boolean = false;
   public isCinemaActive: boolean = false;
@@ -194,8 +195,15 @@ export class PlayerController {
     window.removeEventListener('deviceorientation', this.handleDeviceOrientation);
   }
 
+  private getLockTarget(): HTMLElement {
+    return (this.domElement.querySelector('canvas') as HTMLElement) || this.domElement;
+  }
+
   private handlePointerLockChange = (): void => {
-    this.isLocked = document.pointerLockElement === this.domElement;
+    const lockEl = document.pointerLockElement;
+    this.isLocked = Boolean(
+      lockEl && (lockEl === this.domElement || this.domElement.contains(lockEl) || lockEl === document.body)
+    );
     if (this.onPointerLockChange) {
       this.onPointerLockChange(this.isLocked);
     }
@@ -207,9 +215,10 @@ export class PlayerController {
   public requestLock(): void {
     if (this.isHoldingCD || this.isCinemaActive) return;
     if (!this.domElement || !this.domElement.isConnected) return;
-    if (document.pointerLockElement !== this.domElement) {
+    const target = this.getLockTarget();
+    if (!this.isLocked) {
       try {
-        const p = this.domElement.requestPointerLock() as any;
+        const p = (target.requestPointerLock || this.domElement.requestPointerLock).call(target) as any;
         if (p && typeof p.catch === 'function') {
           p.catch(() => {});
         }
@@ -220,7 +229,7 @@ export class PlayerController {
   }
 
   public exitLock(): void {
-    if (document.pointerLockElement === this.domElement) {
+    if (document.pointerLockElement) {
       try {
         document.exitPointerLock();
       } catch {
@@ -325,6 +334,24 @@ export class PlayerController {
       case 'KeyM':
         if (this.isCinemaActive && this.onToggleVideoAudio) {
           this.onToggleVideoAudio();
+        }
+        break;
+      case 'Digit1':
+      case 'Numpad1':
+        if (!this.isCinemaActive && !this.isHoldingCD) {
+          if (this.onSectorSelect) this.onSectorSelect(1);
+        }
+        break;
+      case 'Digit2':
+      case 'Numpad2':
+        if (!this.isCinemaActive && !this.isHoldingCD) {
+          if (this.onSectorSelect) this.onSectorSelect(2);
+        }
+        break;
+      case 'Digit3':
+      case 'Numpad3':
+        if (!this.isCinemaActive && !this.isHoldingCD) {
+          if (this.onSectorSelect) this.onSectorSelect(3);
         }
         break;
       case 'Escape':

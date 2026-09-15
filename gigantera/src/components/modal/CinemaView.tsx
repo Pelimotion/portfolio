@@ -223,158 +223,169 @@ export const CinemaView: React.FC = () => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Vinheta atmosférica — fundo escuro que isola a obra */}
+      {/* Vinheta atmosférica pura sem cortes lineares */}
       <div className="cinema-volumetric-aura" />
 
-      {/* ─── ZONA B — Painel Curatorial Inferior Esquerdo ─── */}
-      <div className={`cinema-info-panel-left ${controlsVisible ? 'is-visible' : ''}`}>
-        <span className="cinema-series-tag font-mono">
-          [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
-        </span>
-        <h2 className="cinema-title">{cinemaArtwork.title}</h2>
-        <p className="cinema-desc font-mono">{cinemaArtwork.description}</p>
-        <div className="cinema-meta-row font-mono">
-          <span className="meta-disc">{cinemaArtwork.categoryLabel}</span>
-          <span className="meta-sep">/</span>
-          <span className="meta-mat">{cinemaArtwork.materials}</span>
-        </div>
+      {/* Botão Fechar Interativo Topo Direito (sempre clicável, substitui badge passiva) */}
+      <div className="cinema-top-actions font-mono">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCloseCinema();
+          }}
+          className="cinema-top-close-btn"
+          title="Fechar inspeção e voltar ao salão 3D (Tecla E ou ESC)"
+          aria-label="Fechar inspeção da obra"
+        >
+          <span className="top-close-icon">✕</span>
+          <span className="top-close-text">FECHAR</span>
+          <kbd className="keycap keycap-xs">E</kbd>
+        </button>
       </div>
 
-      {/* ─── ZONA C — Controles Mínimos Inferior Direito ─── */}
-      <div className={`cinema-controls-panel-right font-mono ${controlsVisible ? 'is-visible' : ''}`}>
-
-        {/* Controles de vídeo */}
-        {!isStill && (
-          <div className="cinema-video-controls">
-            <button
-              onClick={() => {
-                const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
-                if (vid) {
-                  if (vid.paused) { vid.play(); setIsVideoPlaying(true); }
-                  else { vid.pause(); setIsVideoPlaying(false); }
-                }
-              }}
-              className="cinema-ctrl-btn"
-              title="Pausar / Reproduzir (Espaço)"
-            >
-              {isVideoPlaying ? '❚❚' : '▶'}
-            </button>
-            <button
-              onClick={() => {
-                const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
-                if (vid) { vid.muted = !vid.muted; setIsVideoMuted(vid.muted); }
-              }}
-              className="cinema-ctrl-btn"
-              title="Alternar áudio (M)"
-            >
-              {isVideoMuted ? '🔇' : '🔈'}
-            </button>
-          </div>
-        )}
-
-        {/* Botões de ação: Lupa e Fechar */}
-        <div className="cinema-action-btns">
-          <button
-            onClick={() => toggleLoupeMode()}
-            className={`cinema-ctrl-btn cinema-lupa-btn ${isLoupeMode ? 'is-active' : ''}`}
-            title="Modo Lupa: zoom 300% + pan (R)"
-          >
-            <span>⌕</span>
-            <span className="cinema-btn-label">{isLoupeMode ? '100%' : 'LUPA'}</span>
-          </button>
-
-          <button
-            onClick={handleCloseCinema}
-            className="cinema-ctrl-btn cinema-close-btn"
-            title="Devolver à vitrine (E / Q / ESC)"
-            aria-label="Fechar inspeção"
-          >
-            <span>✕</span>
-            <span className="cinema-btn-label">FECHAR</span>
-          </button>
-        </div>
-
-        {/* Hint de teclado discreto */}
-        {!isMobile && (
-          <div className="cinema-key-hints">
-            <kbd className="keycap keycap-sm">E</kbd>
-            <span> fechar · </span>
-            <kbd className="keycap keycap-sm">R</kbd>
-            <span> lupa · </span>
-            <span>scroll zoom · duplo-clique 100%</span>
-          </div>
-        )}
-      </div>
-
-      {/* ─── ZONA D — HUD Persistente (Zoom e Pranchetas) ─── */}
-      <div className="cinema-persistent-hud font-mono">
-        {/* Barra de Zoom visual */}
-        <div className="cinema-zoom-row">
-          <span className="cinema-zoom-label">ZOOM</span>
-          <div className="cinema-zoom-track">
-            <div
-              className="cinema-zoom-fill"
-              style={{ width: `${Math.max(0, Math.min(100, ((inspectionZoom - 0.85) / (3.5 - 0.85)) * 100))}%` }}
-            />
-          </div>
-          <span className="cinema-zoom-pct">{zoomPercent}%</span>
-        </div>
-
-        {/* Navegação de Pranchetas — só para obras com múltiplas imagens */}
-        {isStill && (cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length > 1 && (
-          <div className="cinema-sheet-nav">
-            <button
-              onClick={() => prevStillSheet()}
-              className="cinema-ctrl-btn"
-              title="Prancheta anterior (← / A)"
-              aria-label="Prancheta anterior"
-            >←</button>
-            <div className="cinema-sheet-dots">
-              {(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setStillSheetIndex(idx)}
-                  className={`cinema-dot-btn ${idx === currentStillSheetIndex ? 'is-active' : ''}`}
-                  title={`Imagem ${idx + 1}`}
-                  aria-label={`Ir para imagem ${idx + 1}`}
-                />
-              ))}
+      {/* ─── DOCK UNIFICADO DE INSPEÇÃO (Mesmo padrão estético do MinimalBottomBar) ─── */}
+      <div className={`cinema-unified-dock-container ${controlsVisible ? 'is-visible' : ''}`}>
+        <div className="cinema-unified-dock-card font-mono">
+          {/* Lado Esquerdo: Identificação Curatorial */}
+          <div className="cinema-dock-info">
+            <div className="cinema-dock-badge-row">
+              <span className="cinema-dock-series">
+                [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
+              </span>
+              <span className="cinema-dock-category">{cinemaArtwork.categoryLabel}</span>
             </div>
-            <button
-              onClick={() => nextStillSheet()}
-              className="cinema-ctrl-btn"
-              title="Próxima prancheta (→ / D)"
-              aria-label="Próxima prancheta"
-            >→</button>
-            <span className="cinema-sheet-counter">
-              {currentStillSheetIndex + 1}/{(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length}
-            </span>
+            <h2 className="cinema-dock-title">{cinemaArtwork.title}</h2>
+            <p className="cinema-dock-desc">{cinemaArtwork.description}</p>
+            <div className="cinema-dock-materials">
+              <span className="materials-label">MATERIAIS:</span>
+              <span>{cinemaArtwork.materials}</span>
+            </div>
           </div>
-        )}
+
+          {/* Centro: Controles de Mídia & Zoom */}
+          <div className="cinema-dock-controls">
+            {/* Controles de Vídeo */}
+            {!isStill && (
+              <div className="cinema-dock-media-group">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
+                    if (vid) {
+                      if (vid.paused) { vid.play(); setIsVideoPlaying(true); }
+                      else { vid.pause(); setIsVideoPlaying(false); }
+                    }
+                  }}
+                  className="cinema-action-btn"
+                  title="Pausar / Reproduzir (Espaço)"
+                >
+                  <span>{isVideoPlaying ? '❚❚' : '▶'}</span>
+                  <span className="btn-label">{isVideoPlaying ? 'PAUSAR' : 'REPRODUZIR'}</span>
+                  <kbd className="keycap keycap-xs">ESPAÇO</kbd>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
+                    if (vid) { vid.muted = !vid.muted; setIsVideoMuted(vid.muted); }
+                  }}
+                  className={`cinema-action-btn ${isVideoMuted ? 'is-muted' : ''}`}
+                  title="Alternar áudio (M)"
+                >
+                  <span>{isVideoMuted ? '🔇' : '🔈'}</span>
+                  <span className="btn-label">{isVideoMuted ? 'MUDO' : 'ÁUDIO'}</span>
+                  <kbd className="keycap keycap-xs">M</kbd>
+                </button>
+              </div>
+            )}
+
+            {/* Navegação de Pranchetas (Stills com múltiplas imagens) */}
+            {isStill && (cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length > 1 && (
+              <div className="cinema-dock-sheets-group">
+                <button
+                  type="button"
+                  onClick={() => prevStillSheet()}
+                  className="cinema-sheet-arrow-btn"
+                  title="Prancheta anterior (← / A)"
+                  aria-label="Prancheta anterior"
+                >
+                  ← <kbd className="keycap keycap-xs">A</kbd>
+                </button>
+                <div className="cinema-sheet-dots-list">
+                  {(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setStillSheetIndex(idx)}
+                      className={`cinema-sheet-dot ${idx === currentStillSheetIndex ? 'is-active' : ''}`}
+                      title={`Imagem ${idx + 1}`}
+                      aria-label={`Ir para imagem ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => nextStillSheet()}
+                  className="cinema-sheet-arrow-btn"
+                  title="Próxima prancheta (→ / D)"
+                  aria-label="Próxima prancheta"
+                >
+                  <kbd className="keycap keycap-xs">D</kbd> →
+                </button>
+                <span className="cinema-sheet-badge">
+                  {currentStillSheetIndex + 1}/{(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length}
+                </span>
+              </div>
+            )}
+
+            {/* Controles de Lupa & Zoom */}
+            <div className="cinema-dock-zoom-group">
+              <button
+                type="button"
+                onClick={() => toggleLoupeMode()}
+                className={`cinema-action-btn cinema-loupe-btn ${isLoupeMode ? 'is-active' : ''}`}
+                title="Modo Lupa: zoom 300% com arraste livre (R)"
+              >
+                <span>⌕</span>
+                <span className="btn-label">{isLoupeMode ? 'LUPA ATIVA' : 'LUPA (300%)'}</span>
+                <kbd className="keycap keycap-xs">R</kbd>
+              </button>
+
+              <div className="cinema-zoom-meter" title="Nível de ampliação atual (Scroll para ajustar)">
+                <span className="meter-label">ZOOM</span>
+                <div className="meter-track">
+                  <div
+                    className="meter-fill"
+                    style={{ width: `${Math.max(0, Math.min(100, ((inspectionZoom - 0.85) / (3.5 - 0.85)) * 100))}%` }}
+                  />
+                </div>
+                <span className="meter-val">{zoomPercent}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Lado Direito: Botão Principal de Saída */}
+          <div className="cinema-dock-actions">
+            <button
+              type="button"
+              onClick={handleCloseCinema}
+              className="cinema-dock-close-btn"
+              title="Fechar inspeção e devolver à vitrine (E / Q / ESC)"
+            >
+              <span className="close-x">✕</span>
+              <span>FECHAR</span>
+              <kbd className="keycap keycap-sm">E</kbd>
+            </button>
+          </div>
+        </div>
       </div>
-
-
-      {/* Hint de lupa ativa — pan com mouse */}
-      {isLoupeMode && (
-        <div className="cinema-loupe-active-badge font-mono" aria-live="polite">
-          <span className="loupe-icon">⌕</span>
-          <span>LUPA ATIVA — ARRASTE PARA EXPLORAR</span>
-        </div>
-      )}
-
-      {/* Badge persistente minimalista — sempre visível no topo direito */}
-      {!isMobile && (
-        <div className="cinema-persistent-badge font-mono" aria-hidden="true">
-          <span>[H] ajuda</span>
-          <span className="cinema-persistent-sep">·</span>
-          <span>[E] fechar</span>
-        </div>
-      )}
 
       {/* Dica discreta quando o usuário está ocioso e os controles sumiram */}
       {showIdleHint && !controlsVisible && !isMobile && (
         <div className="cinema-idle-hint font-mono" aria-hidden="true">
-          <span>mova o mouse para ver os controles</span>
+          <span>mova o mouse para revelar os controles</span>
         </div>
       )}
     </div>

@@ -273,24 +273,8 @@ export const GalleryScene3D: React.FC = () => {
 
   const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
   const [showDragHint, setShowDragHint] = useState(false);
-  const [showAmbientHud, setShowAmbientHud] = useState(false);
   const dragHintTimerRef = useRef<number | null>(null);
-
-  // Ambient HUD: surge 1.5s após a intro e se apaga definitivamente no primeiro passo
-  useEffect(() => {
-    if (hasPlayerMoved) {
-      setShowAmbientHud(false);
-      return;
-    }
-    if (introPhase === 'ready') {
-      const timer = window.setTimeout(() => {
-        if (!useAppStore.getState().hasPlayerMoved) {
-          setShowAmbientHud(true);
-        }
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [introPhase, hasPlayerMoved]);
+  const playerControllerRef = useRef<PlayerController | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -995,30 +979,36 @@ export const GalleryScene3D: React.FC = () => {
       });
     });
 
-    // 7. RIG DE INSPEÇÃO 3D EM PRIMEIRO PLANO (A Obra saindo da caixa de vidro em 3D)
-    // Acoplado diretamente à câmera: o jogador pode rotacionar e dar zoom na peça sem interferência de luz externa
+    // 7. RIG DE INSPEÇÃO 3D EM PRIMEIRO PLANO (A Obra saindo da vitrine em 3D)
+    // Acoplado diretamente à câmera com depthTest desativado e renderOrder alta para nunca sofrer cortes por paredes/tetos
     const inspectionRig = new THREE.Group();
-    inspectionRig.position.set(0, 0, -2.1);
+    inspectionRig.position.set(0, 0, -1.9);
     inspectionRig.visible = false;
 
-    // Fundo neutro fino de passe-partout / moldura — renderOrder garante que nunca causa Z-fighting
+    // Moldura preta sólida e uniforme — depthTest: false garante imunidade a qualquer parede ou viga
     const backingGeo = new THREE.PlaneGeometry(1.0, 1.0);
-    const backingMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x141615 : 0x050606, depthWrite: false });
+    const backingMat = new THREE.MeshBasicMaterial({
+      color: isLight ? 0x141615 : 0x050606,
+      depthWrite: false,
+      depthTest: false
+    });
     const inspectionBacking = new THREE.Mesh(backingGeo, backingMat);
-    inspectionBacking.renderOrder = 0;
+    inspectionBacking.renderOrder = 9998;
     inspectionRig.add(inspectionBacking);
 
-    // Plano da Obra em Primeiro Plano (Imunidade total à iluminação externa)
-    // z = 0.04 para separação clara do depth buffer e eliminar corte visual
+    // Plano da Obra em Primeiro Plano (Imunidade total à iluminação externa e sem corte geométrico)
+    // z = 0.005 para ficar perfeitamente colado na moldura sem distorção angular
     const artPlaneGeo = new THREE.PlaneGeometry(1.0, 1.0);
     const artPlaneMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       side: THREE.FrontSide,
-      toneMapped: false // Imunidade a sombras ou luzes externas da galeria
+      toneMapped: false, // Imunidade a sombras ou luzes externas da galeria
+      depthWrite: false,
+      depthTest: false
     });
     const inspectionArtMesh = new THREE.Mesh(artPlaneGeo, artPlaneMat);
-    inspectionArtMesh.position.z = 0.04;
-    inspectionArtMesh.renderOrder = 1;
+    inspectionArtMesh.position.z = 0.005;
+    inspectionArtMesh.renderOrder = 9999;
     inspectionRig.add(inspectionArtMesh);
 
     camera.add(inspectionRig);
@@ -1057,6 +1047,7 @@ export const GalleryScene3D: React.FC = () => {
       minX: layout.playerBounds.minX,
       maxX: layout.playerBounds.maxX
     });
+    playerControllerRef.current = playerController;
     playerController.updateBounds(layout.playerBounds);
     playerController.obstacles = layout.artworksWithCoords.map((a) => ({
       x: a.computedCoords.x,
@@ -1077,6 +1068,13 @@ export const GalleryScene3D: React.FC = () => {
 
     playerController.onPointerLockChange = (locked) => {
       useAppStore.getState().setPointerLocked(locked);
+    };
+
+    playerController.onSectorSelect = (sectorNum) => {
+      const state = useAppStore.getState();
+      if (sectorNum === 1) state.warpToSector('entrance-audio');
+      else if (sectorNum === 2) state.warpToSector('video');
+      else if (sectorNum === 3) state.warpToSector('still');
     };
 
     playerController.onInteract = () => {
@@ -1495,15 +1493,14 @@ export const GalleryScene3D: React.FC = () => {
 
     // Escuta global para atalhos táteis de jogabilidade (R, Q, E, Escape)
     const onGlobalKeyDown = (e: KeyboardEvent) => {
+      const state = useAppStore.getState();
       if (e.key === 'r' || e.key === 'R') {
-        const state = useAppStore.getState();
         if (state.cinemaArtwork) {
           e.preventDefault();
           e.stopPropagation();
           state.toggleLoupeMode();
         }
       } else if (e.key === 'q' || e.key === 'Q' || e.key === 'Escape' || e.key === 'e' || e.key === 'E') {
-        const state = useAppStore.getState();
         if (state.cinemaArtwork || state.isHoldingCD) {
           e.preventDefault();
           e.stopPropagation();
@@ -1514,6 +1511,17 @@ export const GalleryScene3D: React.FC = () => {
           }
           playerController.resumeAimControl();
           handleRequestLock();
+        }
+      } else if (!state.cinemaArtwork && !state.isHoldingCD && state.viewMode === 'spatial') {
+        if (e.code === 'Digit1' || e.code === 'Numpad1' || e.key === '1') {
+          e.preventDefault();
+          state.warpToSector('entrance-audio');
+        } else if (e.code === 'Digit2' || e.code === 'Numpad2' || e.key === '2') {
+          e.preventDefault();
+          state.warpToSector('video');
+        } else if (e.code === 'Digit3' || e.code === 'Numpad3' || e.key === '3') {
+          e.preventDefault();
+          state.warpToSector('still');
         }
       }
     };
@@ -1851,7 +1859,7 @@ export const GalleryScene3D: React.FC = () => {
             inspectionArtMesh.geometry.dispose();
             inspectionArtMesh.geometry = new THREE.PlaneGeometry(w, h);
             inspectionBacking.geometry.dispose();
-            inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.06, h + 0.06);
+            inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.08, h + 0.08);
 
             inspectionRig.visible = true;
             inspectionTransition = 0.1;
@@ -1919,7 +1927,7 @@ export const GalleryScene3D: React.FC = () => {
             inspectionArtMesh.geometry.dispose();
             inspectionArtMesh.geometry = new THREE.PlaneGeometry(w, h);
             inspectionBacking.geometry.dispose();
-            inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.06, h + 0.06);
+            inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.08, h + 0.08);
 
             inspectionRig.visible = true;
             inspectionTransition = 0.1;
@@ -1954,7 +1962,7 @@ export const GalleryScene3D: React.FC = () => {
           curPanY = THREE.MathUtils.lerp(curPanY, 0, 0.18);
         }
 
-        inspectionRig.position.set(curPanX, curPanY, -2.1);
+        inspectionRig.position.set(curPanX, curPanY, -1.9);
         inspectionRig.rotation.x = curInspRotX;
         inspectionRig.rotation.y = curInspRotY;
         const totalScale = curInspZoom * inspectionTransition;
@@ -2248,25 +2256,15 @@ export const GalleryScene3D: React.FC = () => {
         <div
           className="pointer-lock-hint-dock font-mono"
           aria-hidden="true"
-          onClick={() => window.dispatchEvent(new CustomEvent('gigantera:request-lock'))}
+          onClick={() => {
+            playerControllerRef.current?.requestLock();
+          }}
           style={{ cursor: 'pointer' }}
         >
           <span className="mouse-badge">
             <span className="mouse-icon mouse-left-click" />
             <span className="keycap-label">CLIQUE P/ MIRA LIVRE</span>
           </span>
-        </div>
-      )}
-
-      {/* Ambient HUD — badge discreto contextual que ensina controles e some no primeiro movimento */}
-      {showAmbientHud && introPhase === 'ready' && !hasPlayerMoved && !cinemaArtwork && !isHoldingCD && !isMobile && (
-        <div className="ambient-hud-badge font-mono" aria-hidden="true">
-          <div className="ambient-hud-row"><span className="ambient-hud-key">WASD</span><span>caminhar</span></div>
-          <div className="ambient-hud-row"><span className="ambient-hud-key">MOUSE</span><span>olhar</span></div>
-          <div className="ambient-hud-row"><span className="ambient-hud-key">E</span><span>abrir obra</span></div>
-          <div className="ambient-hud-divider" />
-          <div className="ambient-hud-row ambient-hud-row-sm"><span className="ambient-hud-key">TAB</span><span>catálogo</span></div>
-          <div className="ambient-hud-row ambient-hud-row-sm"><span className="ambient-hud-key">H</span><span>ajuda</span></div>
         </div>
       )}
     </div>
