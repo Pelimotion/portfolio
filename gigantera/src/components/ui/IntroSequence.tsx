@@ -59,6 +59,7 @@ export const IntroSequence: React.FC = () => {
 
   const handleEnter3D = (e: React.MouseEvent) => {
     e.stopPropagation();
+    window.dispatchEvent(new CustomEvent('gigantera:request-lock'));
     dismiss(400);
   };
 
@@ -99,7 +100,7 @@ export const IntroSequence: React.FC = () => {
           >
             <span className="entry-icon" aria-hidden="true">▶</span>
             <span className="entry-content">
-              <span className="entry-label">CAMINHAR PELO PAVILHÃO</span>
+              <span className="entry-label">INICIAR EXPERIÊNCIA 3D</span>
               <span className="entry-hint">WASD + mouse</span>
             </span>
           </button>
@@ -111,7 +112,7 @@ export const IntroSequence: React.FC = () => {
           >
             <span className="entry-icon" aria-hidden="true">≡</span>
             <span className="entry-content">
-              <span className="entry-label">VER O ACERVO</span>
+              <span className="entry-label">VERSÃO ESTÁTICA / CATÁLOGO</span>
               <span className="entry-hint">catálogo em grade</span>
             </span>
           </button>

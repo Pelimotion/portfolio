@@ -237,38 +237,6 @@ export const CinemaView: React.FC = () => {
       {/* ─── ZONA C — Controles Mínimos Inferior Direito ─── */}
       <div className={`cinema-controls-panel-right font-mono ${controlsVisible ? 'is-visible' : ''}`}>
 
-        {/* Navegação de Pranchetas — só para stills */}
-        {isStill && stillArtworksList.length > 1 && (
-          <div className="cinema-sheet-nav">
-            <button
-              onClick={() => prevStillSheet()}
-              className="cinema-ctrl-btn"
-              title="Prancheta anterior (← / A)"
-              aria-label="Prancheta anterior"
-            >←</button>
-            <div className="cinema-sheet-dots">
-              {stillArtworksList.map((art, idx) => (
-                <button
-                  key={art.id}
-                  onClick={() => setStillSheetIndex(idx)}
-                  className={`cinema-dot-btn ${idx === currentStillSheetIndex ? 'is-active' : ''}`}
-                  title={art.title}
-                  aria-label={art.title}
-                />
-              ))}
-            </div>
-            <button
-              onClick={() => nextStillSheet()}
-              className="cinema-ctrl-btn"
-              title="Próxima prancheta (→ / D)"
-              aria-label="Próxima prancheta"
-            >→</button>
-            <span className="cinema-sheet-counter">
-              {currentStillSheetIndex + 1}/{stillArtworksList.length}
-            </span>
-          </div>
-        )}
-
         {/* Controles de vídeo */}
         {!isStill && (
           <div className="cinema-video-controls">
@@ -297,18 +265,6 @@ export const CinemaView: React.FC = () => {
             </button>
           </div>
         )}
-
-        {/* Barra de Zoom visual */}
-        <div className="cinema-zoom-row">
-          <span className="cinema-zoom-label">ZOOM</span>
-          <div className="cinema-zoom-track">
-            <div
-              className="cinema-zoom-fill"
-              style={{ width: `${Math.max(0, Math.min(100, ((inspectionZoom - 0.85) / (3.5 - 0.85)) * 100))}%` }}
-            />
-          </div>
-          <span className="cinema-zoom-pct">{zoomPercent}%</span>
-        </div>
 
         {/* Botões de ação: Lupa e Fechar */}
         <div className="cinema-action-btns">
@@ -343,6 +299,54 @@ export const CinemaView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* ─── ZONA D — HUD Persistente (Zoom e Pranchetas) ─── */}
+      <div className="cinema-persistent-hud font-mono">
+        {/* Barra de Zoom visual */}
+        <div className="cinema-zoom-row">
+          <span className="cinema-zoom-label">ZOOM</span>
+          <div className="cinema-zoom-track">
+            <div
+              className="cinema-zoom-fill"
+              style={{ width: `${Math.max(0, Math.min(100, ((inspectionZoom - 0.85) / (3.5 - 0.85)) * 100))}%` }}
+            />
+          </div>
+          <span className="cinema-zoom-pct">{zoomPercent}%</span>
+        </div>
+
+        {/* Navegação de Pranchetas — só para obras com múltiplas imagens */}
+        {isStill && (cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length > 1 && (
+          <div className="cinema-sheet-nav">
+            <button
+              onClick={() => prevStillSheet()}
+              className="cinema-ctrl-btn"
+              title="Prancheta anterior (← / A)"
+              aria-label="Prancheta anterior"
+            >←</button>
+            <div className="cinema-sheet-dots">
+              {(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setStillSheetIndex(idx)}
+                  className={`cinema-dot-btn ${idx === currentStillSheetIndex ? 'is-active' : ''}`}
+                  title={`Imagem ${idx + 1}`}
+                  aria-label={`Ir para imagem ${idx + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => nextStillSheet()}
+              className="cinema-ctrl-btn"
+              title="Próxima prancheta (→ / D)"
+              aria-label="Próxima prancheta"
+            >→</button>
+            <span className="cinema-sheet-counter">
+              {currentStillSheetIndex + 1}/{(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length}
+            </span>
+          </div>
+        )}
+      </div>
+
 
       {/* Hint de lupa ativa — pan com mouse */}
       {isLoupeMode && (

@@ -69,6 +69,7 @@ export interface Artwork {
   dimensionsOrDuration?: string;
   cloudStorageUrl?: string;
   status?: 'active' | 'hidden';
+  galleryImages?: string[]; // Multiple images for a single artwork mosaic
 }
 
 

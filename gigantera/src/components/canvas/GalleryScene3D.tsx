@@ -861,6 +861,8 @@ export const GalleryScene3D: React.FC = () => {
         vid.playsInline = true;
         vid.autoplay = true;
         vid.setAttribute('data-art-id', art.id);
+        vid.style.display = 'none';
+        document.body.appendChild(vid);
         vid.play().catch(() => {});
 
         const videoTex = new THREE.VideoTexture(vid);
@@ -1417,8 +1419,12 @@ export const GalleryScene3D: React.FC = () => {
       const state = useAppStore.getState();
       if (state.cinemaArtwork) {
         e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.12 : 0.12;
-        targetInspZoom = Math.max(0.85, Math.min(3.5, targetInspZoom + delta));
+        const delta = e.deltaY > 0 ? -0.15 : 0.15;
+        targetInspZoom = Math.max(0.95, Math.min(3.5, targetInspZoom + delta));
+        // Snap to 1.0 if close to it, avoiding getting lost in strange zoom scales
+        if (Math.abs(targetInspZoom - 1.0) < 0.08) {
+          targetInspZoom = 1.0;
+        }
         state.setInspectionZoom(targetInspZoom);
         if (targetInspZoom > 1.8 && !state.isLoupeMode) {
           state.setLoupeMode(true);
@@ -1612,6 +1618,7 @@ export const GalleryScene3D: React.FC = () => {
     let lastFpsReportTime = performance.now();
     const benchmarkStartTime = performance.now();
     let benchmarkEvaluated = false;
+    let lastRenderedSheetIndex = -1;
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
@@ -1730,8 +1737,8 @@ export const GalleryScene3D: React.FC = () => {
         }
 
         // Se a obra acabou de ser aberta ou se mudou de prancheta
-        if (activeCinemaArtId !== currentCinemaArt.id) {
-          if (activeCinemaArtId) {
+        if (activeCinemaArtId !== currentCinemaArt.id || lastRenderedSheetIndex !== storeState.currentStillSheetIndex) {
+          if (activeCinemaArtId && activeCinemaArtId !== currentCinemaArt.id) {
             const prevFound = artworkItems.find((a) => a.artwork.id === activeCinemaArtId);
             if (prevFound) prevFound.group.visible = true;
           }
@@ -1746,7 +1753,19 @@ export const GalleryScene3D: React.FC = () => {
               artPlaneMat.map = found.texture;
               found.videoEl.play().catch(() => {});
             } else {
-              artPlaneMat.map = found.texture;
+              // Se for imagem estática e tiver galeria, carrega a imagem da galeria sob demanda
+              if (currentCinemaArt.medium === 'still' && currentCinemaArt.galleryImages && currentCinemaArt.galleryImages.length > 1) {
+                const imgUrl = currentCinemaArt.galleryImages[storeState.currentStillSheetIndex];
+                if (imgUrl) {
+                   const tex = textureLoader.load(imgUrl);
+                   tex.colorSpace = THREE.SRGBColorSpace;
+                   artPlaneMat.map = tex;
+                } else {
+                   artPlaneMat.map = found.texture;
+                }
+              } else {
+                artPlaneMat.map = found.texture;
+              }
             }
             artPlaneMat.needsUpdate = true;
 
@@ -1784,6 +1803,7 @@ export const GalleryScene3D: React.FC = () => {
             targetPanX = 0;
             targetPanY = 0;
             activeCinemaArtId = currentCinemaArt.id;
+            lastRenderedSheetIndex = storeState.currentStillSheetIndex;
           } else {
             // Obra aberta externamente ou via catálogo/admin
             const isVid = currentCinemaArt.medium === 'video';
@@ -1794,12 +1814,16 @@ export const GalleryScene3D: React.FC = () => {
               tempVid.loop = true;
               tempVid.muted = false;
               tempVid.playsInline = true;
+              tempVid.style.display = 'none';
+              document.body.appendChild(tempVid);
               tempVid.play().catch(() => {});
               const vidTex = new THREE.VideoTexture(tempVid);
               vidTex.colorSpace = THREE.SRGBColorSpace;
               artPlaneMat.map = vidTex;
             } else if (currentCinemaArt.imageSrc) {
-              const tex = textureLoader.load(currentCinemaArt.imageSrc);
+              const images = currentCinemaArt.galleryImages || [currentCinemaArt.imageSrc];
+              const texUrl = images[storeState.currentStillSheetIndex] || currentCinemaArt.imageSrc;
+              const tex = textureLoader.load(texUrl);
               tex.colorSpace = THREE.SRGBColorSpace;
               artPlaneMat.map = tex;
             }

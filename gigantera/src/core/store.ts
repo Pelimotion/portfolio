@@ -215,37 +215,38 @@ export const useAppStore = create<AppState>((set, get) => ({
   hoveredTrackIndex: null,
   lastActionCloseTime: 0,
 
-  stillArtworksList: ARTWORKS_CATALOG.filter((a) => a.medium === 'still'),
+  stillArtworksList: [], // Legacy, mantido para compatibilidade de tipagem se necessário, mas não é mais iterado globalmente
   currentStillSheetIndex: 0,
 
   nextStillSheet: () => {
-    const list = get().stillArtworksList;
-    if (list.length === 0) return;
-    const nextIdx = (get().currentStillSheetIndex + 1) % list.length;
+    const art = get().cinemaArtwork;
+    if (!art || art.medium !== 'still') return;
+    const images = art.galleryImages || [art.imageSrc];
+    const nextIdx = (get().currentStillSheetIndex + 1) % images.length;
     set({
       currentStillSheetIndex: nextIdx,
-      cinemaArtwork: list[nextIdx],
       inspectionZoom: 1.0
     });
   },
 
   prevStillSheet: () => {
-    const list = get().stillArtworksList;
-    if (list.length === 0) return;
-    const prevIdx = (get().currentStillSheetIndex - 1 + list.length) % list.length;
+    const art = get().cinemaArtwork;
+    if (!art || art.medium !== 'still') return;
+    const images = art.galleryImages || [art.imageSrc];
+    const prevIdx = (get().currentStillSheetIndex - 1 + images.length) % images.length;
     set({
       currentStillSheetIndex: prevIdx,
-      cinemaArtwork: list[prevIdx],
       inspectionZoom: 1.0
     });
   },
 
   setStillSheetIndex: (idx) => {
-    const list = get().stillArtworksList;
-    if (idx >= 0 && idx < list.length) {
+    const art = get().cinemaArtwork;
+    if (!art || art.medium !== 'still') return;
+    const images = art.galleryImages || [art.imageSrc];
+    if (idx >= 0 && idx < images.length) {
       set({
         currentStillSheetIndex: idx,
-        cinemaArtwork: list[idx],
         inspectionZoom: 1.0
       });
     }
