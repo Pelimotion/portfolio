@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAppStore } from '../../core/store';
 import { soundEngine } from '../../core/soundEngine';
 
@@ -33,6 +33,9 @@ export const CinemaView: React.FC = () => {
   const controlsTimerRef = React.useRef<number | null>(null);
   const idleHintTimerRef = React.useRef<number | null>(null);
 
+  // Cursor inteligente: grab na zona da obra, pointer nos botões de UI
+  const [cursorStyle, setCursorStyle] = useState<'grab' | 'grabbing' | 'default'>('grab');
+
   const showControls = () => {
     setControlsVisible(true);
     setShowIdleHint(false);
@@ -48,14 +51,38 @@ export const CinemaView: React.FC = () => {
   };
 
   // Função unificada para encerramento gracioso
-  const handleCloseCinema = () => {
+  const handleCloseCinema = useCallback(() => {
     try {
       (document.activeElement as HTMLElement)?.blur?.();
       document.body.style.cursor = 'default';
     } catch {}
     closeCinema();
     window.dispatchEvent(new CustomEvent('gigantera:request-lock'));
-  };
+  }, [closeCinema]);
+
+  // Handlers de cursor inteligente
+  const handleViewportMouseMove = useCallback((e: React.MouseEvent) => {
+    showControls();
+    const target = e.target as HTMLElement;
+    const isUI = !!target?.closest?.('button, kbd, [role="dialog"] > div:not(.cinema-volumetric-aura), .cinema-top-actions, .cinema-unified-dock-container, .cinema-idle-hint');
+    if (isUI) {
+      setCursorStyle('default');
+    } else {
+      setCursorStyle(prev => prev === 'grabbing' ? 'grabbing' : 'grab');
+    }
+  }, []);
+
+  const handleViewportMouseDown = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const isUI = !!target?.closest?.('button, kbd, .cinema-top-actions, .cinema-unified-dock-container');
+    if (!isUI) {
+      setCursorStyle('grabbing');
+    }
+  }, []);
+
+  const handleViewportMouseUp = useCallback(() => {
+    setCursorStyle('grab');
+  }, []);
 
   // Crossfade de áudio cinematográfico ao inspecionar obra de vídeo
   useEffect(() => {
@@ -219,9 +246,12 @@ export const CinemaView: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-label={`Inspeção 3D da obra ${cinemaArtwork.title}`}
-      onMouseMove={showControls}
+      onMouseMove={handleViewportMouseMove}
+      onMouseDown={handleViewportMouseDown}
+      onMouseUp={handleViewportMouseUp}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      style={{ cursor: cursorStyle }}
     >
       {/* Vinheta atmosférica pura sem cortes lineares */}
       <div className="cinema-volumetric-aura" />

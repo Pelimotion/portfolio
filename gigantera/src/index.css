@@ -670,10 +670,11 @@ a {
 }
 
 .keycap.keycap-sm {
-  min-width: 16px;
-  height: 16px;
-  font-size: 8.5px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 8px;
   padding: 0 4px;
+  border-bottom-width: 2px;
 }
 
 /* ==========================================================================
@@ -1102,6 +1103,16 @@ a {
   z-index: 50;
   pointer-events: none; /* Obra 3D por baixo permanece interativa */
   animation: cinemaSmoothIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Cursor padrão de grab na zona da obra — sobrescrito via style inline pelo React */
+  cursor: grab;
+}
+
+/* Botões e elementos interativos dentro do cinema sempre usam cursor pointer */
+.cinema-feathered-viewport button,
+.cinema-feathered-viewport a,
+.cinema-feathered-viewport [role="button"],
+.cinema-feathered-viewport kbd {
+  cursor: pointer !important;
 }
 
 @keyframes cinemaSmoothIn {
@@ -1563,11 +1574,12 @@ a {
   justify-content: center;
   pointer-events: auto;
   cursor: pointer;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+  /* Transição de entrada rápida; saída de 2s elegante controlada via .is-gliding-down */
+  transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .intro-spatial-overlay.is-gliding-down {
-  transform: translateY(35vh);
+  transform: translateY(40vh);
   opacity: 0;
   pointer-events: none;
 }
@@ -1741,19 +1753,89 @@ a {
   color: var(--accent-gold, #e4c379) !important;
 }
 
-.keycap.keycap-xs {
-  min-width: 16px;
-  height: 16px;
+/* ─── Bloco de Controles Inline no Card do Tutorial ─── */
+.intro-controls-block {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+}
+
+.intro-controls-separator {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 2px 0;
+}
+
+.intro-controls-title {
+  font-family: var(--font-mono, 'Space Mono', monospace);
   font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-gold, #e4c379) !important;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.intro-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10.5px;
+  color: #b8c2bc !important;
+}
+
+.intro-controls-row span {
+  color: #b8c2bc !important;
+}
+
+/* Cluster WASD 2x2 no tutorial */
+.intro-wasd-grid {
+  display: grid;
+  grid-template-columns: 22px 22px 22px;
+  grid-template-rows: 22px 22px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.intro-wasd-grid .keycap {
+  min-width: 22px;
+  width: 22px;
+  height: 22px;
+  font-size: 9px;
+  padding: 0;
+}
+
+.intro-wasd-spacer {
+  width: 22px;
+  height: 22px;
+}
+
+/* Ícone de mouse estilizado no tutorial */
+.intro-mouse-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-gold, #e4c379) !important;
+}
+
+.keycap.keycap-xs {
+  min-width: 17px;
+  height: 17px;
+  font-size: 8px;
   padding: 0 4px;
-  background: rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  border-radius: 4px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Herda morfologia mecânica do .keycap base — sem override de background/border */
 }
 
 /* Proteção explícita contra tema light tornando a tipografia preta */
@@ -2817,42 +2899,96 @@ a {
 }
 
 /* ==========================================================================
-   MINIMALIST KEYCAPS & MOUSE GLYPHS (Game HUD Tático)
+   HYPER-REALISTIC MECHANICAL KEYCAPS & MOUSE GLYPHS (Game HUD Tático)
    ========================================================================== */
 
+/* Base keycap — morfologia de tecla mecânica real com bevel 3D e superfície côncava */
 .keycap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  font-family: 'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 9.5px;
-  font-weight: 400;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #f4f3ef;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: none;
+  letter-spacing: 0.04em;
+  border-radius: 4px;
+  /* Corpo da keycap: gradiente vertical simulando concavidade (topo iluminado, base em sombra) */
+  background: linear-gradient(
+    180deg,
+    rgba(62, 68, 65, 0.95) 0%,
+    rgba(38, 43, 40, 0.98) 60%,
+    rgba(28, 32, 30, 1.0) 100%
+  );
+  color: #e8e6e0;
+  /* Borda: chanfro iluminado em cima, borda física sólida embaixo */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.65);
+  /* Box-shadow: luz vinda de cima (inset bevel), sombra inferior de profundidade, drop-shadow geral */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.45) inset,
+    0 2px 0 rgba(0, 0, 0, 0.0),
+    0 3px 6px rgba(0, 0, 0, 0.45);
   user-select: none;
-  transition: all 0.15s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border-bottom-width 0.08s ease;
+  position: relative;
+  top: 0;
+}
+
+/* Microinteração fisiológica: tecla afunda ao pressionar (simula clique mecânico) */
+.keycap:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.35) inset,
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  top: 1px;
 }
 
 [data-theme='light'] .keycap {
-  background: rgba(0, 0, 0, 0.05);
-  color: #111413;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  box-shadow: none;
+  background: linear-gradient(
+    180deg,
+    rgba(230, 228, 222, 1.0) 0%,
+    rgba(210, 207, 198, 1.0) 60%,
+    rgba(195, 192, 183, 1.0) 100%
+  );
+  color: #1a1d1b;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.32);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.15) inset,
+    0 3px 6px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme='light'] .keycap:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.1) inset,
+    0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .keycap.keycap-coral {
-  border-color: rgba(255, 107, 74, 0.4);
+  border-color: rgba(255, 107, 74, 0.45);
+  border-bottom-color: rgba(180, 60, 30, 0.7);
   color: var(--accent-coral);
-  background: rgba(255, 107, 74, 0.08);
-  box-shadow: none;
+  background: linear-gradient(
+    180deg,
+    rgba(60, 28, 20, 0.95) 0%,
+    rgba(40, 18, 12, 0.98) 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 120, 80, 0.15) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.45) inset,
+    0 3px 6px rgba(0, 0, 0, 0.45);
 }
 
 .keycap-group,

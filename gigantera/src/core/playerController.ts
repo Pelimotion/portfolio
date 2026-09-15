@@ -60,9 +60,11 @@ export class PlayerController {
   private lastFootstepTime: number = 0;
   private forwardHoldTime: number = 0; // Aceleração dinâmica e orgânica de passada ao caminhar continuo
   private isPointerDown: boolean = false;
-  private prevMouseX: number = 0;
-  private prevMouseY: number = 0;
+  private prevMouseX: number = -1; // -1 = nunca inicializado
+  private prevMouseY: number = -1;
   public isLocked: boolean = false;
+  // Flag que indica que o usuário deu pelo menos 1 clique intencional no canvas 3D
+  private hasClickedCanvas: boolean = false;
 
   // Interação e Callbacks
   public onInteract?: () => void;
@@ -210,6 +212,11 @@ export class PlayerController {
     }
     if (!this.isLocked) {
       this.isPointerDown = false;
+    } else {
+      // Pointer Lock recém concedido: reseta deltas para evitar salto na câmera
+      // O próximo mousemove usará e.movementX/Y limpos em vez de delta com prevMouseX
+      this.prevMouseX = -1;
+      this.prevMouseY = -1;
     }
   };
 
@@ -377,8 +384,8 @@ export class PlayerController {
   public resumeAimControl(): void {
     this.isHoldingCD = false;
     this.isCinemaActive = false;
-    this.prevMouseX = 0;
-    this.prevMouseY = 0;
+    this.prevMouseX = -1;
+    this.prevMouseY = -1;
   }
 
   private handleKeyUp = (e: KeyboardEvent): void => {
@@ -420,6 +427,7 @@ export class PlayerController {
 
     if (e.button === 0) {
       this.isPointerDown = true;
+      this.hasClickedCanvas = true; // Marca intenção: o usuário clicou no espaço 3D
       this.prevMouseX = e.clientX;
       this.prevMouseY = e.clientY;
 
@@ -433,8 +441,8 @@ export class PlayerController {
   private handleMouseMove = (e: MouseEvent): void => {
     // CRÍTICO: Quando segurando o CD, no cinema ou no acervo, a câmera de fundo NUNCA gira!
     if (this.isHoldingCD || this.isCinemaActive || this.isArchiveActive) {
-      this.prevMouseX = 0;
-      this.prevMouseY = 0;
+      this.prevMouseX = -1;
+      this.prevMouseY = -1;
       return;
     }
 
@@ -450,28 +458,43 @@ export class PlayerController {
     }
 
     // Controle de mira contínuo (Desktop sem Pointer Lock):
-    // Quando o usuário sai de uma obra ou CD, ou quando o cursor está sobre o salão,
-    // o mouse já controla a mira suavemente sem forçar um novo clique.
+    // Após o primeiro clique intencional no canvas, o mouse controla a mira suavemente
+    // sem precisar manter o botão pressionado (single-click look).
     const target = e.target as HTMLElement | null;
     const isInteractiveUI = !!target?.closest?.('header, nav, aside, button, a, [role="dialog"], input, select, textarea, .modal-backdrop');
     if (isInteractiveUI) {
-      this.prevMouseX = 0;
-      this.prevMouseY = 0;
+      // Ao entrar em UI, preserva prevMouse para não causar salto ao retornar ao canvas
       return;
     }
 
+    // Primeiro movimento após clique: inicializa sem delta (evita salto de câmera)
+    if (this.prevMouseX === -1 || this.prevMouseY === -1) {
+      this.prevMouseX = e.clientX;
+      this.prevMouseY = e.clientY;
+      return;
+    }
+
+    // Single-click look: rastreia delta de posição do mouse continuamente
+    // (funciona mesmo sem botão pressionado, desde que hasClickedCanvas seja true)
     let moveX = 0;
     let moveY = 0;
 
     if (typeof e.movementX === 'number' && (e.movementX !== 0 || e.movementY !== 0) && Math.abs(e.movementX) < 120 && Math.abs(e.movementY) < 120) {
       moveX = e.movementX;
       moveY = e.movementY;
-    } else if (this.prevMouseX > 0 && this.prevMouseY > 0) {
+    } else {
       const dx = e.clientX - this.prevMouseX;
       const dy = e.clientY - this.prevMouseY;
       if (Math.abs(dx) < 120 && Math.abs(dy) < 120) {
-        moveX = dx;
-        moveY = dy;
+        // Single-click: aplica delta mesmo sem botão pressionado, se já clicou no canvas
+        if (this.hasClickedCanvas) {
+          moveX = dx;
+          moveY = dy;
+        } else if (this.isPointerDown) {
+          // Fallback: modo arraste clássico enquanto o botão está pressionado (antes do primeiro clique)
+          moveX = dx;
+          moveY = dy;
+        }
       }
     }
 
