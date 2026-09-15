@@ -7,8 +7,8 @@
 
 **Data:** 2026-09-15
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — Acervo 3D In-Scene Implementado + Build 100% Validado
-**Próxima Ação:** Refinamento de UX de interação na próxima sessão (cursor inteligente de arrasto no CinemaView, ativação de mira com single-click, tutorial unificado e keycaps físicas hiper-realistas)
+**Status:** ESTÁVEL, BLINDADO & ONLINE — 4 Melhorias de UX (Keycaps + Cursor + Single-Click + Tutorial) implementadas | Build 100% Validado
+**Próxima Ação:** Aguardar feedback do usuário sobre as 4 melhorias; possíveis refinamentos de sensibilidade do mouse ou ajustes visuais
 **Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -32,7 +32,19 @@
 
 ## 📝 HISTÓRICO DE SESSÕES
 
-### 2026-09-15 — Acervo 3D In-Scene, Matriz 4x2 com Reflexos e Otimizações de UX
+### 2026-09-15 (tarde) — 4 Melhorias de UX: Keycaps, Cursor, Single-Click, Tutorial
+**O que foi feito:**
+- [x] **Keycaps Hiper-Realistas (T1):** Redesenho completo da classe `.keycap` com morfologia de tecla mecânica real — gradiente vertical côncavo, bevel de luz, borda inferior sólida (`border-bottom: 2px solid`) e efeito `:active` que afunda a tecla 2px simulando o clique tátil. Variantes `.keycap-sm` e `.keycap-xs` atualizadas para herdar a morfologia sem overrides de `!important`.
+- [x] **Cursor Grab Inteligente no CinemaView (T2):** Estado local `cursorStyle: 'grab' | 'grabbing' | 'default'` adicionado ao `CinemaView.tsx`. Cursor muda para `grabbing` ao pressionar o botão do mouse na área da obra e retorna para `grab` ao soltar. Ao hover sobre botões e elementos de UI do cinema, o cursor muda para `default`/`pointer`. CSS garante que `button`, `a`, `kbd` dentro do viewport sempre usem `cursor: pointer !important`.
+- [x] **Mira com Single-Click (T3):** Corrigido o `playerController.ts` — `prevMouseX/Y` inicializado como `-1` (estado "nunca inicializado") em vez de `0`. Adicionada flag `hasClickedCanvas` que marca intenção do usuário. Após o primeiro clique no canvas, o delta do mouse é rastreado continuamente (sem exigir segurar o botão). Ao receber Pointer Lock, `prevMouseX/Y` é resetado para `-1` para evitar salto inicial de câmera.
+- [x] **Tutorial Integrado com Saída de 2s (T4):** `IntroSequence.tsx` agora contém bloco de controles inline (WASD 2x2, mouse look, `E` interagir, `TAB` acérvo) usando as novas keycaps mecânicas. Delay de dismiss atualizado para 2000ms. CSS `.intro-spatial-overlay` atualizado para `transition: 2s cubic-bezier(0.16,1,0.3,1)` com `translateY(40vh)` no estado `.is-gliding-down`.
+- [x] **Validação e Build:** `npx tsc --noEmit` (0 erros) + `npm run build` (368ms, limpo) + commit + push → deploy automático no Vercel.
+
+**Commit:** `b14ca52` feat(gigantera): hyper-realistic keycaps, grab cursor in cinema, single-click mouse look, integrated tutorial with 2s exit
+
+---
+
+### 2026-09-15 — Aceràvo 3D In-Scene, Matriz 4x2 com Reflexos e Otimizações de UX
 **O que foi feito:**
 - [x] **Acervo 3D In-Scene no Mesmo Ambiente (TAB):** O modo Acervo agora ocorre 100% dentro do pavilhão tridimensional, eliminando escurecimento de fundo e desfoque. A câmera desliza suavemente para a posição frontal panorâmica `(0, 0.6, 9.5)`.
 - [x] **Coreografia Espacial das Vitrines em Matriz 4x2:** As vitrines do pavilhão se movem do corredor e se organizam em uma grade frontal suspensa em `z = 0` com reflexos espelhados no chão de vidro (`floorReflector`), reproduzindo com fidelidade a simulação curatorial.
