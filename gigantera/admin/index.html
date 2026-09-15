@@ -1427,19 +1427,17 @@
     const CONFIG_KEY = 'gigantera_custom_config';
 
     // DADOS PADRÃO DE FÁBRICA
+    const BUNNY_DEFAULT_PULL = 'https://pelimotion-portfolio.b-cdn.net';
     const DEFAULT_ARTWORKS = [
-      { id: 'video-espinhaco-cinetico', title: 'Tração', series: 'Espinhaço', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // LOOP', year: 2026, materials: 'Vitrine de vidro flutuante, simulação hidrodinâmica em tempo real', description: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a seguinte.', imageSrc: 'works/espinhaco-descida-crepuscular.jpg', videoSrc: 'works/video/video-01-kinetic-spine.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
-      { id: 'video-stipples-particulas', title: 'Sumud', series: 'Zimbro', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // ESTOCÁSTICA', year: 2026, materials: 'Vitrine de vidro flutuante, sistema estocástico de pontos (stippling)', description: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.', imageSrc: 'works/zimbro-rastreamento-vetorial.jpg', videoSrc: 'works/video/video-02-stipples-simulation.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
-      { id: 'video-espinha-metalica', title: 'Encalhe', series: 'Espinhaço', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // 3D', year: 2026, materials: 'Vitrine de vidro flutuante, liga cromo-níquel virtual e reflexão anisotrópica', description: 'Sequência em plano fechado destacando as reflexões metálicas enquanto a estrutura se curva em ciclo contínuo.', imageSrc: 'works/espinhaco-relevo-neotribal.jpg', videoSrc: 'works/video/video-03-metallic-spine.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
-      { id: 'video-mapping-led', title: 'Pulso', series: 'Luz & Escultura', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // LIGHT SCULPTURE', year: 2026, materials: 'Instalação visual em painéis de LED volumétricos, animação vetorial', description: 'Campos luminescentes projetados em escala monumental com transições dinâmicas entre feixes frios e densidade escura.', imageSrc: 'works/zimbro-estudo-espectral.jpg', videoSrc: 'works/video/video-04-mapping-led.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
-      { id: 'video-onda-padroes', title: 'Maré', series: 'Ressonância', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // FLUID DYNAMICS', year: 2026, materials: 'Simulação vetorial contínua, interferência ondulatória em matriz 2D', description: 'Padrões rítmicos oscilantes que exploram a propagação acústica em meios materiais, gerando relevos ópticos contínuos.', imageSrc: 'works/sedimento-litificacao-final.jpg', videoSrc: 'works/video/video-05-onda-padroes.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
-      { id: 'video-cores-spectrum', title: 'Fissura 26', series: 'Cromia', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // CHROMATIC', year: 2026, materials: 'Gradientes ópticos generativos de alta saturação sob vidro acrílico', description: 'Transição aveludada entre frequências cromáticas complementares, quebrando a monocromia mineral do salão.', imageSrc: 'works/notalgia-monolito-costeiro.jpg', videoSrc: 'works/video/video-06-cores-spectrum.mp4', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
-      { id: 'espinhaco-cinetica-prata', title: 'Tarrafa Cega', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel de algodão mate 310g/m², vitrine de vidro temperado e liga de prata', description: 'Estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.', imageSrc: 'works/espinhaco-cinetica-prata.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
-      { id: 'espinhaco-vitrine-aquario', title: 'Tempo de Espera', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel arquivístico mate sem brilho, vitrine de vidro óptico e titânio', description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação do fluxo hidrodinâmico.', imageSrc: 'works/espinhaco-vitrine-aquario.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
-      { id: 'zimbro-estudo-espectral', title: 'Inventário', series: 'Zimbro', medium: 'still', categoryLabel: 'MURAL WIDESCREEN EM VIDRO', year: 2026, materials: 'Papel mate panorâmico de museu, coordenadas fotogramétricas e vitrine selada', description: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão.', imageSrc: 'works/zimbro-estudo-espectral.jpg', aspectRatio: '16 / 9', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Panorâmico (300 DPI)', dimensionsOrDuration: '5000x2812 px (300 DPI)', status: 'active' },
-      { id: 'sedimento-litificacao-final', title: 'Fundação Nua', series: 'Sedimento', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel mate aveludado, silte basáltico e vitrine de vidro ultra-claro', description: 'Momento de repouso definitivo da peça contra o piso basáltico; a matéria inerte entra em contato com silte em processo de litificação.', imageSrc: 'works/sedimento-litificacao-final.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
-      { id: 'notalgia-monolito-costeiro', title: 'Farol Mudo', series: 'Notalgia', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel mate de alta gramatura, vitrine de vidro arquitetural e fiação industrial', description: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre a arquitetura bruta e o abismo natural.', imageSrc: 'works/notalgia-monolito-costeiro.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
-      { id: 'espinhaco-registro-abissal', title: 'Quilha', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel de algodão fosco 310g/m², vitrine de vidro selada e pigmentos minerais', description: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica sob compressão sedimentar marinha.', imageSrc: 'works/espinhaco-registro-abissal.jpg', aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' }
+      { id: 'video-espinhaco-cinetico', title: 'Tração', series: 'Espinhaço', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // LOOP', year: 2026, materials: 'Vitrine de vidro flutuante, simulação hidrodinâmica em tempo real', description: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a seguinte.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/espinhaco-descida-crepuscular.jpg`, videoSrc: `${BUNNY_DEFAULT_PULL}/gigantera/videos/video-01-kinetic-spine.mp4`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-stipples-particulas', title: 'Sumud', series: 'Zimbro', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // ESTOCÁSTICA', year: 2026, materials: 'Vitrine de vidro flutuante, sistema estocástico de pontos (stippling)', description: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/zimbro-rastreamento-vetorial.jpg`, videoSrc: `${BUNNY_DEFAULT_PULL}/gigantera/videos/video-02-stipples-simulation.mp4`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'video-espinha-metalica', title: 'Encalhe', series: 'Espinhaço', medium: 'video', categoryLabel: 'VITRINE CINÉTICA // 3D', year: 2026, materials: 'Vitrine de vidro flutuante, liga cromo-níquel virtual e reflexão anisotrópica', description: 'Sequência em plano fechado destacando as reflexões metálicas enquanto a estrutura se curva em ciclo contínuo.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/espinhaco-relevo-neotribal.jpg`, videoSrc: `${BUNNY_DEFAULT_PULL}/gigantera/videos/video-03-metallic-spine.mp4`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'Apple ProRes 422 HQ (4K UHD 60fps)', dimensionsOrDuration: '3840x2160 UHD (16:9)', status: 'active' },
+      { id: 'espinhaco-cinetica-prata', title: 'Estudos de Tarrafa', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel de algodão mate 310g/m², vitrine de vidro temperado e liga de prata', description: 'Estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/espinhaco-cinetica-prata.jpg`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'espinhaco-vitrine-aquario', title: 'Tempo de Espera', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel arquivístico mate sem brilho, vitrine de vidro óptico e titânio', description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação do fluxo hidrodinâmico.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/espinhaco-vitrine-aquario.jpg`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'zimbro-estudo-espectral', title: 'Inventário', series: 'Zimbro', medium: 'still', categoryLabel: 'MURAL WIDESCREEN EM VIDRO', year: 2026, materials: 'Papel mate panorâmico de museu, coordenadas fotogramétricas e vitrine selada', description: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/zimbro-estudo-espectral.jpg`, aspectRatio: '16 / 9', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Panorâmico (300 DPI)', dimensionsOrDuration: '5000x2812 px (300 DPI)', status: 'active' },
+      { id: 'sedimento-litificacao-final', title: 'Fundação Nua', series: 'Sedimento', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel mate aveludado, silte basáltico e vitrine de vidro ultra-claro', description: 'Momento de repouso definitivo da peça contra o piso basáltico; a matéria inerte entra em contato com silte em processo de litificação.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/sedimento-litificacao-final.jpg`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'notalgia-monolito-costeiro', title: 'Farol Mudo', series: 'Notalgia', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel mate de alta gramatura, vitrine de vidro arquitetural e fiação industrial', description: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre a arquitetura bruta e o abismo natural.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/notalgia-monolito-costeiro.jpg`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' },
+      { id: 'espinhaco-registro-abissal', title: 'Quilha', series: 'Espinhaço', medium: 'still', categoryLabel: 'IMPRESSO GICLÉE EM VIDRO', year: 2026, materials: 'Papel de algodão fosco 310g/m², vitrine de vidro selada e pigmentos minerais', description: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica sob compressão sedimentar marinha.', imageSrc: `${BUNNY_DEFAULT_PULL}/gigantera/stills/espinhaco-registro-abissal.jpg`, aspectRatio: '9 / 16', availableInMediaKit: true, masterFormat: 'TIFF 16-bit Não-Comprimido (300 DPI)', dimensionsOrDuration: '4000x5000 px (300 DPI)', status: 'active' }
     ];
 
     const DEFAULT_PRESS_ASSETS = [
@@ -1832,6 +1830,7 @@
 
     // INICIALIZAÇÃO & LEITURA DO STORAGE
     function loadState() {
+      const FAKE_ARTWORK_IDS = new Set(['video-mapping-led', 'video-onda-padroes', 'video-cores-spectrum']);
       try {
         const raw = localStorage.getItem(CONFIG_KEY);
         if (raw) {
@@ -1852,6 +1851,19 @@
         currentSiteConfig = { ...DEFAULT_SITE_CONFIG };
         currentCuratorialStatements = { ...GIGANTERA_DEFAULT_TEXTOS };
       }
+
+      // Purga trabalhos que não pertencem ao Gigantera e garante URLs diretas no Bunny CDN
+      currentArtworks = currentArtworks.filter(a => !FAKE_ARTWORK_IDS.has(a.id));
+      currentArtworks.forEach(art => {
+        if (!art.imageSrc || !art.imageSrc.startsWith('http')) {
+          const filename = (art.imageSrc || '').replace(/^.*[\\\/]/, '') || `${art.id}.jpg`;
+          art.imageSrc = `${BUNNY_DEFAULT_PULL}/gigantera/stills/${filename}`;
+        }
+        if (art.medium === 'video' && (!art.videoSrc || !art.videoSrc.startsWith('http'))) {
+          const filename = (art.videoSrc || '').replace(/^.*[\\\/]/, '') || `${art.id}.mp4`;
+          art.videoSrc = `${BUNNY_DEFAULT_PULL}/gigantera/videos/${filename}`;
+        }
+      });
     }
 
     function saveStateToStorage() {
@@ -1903,17 +1915,23 @@
         return;
       }
 
+      const fallbackSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' fill='%23333'%3E%3Crect width='60' height='60' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23888' font-size='9' font-family='sans-serif'%3EGIGANTERA%3C/text%3E%3C/svg%3E";
+
       artworks.forEach((art, index) => {
         const isVid = art.medium === 'video';
         const badgeClass = isVid ? 'badge-video' : (art.medium === 'sound' ? 'badge-audio' : 'badge-still');
         const badgeLabel = isVid ? 'VÍDEO LOOP' : (art.medium === 'sound' ? 'ÁUDIO' : 'STILL GICLÉE');
         const isAvailable = art.availableInMediaKit !== false;
-        const thumbUrl = '../' + (art.imageSrc.startsWith('/') ? art.imageSrc.slice(1) : art.imageSrc);
+        let thumbUrl = art.imageSrc || '';
+        if (!thumbUrl.startsWith('http')) {
+          const filename = thumbUrl.replace(/^.*[\\\/]/, '');
+          thumbUrl = `https://pelimotion-portfolio.b-cdn.net/gigantera/stills/${filename}`;
+        }
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>
-            <img src="${thumbUrl}" alt="${art.title}" class="table-thumb" onerror="this.src='../works/espinhaco-cinetica-prata.jpg'" />
+            <img src="${thumbUrl}" alt="${art.title}" class="table-thumb" onerror="this.onerror=null; this.src='${fallbackSvg}';" />
           </td>
           <td>
             <strong style="color: #fff; font-size: 0.9rem;">${art.title}</strong>

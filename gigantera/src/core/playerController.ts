@@ -415,10 +415,6 @@ export class PlayerController {
       const movementX = e.movementX || 0;
       const movementY = e.movementY || 0;
 
-      if (this.onPlayerActivity && (Math.abs(movementX) > 1 || Math.abs(movementY) > 1)) {
-        this.onPlayerActivity();
-      }
-
       this.yaw -= movementX * this.config.mouseSensitivity;
       this.pitch -= movementY * this.config.mouseSensitivity;
       this.pitch = Math.max(-0.72, Math.min(0.72, this.pitch));
@@ -455,7 +451,6 @@ export class PlayerController {
     this.prevMouseY = e.clientY;
 
     if (moveX !== 0 || moveY !== 0) {
-      if (this.onPlayerActivity) this.onPlayerActivity();
       this.yaw -= moveX * this.config.mouseSensitivity;
       this.pitch -= moveY * this.config.mouseSensitivity;
       this.pitch = Math.max(-0.72, Math.min(0.72, this.pitch));
@@ -503,9 +498,6 @@ export class PlayerController {
     this.pitch -= deltaY * this.config.mouseSensitivity * 1.6;
     this.pitch = Math.max(-0.68, Math.min(0.68, this.pitch));
 
-    if (this.onPlayerActivity && (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1)) {
-      this.onPlayerActivity();
-    }
   };
 
   private handleTouchEnd = (e: TouchEvent): void => {

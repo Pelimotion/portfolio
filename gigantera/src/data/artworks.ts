@@ -289,12 +289,12 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Vitrine de vidro flutuante, simulação hidrodinâmica em tempo real e renderização volumétrica',
     description: 'Movimento ondular da coluna de aço em meio denso. Cada vértebra transmite torque desacelerado para a vértebra seguinte.',
-    imageSrc: getWorkAssetUrl('espinhaco-descida-crepuscular.jpg'),
-    videoSrc: getWorkAssetUrl('video/video-01-kinetic-spine.mp4'),
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/espinhaco-descida-crepuscular.jpg`,
+    videoSrc: `${BUNNY_CDN_GIGANTERA}/videos/video-01-kinetic-spine.mp4`,
     duration: '00:06 (Loop Contínuo)',
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
-    spatialCoords: { x: -3.8, y: 0.0, z: 13.0, rotY: 0.12 },
+    spatialCoords: { x: -3.8, y: 0.0, z: 12.0, rotY: 0.12 },
     curatorialNotes: 'O impresso dentro da caixa de vidro ganha vida com a física computacional de viscosidade do meio.'
   },
   {
@@ -306,12 +306,12 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Vitrine de vidro flutuante, sistema estocástico de pontos (stippling) e ruído vetorial',
     description: 'Milhares de corpúsculos gráficos reagem a campos de força invisíveis, colidindo e recompondo a silhueta da escultura.',
-    imageSrc: getWorkAssetUrl('zimbro-rastreamento-vetorial.jpg'),
-    videoSrc: getWorkAssetUrl('video/video-02-stipples-simulation.mp4'),
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/zimbro-rastreamento-vetorial.jpg`,
+    videoSrc: `${BUNNY_CDN_GIGANTERA}/videos/video-02-stipples-simulation.mp4`,
     duration: '00:06 (Loop Contínuo)',
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
-    spatialCoords: { x: 3.8, y: 0.0, z: 8.0, rotY: -0.15 },
+    spatialCoords: { x: 3.8, y: 0.0, z: 4.0, rotY: -0.15 },
     curatorialNotes: 'Loop procedural que examina o limite entre o desenho de linha clássico e a computação estocástica de partículas.'
   },
   {
@@ -323,68 +323,17 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Vitrine de vidro flutuante, liga cromo-níquel virtual e reflexão anisotrópica',
     description: 'Sequência em plano-sequência fechado destacando as reflexões metálicas de alta pureza enquanto a estrutura se curva em ciclo contínuo.',
-    imageSrc: getWorkAssetUrl('espinhaco-relevo-neotribal.jpg'),
-    videoSrc: getWorkAssetUrl('video/video-03-metallic-spine.mp4'),
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/espinhaco-relevo-neotribal.jpg`,
+    videoSrc: `${BUNNY_CDN_GIGANTERA}/videos/video-03-metallic-spine.mp4`,
     duration: '00:06 (Loop Contínuo)',
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
-    spatialCoords: { x: -3.8, y: 0.0, z: 3.0, rotY: 0.14 },
+    spatialCoords: { x: -3.8, y: 0.0, z: -4.0, rotY: 0.14 },
     curatorialNotes: 'Estudo de iluminação e materialidade em superfícies reflexivas curvas sob vidro.'
-  },
-  {
-    id: 'video-mapping-led',
-    title: 'Pulso',
-    series: 'Luz & Escultura',
-    medium: 'video',
-    categoryLabel: 'VITRINE CINÉTICA // LIGHT SCULPTURE',
-    year: 2026,
-    materials: 'Instalação visual em painéis de LED volumétricos, animação vetorial e sincronização cromática',
-    description: 'Campos luminescentes projetados em escala monumental com transições dinâmicas entre feixes frios e densidade escura.',
-    imageSrc: getWorkAssetUrl('zimbro-estudo-espectral.jpg'),
-    videoSrc: getWorkAssetUrl('video/video-04-mapping-led.mp4'),
-    duration: '00:10 (Loop Contínuo)',
-    aspectRatio: '9 / 16',
-    aspectRatioNum: 540 / 960,
-    spatialCoords: { x: 3.8, y: 0.0, z: -2.0, rotY: -0.12 },
-    curatorialNotes: 'Obra comemorativa da intervenção de vídeo mapping, fundindo a arquitetura brutalista ao pulso de luz de palco.'
-  },
-  {
-    id: 'video-onda-padroes',
-    title: 'Maré',
-    series: 'Ressonância',
-    medium: 'video',
-    categoryLabel: 'VITRINE CINÉTICA // FLUID DYNAMICS',
-    year: 2026,
-    materials: 'Simulação vetorial contínua, interferência ondulatória em matriz 2D e reverberação ótica',
-    description: 'Padrões rítmicos oscilantes que exploram a propagação acústica em meios materiais, gerando relevos ópticos contínuos.',
-    imageSrc: getWorkAssetUrl('sedimento-litificacao-final.jpg'),
-    videoSrc: getWorkAssetUrl('video/video-05-onda-padroes.mp4'),
-    duration: '00:08 (Loop Contínuo)',
-    aspectRatio: '9 / 16',
-    aspectRatioNum: 540 / 960,
-    spatialCoords: { x: -3.8, y: 0.0, z: -7.0, rotY: 0.12 },
-    curatorialNotes: 'Animação gerada a partir de síntese harmônica ressonante com as faixas de áudio da galeria.'
-  },
-  {
-    id: 'video-cores-spectrum',
-    title: 'Fissura 26',
-    series: 'Cromia',
-    medium: 'video',
-    categoryLabel: 'VITRINE CINÉTICA // CHROMATIC',
-    year: 2026,
-    materials: 'Gradientes ópticos generativos de alta saturação, refração sob vidro acrílico e pulso harmônico',
-    description: 'Transição aveludada entre frequências cromáticas complementares, quebrando a monocromia mineral do salão.',
-    imageSrc: getWorkAssetUrl('notalgia-monolito-costeiro.jpg'),
-    videoSrc: getWorkAssetUrl('video/video-06-cores-spectrum.mp4'),
-    duration: '00:08 (Loop Contínuo)',
-    aspectRatio: '9 / 16',
-    aspectRatioNum: 540 / 960,
-    spatialCoords: { x: 3.8, y: 0.0, z: -12.0, rotY: -0.14 },
-    curatorialNotes: 'Ponto focal de fechamento do setor de vídeos antes da transição para os monolitos esculturais de arte estática.'
   },
 
   // ==========================================
-  // SETOR 02: STILL (Obras Físicas Únicas em Vitrines de Vidro com Pôster de Papel Mate)
+  // SETOR 02: STILL (Obras Físicas em Vitrines de Vidro com Pôster de Papel Mate)
   // ==========================================
   {
     id: 'espinhaco-cinetica-prata',
@@ -395,16 +344,26 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel de algodão mate 310g/m², vitrine de vidro temperado e liga de prata',
     description: 'Estudos da estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.',
-    imageSrc: getWorkAssetUrl('espinhaco-cinetica-prata.jpg'),
-    galleryImages: [
-      getWorkAssetUrl('espinhaco-cinetica-prata.jpg'),
-      getWorkAssetUrl('espinhaco-vitrine-aquario.jpg'),
-      getWorkAssetUrl('espinhaco-registro-abissal.jpg')
-    ],
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/espinhaco-cinetica-prata.jpg`,
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400,
     spatialCoords: { x: -3.8, y: 0.0, z: -19.0, rotY: 0.12 },
     curatorialNotes: 'Peça inaugural da série Espinhaço com pranchetas múltiplas detalhando a evolução da estrutura.'
+  },
+  {
+    id: 'espinhaco-vitrine-aquario',
+    title: 'Tempo de Espera',
+    series: 'Espinhaço',
+    medium: 'still',
+    categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
+    year: 2026,
+    materials: 'Papel arquivístico mate sem brilho, vitrine de vidro óptico e titânio',
+    description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação do fluxo hidrodinâmico.',
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/espinhaco-vitrine-aquario.jpg`,
+    aspectRatio: '9 / 16',
+    aspectRatioNum: 781 / 1400,
+    spatialCoords: { x: 3.8, y: 0.0, z: -25.0, rotY: -0.15 },
+    curatorialNotes: 'A vitrine transparente funciona como câmara de contenção e pedestal arquitetural sem contato com o piso.'
   },
   {
     id: 'zimbro-estudo-espectral',
@@ -415,10 +374,10 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel mate panorâmico de museu, coordenadas fotogramétricas e vitrine horizontal selada',
     description: 'Mapeamento integral do ciclo curatorial: da tapeçaria têxtil e prototipagem em ateliê aos modelos de submersão e análise algorítmica.',
-    imageSrc: getWorkAssetUrl('zimbro-estudo-espectral.jpg'),
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/zimbro-estudo-espectral.jpg`,
     aspectRatio: '16 / 9',
     aspectRatioNum: 1400 / 787,
-    spatialCoords: { x: -4.0, y: 0.0, z: -30.0, rotY: 0.14 },
+    spatialCoords: { x: -4.0, y: 0.0, z: -31.0, rotY: 0.14 },
     curatorialNotes: 'Mural horizontal documentando as fases de gestação física e virtual dos protótipos em proporção cinematográfica 16:9.'
   },
   {
@@ -430,10 +389,10 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel mate aveludado, silte basáltico e vitrine de vidro ultra-claro',
     description: 'Momento de repouso definitivo da peça contra o piso basáltico; a matéria inerte entra em contato com silte em processo de litificação.',
-    imageSrc: getWorkAssetUrl('sedimento-litificacao-final.jpg'),
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/sedimento-litificacao-final.jpg`,
     aspectRatio: '9 / 16',
     aspectRatioNum: 787 / 1400,
-    spatialCoords: { x: 3.8, y: 0.0, z: -35.5, rotY: -0.12 },
+    spatialCoords: { x: 3.8, y: 0.0, z: -37.0, rotY: -0.12 },
     curatorialNotes: 'Fase final do ciclo de decadência dos materiais escultóricos sob compressão basáltica.'
   },
   {
@@ -445,12 +404,27 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     year: 2026,
     materials: 'Papel mate de alta gramatura, vitrine de vidro arquitetural e fiação industrial',
     description: 'Artefato monolítico concebido como relicário contemporâneo na fronteira entre a arquitetura bruta e o abismo natural.',
-    imageSrc: getWorkAssetUrl('notalgia-monolito-costeiro.jpg'),
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/notalgia-monolito-costeiro.jpg`,
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400,
-    spatialCoords: { x: -3.8, y: 0.0, z: -41.0, rotY: 0.1 },
+    spatialCoords: { x: -3.8, y: 0.0, z: -43.0, rotY: 0.1 },
     curatorialNotes: 'Monólito escultural vertical com iluminação emissiva verde e contraste com geologia costeira.'
   },
+  {
+    id: 'espinhaco-registro-abissal',
+    title: 'Quilha',
+    series: 'Espinhaço',
+    medium: 'still',
+    categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
+    year: 2026,
+    materials: 'Papel de algodão fosco 310g/m², vitrine de vidro selada e pigmentos minerais',
+    description: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica, revelando texturas de compressão sedimentar marinha.',
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/espinhaco-registro-abissal.jpg`,
+    aspectRatio: '9 / 16',
+    aspectRatioNum: 781 / 1400,
+    spatialCoords: { x: 3.8, y: 0.0, z: -49.0, rotY: -0.12 },
+    curatorialNotes: 'Cartografia gráfica que detalha os pontos de flexão e fadiga de materiais no fundo oceânico.'
+  }
 ];
 
 export const PIPELINE_CLUSTERS: OutputCluster[] = [

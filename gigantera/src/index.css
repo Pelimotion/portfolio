@@ -1428,13 +1428,18 @@ a {
   max-width: 580px;
   gap: 16px;
   padding: 28px 36px;
-  background: rgba(14, 18, 17, 0.85);
+  background: rgba(14, 18, 17, 0.92) !important;
   backdrop-filter: blur(36px) saturate(190%);
   -webkit-backdrop-filter: blur(36px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 20px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 32px rgba(228, 195, 121, 0.06);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 32px rgba(228, 195, 121, 0.1);
   animation: introPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #f4f3ef !important;
+}
+
+.intro-floating-cue * {
+  box-sizing: border-box;
 }
 
 @keyframes introPop {
@@ -1457,7 +1462,7 @@ a {
 
 .cue-badge {
   font-size: 10px;
-  color: var(--accent-gold);
+  color: var(--accent-gold, #e4c379) !important;
   letter-spacing: 0.1em;
   font-weight: 700;
 }
@@ -1466,111 +1471,168 @@ a {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--text-tertiary);
+  background: #a0a6a2 !important;
 }
 
 .intro-session-text {
   font-size: 9.5px;
-  color: var(--text-tertiary);
+  color: #a0a6a2 !important;
   letter-spacing: 0.06em;
 }
 
-.cue-statement {
-  font-family: var(--font-display);
-  font-size: 20px;
+.cue-hero-title {
+  font-family: var(--font-display, 'Fraunces', serif);
+  font-size: 26px;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #f4f3ef;
-  line-height: 1.25;
+  letter-spacing: 0.12em;
+  color: #ffffff !important;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cue-statement {
+  font-family: var(--font-display, 'Fraunces', serif);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #f4f3ef !important;
+  line-height: 1.3;
+  margin: 0;
 }
 
 .cue-narrative-text {
-  font-family: var(--font-body);
-  font-size: 13px;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  font-size: 13.5px;
   line-height: 1.6;
-  color: #a0a6a2;
-}
-
-.cue-quick-tips-cluster {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  font-size: 10px;
-  color: var(--text-secondary);
-}
-
-.cue-tip-chip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.chip-sep {
-  color: var(--text-tertiary);
-  font-size: 11px;
-}
-
-.keycap.keycap-xs {
-  min-width: 14px;
-  height: 15px;
-  font-size: 8px;
-  padding: 0 3px;
-}
-
-.intro-dismiss-cta-btn {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 8px 20px;
-  border-radius: 9999px;
-  background: rgba(228, 195, 121, 0.16);
-  border: 1px solid rgba(228, 195, 121, 0.4);
-  color: var(--accent-gold);
-  box-shadow: 0 4px 16px rgba(228, 195, 121, 0.12);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  margin-top: 4px;
-}
-
-.intro-dismiss-cta-btn:hover {
-  background: var(--accent-gold);
-  color: #08090a;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(228, 195, 121, 0.28);
+  color: #c5ccc8 !important;
+  margin: 0;
 }
 
 .intro-entry-primary-area {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-.entry-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #f4f3ef;
-}
-
-.entry-hint {
-  font-size: 9px;
-  color: #6a7470;
-  letter-spacing: 0.04em;
-}
-
-.intro-guide-hint {
-  font-size: 9.5px;
-  color: #5a6360;
-  letter-spacing: 0.04em;
-  margin-top: 12px;
+.intro-entry-main-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
   justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(228, 195, 121, 0.22), rgba(99, 226, 183, 0.15)) !important;
+  border: 1px solid rgba(228, 195, 121, 0.5) !important;
+  color: #ffffff !important;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.intro-entry-main-btn:hover {
+  background: linear-gradient(135deg, rgba(228, 195, 121, 0.42), rgba(99, 226, 183, 0.3)) !important;
+  border-color: rgba(228, 195, 121, 0.85) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(228, 195, 121, 0.25);
+}
+
+.entry-icon-mouse {
+  display: flex;
+  align-items: center;
+  color: var(--accent-gold, #e4c379) !important;
+}
+
+.entry-main-label {
+  color: #ffffff !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.intro-secondary-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.intro-hint-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #b8c2bc !important;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.intro-hint-item:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.intro-hint-item span {
+  color: #b8c2bc !important;
+}
+
+.intro-hint-item svg {
+  flex-shrink: 0;
+  color: var(--accent-gold, #e4c379) !important;
+}
+
+.keycap.keycap-xs {
+  min-width: 16px;
+  height: 16px;
+  font-size: 9px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Proteção explícita contra tema light tornando a tipografia preta */
+[data-theme='light'] .intro-floating-cue {
+  background: rgba(18, 22, 21, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #f4f3ef !important;
+}
+
+[data-theme='light'] .cue-hero-title {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .cue-statement {
+  color: #f4f3ef !important;
+}
+
+[data-theme='light'] .cue-narrative-text {
+  color: #c5ccc8 !important;
+}
+
+[data-theme='light'] .entry-main-label {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .intro-hint-item span {
+  color: #b8c2bc !important;
+}
+
+[data-theme='light'] .intro-entry-main-btn {
+  color: #ffffff !important;
 }
 
 /* ==========================================================================

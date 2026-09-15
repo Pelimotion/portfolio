@@ -12,6 +12,15 @@ export const IntroSequence: React.FC = () => {
 
   const [isGlidingDown, setIsGlidingDown] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+
+  // Garante que o tutorial fica na tela pelo menos 7 segundos
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinTimeElapsed(true);
+    }, 7000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const dismiss = (delay = 400) => {
     setIsGlidingDown(true);
@@ -39,7 +48,7 @@ export const IntroSequence: React.FC = () => {
     };
   }, [setViewMode]);
 
-  // Se o jogador interagiu diretamente e o avatar se moveu ou pegou o CD, encerra gracioso
+  // Se o jogador interagiu diretamente e o avatar se moveu (WASD/setas) ou pegou o CD
   useEffect(() => {
     if ((hasPlayerMoved || isHoldingCD) && !isDone) {
       dismiss(300);
