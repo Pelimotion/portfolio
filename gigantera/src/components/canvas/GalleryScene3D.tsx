@@ -270,6 +270,8 @@ export const GalleryScene3D: React.FC = () => {
   const isMobile = useAppStore((s) => s.isMobile);
 
   const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
+  const [showDragHint, setShowDragHint] = useState(false);
+  const dragHintTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -931,13 +933,15 @@ export const GalleryScene3D: React.FC = () => {
     inspectionRig.position.set(0, 0, -2.1);
     inspectionRig.visible = false;
 
-    // Fundo neutro fino de passe-partout / moldura
+    // Fundo neutro fino de passe-partout / moldura — renderOrder garante que nunca causa Z-fighting
     const backingGeo = new THREE.PlaneGeometry(1.0, 1.0);
-    const backingMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x141615 : 0x050606 });
+    const backingMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x141615 : 0x050606, depthWrite: false });
     const inspectionBacking = new THREE.Mesh(backingGeo, backingMat);
+    inspectionBacking.renderOrder = 0;
     inspectionRig.add(inspectionBacking);
 
     // Plano da Obra em Primeiro Plano (Imunidade total à iluminação externa)
+    // z = 0.04 para separação clara do depth buffer e eliminar corte visual
     const artPlaneGeo = new THREE.PlaneGeometry(1.0, 1.0);
     const artPlaneMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
@@ -945,7 +949,8 @@ export const GalleryScene3D: React.FC = () => {
       toneMapped: false // Imunidade a sombras ou luzes externas da galeria
     });
     const inspectionArtMesh = new THREE.Mesh(artPlaneGeo, artPlaneMat);
-    inspectionArtMesh.position.z = 0.01;
+    inspectionArtMesh.position.z = 0.04;
+    inspectionArtMesh.renderOrder = 1;
     inspectionRig.add(inspectionArtMesh);
 
     camera.add(inspectionRig);
@@ -1388,12 +1393,13 @@ export const GalleryScene3D: React.FC = () => {
     };
 
     // Zoom fluido com Roda do Mouse no Modo Cinema 3D
+    // Mínimo 0.85 para a obra nunca desaparecer; duplo-clique reseta para 100%
     const onWheel = (e: WheelEvent) => {
       const state = useAppStore.getState();
       if (state.cinemaArtwork) {
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.12 : 0.12;
-        targetInspZoom = Math.max(0.5, Math.min(3.5, targetInspZoom + delta));
+        targetInspZoom = Math.max(0.85, Math.min(3.5, targetInspZoom + delta));
         state.setInspectionZoom(targetInspZoom);
         if (targetInspZoom > 1.8 && !state.isLoupeMode) {
           state.setLoupeMode(true);
@@ -1403,6 +1409,17 @@ export const GalleryScene3D: React.FC = () => {
         return;
       }
     };
+
+    // Duplo-clique na obra reseta zoom para 100%
+    const onDblClick = () => {
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork) {
+        targetInspZoom = 1.0;
+        state.setInspectionZoom(1.0);
+        state.setLoupeMode(false);
+      }
+    };
+    window.addEventListener('dblclick', onDblClick);
 
     // Escuta global para atalhos táteis de jogabilidade (R, Q, E, Escape)
     const onGlobalKeyDown = (e: KeyboardEvent) => {
@@ -1686,6 +1703,13 @@ export const GalleryScene3D: React.FC = () => {
 
       // DINÂMICA DO MODO DE INSPEÇÃO 3D (Obra no Primeiro Plano saindo da vitrine)
       if (currentCinemaArt) {
+        // Dispara hint de arrastar por 3s na entrada de cada obra
+        if (activeCinemaArtId !== currentCinemaArt.id) {
+          setShowDragHint(true);
+          if (dragHintTimerRef.current) clearTimeout(dragHintTimerRef.current);
+          dragHintTimerRef.current = window.setTimeout(() => setShowDragHint(false), 3000);
+        }
+
         // Se a obra acabou de ser aberta ou se mudou de prancheta
         if (activeCinemaArtId !== currentCinemaArt.id) {
           if (activeCinemaArtId) {
@@ -1995,9 +2019,11 @@ export const GalleryScene3D: React.FC = () => {
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('click', onClick);
       window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('dblclick', onDblClick);
       window.removeEventListener('keydown', onGlobalKeyDown, { capture: true });
       window.removeEventListener('gigantera:request-lock', handleRequestLock);
       window.removeEventListener('resize', onResize);
+      if (dragHintTimerRef.current) clearTimeout(dragHintTimerRef.current);
       window.removeEventListener('resize', checkMobile);
       unsubQuality();
       unsubTheme();
@@ -2050,6 +2076,16 @@ export const GalleryScene3D: React.FC = () => {
             {reticleState === 'artwork' ? '⌕' : reticleState === 'cd' ? '☊' : '·'}
           </span>
           <span className="reticle-bracket">]</span>
+        </div>
+      )}
+
+      {/* Hint de Arrastar — aparece 3s ao entrar no cinema, depois some */}
+      {cinemaArtwork && showDragHint && (
+        <div className="cinema-drag-hint font-mono" aria-hidden="true">
+          <span className="mouse-badge">
+            <span className="mouse-icon mouse-look" />
+          </span>
+          <span>ARRASTE PARA GIRAR</span>
         </div>
       )}
 

@@ -16,13 +16,14 @@ import { IntroSequence } from './components/ui/IntroSequence';
 export const App: React.FC = () => {
   const theme = useAppStore((s) => s.theme);
   const viewMode = useAppStore((s) => s.viewMode);
+  const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
 
   useEffect(() => {
     applyThemeTokens(theme);
   }, [theme]);
 
   return (
-    <main className="gallery-main-app" data-theme={theme} data-mode={viewMode}>
+    <main className="gallery-main-app" data-theme={theme} data-mode={viewMode} data-cinema={cinemaArtwork ? 'true' : 'false'}>
       {/* 1. Animação Inicial no Espaço 3D (Materialização das Obras em 4s) */}
       <IntroSequence />
 

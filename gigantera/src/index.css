@@ -1030,209 +1030,347 @@ a {
    4. MODO CINEMA: INSPEÇÃO 3D EM PRIMEIRO PLANO (FEATHERED TRANSLUCENT OVERLAY)
    ========================================================================== */
 
+/* ==========================================================================
+   4. CINEMA MODE — FINE ART INSPECTION (4 ZONAS)
+   Referências: Pace Digital, Fondation Cartier, MoMA Collection, Refik Anadol
+   Princípio: A obra ocupa a tela inteira. O chrome some. Só o que importa fica.
+   ========================================================================== */
+
+/* Supressão Total do Chrome Global durante o Modo Cinema */
+[data-cinema='true'] .minimal-feathered-header,
+[data-cinema='true'] .minimal-feathered-dock {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.minimal-feathered-header,
+.minimal-feathered-dock {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Viewport Principal do Cinema — Fundo transparente que não bloqueia a obra 3D */
 .cinema-feathered-viewport {
   position: fixed;
   inset: 0;
   z-index: 50;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  background: radial-gradient(circle at center, transparent 32%, rgba(4, 6, 5, 0.85) 85%);
-  pointer-events: none; /* Permite interagir com a obra 3D no canvas atrás */
-  animation: cinemaSmoothIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none; /* Obra 3D por baixo permanece interativa */
+  animation: cinemaSmoothIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes cinemaSmoothIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
+/* Vinheta Atmosférica — Escurece as bordas sem tocar no centro onde está a obra */
 .cinema-volumetric-aura {
   position: absolute;
-  top: -10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80vw;
-  height: 80vh;
-  background: radial-gradient(ellipse at center, rgba(228, 195, 121, 0.06) 0%, transparent 70%);
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 50%, transparent 40%, rgba(4, 6, 5, 0.70) 100%),
+    linear-gradient(180deg, rgba(4,6,5,0.40) 0%, transparent 18%, transparent 72%, rgba(4,6,5,0.92) 100%);
   pointer-events: none;
+  z-index: 0;
 }
 
-/* Dica Superior de Inspeção 3D com Feather/Blur Macio */
-.cinema-top-inspection-hud {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 55;
-  pointer-events: auto;
-}
-
-.inspection-cue-pill {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 22px;
-  background: rgba(12, 16, 14, 0.65);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: none;
-  border-radius: 4px;
-  color: #f5f4ef;
-  font-family: 'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-[data-theme='light'] .inspection-cue-pill {
-  background: rgba(255, 255, 255, 0.72);
-  color: #111413;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-}
-
-.cue-dot {
-  color: var(--accent-gold);
-  font-size: 12px;
-}
-
-.cue-sep {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.cue-esc-btn {
-  color: var(--accent-coral);
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.cue-esc-btn:hover {
-  transform: scale(1.05);
-}
-
-.cinema-video-floating-bar {
-  position: fixed;
-  top: 76px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 55;
-  pointer-events: auto;
-}
-
-.cinema-soft-btn {
-  padding: 5px 14px;
-  background: rgba(12, 15, 14, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: none;
-  border-radius: 9999px;
-  color: #ffffff;
-  font-size: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cinema-soft-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.cinema-duration-badge {
-  padding: 4px 10px;
-  background: rgba(12, 15, 14, 0.6);
-  backdrop-filter: blur(16px);
-  border-radius: 9999px;
-  font-size: 10px;
-  color: var(--accent-gold);
-}
-
-/* Informações no Rodapé com Scrim Feather Profundo e Sem Bordas Pesadas */
-.cinema-bottom-feather-bar {
+/* ─── ZONA B — Painel Curatorial Inferior Esquerdo ─── */
+.cinema-info-panel-left {
   pointer-events: auto;
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 32px 44px 24px;
-  background: linear-gradient(0deg, rgba(7, 9, 8, 0.94) 0%, rgba(7, 9, 8, 0.72) 65%, transparent 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: none;
-  z-index: 55;
-  gap: 24px;
-}
-
-.cinema-info-left {
+  width: min(500px, 42vw);
+  padding: 0 44px 28px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-width: 440px;
+  gap: 5px;
+  z-index: 55;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.cinema-info-panel-left.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .cinema-series-tag {
   font-size: 10px;
-  color: var(--accent-gold);
   letter-spacing: 0.5px;
+  color: var(--accent-gold);
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .cinema-title {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
   color: #f4f3ef;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
 }
 
 .cinema-desc {
-  font-size: 11px;
-  color: #9ea4a1;
-  line-height: 1.45;
-  margin-top: 4px;
+  font-size: 10.5px;
+  color: #8a9490;
+  line-height: 1.55;
+  max-width: 380px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.cinema-info-center {
+.cinema-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #5a6360;
+  margin-top: 2px;
+}
+
+.meta-disc  { color: #9ea4a1; }
+.meta-sep   { color: #3a4340; }
+.meta-mat   { color: #7a8480; }
+
+/* ─── ZONA C — Controles Mínimos Inferior Direito ─── */
+.cinema-controls-panel-right {
+  pointer-events: auto;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 0 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  z-index: 55;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.cinema-controls-panel-right.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Navegação de Pranchetas (Stills) */
+.cinema-sheet-nav {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
-  color: #9ea4a1;
-  max-width: 380px;
 }
 
-.meta-sep {
-  color: #555b58;
+.cinema-sheet-counter {
+  font-size: 10px;
+  color: #8a9490;
+  letter-spacing: 0.05em;
+  min-width: 28px;
+  text-align: right;
 }
 
-.cinema-info-right {
+.cinema-sheet-dots {
   display: flex;
   align-items: center;
+  gap: 5px;
 }
 
-.cinema-return-btn {
-  padding: 8px 22px;
-  background: rgba(255, 255, 255, 0.08);
+.cinema-dot-btn {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
   border: none;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #f4f3ef;
   cursor: pointer;
-  backdrop-filter: blur(12px);
   transition: all 0.2s ease;
-  letter-spacing: 0.5px;
+  pointer-events: auto;
+  padding: 0;
 }
 
-.cinema-return-btn:hover {
-  background: rgba(255, 107, 74, 0.28);
+.cinema-dot-btn.is-active {
+  background: var(--accent-gold);
+  transform: scale(1.3);
+}
+
+.cinema-dot-btn:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+/* Controles de vídeo */
+.cinema-video-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Botão de controle genérico */
+.cinema-ctrl-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  background: rgba(16, 20, 19, 0.70);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px;
+  color: rgba(255,255,255,0.72);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  pointer-events: auto;
+}
+
+.cinema-ctrl-btn:hover {
+  background: rgba(255,255,255,0.10);
+  color: #f4f3ef;
+  border-color: rgba(255,255,255,0.15);
+}
+
+.cinema-btn-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Botão de Lupa — ativo = dourado */
+.cinema-lupa-btn.is-active {
+  background: rgba(228, 195, 121, 0.15);
+  border-color: rgba(228, 195, 121, 0.35);
+  color: var(--accent-gold);
+}
+
+/* Botão de Fechar — coral no hover */
+.cinema-close-btn:hover {
+  background: rgba(255, 107, 74, 0.18);
+  border-color: rgba(255, 107, 74, 0.35);
   color: var(--accent-coral);
-  transform: translateY(-1px);
+}
+
+.cinema-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Barra de Zoom Visual */
+.cinema-zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9.5px;
+  color: #5a6360;
+  letter-spacing: 0.06em;
+}
+
+.cinema-zoom-label {
+  color: #6a7470;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.cinema-zoom-track {
+  width: 72px;
+  height: 2px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cinema-zoom-fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: rgba(255,255,255,0.45);
+  border-radius: 2px;
+  transition: width 0.12s ease;
+}
+
+.cinema-zoom-pct {
+  color: #8a9490;
+  font-size: 9px;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Hints de teclado */
+.cinema-key-hints {
+  font-size: 9px;
+  color: #3a4340;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Drag hint — aparece no GalleryScene3D via .cinema-drag-hint */
+.cinema-drag-hint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 56;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  background: rgba(12,16,14,0.60);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px;
+  color: rgba(255,255,255,0.55);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  animation: dragHintFadeIn 0.3s ease, dragHintFadeOut 0.5s ease 2.5s forwards;
+}
+
+@keyframes dragHintFadeIn {
+  from { opacity: 0; transform: translate(-50%,-50%) scale(0.97); }
+  to   { opacity: 1; transform: translate(-50%,-50%) scale(1);    }
+}
+@keyframes dragHintFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Badge de Lupa Ativa */
+.cinema-loupe-active-badge {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 56;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: rgba(228, 195, 121, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(228, 195, 121, 0.22);
+  border-radius: 3px;
+  color: var(--accent-gold);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  animation: cinemaSmoothIn 0.3s ease;
+}
+
+.loupe-icon {
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 /* ==========================================================================
