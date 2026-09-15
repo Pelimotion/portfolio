@@ -4,7 +4,7 @@ export type ViewMode = 'spatial' | 'archive' | 'media';
 
 export interface PressKitAsset {
   id: string;
-  category: 'bio' | 'statement' | 'photos' | 'logos' | 'release' | 'promopack';
+  category: 'bio' | 'statement' | 'photos' | 'logos' | 'release' | 'promopack' | 'process' | 'cv';
   title: string;
   description: string;
   format: string; // ex: 'PDF', 'SVG', 'PNG', 'ZIP', 'TXT'
@@ -28,6 +28,8 @@ export interface MasterWorkAsset {
   dimensionsOrDuration: string; // ex: '3840x2160 UHD', '4500x5600 px (300 DPI)', '02:44 min'
   colorSpace: string; // ex: 'Rec.709 / sRGB', 'DCI-P3'
   fileSizeApprox: string; // ex: '1.4 GB', '85 MB', '45 MB'
+  webFileSize?: string; // ex: '514 KB', '385 KB'
+  masterFileSize?: string; // ex: '1.85 GB', '65 MB'
   previewSrc: string;
   downloadUrl: string;
   cloudStorageUrl?: string;

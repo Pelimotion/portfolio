@@ -12,10 +12,16 @@ export interface GiganteraCustomConfig {
   artworks?: Artwork[];
   pressKitAssets?: PressKitAsset[];
   curatorialStatements?: {
+    tagline?: string;
+    miniBio?: string;
     bioPt?: string;
+    bioShort?: string;
+    bioInstitutional?: string;
     bioEn?: string;
     statementPt?: string;
     statementEn?: string;
+    processNotes?: string;
+    cvSkeleton?: string;
   };
   artistInfo?: {
     name?: string;
@@ -80,10 +86,16 @@ export function getMergedCuratorialStatements() {
   const custom = loadCustomConfig();
   if (custom && custom.curatorialStatements) {
     return {
+      tagline: custom.curatorialStatements.tagline ?? CURATORIAL_STATEMENTS.tagline,
+      miniBio: custom.curatorialStatements.miniBio ?? CURATORIAL_STATEMENTS.miniBio,
       bioPt: custom.curatorialStatements.bioPt ?? CURATORIAL_STATEMENTS.bioPt,
+      bioShort: custom.curatorialStatements.bioShort ?? CURATORIAL_STATEMENTS.bioShort,
+      bioInstitutional: custom.curatorialStatements.bioInstitutional ?? CURATORIAL_STATEMENTS.bioInstitutional,
       bioEn: custom.curatorialStatements.bioEn ?? CURATORIAL_STATEMENTS.bioEn,
       statementPt: custom.curatorialStatements.statementPt ?? CURATORIAL_STATEMENTS.statementPt,
-      statementEn: custom.curatorialStatements.statementEn ?? CURATORIAL_STATEMENTS.statementEn
+      statementEn: custom.curatorialStatements.statementEn ?? CURATORIAL_STATEMENTS.statementEn,
+      processNotes: custom.curatorialStatements.processNotes ?? CURATORIAL_STATEMENTS.processNotes,
+      cvSkeleton: custom.curatorialStatements.cvSkeleton ?? CURATORIAL_STATEMENTS.cvSkeleton
     };
   }
   return CURATORIAL_STATEMENTS;

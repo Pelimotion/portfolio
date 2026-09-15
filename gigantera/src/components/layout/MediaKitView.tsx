@@ -4,7 +4,9 @@ import {
   ARTIST_INFO as DEFAULT_ARTIST_INFO,
   CURATORIAL_STATEMENTS as DEFAULT_STATEMENTS,
   PRESS_KIT_ASSETS as DEFAULT_PRESS_ASSETS,
-  MASTER_AUDIO_CATALOG
+  MASTER_AUDIO_CATALOG,
+  GIGANTERA_TEXTOS_CANONICOS,
+  getWorkRealSize
 } from '../../data/mediaKitData';
 import {
   getMergedArtworks,
@@ -46,9 +48,11 @@ export const MediaKitView: React.FC = () => {
 
   // Estados locais da view
   const [statementLang, setStatementLang] = useState<'pt' | 'en'>('pt');
+  const [bioLength, setBioLength] = useState<'mini' | 'short' | 'institutional'>('short');
   const [masterFilter, setMasterFilter] = useState<'all' | 'video' | 'still' | 'sound'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({});
+  const [downloadingIds, setDownloadingIds] = useState<Record<string, boolean>>({});
 
   // Monta o catálogo de masters filtrando apenas as obras autorizadas
   const masterVisuals: MasterWorkAsset[] = useMemo(() => {
@@ -61,7 +65,8 @@ export const MediaKitView: React.FC = () => {
           : 'TIFF 16-bit Não-Comprimido (300 DPI)');
         const dimensions = art.dimensionsOrDuration || (isVideo ? '3840x2160 UHD (16:9)' : '4000x5000 px (4:5) / 300 DPI');
         const colorSpace = isVideo ? 'Rec.709 / BT.1886' : 'Adobe RGB (1998) / sRGB';
-        const fileSizeApprox = isVideo ? '1.85 GB' : '64.2 MB';
+        
+        const sizeInfo = getWorkRealSize(art.id, isVideo);
         const citationCredit = `CONCEIÇÃO, Felipe. ${art.title}, ${art.year}. ${art.materials}. ${dimensions}. Coleção Gigantera. Disponível em: https://pelimotion.art/gigantera.`;
 
         return {
@@ -75,7 +80,9 @@ export const MediaKitView: React.FC = () => {
           masterFormat,
           dimensionsOrDuration: dimensions,
           colorSpace,
-          fileSizeApprox,
+          fileSizeApprox: sizeInfo.displaySize,
+          webFileSize: sizeInfo.webSize,
+          masterFileSize: sizeInfo.masterSize,
           previewSrc: art.imageSrc,
           downloadUrl: art.videoSrc || art.imageSrc,
           cloudStorageUrl: art.cloudStorageUrl || artistInfo.cloudDriveUrl,
@@ -121,15 +128,57 @@ export const MediaKitView: React.FC = () => {
     }
   };
 
-  const handleDirectDownload = (e: React.MouseEvent, url: string, filename: string) => {
+  /**
+   * Download Direto Robusto via Blob CORS
+   * Garante nome do arquivo e formato sem erros no navegador
+   */
+  const handleDirectDownload = async (e: React.MouseEvent, rawUrl: string, filename: string, itemId?: string) => {
+    e.preventDefault();
     e.stopPropagation();
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setCopiedFeedback(`Download de "${filename}" iniciado!`);
+
+    if (itemId) {
+      setDownloadingIds((prev) => ({ ...prev, [itemId]: true }));
+    }
+    setCopiedFeedback(`Preparando download de "${filename}"...`);
+
+    try {
+      let fullUrl = rawUrl;
+      if (!/^https?:\/\//i.test(rawUrl)) {
+        fullUrl = new URL(rawUrl, window.location.origin).href;
+      }
+
+      const response = await fetch(fullUrl, { mode: 'cors' });
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+
+      setCopiedFeedback(`Download de "${filename}" concluído!`);
+    } catch (err) {
+      console.warn('[Direct Download Fallback]', err);
+      const a = document.createElement('a');
+      a.href = rawUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setCopiedFeedback(`Download de "${filename}" iniciado!`);
+    } finally {
+      if (itemId) {
+        setDownloadingIds((prev) => ({ ...prev, [itemId]: false }));
+      }
+    }
   };
 
   const handleDownloadBlob = (filename: string, content: string, mimeType = 'text/plain;charset=utf-8') => {
@@ -145,9 +194,23 @@ export const MediaKitView: React.FC = () => {
     setCopiedFeedback(`Download de ${filename} iniciado!`);
   };
 
+  // Obter o texto de biografia de acordo com o tamanho selecionado
+  const activeBioText = useMemo(() => {
+    if (statementLang === 'en') {
+      return curatorialStatements.bioEn;
+    }
+    if (bioLength === 'mini') {
+      return curatorialStatements.miniBio || GIGANTERA_TEXTOS_CANONICOS.miniBio;
+    }
+    if (bioLength === 'institutional') {
+      return curatorialStatements.bioInstitutional || GIGANTERA_TEXTOS_CANONICOS.bioInstitutional;
+    }
+    return curatorialStatements.bioShort || curatorialStatements.bioPt || GIGANTERA_TEXTOS_CANONICOS.bioShort;
+  }, [curatorialStatements, bioLength, statementLang]);
+
   return (
     <section className="media-kit-section" aria-label="Central de Mídia e Acervo de Obras">
-      {/* Toast flutuante de feedback de cópia */}
+      {/* Toast flutuante de feedback */}
       {copiedFeedback && (
         <div className="media-kit-toast font-mono" role="status" aria-live="polite">
           <span className="toast-dot" />
@@ -179,7 +242,7 @@ export const MediaKitView: React.FC = () => {
             <div>
               <h1 className="media-kit-heading">Material de Imprensa & Acervo</h1>
               <p className="media-kit-lead">
-                Área reservada para <strong>galeristas, curadores, editais e imprensa</strong>. Baixe os arquivos brutos das obras em alta definição e materiais oficiais de divulgação.
+                Área reservada para <strong>galeristas, curadores, editais e imprensa</strong>. Textos canônicos sobre o projeto <strong>GIGANTERA</strong> e arquivos brutos das obras para download.
               </p>
             </div>
 
@@ -195,7 +258,7 @@ export const MediaKitView: React.FC = () => {
                   <span className="drive-btn-icon">📁</span>
                   <span>PASTA COMPLETA NO DRIVE ↗</span>
                 </a>
-                <span className="drive-hint font-mono">Arquivos brutos e masters descompactados</span>
+                <span className="drive-hint font-mono">Masters 4K ProRes e TIFFs 300 DPI</span>
               </div>
             )}
           </div>
@@ -209,7 +272,7 @@ export const MediaKitView: React.FC = () => {
               className={`media-tab-btn ${activeMediaTab === 'promo' ? 'is-active' : ''}`}
             >
               <span className="tab-number">01</span>
-              <span>MATERIAL DE DIVULGAÇÃO</span>
+              <span>TEXTOS CANÔNICOS & PRESS KIT</span>
               <span className="tab-count">[{pressAssets.length}]</span>
             </button>
 
@@ -227,18 +290,33 @@ export const MediaKitView: React.FC = () => {
         </header>
 
         {/* ========================================================================= */}
-        {/* ABA 01: MATERIAL DE DIVULGAÇÃO (PRESS KIT)                                */}
+        {/* ABA 01: MATERIAL DE DIVULGAÇÃO & TEXTOS CANÔNICOS DO GIGANTERA             */}
         {/* ========================================================================= */}
         {activeMediaTab === 'promo' && (
           <div className="media-tab-content promo-tab-content">
+            {/* Banner de Destaque: Tagline Oficial */}
+            <div className="tagline-banner">
+              <div className="tagline-banner-left font-mono">
+                <span className="tagline-tag">[TAGLINE INSTITUCIONAL // 1 LINHA]</span>
+                <p className="tagline-text">"{curatorialStatements.tagline || GIGANTERA_TEXTOS_CANONICOS.tagline}"</p>
+                <span className="tagline-hint">Uso: bio de Instagram, assinatura de e-mail e abertura de dossiês</span>
+              </div>
+              <button
+                onClick={() => handleCopy(curatorialStatements.tagline || GIGANTERA_TEXTOS_CANONICOS.tagline, 'Tagline Oficial')}
+                className="box-action-btn font-mono"
+              >
+                COPIAR TAGLINE 📋
+              </button>
+            </div>
+
             {/* Bloco 1: Textos Oficiais (Biografia e Statement) */}
             <div className="media-texts-row">
-              {/* Card de Biografia */}
+              {/* Card de Biografia com seletor de extensão */}
               <article className="media-text-box">
                 <div className="text-box-header font-mono">
                   <div className="text-box-title-group">
-                    <span className="text-box-tag">[TEXTO OFICIAL]</span>
-                    <h2 className="text-box-title">Biografia Curatorial</h2>
+                    <span className="text-box-tag">[BIOGRAFIA EM 3ª PESSOA]</span>
+                    <h2 className="text-box-title">Biografia do Artista</h2>
                   </div>
                   <div className="text-box-lang-switch">
                     <button
@@ -256,9 +334,34 @@ export const MediaKitView: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Seletor de Extensão (apenas em PT) */}
+                {statementLang === 'pt' && (
+                  <div className="bio-ext-selector font-mono">
+                    <span className="bio-ext-label">EXTENSÃO:</span>
+                    <button
+                      onClick={() => setBioLength('mini')}
+                      className={`bio-ext-btn ${bioLength === 'mini' ? 'is-active' : ''}`}
+                    >
+                      MINI BIO (~50p)
+                    </button>
+                    <button
+                      onClick={() => setBioLength('short')}
+                      className={`bio-ext-btn ${bioLength === 'short' ? 'is-active' : ''}`}
+                    >
+                      CURTA (~150p)
+                    </button>
+                    <button
+                      onClick={() => setBioLength('institutional')}
+                      className={`bio-ext-btn ${bioLength === 'institutional' ? 'is-active' : ''}`}
+                    >
+                      LONGA (~280p)
+                    </button>
+                  </div>
+                )}
+
                 <div className="text-box-body">
-                  <p className="curatorial-paragraph">
-                    {statementLang === 'pt' ? curatorialStatements.bioPt : curatorialStatements.bioEn}
+                  <p className="curatorial-paragraph" style={{ whiteSpace: 'pre-line' }}>
+                    {activeBioText}
                   </p>
                 </div>
 
@@ -266,19 +369,19 @@ export const MediaKitView: React.FC = () => {
                   <button
                     onClick={() =>
                       handleCopy(
-                        statementLang === 'pt' ? curatorialStatements.bioPt : curatorialStatements.bioEn,
-                        `Biografia (${statementLang.toUpperCase()})`
+                        activeBioText,
+                        `Biografia (${statementLang.toUpperCase()} - ${bioLength.toUpperCase()})`
                       )
                     }
                     className="box-action-btn"
                   >
-                    COPIAR TEXTO 📋
+                    COPIAR BIOGRAFIA 📋
                   </button>
                   <button
                     onClick={() =>
                       handleDownloadBlob(
-                        `gigantera-biografia-${statementLang}.txt`,
-                        statementLang === 'pt' ? curatorialStatements.bioPt : curatorialStatements.bioEn
+                        `gigantera-biografia-${statementLang}-${bioLength}.txt`,
+                        activeBioText
                       )
                     }
                     className="box-action-btn is-secondary"
@@ -288,11 +391,11 @@ export const MediaKitView: React.FC = () => {
                 </div>
               </article>
 
-              {/* Card de Declaração do Artista (Statement) */}
+              {/* Card de Declaração do Artista (Artist Statement em 1ª Pessoa) */}
               <article className="media-text-box">
                 <div className="text-box-header font-mono">
                   <div className="text-box-title-group">
-                    <span className="text-box-tag">[TEXTO CONCEITUAL]</span>
+                    <span className="text-box-tag">[CONCEITO EM 1ª PESSOA]</span>
                     <h2 className="text-box-title">Artist Statement</h2>
                   </div>
                   <div className="text-box-lang-switch">
@@ -312,8 +415,10 @@ export const MediaKitView: React.FC = () => {
                 </div>
 
                 <div className="text-box-body">
-                  <p className="curatorial-paragraph">
-                    {statementLang === 'pt' ? curatorialStatements.statementPt : curatorialStatements.statementEn}
+                  <p className="curatorial-paragraph" style={{ whiteSpace: 'pre-line' }}>
+                    {statementLang === 'pt'
+                      ? (curatorialStatements.statementPt || GIGANTERA_TEXTOS_CANONICOS.artistStatement)
+                      : curatorialStatements.statementEn}
                   </p>
                 </div>
 
@@ -321,7 +426,9 @@ export const MediaKitView: React.FC = () => {
                   <button
                     onClick={() =>
                       handleCopy(
-                        statementLang === 'pt' ? curatorialStatements.statementPt : curatorialStatements.statementEn,
+                        statementLang === 'pt'
+                          ? (curatorialStatements.statementPt || GIGANTERA_TEXTOS_CANONICOS.artistStatement)
+                          : curatorialStatements.statementEn,
                         `Artist Statement (${statementLang.toUpperCase()})`
                       )
                     }
@@ -333,7 +440,94 @@ export const MediaKitView: React.FC = () => {
                     onClick={() =>
                       handleDownloadBlob(
                         `gigantera-artist-statement-${statementLang}.txt`,
-                        statementLang === 'pt' ? curatorialStatements.statementPt : curatorialStatements.statementEn
+                        statementLang === 'pt'
+                          ? (curatorialStatements.statementPt || GIGANTERA_TEXTOS_CANONICOS.artistStatement)
+                          : curatorialStatements.statementEn
+                      )
+                    }
+                    className="box-action-btn is-secondary"
+                  >
+                    BAIXAR .TXT ↓
+                  </button>
+                </div>
+              </article>
+            </div>
+
+            {/* Bloco Adicional: Nota de Processo & CV Esqueleto */}
+            <div className="media-texts-row">
+              {/* Card Nota de Processo & Materiais */}
+              <article className="media-text-box">
+                <div className="text-box-header font-mono">
+                  <div className="text-box-title-group">
+                    <span className="text-box-tag">[RIDER TÉCNICO & MATERIAIS]</span>
+                    <h2 className="text-box-title">Nota de Processo</h2>
+                  </div>
+                </div>
+
+                <div className="text-box-body">
+                  <p className="curatorial-paragraph" style={{ whiteSpace: 'pre-line' }}>
+                    {curatorialStatements.processNotes || GIGANTERA_TEXTOS_CANONICOS.processNotes}
+                  </p>
+                </div>
+
+                <div className="text-box-footer font-mono">
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        curatorialStatements.processNotes || GIGANTERA_TEXTOS_CANONICOS.processNotes,
+                        'Nota de Processo'
+                      )
+                    }
+                    className="box-action-btn"
+                  >
+                    COPIAR NOTA 📋
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleDownloadBlob(
+                        'gigantera-nota-de-processo.txt',
+                        curatorialStatements.processNotes || GIGANTERA_TEXTOS_CANONICOS.processNotes
+                      )
+                    }
+                    className="box-action-btn is-secondary"
+                  >
+                    BAIXAR .TXT ↓
+                  </button>
+                </div>
+              </article>
+
+              {/* Card CV / Trajetória Artística */}
+              <article className="media-text-box">
+                <div className="text-box-header font-mono">
+                  <div className="text-box-title-group">
+                    <span className="text-box-tag">[CRONOLOGIA & TRAJETÓRIA]</span>
+                    <h2 className="text-box-title">Currículo do Artista</h2>
+                  </div>
+                </div>
+
+                <div className="text-box-body">
+                  <pre className="cv-pre-block font-mono">
+                    {curatorialStatements.cvSkeleton || GIGANTERA_TEXTOS_CANONICOS.cvSkeleton}
+                  </pre>
+                </div>
+
+                <div className="text-box-footer font-mono">
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        curatorialStatements.cvSkeleton || GIGANTERA_TEXTOS_CANONICOS.cvSkeleton,
+                        'Currículo do Artista'
+                      )
+                    }
+                    className="box-action-btn"
+                  >
+                    COPIAR CV 📋
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleDownloadBlob(
+                        'gigantera-curriculo-trajetoria.txt',
+                        curatorialStatements.cvSkeleton || GIGANTERA_TEXTOS_CANONICOS.cvSkeleton
                       )
                     }
                     className="box-action-btn is-secondary"
@@ -387,15 +581,14 @@ export const MediaKitView: React.FC = () => {
 
                       <div className="press-card-actions">
                         {hasFile && (
-                          <a
-                            href={asset.fileUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            type="button"
+                            disabled={downloadingIds[asset.id]}
+                            onClick={(e) => handleDirectDownload(e, asset.fileUrl!, asset.fileUrl!.split('/').pop() || `${asset.id}.file`, asset.id)}
                             className="press-action-btn is-primary"
                           >
-                            BAIXAR ARQUIVO ↓
-                          </a>
+                            {downloadingIds[asset.id] ? 'BAIXANDO...' : 'BAIXAR ARQUIVO ↓'}
+                          </button>
                         )}
 
                         {hasCopyText && (
@@ -495,6 +688,7 @@ export const MediaKitView: React.FC = () => {
                 filteredMasters.map((master) => {
                   const isExpanded = !!expandedDetails[master.id];
                   const filename = master.downloadUrl.split('/').pop() || `${master.title}.${master.medium === 'video' ? 'mp4' : master.medium === 'sound' ? 'mp3' : 'jpg'}`;
+                  const isDownloading = !!downloadingIds[master.id];
 
                   return (
                     <article key={master.id} className="master-item-card">
@@ -521,9 +715,16 @@ export const MediaKitView: React.FC = () => {
                               <span>[{master.series.toUpperCase()}]</span>
                               <span>{master.year}</span>
                             </div>
-                            <span className="master-size-tag font-mono">
-                              {master.fileSizeApprox}
-                            </span>
+                            <div className="master-size-tags font-mono">
+                              <span className="master-size-tag is-web" title="Tamanho do arquivo otimizado para download direto web">
+                                {master.webFileSize || master.fileSizeApprox.split(' · ')[0]}
+                              </span>
+                              {master.masterFileSize && (
+                                <span className="master-size-tag is-master" title="Master bruto não-comprimido disponível no Google Drive">
+                                  {master.masterFileSize} Drive
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           <h2 className="master-title">{master.title}</h2>
@@ -531,14 +732,15 @@ export const MediaKitView: React.FC = () => {
 
                           {/* Botões de Ação Direta */}
                           <div className="master-actions-row font-mono">
-                            <a
-                              href={master.downloadUrl}
-                              download={filename}
-                              onClick={(e) => handleDirectDownload(e, master.downloadUrl, filename)}
+                            <button
+                              type="button"
+                              disabled={isDownloading}
+                              onClick={(e) => handleDirectDownload(e, master.downloadUrl, filename, master.id)}
                               className="master-download-btn is-primary"
+                              title={`Baixar ${master.title} (${master.webFileSize || 'Otimizado'})`}
                             >
-                              <span>BAIXAR ARQUIVO ↓</span>
-                            </a>
+                              <span>{isDownloading ? 'BAIXANDO... ⏳' : 'BAIXAR ARQUIVO WEB ↓'}</span>
+                            </button>
 
                             <button
                               type="button"
@@ -554,9 +756,9 @@ export const MediaKitView: React.FC = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="master-download-btn is-ghost"
-                                title="Abrir pasta completa no Google Drive"
+                                title="Abrir pasta completa no Google Drive (Masters ProRes / TIFFs 300 DPI)"
                               >
-                                <span>DRIVE ↗</span>
+                                <span>DRIVE MASTER ↗</span>
                               </a>
                             )}
                           </div>
@@ -580,6 +782,14 @@ export const MediaKitView: React.FC = () => {
                                 <div className="spec-item">
                                   <span className="spec-k">MATERIAIS:</span>
                                   <span className="spec-v">{master.materials}</span>
+                                </div>
+                                <div className="spec-item">
+                                  <span className="spec-k">TAMANHO ARQUIVO WEB:</span>
+                                  <span className="spec-v">{master.webFileSize || 'Otimizado'}</span>
+                                </div>
+                                <div className="spec-item">
+                                  <span className="spec-k">TAMANHO MASTER BRUTO:</span>
+                                  <span className="spec-v">{master.masterFileSize || 'Sob Demanda'}</span>
                                 </div>
                               </div>
 

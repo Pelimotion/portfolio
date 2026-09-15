@@ -613,6 +613,174 @@
       gap: 1rem;
     }
 
+    /* CLIENT-SIDE MEDIA CONVERTER & BUNNY UPLOAD */
+    .converter-box {
+      background: rgba(22, 25, 32, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .converter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .converter-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      letter-spacing: 0.05em;
+    }
+
+    .converter-badge {
+      font-size: 0.62rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+    }
+
+    .converter-desc {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .converter-dropzones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .dropzone-card {
+      border: 1px dashed var(--border-focus);
+      background: var(--bg);
+      border-radius: 4px;
+      padding: 0.9rem 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone-card:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    .dropzone-icon {
+      font-size: 1.4rem;
+    }
+
+    .dropzone-text {
+      font-size: 0.75rem;
+      color: var(--text-main);
+    }
+
+    .dropzone-hint {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .conversion-result {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+    }
+
+    .conv-preview-wrap {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 3px;
+      overflow: hidden;
+      background: #000;
+      flex-shrink: 0;
+    }
+
+    .conv-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .conv-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex: 1;
+    }
+
+    .conv-stats {
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .conv-stat-orig {
+      color: var(--text-dim);
+      text-decoration: line-through;
+    }
+
+    .conv-stat-opt {
+      color: var(--accent-emerald);
+      font-weight: 700;
+    }
+
+    .conv-arrow {
+      color: var(--text-muted);
+    }
+
+    .conv-dims {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .conv-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.68rem;
+    }
+
+    .upload-status {
+      font-size: 0.7rem;
+      padding: 0.2rem 0;
+    }
+
+    .video-duration-pill {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      font-size: 0.6rem;
+      padding: 1px 3px;
+      border-radius: 2px;
+    }
+
     /* TOAST FEEDBACK */
     .toast {
       position: fixed;
@@ -838,48 +1006,96 @@
     <section id="tab-copys" class="tab-content">
       <div class="section-header">
         <div>
-          <h2 class="section-title">Copys Oficiais do Pavilhão</h2>
+          <h2 class="section-title">Textos Institucionais do Projeto GIGANTERA & Pavilhão</h2>
           <p class="section-subtitle">
-            Textos do Hero, Subhead, CTA de entrada e metadados SEO. Modifique e clique em salvar para aplicar diretamente.
+            O pavilhão 3D é o portfólio imersivo do artista. O projeto substantivo é <strong>GIGANTERA</strong>. Gerencie aqui a tagline, bios em 3ª pessoa, artist statement em 1ª pessoa, notas de processo e copys de entrada.
           </p>
         </div>
-        <button class="btn btn-primary" onclick="persistAndPublish()">SALVAR COPYS 💾</button>
+        <button class="btn btn-primary" onclick="persistAndPublish()">SALVAR TODOS OS TEXTOS 💾</button>
       </div>
 
-      <div style="display: grid; gap: 1.25rem;">
-        <div class="form-group">
-          <label class="form-label">Title Tag (Aba do Navegador)</label>
-          <input type="text" id="copyTitle" class="form-input" value="GIGANTERA | Pavilhão Digital" />
+      <!-- SEÇÃO 1: TEXTOS DO ARTISTA & PROJETO GIGANTERA -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+          <h3 class="section-title" style="color: var(--accent-amber);">1. Identidade Institucional // Projeto GIGANTERA</h3>
+          <span class="badge-pill badge-ready">CANÔNICO (gigantera-textos.md)</span>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Meta Description (140 Caracteres)</label>
-          <textarea id="copyMeta" class="form-textarea" rows="2">Um pavilhão imersivo. Você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral.</textarea>
+        <div style="display: grid; gap: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Tagline Oficial (1 linha · Assinatura / Bio de Redes)</label>
+            <input type="text" id="copyTagline" class="form-input" value="Memória caiçara em atrito com máquina e som sintético." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mini Bio (~50 palavras · Catálogo Rápido / Rodapé / Release)</label>
+            <textarea id="copyMiniBio" class="form-textarea" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Bio Curta Oficial (~150 palavras · Editais / Festivais / Mostras Coletivas)</label>
+            <textarea id="copyBioShort" class="form-textarea" rows="5"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Bio Institucional Completa (~280 palavras · Imprensa / Grande Porte)</label>
+            <textarea id="copyBioInstitutional" class="form-textarea" rows="8"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Artist Statement Oficial (1ª Pessoa · Conceito & Pesquisa)</label>
+            <textarea id="copyStatement" class="form-textarea" rows="8"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nota de Processo & Materiais (Rider Técnico / Creative Coding / Modular)</label>
+            <textarea id="copyProcess" class="form-textarea" rows="4"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Currículo / Trajetória Artística (Esqueleto Cronológico)</label>
+            <textarea id="copyCV" class="form-textarea" rows="6"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: TEXTOS DO PAVILHÃO 3D (PORTFÓLIO & APRESENTAÇÃO) -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+          <h3 class="section-title" style="color: var(--accent-cyan);">2. Apresentação do Pavilhão 3D (Portfólio Digital & SEO)</h3>
+          <span class="badge-pill badge-video">PORTFÓLIO ESPACIAL</span>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Hero Headline (Tela de Entrada)</label>
-          <input type="text" id="copyHero" class="form-input" value="GIGANTERA — Um pavilhão. Não um portfólio." />
-        </div>
+        <div style="display: grid; gap: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Title Tag (Aba do Navegador)</label>
+            <input type="text" id="copyTitle" class="form-input" value="GIGANTERA | Pavilhão Digital" />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Subhead (Abaixo do Hero)</label>
-          <input type="text" id="copySubhead" class="form-input" value="Concreto, luz e som suspensos no espaço — entre e ande." />
-        </div>
+          <div class="form-group">
+            <label class="form-label">Meta Description (140 Caracteres)</label>
+            <textarea id="copyMeta" class="form-textarea" rows="2">Um pavilhão imersivo. Você flutua entre vitrines suspensas com obras provocativas e uma sala de som autoral.</textarea>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">CTA de Entrada (Botão Principal)</label>
-          <input type="text" id="copyCTA" class="form-input" value="ENTRAR NO PAVILHÃO" />
-        </div>
+          <div class="form-group">
+            <label class="form-label">Hero Headline (Tela de Entrada)</label>
+            <input type="text" id="copyHero" class="form-input" value="GIGANTERA — Um pavilhão. Não um portfólio." />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Blurb Curto pra Bio / Imprensa</label>
-          <textarea id="copyBlurb" class="form-textarea" rows="4">Gigantera é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.</textarea>
-        </div>
+          <div class="form-group">
+            <label class="form-label">Subhead (Abaixo do Hero)</label>
+            <input type="text" id="copySubhead" class="form-input" value="Concreto, luz e som suspensos no espaço — entre e ande." />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Provérbio Curatorial Raiz</label>
-          <input type="text" id="copyProverbio" class="form-input" value="Tainhas gigantes só podem ser pescadas com uma tarrafa gigante." />
+          <div class="form-group">
+            <label class="form-label">CTA de Entrada (Botão Principal)</label>
+            <input type="text" id="copyCTA" class="form-input" value="ENTRAR NO PAVILHÃO" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Provérbio Curatorial Raiz</label>
+            <input type="text" id="copyProverbio" class="form-input" value="Tainhas gigantes só podem ser pescadas com uma tarrafa gigante." />
+          </div>
         </div>
       </div>
     </section>
@@ -963,6 +1179,44 @@
           </p>
           <button class="btn btn-danger" onclick="resetToDefaults()">RESTAURAR PADRÕES ↺</button>
         </div>
+
+        <!-- CONFIGURAÇÃO DO BUNNY CDN STORAGE -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; grid-column: 1 / -1;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 class="section-title" style="color: var(--accent-amber);">Integração Bunny CDN (Storage & Edge Delivery)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Configure sua Storage Zone e API Key para subir imagens e vídeos diretamente do seu navegador com conversão e otimização automática.
+              </p>
+            </div>
+            <span class="badge-pill badge-ready" id="bunnyStatusBadge">STORAGE PRONTO</span>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Bunny Pull Zone Host (CDN de Entrega)</label>
+              <input type="text" id="bunnyPullZone" class="form-input" value="https://pelimotion-portfolio.b-cdn.net" placeholder="https://pelimotion-portfolio.b-cdn.net" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Bunny Storage Zone Name</label>
+              <input type="text" id="bunnyStorageZone" class="form-input" value="pelimotion-portfolio" placeholder="Nome da Storage Zone" />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label">Bunny Storage API Key (Access Key / Senha de Escrita)</label>
+            <input type="password" id="bunnyAccessKey" class="form-input" placeholder="Cole aqui a Storage Access Key para uploads automáticos 1-clique" />
+            <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
+              Localize em: Bunny.net Dashboard → Storage → Sua Storage Zone → FTP & API Access → Password (AccessKey)
+            </span>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="saveBunnySettings()">SALVAR CONFIGURAÇÃO BUNNY 💾</button>
+            <button class="btn btn-cyan" onclick="testBunnyConnection()">TESTAR CONEXÃO COM STORAGE ⚡</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1040,6 +1294,88 @@
         <div class="form-group">
           <label class="form-label">Declaração Curatorial / Sinopse</label>
           <textarea id="editArtworkDesc" class="form-textarea" rows="3" placeholder="Descrição poética e conceitual da obra..."></textarea>
+        </div>
+
+        <!-- CONVERSOR CLIENT-SIDE & UPLOAD BUNNY CDN -->
+        <div class="converter-box" id="modalMediaConverter">
+          <div class="converter-header">
+            <span class="converter-tag font-mono">⚡ CONVERSOR CLIENT-SIDE & UPLOAD BUNNY CDN</span>
+            <span class="converter-badge font-mono">OTIMIZAÇÃO AUTOMÁTICA</span>
+          </div>
+          <p class="converter-desc">
+            Arraste imagem ou vídeo. Imagens são redimensionadas no navegador para WebP/JPG leve (~250KB) mantendo alta definição. Vídeos geram o frame de capa (poster still) automaticamente!
+          </p>
+
+          <div class="converter-dropzones">
+            <!-- Dropzone de Imagem / Still -->
+            <div class="dropzone-card" id="dropzoneImage" onclick="document.getElementById('fileInputImage').click()">
+              <input type="file" id="fileInputImage" accept="image/*" style="display:none;" onchange="handleImageFileSelected(this.files[0])" />
+              <div class="dropzone-icon">🖼️</div>
+              <div class="dropzone-text">
+                <strong>Arraste Imagem / Still</strong> ou clique
+              </div>
+              <span class="dropzone-hint">Redimensionamento & compressão automática</span>
+            </div>
+
+            <!-- Dropzone de Vídeo (Loop) -->
+            <div class="dropzone-card" id="dropzoneVideo" onclick="document.getElementById('fileInputVideo').click()">
+              <input type="file" id="fileInputVideo" accept="video/mp4,video/webm,video/quicktime" style="display:none;" onchange="handleVideoFileSelected(this.files[0])" />
+              <div class="dropzone-icon">🎬</div>
+              <div class="dropzone-text">
+                <strong>Arraste Vídeo (Loop MP4)</strong> ou clique
+              </div>
+              <span class="dropzone-hint">Extrai poster de capa e lê proporção</span>
+            </div>
+          </div>
+
+          <!-- Feedback de Conversão da Imagem -->
+          <div id="imageConversionFeedback" class="conversion-result" style="display:none;">
+            <div class="conv-preview-wrap">
+              <img id="imagePreviewImg" class="conv-thumb" alt="Preview da imagem convertida" />
+            </div>
+            <div class="conv-info">
+              <div class="conv-stats font-mono">
+                <span class="conv-stat-orig" id="imageOriginalSizeText">Orig: 14.8 MB</span>
+                <span class="conv-arrow">→</span>
+                <span class="conv-stat-opt" id="imageOptimizedSizeText">Otimizado: 285 KB</span>
+                <span class="badge-pill badge-ready" id="imageReductionRatioText">-98%</span>
+              </div>
+              <div class="conv-dims font-mono" id="imageDimsText">1920x1080 px · JPEG 85%</div>
+              <div class="conv-actions">
+                <button type="button" class="btn btn-primary btn-sm" id="btnUploadImageBunny" onclick="uploadOptimizedImageToBunny()">
+                  SUBIR P/ BUNNY STORAGE ☁️
+                </button>
+                <button type="button" class="btn btn-sm" onclick="downloadOptimizedImage()">
+                  BAIXAR JPG ↓
+                </button>
+              </div>
+              <div id="imageUploadStatus" class="upload-status font-mono" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Feedback de Conversão do Vídeo -->
+          <div id="videoConversionFeedback" class="conversion-result" style="display:none;">
+            <div class="conv-preview-wrap">
+              <img id="videoPosterImg" class="conv-thumb" alt="Poster extraído do vídeo" />
+              <span class="video-duration-pill font-mono" id="videoDurationText">00:06</span>
+            </div>
+            <div class="conv-info">
+              <div class="conv-stats font-mono">
+                <span class="conv-stat-opt" id="videoSizeText">Vídeo: 1.05 MB</span>
+                <span class="conv-dims" id="videoDimsText">1080x1920 (9:16)</span>
+                <span class="badge-pill badge-video">POSTER EXTRAÍDO ✓</span>
+              </div>
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0.2rem 0;">
+                O frame extraído a 0.5s foi definido como a capa desta obra.
+              </p>
+              <div class="conv-actions">
+                <button type="button" class="btn btn-cyan btn-sm" id="btnUploadVideoBunny" onclick="uploadVideoToBunny()">
+                  SUBIR VÍDEO P/ BUNNY STORAGE ☁️
+                </button>
+              </div>
+              <div id="videoUploadStatus" class="upload-status font-mono" style="display:none;"></div>
+            </div>
+          </div>
         </div>
 
         <div class="form-grid-2">
@@ -1194,10 +1530,297 @@
       { num: '17', title: 'Sobnome', genre: 'AMBIENT TECHNO', bpm: 119, duration: '01:40', year: 2025, series: 'Sobnome Sketches' }
     ];
 
+    // TEXTOS CANÔNICOS DO PROJETO GIGANTERA (gigantera-textos.md)
+    const GIGANTERA_DEFAULT_TEXTOS = {
+      tagline: 'Memória caiçara em atrito com máquina e som sintético.',
+      miniBio: `Gigantera é o projeto artístico de Felipe Conceição, com atuação em vídeo, mídia generativa e som. No audiovisual desde 2015, no motion design desde 2018. A pesquisa nasce da herança caiçara do artista e investiga o atrito entre corpo e automação, tempo orgânico e aceleração, por meio de código, projeção e síntese modular.`,
+      bioShort: `Gigantera é o projeto artístico de Felipe Conceição, dedicado a vídeo arte, mídia generativa e som experimental. Antes do código veio o baixo: a música é raiz da prática, hoje deslocada pra síntese modular e processos generativos. É uma escolha deliberada, o sintético como material e não só como técnica.\n\nDescendente de família caiçara (parte na pesca artesanal, parte já dentro da pesca industrial) e criado na Praia Brava, bairro que hoje abriga o Warung, Felipe viu de perto um território sendo absorvido por uma escala maior. Essa fricção atravessa a obra de Gigantera, que coloca o corpo contra a automação e a memória contra o espetáculo, dentro de um tempo cada vez mais acelerado. Com quase uma década na indústria audiovisual e publicitária, o artista usa as mesmas ferramentas que sustentam essa indústria (projeção, código, mídia generativa) pra questioná-la por dentro.`,
+      bioInstitutional: `Gigantera é o projeto artístico de Felipe Conceição, um espaço à parte da carreira comercial dele em motion design e pós-produção, onde as mesmas ferramentas técnicas servem pra investigar questões que o mercado não dá espaço pra fazer.\n\nNo audiovisual desde 2015 e no motion design desde 2018, Felipe fundou a Pelimotion, hub que conecta profissionais do setor criativo. Essa trajetória o colocou, por quase uma década, dentro da máquina que produz o brilho publicitário, e é esse conhecimento de dentro que ele vira contra si mesmo em Gigantera.\n\nA pesquisa nasce de duas heranças territoriais. Uma é a família caiçara, parte pescadores artesanais, parte já absorvida pela pesca industrial, que carrega dentro de casa o mesmo conflito de escala que atravessa a obra. A outra é a Praia Brava, bairro onde cresceu e que hoje abriga o Warung, um dos points de música eletrônica mais conhecidos do mundo. Ali, desde criança, viu o turismo internacional e as elites tomando um território que era da comunidade.\n\nAs duas experiências alimentam a mesma questão, o que sobra de uma cultura local quando ela é engolida por uma escala maior, mais rica e mais rápida. Gigantera trabalha essa questão em vídeo, mídia generativa, projeção mapeada e som, usando código e processos algorítmicos pra colocar o gesto orgânico em atrito com o automatismo industrial.\n\nA música é raiz da prática, começou no baixo, e hoje se desloca pra síntese modular e eletrônica, escolhida por ser inteiramente sintética: o som, assim como a imagem, carrega essa tensão entre corpo e máquina. O foco do trabalho não é lamentar o que já foi perdido. É mostrar o mecanismo que segue causando a perda.`,
+      statement: `Minha prática como Gigantera nasce de um atrito que carrego de dentro: entre o corpo e a automação, entre o tempo orgânico e a aceleração de um sistema que não parece ter fora.\n\nUso mídia generativa, código, projeção e som pra colocar essas duas lógicas na mesma imagem, no mesmo espaço. Isso não vem de um lugar nostálgico, é mais um diagnóstico. Não me interessa lamentar o que a indústria apaga. Me interessa expor o mecanismo que continua apagando, e a facilidade com que qualquer cultura vira estética vendável assim que alguém sabe embalar direito.\n\nEssa questão dialoga com o realismo capitalista de Mark Fisher, a sensação de que não existe mais fora do sistema, só velocidade dentro dele. E dialoga também com uma leitura lacaniana do desejo: ele nunca é só nosso, é produzido e mantido em falta pra alimentar o próprio sistema.\n\nA música é onde tudo começou pra mim, antes do código ou da projeção. Hoje trabalho com síntese modular e eletrônica, deliberadamente sintética, sem instrumento acústico, porque o som também precisa carregar essa tensão entre o vivo e o fabricado.\n\nTrago pra dentro do trabalho duas heranças de território: uma família que viveu a pesca, dividida entre o artesanal e o industrial, e um bairro que virou destino turístico da noite eletrônica mundial. As duas me ensinaram, cedo demais, que escala vence. O resto é o que sobra.`,
+      process: `Trabalho com mídia generativa, creative coding, motion design, VFX e projeção mapeada pra construir a camada visual, muitas vezes a partir de objetos ou elementos físicos processados digitalmente e devolvidos em loop. O som segue a mesma lógica: síntese modular e generativa, sem instrumentação acústica, construída com fragmentos de internet, b-rolls e gravações de campo. Não busco conforto acústico nem resolução fácil. O ambiente sonoro é parte do diagnóstico, não trilha de apoio.`,
+      cv: `FELIPE CONCEIÇÃO (GIGANTERA)\nBaseado em Itajaí / Santa Catarina, Brasil\nContato: felipe@pelimotion.art · https://pelimotion.art\n\nTRAJETÓRIA\n- 2015 — Início no mercado audiovisual e cinema independente\n- 2018 — Início em motion design, arte procedural e direção de arte\n- Fundação da Pelimotion (hub e rede de pós-produção)\n\nSÉRIES & OBRAS EM ANDAMENTO\n- Espinhaço (2026) — Vídeo cinético, renderização volumétrica e estudos de escala\n- Zimbro (2026) — Sistemas estocásticos de partículas e ruído vetorial\n- Notalgia (2026) — Topografia costeira e litificação\n- Sedimento (2026) — Fósseis computacionais e mineralização\n- Gigantera LP (2026) — 17 faixas em síntese sonora modular e eletrônica experimental`
+    };
+
     // ESTADO ATIVO DO ADMIN
     let currentArtworks = [];
     let currentPressAssets = [];
     let currentSiteConfig = {};
+    let currentCuratorialStatements = {};
+
+    // CONFIGURAÇÃO BUNNY CDN
+    const BUNNY_SETTINGS_KEY = 'gigantera_bunny_settings';
+
+    function getBunnySettings() {
+      try {
+        const raw = localStorage.getItem(BUNNY_SETTINGS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        pullZone: 'https://pelimotion-portfolio.b-cdn.net',
+        storageZone: 'pelimotion-portfolio',
+        accessKey: ''
+      };
+    }
+
+    function saveBunnySettings() {
+      const settings = {
+        pullZone: document.getElementById('bunnyPullZone').value.trim().replace(/\/$/, '') || 'https://pelimotion-portfolio.b-cdn.net',
+        storageZone: document.getElementById('bunnyStorageZone').value.trim() || 'pelimotion-portfolio',
+        accessKey: document.getElementById('bunnyAccessKey').value.trim()
+      };
+      localStorage.setItem(BUNNY_SETTINGS_KEY, JSON.stringify(settings));
+      showToast('Configurações do Bunny CDN salvas!');
+    }
+
+    function loadBunnySettings() {
+      const s = getBunnySettings();
+      if (document.getElementById('bunnyPullZone')) document.getElementById('bunnyPullZone').value = s.pullZone;
+      if (document.getElementById('bunnyStorageZone')) document.getElementById('bunnyStorageZone').value = s.storageZone;
+      if (document.getElementById('bunnyAccessKey')) document.getElementById('bunnyAccessKey').value = s.accessKey;
+    }
+
+    async function testBunnyConnection() {
+      const s = getBunnySettings();
+      if (!s.accessKey) {
+        alert('Por favor informe o Storage API Key (Access Key) do Bunny CDN.');
+        return;
+      }
+      showToast('Testando conexão com Bunny CDN Storage...');
+      try {
+        const res = await fetch(`https://storage.bunnycdn.com/${s.storageZone}/`, {
+          method: 'GET',
+          headers: { 'AccessKey': s.accessKey }
+        });
+        if (res.ok) {
+          showToast('✓ Conexão com Bunny Storage bem sucedida!');
+          document.getElementById('bunnyStatusBadge').innerText = 'CONECTADO ✓';
+          document.getElementById('bunnyStatusBadge').className = 'badge-pill badge-ready';
+        } else {
+          alert(`Erro na autenticação Bunny (Status ${res.status}). Verifique o nome da Storage Zone e a AccessKey.`);
+        }
+      } catch (err) {
+        alert(`Erro de conexão com Bunny Storage: ${err.message}. Verifique sua internet.`);
+      }
+    }
+
+    // CONVERSOR CLIENT-SIDE & PROCESSADOR DE MÍDIA
+    let currentConvertedImage = null;
+    let currentVideoData = null;
+
+    function handleImageFileSelected(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          const maxDim = 1920;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+
+          canvas.toBlob((blob) => {
+            const originalMB = (file.size / (1024 * 1024)).toFixed(2);
+            const convertedKB = (blob.size / 1024).toFixed(1);
+            const ratio = Math.round((1 - blob.size / file.size) * 100);
+            const filename = file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^a-z0-9_-]/g, '-') + '.jpg';
+
+            currentConvertedImage = {
+              blob,
+              dataUrl: canvas.toDataURL('image/jpeg', 0.85),
+              originalMB,
+              convertedKB,
+              ratio,
+              w,
+              h,
+              filename
+            };
+
+            document.getElementById('imagePreviewImg').src = currentConvertedImage.dataUrl;
+            document.getElementById('imageOriginalSizeText').innerText = `Orig: ${originalMB} MB`;
+            document.getElementById('imageOptimizedSizeText').innerText = `Otimizado: ${convertedKB} KB`;
+            document.getElementById('imageReductionRatioText').innerText = `-${ratio}%`;
+            document.getElementById('imageDimsText').innerText = `${w}x${h} px · JPEG 85%`;
+            document.getElementById('imageConversionFeedback').style.display = 'flex';
+
+            const bunny = getBunnySettings();
+            const cdnUrl = `${bunny.pullZone}/gigantera/stills/${filename}`;
+            document.getElementById('editArtworkImage').value = cdnUrl;
+
+            showToast(`Imagem convertida: ${originalMB} MB → ${convertedKB} KB (-${ratio}%)`);
+          }, 'image/jpeg', 0.85);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function downloadOptimizedImage() {
+      if (!currentConvertedImage) return;
+      const a = document.createElement('a');
+      a.href = currentConvertedImage.dataUrl;
+      a.download = currentConvertedImage.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast(`Download de "${currentConvertedImage.filename}" iniciado!`);
+    }
+
+    async function uploadOptimizedImageToBunny() {
+      if (!currentConvertedImage) return;
+      const bunny = getBunnySettings();
+      if (!bunny.accessKey) {
+        alert('Por favor configure seu Bunny AccessKey na aba "Backup & Sincronização" para realizar uploads automáticos.');
+        return;
+      }
+      const statusEl = document.getElementById('imageUploadStatus');
+      const btn = document.getElementById('btnUploadImageBunny');
+      statusEl.style.display = 'block';
+      statusEl.innerText = 'Enviando para Bunny CDN Storage...';
+      statusEl.style.color = 'var(--accent-amber)';
+      btn.disabled = true;
+
+      try {
+        const uploadUrl = `https://storage.bunnycdn.com/${bunny.storageZone}/gigantera/stills/${currentConvertedImage.filename}`;
+        const res = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'AccessKey': bunny.accessKey,
+            'Content-Type': 'image/jpeg'
+          },
+          body: currentConvertedImage.blob
+        });
+
+        if (res.ok) {
+          statusEl.innerText = '✓ Upload concluído com sucesso no Bunny CDN!';
+          statusEl.style.color = 'var(--accent-emerald)';
+          showToast('Imagem salva no Bunny Storage com sucesso!');
+        } else {
+          statusEl.innerText = `Erro no upload (HTTP ${res.status})`;
+          statusEl.style.color = 'var(--accent-rose)';
+        }
+      } catch (err) {
+        statusEl.innerText = `Erro de conexão: ${err.message}`;
+        statusEl.style.color = 'var(--accent-rose)';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function handleVideoFileSelected(file) {
+      if (!file) return;
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.src = URL.createObjectURL(file);
+      video.muted = true;
+      video.playsInline = true;
+
+      video.onloadeddata = () => {
+        video.currentTime = Math.min(0.5, video.duration / 2 || 0.1);
+      };
+
+      video.onseeked = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 1080;
+        canvas.height = video.videoHeight || 1920;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((posterBlob) => {
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          const dur = Math.round(video.duration || 6);
+          const isVertical = canvas.height > canvas.width;
+          const ratioStr = isVertical ? '9 / 16' : '16 / 9';
+          const posterFilename = file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^a-z0-9_-]/g, '-') + '-poster.jpg';
+          const videoFilename = file.name.toLowerCase().replace(/[^a-z0-9_.-]/g, '-');
+
+          currentVideoData = {
+            file,
+            posterBlob,
+            posterDataUrl: canvas.toDataURL('image/jpeg', 0.85),
+            w: canvas.width,
+            h: canvas.height,
+            dur,
+            sizeMB,
+            posterFilename,
+            videoFilename,
+            ratioStr
+          };
+
+          document.getElementById('videoPosterImg').src = currentVideoData.posterDataUrl;
+          document.getElementById('videoDurationText').innerText = `00:${dur < 10 ? '0' + dur : dur}`;
+          document.getElementById('videoSizeText').innerText = `Vídeo: ${sizeMB} MB`;
+          document.getElementById('videoDimsText').innerText = `${canvas.width}x${canvas.height} (${isVertical ? '9:16' : '16:9'})`;
+          document.getElementById('videoConversionFeedback').style.display = 'flex';
+
+          document.getElementById('editArtworkRatio').value = ratioStr;
+          document.getElementById('editArtworkMedium').value = 'video';
+          handleMediumChange();
+
+          const bunny = getBunnySettings();
+          document.getElementById('editArtworkVideo').value = `${bunny.pullZone}/gigantera/videos/${videoFilename}`;
+          document.getElementById('editArtworkImage').value = `${bunny.pullZone}/gigantera/stills/${posterFilename}`;
+
+          showToast(`Vídeo processado! Poster still extraído a 0.5s.`);
+          URL.revokeObjectURL(video.src);
+        }, 'image/jpeg', 0.85);
+      };
+    }
+
+    async function uploadVideoToBunny() {
+      if (!currentVideoData) return;
+      const bunny = getBunnySettings();
+      if (!bunny.accessKey) {
+        alert('Por favor configure seu Bunny AccessKey na aba "Backup & Sincronização" para realizar uploads automáticos.');
+        return;
+      }
+      const statusEl = document.getElementById('videoUploadStatus');
+      const btn = document.getElementById('btnUploadVideoBunny');
+      statusEl.style.display = 'block';
+      statusEl.innerText = 'Enviando vídeo e poster para Bunny Storage...';
+      statusEl.style.color = 'var(--accent-amber)';
+      btn.disabled = true;
+
+      try {
+        await fetch(`https://storage.bunnycdn.com/${bunny.storageZone}/gigantera/stills/${currentVideoData.posterFilename}`, {
+          method: 'PUT',
+          headers: { 'AccessKey': bunny.accessKey, 'Content-Type': 'image/jpeg' },
+          body: currentVideoData.posterBlob
+        });
+
+        const res = await fetch(`https://storage.bunnycdn.com/${bunny.storageZone}/gigantera/videos/${currentVideoData.videoFilename}`, {
+          method: 'PUT',
+          headers: { 'AccessKey': bunny.accessKey, 'Content-Type': 'video/mp4' },
+          body: currentVideoData.file
+        });
+
+        if (res.ok) {
+          statusEl.innerText = '✓ Vídeo e poster enviados para o Bunny CDN com sucesso!';
+          statusEl.style.color = 'var(--accent-emerald)';
+          showToast('Vídeo e poster hospedados no Bunny CDN!');
+        } else {
+          statusEl.innerText = `Erro no upload do vídeo (HTTP ${res.status})`;
+          statusEl.style.color = 'var(--accent-rose)';
+        }
+      } catch (err) {
+        statusEl.innerText = `Erro de conexão: ${err.message}`;
+        statusEl.style.color = 'var(--accent-rose)';
+      } finally {
+        btn.disabled = false;
+      }
+    }
 
     // INICIALIZAÇÃO & LEITURA DO STORAGE
     function loadState() {
@@ -1208,15 +1831,18 @@
           currentArtworks = (parsed.artworks && parsed.artworks.length > 0) ? parsed.artworks : JSON.parse(JSON.stringify(DEFAULT_ARTWORKS));
           currentPressAssets = (parsed.pressKitAssets && parsed.pressKitAssets.length > 0) ? parsed.pressKitAssets : JSON.parse(JSON.stringify(DEFAULT_PRESS_ASSETS));
           currentSiteConfig = parsed.siteConfig ? { ...DEFAULT_SITE_CONFIG, ...parsed.siteConfig } : { ...DEFAULT_SITE_CONFIG };
+          currentCuratorialStatements = parsed.curatorialStatements ? { ...GIGANTERA_DEFAULT_TEXTOS, ...parsed.curatorialStatements } : { ...GIGANTERA_DEFAULT_TEXTOS };
         } else {
           currentArtworks = JSON.parse(JSON.stringify(DEFAULT_ARTWORKS));
           currentPressAssets = JSON.parse(JSON.stringify(DEFAULT_PRESS_ASSETS));
           currentSiteConfig = { ...DEFAULT_SITE_CONFIG };
+          currentCuratorialStatements = { ...GIGANTERA_DEFAULT_TEXTOS };
         }
       } catch (e) {
         currentArtworks = JSON.parse(JSON.stringify(DEFAULT_ARTWORKS));
         currentPressAssets = JSON.parse(JSON.stringify(DEFAULT_PRESS_ASSETS));
         currentSiteConfig = { ...DEFAULT_SITE_CONFIG };
+        currentCuratorialStatements = { ...GIGANTERA_DEFAULT_TEXTOS };
       }
     }
 
@@ -1230,12 +1856,21 @@
           heroHeadline: document.getElementById('copyHero').value,
           subhead: document.getElementById('copySubhead').value,
           ctaText: document.getElementById('copyCTA').value,
-          blurb: document.getElementById('copyBlurb').value,
           curatorialProverb: document.getElementById('copyProverbio').value,
-          cloudDriveUrl: document.getElementById('inputCloudDriveUrl').value
+          cloudDriveUrl: document.getElementById('inputCloudDriveUrl') ? document.getElementById('inputCloudDriveUrl').value : undefined
+        },
+        curatorialStatements: {
+          tagline: document.getElementById('copyTagline') ? document.getElementById('copyTagline').value : GIGANTERA_DEFAULT_TEXTOS.tagline,
+          miniBio: document.getElementById('copyMiniBio') ? document.getElementById('copyMiniBio').value : GIGANTERA_DEFAULT_TEXTOS.miniBio,
+          bioShort: document.getElementById('copyBioShort') ? document.getElementById('copyBioShort').value : GIGANTERA_DEFAULT_TEXTOS.bioShort,
+          bioPt: document.getElementById('copyBioShort') ? document.getElementById('copyBioShort').value : GIGANTERA_DEFAULT_TEXTOS.bioShort,
+          bioInstitutional: document.getElementById('copyBioInstitutional') ? document.getElementById('copyBioInstitutional').value : GIGANTERA_DEFAULT_TEXTOS.bioInstitutional,
+          statementPt: document.getElementById('copyStatement') ? document.getElementById('copyStatement').value : GIGANTERA_DEFAULT_TEXTOS.statement,
+          processNotes: document.getElementById('copyProcess') ? document.getElementById('copyProcess').value : GIGANTERA_DEFAULT_TEXTOS.process,
+          cvSkeleton: document.getElementById('copyCV') ? document.getElementById('copyCV').value : GIGANTERA_DEFAULT_TEXTOS.cv
         },
         artistInfo: {
-          cloudDriveUrl: document.getElementById('inputCloudDriveUrl').value
+          cloudDriveUrl: document.getElementById('inputCloudDriveUrl') ? document.getElementById('inputCloudDriveUrl').value : undefined
         },
         updatedAt: new Date().toISOString()
       };
@@ -1393,10 +2028,21 @@
       document.getElementById('editArtworkAvailable').checked = true;
       document.getElementById('editArtworkMaterials').value = 'Vitrine de vidro flutuante, render volumétrico';
       document.getElementById('editArtworkDesc').value = '';
-      document.getElementById('editArtworkImage').value = 'works/espinhaco-descida-crepuscular.jpg';
-      document.getElementById('editArtworkVideo').value = 'works/video/video-01-kinetic-spine.mp4';
+
+      const bunny = getBunnySettings();
+      document.getElementById('editArtworkImage').value = `${bunny.pullZone}/gigantera/stills/espinhaco-descida-crepuscular.jpg`;
+      document.getElementById('editArtworkVideo').value = `${bunny.pullZone}/gigantera/videos/video-01-kinetic-spine.mp4`;
       document.getElementById('editArtworkMasterFormat').value = 'Apple ProRes 422 HQ (4K)';
       document.getElementById('editArtworkDrive').value = '';
+
+      // Reseta feedback do conversor client-side
+      document.getElementById('imageConversionFeedback').style.display = 'none';
+      document.getElementById('videoConversionFeedback').style.display = 'none';
+      document.getElementById('imageUploadStatus').style.display = 'none';
+      document.getElementById('videoUploadStatus').style.display = 'none';
+      currentConvertedImage = null;
+      currentVideoData = null;
+
       handleMediumChange();
       document.getElementById('artworkModalBackdrop').classList.add('active');
     }
@@ -1419,6 +2065,15 @@
       document.getElementById('editArtworkVideo').value = art.videoSrc || '';
       document.getElementById('editArtworkMasterFormat').value = art.masterFormat || '';
       document.getElementById('editArtworkDrive').value = art.cloudStorageUrl || '';
+
+      // Reseta feedback do conversor client-side
+      document.getElementById('imageConversionFeedback').style.display = 'none';
+      document.getElementById('videoConversionFeedback').style.display = 'none';
+      document.getElementById('imageUploadStatus').style.display = 'none';
+      document.getElementById('videoUploadStatus').style.display = 'none';
+      currentConvertedImage = null;
+      currentVideoData = null;
+
       handleMediumChange();
       document.getElementById('artworkModalBackdrop').classList.add('active');
     }
@@ -1657,14 +2312,24 @@
     }
 
     function loadCopysUI() {
-      if (currentSiteConfig.title) document.getElementById('copyTitle').value = currentSiteConfig.title;
-      if (currentSiteConfig.metaDescription) document.getElementById('copyMeta').value = currentSiteConfig.metaDescription;
-      if (currentSiteConfig.heroHeadline) document.getElementById('copyHero').value = currentSiteConfig.heroHeadline;
-      if (currentSiteConfig.subhead) document.getElementById('copySubhead').value = currentSiteConfig.subhead;
-      if (currentSiteConfig.ctaText) document.getElementById('copyCTA').value = currentSiteConfig.ctaText;
-      if (currentSiteConfig.blurb) document.getElementById('copyBlurb').value = currentSiteConfig.blurb;
-      if (currentSiteConfig.curatorialProverb) document.getElementById('copyProverbio').value = currentSiteConfig.curatorialProverb;
-      if (currentSiteConfig.cloudDriveUrl) document.getElementById('inputCloudDriveUrl').value = currentSiteConfig.cloudDriveUrl;
+      // 1. Textos Institucionais Canônicos do Artista (Projeto GIGANTERA)
+      const st = currentCuratorialStatements || GIGANTERA_DEFAULT_TEXTOS;
+      if (document.getElementById('copyTagline')) document.getElementById('copyTagline').value = st.tagline || GIGANTERA_DEFAULT_TEXTOS.tagline;
+      if (document.getElementById('copyMiniBio')) document.getElementById('copyMiniBio').value = st.miniBio || GIGANTERA_DEFAULT_TEXTOS.miniBio;
+      if (document.getElementById('copyBioShort')) document.getElementById('copyBioShort').value = st.bioShort || st.bioPt || GIGANTERA_DEFAULT_TEXTOS.bioShort;
+      if (document.getElementById('copyBioInstitutional')) document.getElementById('copyBioInstitutional').value = st.bioInstitutional || GIGANTERA_DEFAULT_TEXTOS.bioInstitutional;
+      if (document.getElementById('copyStatement')) document.getElementById('copyStatement').value = st.statementPt || st.statement || GIGANTERA_DEFAULT_TEXTOS.statement;
+      if (document.getElementById('copyProcess')) document.getElementById('copyProcess').value = st.processNotes || st.process || GIGANTERA_DEFAULT_TEXTOS.process;
+      if (document.getElementById('copyCV')) document.getElementById('copyCV').value = st.cvSkeleton || st.cv || GIGANTERA_DEFAULT_TEXTOS.cv;
+
+      // 2. Textos de Apresentação do Pavilhão 3D & SEO
+      if (currentSiteConfig.title && document.getElementById('copyTitle')) document.getElementById('copyTitle').value = currentSiteConfig.title;
+      if (currentSiteConfig.metaDescription && document.getElementById('copyMeta')) document.getElementById('copyMeta').value = currentSiteConfig.metaDescription;
+      if (currentSiteConfig.heroHeadline && document.getElementById('copyHero')) document.getElementById('copyHero').value = currentSiteConfig.heroHeadline;
+      if (currentSiteConfig.subhead && document.getElementById('copySubhead')) document.getElementById('copySubhead').value = currentSiteConfig.subhead;
+      if (currentSiteConfig.ctaText && document.getElementById('copyCTA')) document.getElementById('copyCTA').value = currentSiteConfig.ctaText;
+      if (currentSiteConfig.curatorialProverb && document.getElementById('copyProverbio')) document.getElementById('copyProverbio').value = currentSiteConfig.curatorialProverb;
+      if (currentSiteConfig.cloudDriveUrl && document.getElementById('inputCloudDriveUrl')) document.getElementById('inputCloudDriveUrl').value = currentSiteConfig.cloudDriveUrl;
 
       const secretUrl = window.location.origin + window.location.pathname.replace(/\/admin\/?$/, '') + '/index.html?view=media';
       const secretInput = document.getElementById('secretLinkDisplay');
@@ -1676,6 +2341,7 @@
     // INICIALIZAÇÃO
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
+      loadBunnySettings();
       renderObrasTable(currentArtworks);
       renderPressAdmin();
       renderClusters(CLUSTERS_DATA);

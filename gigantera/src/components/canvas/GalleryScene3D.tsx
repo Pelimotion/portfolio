@@ -1639,6 +1639,32 @@ export const GalleryScene3D: React.FC = () => {
         }
       }
 
+      // Otimização de Performance & Decodificação GPU (LOD de Proximidade para Vídeos)
+      // Pausa decodificação em segundo plano se o visitante estiver a mais de 18m
+      // Retoma reprodução contínua ao se aproximar (< 15m) ou no modo cinema
+      const camPos = camera.position;
+      artworkItems.forEach((item) => {
+        if (!item.videoEl) return;
+        const isCinemaActiveThis = currentCinemaArt?.id === item.artwork.id;
+        if (isCinemaActiveThis) {
+          if (item.videoEl.paused) {
+            item.videoEl.play().catch(() => {});
+          }
+          return;
+        }
+
+        const dist = camPos.distanceTo(item.group.position);
+        if (dist <= 15.0) {
+          if (item.videoEl.paused) {
+            item.videoEl.play().catch(() => {});
+          }
+        } else if (dist > 18.0) {
+          if (!item.videoEl.paused) {
+            item.videoEl.pause();
+          }
+        }
+      });
+
       // DINÂMICA DO MODO DE INSPEÇÃO 3D (Obra no Primeiro Plano saindo da vitrine)
       if (currentCinemaArt) {
         // Se a obra acabou de ser aberta ou se mudou de prancheta
