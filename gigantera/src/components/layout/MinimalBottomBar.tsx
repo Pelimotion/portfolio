@@ -87,11 +87,31 @@ export const MinimalBottomBar: React.FC = () => {
             aria-hidden={hasPlayerMoved}
           >
             <div className="controls-hint-capsule">
+              {/* Cluster WASD em grid físico 2×3 */}
               <span className="keycap-cluster">
-                <kbd className="keycap">W</kbd>
-                <kbd className="keycap">A</kbd>
-                <kbd className="keycap">S</kbd>
-                <kbd className="keycap">D</kbd>
+                <span className="wasd-key-grid">
+                  {/* Linha 1: espaço, W, espaço */}
+                  <span className="wasd-spacer" />
+                  <kbd className="keycap keycap-xs">W</kbd>
+                  <span className="wasd-spacer" />
+                  {/* Linha 2: A, S, D */}
+                  <kbd className="keycap keycap-xs">A</kbd>
+                  <kbd className="keycap keycap-xs">S</kbd>
+                  <kbd className="keycap keycap-xs">D</kbd>
+                </span>
+                {/* Setas direcionais como alternativa */}
+                <span className="arrow-key-cluster">
+                  <span className="arrow-key-row">
+                    <span className="arrow-spacer" />
+                    <kbd className="keycap keycap-xs">↑</kbd>
+                    <span className="arrow-spacer" />
+                  </span>
+                  <span className="arrow-key-row">
+                    <kbd className="keycap keycap-xs">←</kbd>
+                    <kbd className="keycap keycap-xs">↓</kbd>
+                    <kbd className="keycap keycap-xs">→</kbd>
+                  </span>
+                </span>
                 <span className="keycap-label">ANDAR</span>
               </span>
               <span className="hint-sep">·</span>
@@ -101,7 +121,7 @@ export const MinimalBottomBar: React.FC = () => {
               </span>
               <span className="hint-sep">·</span>
               <span className="keycap-combo">
-                <kbd className="keycap">E</kbd>
+                <kbd className="keycap keycap-xs">E</kbd>
                 <span className="keycap-label">INTERAGIR</span>
               </span>
             </div>

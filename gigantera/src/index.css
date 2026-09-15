@@ -135,7 +135,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 36px;
+  gap: 24px;
   background: var(--scrim-top);
   pointer-events: none; /* Apenas botões clicáveis */
   transition: all 0.3s ease;
@@ -290,7 +291,7 @@ a {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 20px;
 }
 
 /* Toast discreto de recomendação de performance */
@@ -371,9 +372,9 @@ a {
   font-family: var(--font-mono);
   font-size: 9.5px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 9999px;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
@@ -407,12 +408,12 @@ a {
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   transition: all 0.2s ease;
 }
 
@@ -622,20 +623,68 @@ a {
 .controls-hint-capsule {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 14px;
-  background: rgba(18, 22, 21, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 10px;
+  padding: 6px 16px;
+  /* Fundo mais escuro para melhor legibilidade dos textos */
+  background: rgba(10, 13, 12, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 9999px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: var(--text-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #d8deda; /* mais brilhante que --text-secondary */
   font-size: 10px;
 }
 
 .hint-sep {
-  color: var(--text-tertiary);
+  color: rgba(255,255,255,0.4);
   font-size: 12px;
+}
+
+/* Grid físico WASD 2×3 no mini-tutorial */
+.wasd-key-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 18px);
+  grid-template-rows: repeat(2, 18px);
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.wasd-spacer {
+  width: 18px;
+  height: 18px;
+}
+
+/* Setas direcionais ao lado do WASD */
+.arrow-key-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.arrow-key-row {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.arrow-spacer {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+
+.keycap-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #d8deda !important;
+}
+
+/* Override para temas dark/light */
+[data-theme='light'] .keycap-label {
+  color: #f4f3ef !important;
 }
 
 /* Ferramentas à Direita: Guia (H) e Acervo / 3D (TAB) */

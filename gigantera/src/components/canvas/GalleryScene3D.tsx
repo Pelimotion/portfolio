@@ -152,46 +152,52 @@ function createGlassRoughnessTexture(): THREE.CanvasTexture {
 function createPlaqueTexture(art: Artwork, index: number, isLight: boolean): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
-  canvas.height = 256;
+  canvas.height = 280;
   const ctx = canvas.getContext('2d')!;
 
   ctx.fillStyle = isLight ? '#fbfbfa' : '#141716';
-  ctx.fillRect(0, 0, 1024, 256);
+  ctx.fillRect(0, 0, 1024, 280);
 
   ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)';
   ctx.lineWidth = 2;
-  ctx.strokeRect(6, 6, 1012, 244);
+  ctx.strokeRect(6, 6, 1012, 268);
 
   ctx.fillStyle = isLight ? '#b88d34' : '#e4c379';
-  ctx.fillRect(28, 28, 6, 200);
+  ctx.fillRect(28, 28, 6, 220);
 
   const numStr = String(index + 1).padStart(2, '0');
   ctx.fillStyle = isLight ? '#0d0f0e' : '#f4f3ef';
-  ctx.font = 'bold 36px "Space Mono", monospace';
+  // Título maior e mais legível
+  ctx.font = 'bold 48px "Space Mono", monospace';
   ctx.textAlign = 'left';
-  ctx.fillText(`${numStr}. ${art.title.toUpperCase()}`, 52, 78);
+  // Truncar título longo para não ultrapassar a largura
+  let titleText = `${numStr}. ${art.title.toUpperCase()}`;
+  if (ctx.measureText(titleText).width > 880) {
+    titleText = `${numStr}. ${art.title.toUpperCase().substring(0, 18)}...`;
+  }
+  ctx.fillText(titleText, 52, 90);
 
-  ctx.fillStyle = isLight ? '#484d4a' : '#909692';
-  ctx.font = '600 22px "Space Mono", monospace';
+  ctx.fillStyle = isLight ? '#484d4a' : '#c8d0cc';
+  ctx.font = '600 28px "Space Mono", monospace';
   const mediumStr = art.medium === 'video' ? 'VITRINE CINÉTICA // LOOP' : 'IMPRESSO GICLÉE EM VIDRO';
-  ctx.fillText(`${art.year} · ${mediumStr}`, 52, 126);
+  ctx.fillText(`${art.year} · ${mediumStr}`, 52, 142);
 
-  ctx.font = '400 20px "Space Mono", monospace';
-  ctx.fillStyle = isLight ? '#7a807c' : '#68706c';
-  ctx.fillText(`PELIMOTION // FELIPE CONCEIÇÃO · ${art.series || 'GIGANTERA'}`, 52, 170);
+  ctx.font = '400 22px "Space Mono", monospace';
+  ctx.fillStyle = isLight ? '#7a807c' : '#7a8480';
+  ctx.fillText(`PELIMOTION // ${art.series || 'GIGANTERA'}`, 52, 190);
 
-  ctx.font = 'bold 18px "Space Mono", monospace';
+  ctx.font = 'bold 20px "Space Mono", monospace';
   ctx.fillStyle = isLight ? '#b88d34' : '#e4c379';
-  ctx.fillText('[E] / [CLIQUE] INSPECIONAR 3D', 52, 214);
+  ctx.fillText('[E] INSPECIONAR', 52, 240);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = isLight ? '#8a908c' : '#4d5551';
   ctx.font = '18px "Space Mono", monospace';
-  ctx.fillText(`PLM-ACC-${numStr}`, 990, 78);
+  ctx.fillText(`PLM-${numStr}`, 990, 90);
 
-  const bcX = 860;
-  const bcY = 110;
-  ctx.fillStyle = isLight ? '#222' : '#ddd';
+  const bcX = 870;
+  const bcY = 120;
+  ctx.fillStyle = isLight ? '#222' : '#ccc';
   const bars = [2, 1, 3, 1, 2, 4, 1, 2, 3, 1, 4, 2];
   let curX = bcX;
   for (let b = 0; b < bars.length; b++) {
@@ -453,14 +459,28 @@ export const GalleryScene3D: React.FC = () => {
     });
 
     const lightShaftGroup = new THREE.Group();
+    // Cone exterior amplo (luz dispersa)
     const shaftGeo = new THREE.CylinderGeometry(0.8, 5.2, 18, 16, 1, true);
     const shaftMat = new THREE.MeshBasicMaterial({
       color: isLight ? 0xfffcf5 : 0xffeed1,
       transparent: true,
-      opacity: isLight ? 0.03 : 0.05,
+      opacity: isLight ? 0.06 : 0.10,
       side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
+    // Cone interior concentrado (núcleo mais brilhante)
+    const shaftCoreGeo = new THREE.CylinderGeometry(0.25, 1.8, 18, 12, 1, true);
+    const shaftCoreMat = new THREE.MeshBasicMaterial({
+      color: isLight ? 0xfffdf8 : 0xfff5de,
+      transparent: true,
+      opacity: isLight ? 0.12 : 0.20,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const lightShaftMeshes: { outer: THREE.Mesh; inner: THREE.Mesh; baseX: number; baseZ: number }[] = [];
 
     layout.ceilingBeamsZ.forEach((bz) => {
       const beam = new THREE.Mesh(beamGeo, beamMat);
@@ -469,10 +489,17 @@ export const GalleryScene3D: React.FC = () => {
       beam.receiveShadow = true;
       ceilingBeamsGroup.add(beam);
 
-      const shaft = new THREE.Mesh(shaftGeo, shaftMat);
-      shaft.position.set(0, 2, bz - 2);
-      shaft.rotation.z = -0.15;
-      lightShaftGroup.add(shaft);
+      const outerShaft = new THREE.Mesh(shaftGeo, shaftMat.clone());
+      outerShaft.position.set(0, 2, bz - 2);
+      outerShaft.rotation.z = -0.15;
+      lightShaftGroup.add(outerShaft);
+
+      const innerShaft = new THREE.Mesh(shaftCoreGeo, shaftCoreMat.clone());
+      innerShaft.position.set(0, 2, bz - 2);
+      innerShaft.rotation.z = -0.15;
+      lightShaftGroup.add(innerShaft);
+
+      lightShaftMeshes.push({ outer: outerShaft, inner: innerShaft, baseX: 0, baseZ: bz - 2 });
     });
     scene.add(ceilingBeamsGroup);
     scene.add(lightShaftGroup);
@@ -803,23 +830,23 @@ export const GalleryScene3D: React.FC = () => {
         paperW = paperH * ratio; // ~2.68m
       }
 
-      const glassW = paperW + 0.6;
-      const glassH = paperH + 0.8;
+      const glassW = paperW + 0.35;  // vitrine mais compacta e minimalista
+      const glassH = paperH + 0.50;
       const glassD = 0.45;
 
       const glassGeo = new THREE.BoxGeometry(glassW, glassH, glassD);
       const glassMat = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        transmission: 0.95,
-        roughness: isLight ? 0.07 : 0.09,
+        transmission: 0.97,
+        roughness: isLight ? 0.05 : 0.07,
         roughnessMap: glassRoughnessTex,
-        ior: 1.52,
-        thickness: 0.65,
-        attenuationColor: new THREE.Color(0xe0fff3),
-        attenuationDistance: 3.5,
+        ior: 1.48,
+        thickness: 0.40,
+        attenuationColor: new THREE.Color(0xe8fff8),
+        attenuationDistance: 4.5,
         transparent: true,
-        opacity: 0.92,
-        reflectivity: 0.72
+        opacity: 0.88,
+        reflectivity: 0.60
       });
       const glassMesh = new THREE.Mesh(glassGeo, glassMat);
       glassMesh.castShadow = true;
@@ -954,9 +981,11 @@ export const GalleryScene3D: React.FC = () => {
       (glassMesh as any).artworkData = art;
       group.add(paperMesh);
 
-      // Plaquinha Física 3D em Baixo da Obra (dimensionada proporcionalmente à vitrine)
-      const plaqueW = Math.min(glassW * 0.75, 2.8);
-      const plaqueGeo = new THREE.BoxGeometry(plaqueW, 0.62, 0.04);
+      // Plaquinha Física 3D em Baixo da Obra
+      // NOTA: A plaquinha NÃO é adicionada ao group para evitar que flutue com a obra.
+      // Ela é adicionada diretamente à cena e segue apenas o X/Z do grupo, com Y fixo perto do chão.
+      const plaqueW = Math.min(glassW * 0.72, 2.6);
+      const plaqueGeo = new THREE.BoxGeometry(plaqueW, 0.68, 0.04);
       const plaqueTex = createPlaqueTexture(art, idx, isLight);
       const plaqueMat = new THREE.MeshStandardMaterial({
         map: plaqueTex,
@@ -964,12 +993,17 @@ export const GalleryScene3D: React.FC = () => {
         metalness: 0.08
       });
       const plaqueMesh = new THREE.Mesh(plaqueGeo, plaqueMat);
-      plaqueMesh.position.set(0, -(glassH / 2) - 0.42, 0.02);
+      // Y fixo: quasi-chão sem encostar (-3.2 é o chão; placa fica em -2.85 = 35cm acima)
+      const plaqueWorldY = -2.85;
+      plaqueMesh.position.set(coords.x, plaqueWorldY, coords.z);
+      if (coords.rotY) plaqueMesh.rotation.y = coords.rotY;
       plaqueMesh.castShadow = true;
       plaqueMesh.receiveShadow = true;
       (plaqueMesh as any).artworkData = art;
       (plaqueMesh as any).isArtworkPlaque = true;
-      group.add(plaqueMesh);
+      // Tag para acompanhar qual artworkItem pertence
+      (plaqueMesh as any).artworkId = art.id;
+      scene.add(plaqueMesh);
 
       scene.add(group);
       artworkItems.push({
@@ -987,7 +1021,7 @@ export const GalleryScene3D: React.FC = () => {
         hallwayRotY: coords.rotY || 0,
         gridPos: new THREE.Vector3(0, 0, 0),
         gridRotY: 0,
-        gridScale: 0.52,
+        gridScale: 0.48,
         idx
       });
     });
@@ -1015,31 +1049,31 @@ export const GalleryScene3D: React.FC = () => {
         const pageIdx = pageArts.findIndex((a) => a.id === item.artwork.id);
         if (pageIdx !== -1) {
           if (filter === 'video') {
-            // 3 obras de vídeo em linha frontal centralizada no horizonte
+            // Vídeos em linha frontal centralizada
             const col = pageIdx;
-            const x = -3.8 + col * 3.8;
-            const y = 0.55;
+            const x = -3.6 + col * 3.6;
+            const y = 0.5;
             item.gridPos.set(x, y, 0.0);
             item.gridRotY = 0;
-            item.gridScale = 0.56;
+            item.gridScale = 0.54;
           } else if (filter === 'still') {
-            // 6 obras still em 3 colunas x 2 linhas
+            // 3 colunas × 2 linhas, mais compactas
             const col = pageIdx % 3;
             const row = Math.floor(pageIdx / 3);
-            const x = -3.8 + col * 3.8;
-            const y = row === 0 ? 1.85 : -0.65;
+            const x = -3.4 + col * 3.4;
+            const y = row === 0 ? 1.6 : -0.8;
             item.gridPos.set(x, y, 0.0);
             item.gridRotY = 0;
-            item.gridScale = 0.53;
+            item.gridScale = 0.48;
           } else {
-            // 'all': 4 colunas x 2 linhas idêntica à simulação do usuário (8 obras na tela + reflexo no piso)
+            // 'all': 4 colunas × 2 linhas — vitrines menores e mais arejadas
             const col = pageIdx % 4;
             const row = Math.floor(pageIdx / 4);
-            const x = -5.4 + col * 3.6;
-            const y = row === 0 ? 1.85 : -0.65;
+            const x = -4.8 + col * 3.2;
+            const y = row === 0 ? 1.6 : -0.85;
             item.gridPos.set(x, y, 0.0);
             item.gridRotY = 0;
-            item.gridScale = 0.52;
+            item.gridScale = 0.48;
           }
         } else {
           // Obras fora do filtro ou da página recuam elegantemente no salão
@@ -2108,6 +2142,7 @@ export const GalleryScene3D: React.FC = () => {
 
             inspectionRig.visible = true;
             inspectionTransition = 0.1;
+            // CRÍTICO: resetar rotação INSTANTANEAMENTE (não via lerp) para evitar obra rotacionada residual
             targetInspRotX = 0;
             targetInspRotY = 0;
             curInspRotX = 0;
@@ -2252,6 +2287,26 @@ export const GalleryScene3D: React.FC = () => {
       }
       dustPosAttr.needsUpdate = true;
 
+      // Animação dos raios de luz volumétrica — oscilação lenta e orgânica
+      if (!currentCinemaArt) {
+        const shaftSwaySpeed = 0.18; // lento e hipnótico
+        lightShaftMeshes.forEach(({ outer, inner, baseX, baseZ }, li) => {
+          // Oscilação de rotação Z suave (imitando luz solar através de claraboia)
+          const sway = Math.sin(elapsedTime * shaftSwaySpeed + li * 0.9) * 0.055;
+          outer.rotation.z = -0.15 + sway;
+          inner.rotation.z = -0.15 + sway * 0.7;
+          // Translação X subtil para simular deslocamento da nuvem de luz
+          outer.position.x = baseX + Math.sin(elapsedTime * 0.12 + li * 1.3) * 0.45;
+          inner.position.x = baseX + Math.sin(elapsedTime * 0.12 + li * 1.3) * 0.28;
+          // Pulsação de opacidade muito suave
+          const baseOpOuter = isLight ? 0.06 : 0.10;
+          const baseOpInner = isLight ? 0.12 : 0.20;
+          const pulse = Math.sin(elapsedTime * 0.22 + li * 0.7) * 0.02;
+          (outer.material as THREE.MeshBasicMaterial).opacity = baseOpOuter + pulse;
+          (inner.material as THREE.MeshBasicMaterial).opacity = baseOpInner + pulse;
+        });
+      }
+
       // Coreografia espacial das vitrines 3D: Corredor ↔ Grade 4x2 do Acervo
       if (!currentCinemaArt) {
         artworkItems.forEach((item) => {
@@ -2259,7 +2314,9 @@ export const GalleryScene3D: React.FC = () => {
 
           if (archiveTransition > 0.001) {
             const targetX = THREE.MathUtils.lerp(item.hallwayPos.x, item.gridPos.x, archiveTransition);
-            const naturalBreathingY = item.hallwayPos.y + Math.sin(elapsedTime * 0.8 + item.idx * 0.9) * 0.08;
+            // Flutuação suave: amplitude 0.09, sem pitch mais rápido
+            const floatAmp = 0.09;
+            const naturalBreathingY = item.hallwayPos.y + Math.sin(elapsedTime * 0.65 + item.idx * 0.85) * floatAmp;
             const targetY = THREE.MathUtils.lerp(naturalBreathingY, item.gridPos.y, archiveTransition);
             let targetZ = THREE.MathUtils.lerp(item.hallwayPos.z, item.gridPos.z, archiveTransition);
 
@@ -2277,13 +2334,31 @@ export const GalleryScene3D: React.FC = () => {
             const baseScale = THREE.MathUtils.lerp(1.0, item.gridScale, archiveTransition);
             const hoverScale = isHoveredInGrid ? baseScale * 1.03 : baseScale;
             item.group.scale.set(hoverScale, hoverScale, hoverScale);
+
+            // Plaquinha acompanha X/Z do grupo em modo acervo mas mantém Y fixo
+            const plaqueWorldY = -2.85;
+            const blendX = targetX;
+            const blendZ = targetZ;
+            const plaqueRotY = THREE.MathUtils.lerp(item.hallwayRotY, item.gridRotY, archiveTransition);
+            item.plaqueMesh.position.set(blendX, plaqueWorldY, blendZ);
+            item.plaqueMesh.rotation.y = plaqueRotY;
+            // Escalar a placa junto com a vitrine no acervo
+            item.plaqueMesh.scale.set(hoverScale, hoverScale, hoverScale);
           } else {
-            // Exploração livre em primeira pessoa pelo pavilhão
+            // Exploração livre em primeira pessoa
+            const floatAmp = 0.09;
+            const floatY = item.hallwayPos.y + Math.sin(elapsedTime * 0.65 + item.idx * 0.85) * floatAmp;
+            // Clamp: vitrine nunca vai abaixo de hallwayPos.y - floatAmp (nunca toca o chão)
             item.group.position.x = item.hallwayPos.x;
-            item.group.position.y = item.hallwayPos.y + Math.sin(elapsedTime * 0.8 + item.idx * 0.9) * 0.08;
+            item.group.position.y = floatY;
             item.group.position.z = item.hallwayPos.z;
             item.group.rotation.y = item.hallwayRotY;
             item.group.scale.set(1.0, 1.0, 1.0);
+
+            // Plaquinha estática no mundo, segue X/Z da hallway position mas Y fixo
+            item.plaqueMesh.position.set(item.hallwayPos.x, -2.85, item.hallwayPos.z);
+            item.plaqueMesh.rotation.y = item.hallwayRotY;
+            item.plaqueMesh.scale.set(1.0, 1.0, 1.0);
           }
         });
       }
