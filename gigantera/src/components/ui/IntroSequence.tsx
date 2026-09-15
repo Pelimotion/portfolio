@@ -23,30 +23,23 @@ export const IntroSequence: React.FC = () => {
   };
 
   useEffect(() => {
-    // Auto-dismiss após 4.5s se o visitante não fizer nada
-    const tGlide = setTimeout(() => dismiss(500), 4500);
-
-    // Qualquer input fecha imediatamente (visitante já sabe o que faz)
-    const handleEarlyDismiss = () => dismiss(350);
-    window.addEventListener('wheel', handleEarlyDismiss, { once: true });
-    window.addEventListener('touchstart', handleEarlyDismiss, { once: true });
-
-    // Só fecha com keydown se for uma tecla de movimento (não H que abre o guia)
-    const handleKeyDismiss = (e: KeyboardEvent) => {
-      const nav = ['w','a','s','d','W','A','S','D','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Enter'];
-      if (nav.includes(e.key)) handleEarlyDismiss();
+    // O tutorial permanece na tela até o usuário clicar para começar ou apertar TAB para ver o acervo
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        e.stopPropagation();
+        setViewMode('archive');
+        dismiss(300);
+      }
     };
-    window.addEventListener('keydown', handleKeyDismiss);
 
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => {
-      clearTimeout(tGlide);
-      window.removeEventListener('wheel', handleEarlyDismiss);
-      window.removeEventListener('touchstart', handleEarlyDismiss);
-      window.removeEventListener('keydown', handleKeyDismiss);
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
     };
-  }, [setIntroPhase, setTutorialDocked]);
+  }, [setViewMode]);
 
-  // Se o jogador começou a andar ou pegou o CD, encerra imediatamente
+  // Se o jogador interagiu diretamente e o avatar se moveu ou pegou o CD, encerra gracioso
   useEffect(() => {
     if ((hasPlayerMoved || isHoldingCD) && !isDone) {
       dismiss(300);

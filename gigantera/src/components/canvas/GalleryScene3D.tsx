@@ -785,6 +785,8 @@ export const GalleryScene3D: React.FC = () => {
       artwork: Artwork;
       paperMat: THREE.MeshStandardMaterial;
       texture: THREE.Texture;
+      posterTex?: THREE.Texture;
+      videoTex?: THREE.VideoTexture;
       videoEl?: HTMLVideoElement;
     }[] = [];
 
@@ -833,13 +835,6 @@ export const GalleryScene3D: React.FC = () => {
       glassMesh.receiveShadow = true;
       group.add(glassMesh);
 
-      const edgeGeo = new THREE.EdgesGeometry(glassGeo);
-      // Moldura Arquitetural Minimalista (Filete metálico de 1.8cm em torno do vidro)
-      const frameMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0x2d302e : 0x0a0c0b,
-        metalness: 0.88,
-        roughness: 0.22
-      });
       const frameGeo = new THREE.BoxGeometry(glassW + 0.036, glassH + 0.036, glassD + 0.036);
       const frameEdges = new THREE.EdgesGeometry(frameGeo);
       const wireframe = new THREE.LineSegments(frameEdges, new THREE.LineBasicMaterial({
@@ -851,40 +846,82 @@ export const GalleryScene3D: React.FC = () => {
       let paperMat: THREE.MeshStandardMaterial;
       let videoElement: HTMLVideoElement | undefined;
       let artworkTex: THREE.Texture;
+      let posterTexture: THREE.Texture | undefined;
+      let videoTexture: THREE.VideoTexture | undefined;
 
       if (art.medium === 'video' && art.videoSrc) {
+        // Carrega SEMPRE a imagem estática de alta definição como poster inicial (elimina 100% o risco de vitrine preta)
+        const pTex = textureLoader.load(art.imageSrc);
+        pTex.minFilter = THREE.LinearMipmapLinearFilter;
+        pTex.colorSpace = THREE.SRGBColorSpace;
+        posterTexture = pTex;
+        artworkTex = pTex;
+
         const vid = document.createElement('video');
         vid.src = art.videoSrc;
         vid.crossOrigin = 'anonymous';
         vid.loop = true;
         vid.muted = true;
+        vid.defaultMuted = true;
         vid.playsInline = true;
-        vid.autoplay = true;
+        vid.setAttribute('playsinline', '');
+        vid.setAttribute('webkit-playsinline', '');
+        vid.setAttribute('muted', '');
         vid.setAttribute('data-art-id', art.id);
-        vid.style.display = 'none';
+        // Elemento fora da visão mas ativo no layout (evita congelamento da decodificação em Chromium/Safari)
+        vid.style.position = 'fixed';
+        vid.style.top = '-9999px';
+        vid.style.left = '-9999px';
+        vid.style.width = '1px';
+        vid.style.height = '1px';
+        vid.style.opacity = '0';
+        vid.style.pointerEvents = 'none';
         document.body.appendChild(vid);
-        vid.play().catch(() => {});
 
-        const videoTex = new THREE.VideoTexture(vid);
-        videoTex.minFilter = THREE.LinearFilter;
-        videoTex.magFilter = THREE.LinearFilter;
-        videoTex.generateMipmaps = false;
-        videoTex.colorSpace = THREE.SRGBColorSpace;
-        artworkTex = videoTex;
-
-        vid.addEventListener('loadeddata', () => {
-          vid.play().catch(() => {});
-        });
+        const vTex = new THREE.VideoTexture(vid);
+        vTex.minFilter = THREE.LinearFilter;
+        vTex.magFilter = THREE.LinearFilter;
+        vTex.generateMipmaps = false;
+        vTex.colorSpace = THREE.SRGBColorSpace;
+        videoTexture = vTex;
 
         paperMat = new THREE.MeshStandardMaterial({
-          map: videoTex,
+          map: pTex,
           emissive: new THREE.Color(0xffffff),
-          emissiveMap: videoTex,
-          emissiveIntensity: 0.2, // Give it a slight screen glow
+          emissiveMap: pTex,
+          emissiveIntensity: 0.15,
           roughness: 0.95,
           metalness: 0.0,
           side: THREE.DoubleSide
         });
+
+        let swapped = false;
+        const swapToVideo = () => {
+          if (swapped) return;
+          swapped = true;
+          artworkTex = vTex;
+          paperMat.map = vTex;
+          paperMat.emissiveMap = vTex;
+          paperMat.needsUpdate = true;
+
+          const currentCinema = useAppStore.getState().cinemaArtwork;
+          if (currentCinema && currentCinema.id === art.id) {
+            artPlaneMat.map = vTex;
+            artPlaneMat.needsUpdate = true;
+          }
+        };
+
+        vid.addEventListener('loadeddata', () => {
+          vid.play().then(swapToVideo).catch(() => {});
+        });
+        vid.addEventListener('canplay', () => {
+          vid.play().then(swapToVideo).catch(() => {});
+        });
+        vid.addEventListener('playing', () => {
+          swapToVideo();
+        });
+
+        vid.play().then(swapToVideo).catch(() => {});
         videoElement = vid;
       } else {
         const tex = textureLoader.load(art.imageSrc);
@@ -952,6 +989,8 @@ export const GalleryScene3D: React.FC = () => {
         artwork: art,
         paperMat,
         texture: artworkTex,
+        posterTex: posterTexture,
+        videoTex: videoTexture,
         videoEl: videoElement
       });
     });
@@ -1502,6 +1541,13 @@ export const GalleryScene3D: React.FC = () => {
       } catch {}
       playerController.resumeAimControl();
       playerController.requestLock();
+
+      // Destrava reprodução de todos os vídeos de fundo com o gesto do usuário
+      artworkItems.forEach((item) => {
+        if (item.videoEl && item.videoEl.paused) {
+          item.videoEl.play().catch(() => {});
+        }
+      });
     };
 
     window.addEventListener('mousedown', onMouseDown);
@@ -1759,7 +1805,15 @@ export const GalleryScene3D: React.FC = () => {
 
             const isVid = currentCinemaArt.medium === 'video';
             if (isVid && found.videoEl) {
-              artPlaneMat.map = found.texture;
+              // Se o vídeo já estiver pronto e com dados, usa a videoTexture;
+              // Caso contrário, usa o posterTex para garantir que a obra nunca apareça preta
+              if (found.videoEl.readyState >= 2 && !found.videoEl.error && found.videoTex) {
+                artPlaneMat.map = found.videoTex;
+              } else if (found.posterTex) {
+                artPlaneMat.map = found.posterTex;
+              } else {
+                artPlaneMat.map = found.texture;
+              }
               found.videoEl.play().catch(() => {});
             } else {
               // Se for imagem estática e tiver galeria, carrega a imagem da galeria sob demanda
@@ -1817,18 +1871,37 @@ export const GalleryScene3D: React.FC = () => {
             // Obra aberta externamente ou via catálogo/admin
             const isVid = currentCinemaArt.medium === 'video';
             if (isVid && currentCinemaArt.videoSrc) {
+              const posterTex = textureLoader.load(currentCinemaArt.imageSrc);
+              posterTex.colorSpace = THREE.SRGBColorSpace;
+              artPlaneMat.map = posterTex;
+
               const tempVid = document.createElement('video');
               tempVid.src = currentCinemaArt.videoSrc;
               tempVid.crossOrigin = 'anonymous';
               tempVid.loop = true;
               tempVid.muted = false;
               tempVid.playsInline = true;
-              tempVid.style.display = 'none';
+              tempVid.setAttribute('playsinline', '');
+              tempVid.setAttribute('webkit-playsinline', '');
+              tempVid.style.position = 'fixed';
+              tempVid.style.top = '-9999px';
+              tempVid.style.left = '-9999px';
+              tempVid.style.width = '1px';
+              tempVid.style.height = '1px';
+              tempVid.style.opacity = '0';
+              tempVid.style.pointerEvents = 'none';
               document.body.appendChild(tempVid);
-              tempVid.play().catch(() => {});
+
               const vidTex = new THREE.VideoTexture(tempVid);
               vidTex.colorSpace = THREE.SRGBColorSpace;
-              artPlaneMat.map = vidTex;
+              tempVid.addEventListener('canplay', () => {
+                artPlaneMat.map = vidTex;
+                artPlaneMat.needsUpdate = true;
+              });
+              tempVid.play().then(() => {
+                artPlaneMat.map = vidTex;
+                artPlaneMat.needsUpdate = true;
+              }).catch(() => {});
             } else if (currentCinemaArt.imageSrc) {
               const images = currentCinemaArt.galleryImages || [currentCinemaArt.imageSrc];
               const texUrl = images[storeState.currentStillSheetIndex] || currentCinemaArt.imageSrc;
@@ -2171,7 +2244,7 @@ export const GalleryScene3D: React.FC = () => {
       )}
 
       {/* Dica discreta de clique para ativar Câmera Livre se não estiver bloqueado (Apenas Desktop) */}
-      {!isPointerLocked && !isHoldingCD && !cinemaArtwork && !isMobile && (
+      {!isPointerLocked && introPhase === 'ready' && !isHoldingCD && !cinemaArtwork && !isMobile && (
         <div
           className="pointer-lock-hint-dock font-mono"
           aria-hidden="true"
@@ -2186,7 +2259,7 @@ export const GalleryScene3D: React.FC = () => {
       )}
 
       {/* Ambient HUD — badge discreto contextual que ensina controles e some no primeiro movimento */}
-      {showAmbientHud && !hasPlayerMoved && !cinemaArtwork && !isHoldingCD && !isMobile && (
+      {showAmbientHud && introPhase === 'ready' && !hasPlayerMoved && !cinemaArtwork && !isHoldingCD && !isMobile && (
         <div className="ambient-hud-badge font-mono" aria-hidden="true">
           <div className="ambient-hud-row"><span className="ambient-hud-key">WASD</span><span>caminhar</span></div>
           <div className="ambient-hud-row"><span className="ambient-hud-key">MOUSE</span><span>olhar</span></div>

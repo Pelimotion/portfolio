@@ -30,6 +30,23 @@ export const ArchiveIndex: React.FC = () => {
     setCDPOVOpen(true);
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      if (e.key === 'Tab' || e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        setViewMode('spatial');
+        window.dispatchEvent(new CustomEvent('gigantera:request-lock'));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [setViewMode]);
+
   return (
     <section className="archive-index-section" aria-label="Catálogo Geral e Portfólio em Grade">
       <div className="archive-inner">

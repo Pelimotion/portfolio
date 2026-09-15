@@ -346,23 +346,34 @@ export const useAppStore = create<AppState>((set, get) => ({
     const clamped = Math.max(TOKENS.navigation.zEnd, Math.min(TOKENS.navigation.zStart, z));
     let sectorId = 'entrance-audio';
     if (clamped < -16) {
-      sectorId = 'video';
-    } else if (clamped < 16) {
       sectorId = 'still';
+    } else if (clamped < 16) {
+      sectorId = 'video';
     }
 
     set({ cameraTargetZ: clamped, activeSectorId: sectorId });
   },
 
   updateCameraZ: (currentZ, velocity) => {
-    set({ cameraCurrentZ: currentZ, cameraVelocityZ: velocity });
+    let sectorId = 'entrance-audio';
+    if (currentZ < -16) {
+      sectorId = 'still';
+    } else if (currentZ < 16) {
+      sectorId = 'video';
+    }
+
+    if (sectorId !== get().activeSectorId) {
+      set({ cameraCurrentZ: currentZ, cameraVelocityZ: velocity, activeSectorId: sectorId });
+    } else {
+      set({ cameraCurrentZ: currentZ, cameraVelocityZ: velocity });
+    }
   },
 
   warpToSector: (sectorId) => {
     let targetZ = 22;
     if (sectorId === 'entrance-audio') targetZ = 20;
-    if (sectorId === 'video') targetZ = 5;
-    if (sectorId === 'still') targetZ = -24;
+    if (sectorId === 'video') targetZ = 8;
+    if (sectorId === 'still') targetZ = -22;
 
     get().setCameraTargetZ(targetZ);
     set({ activeSectorId: sectorId });

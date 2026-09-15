@@ -6,7 +6,8 @@
   <title>GIGANTERA // PAINEL GERAL & CURADORIA</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://pelimotion-portfolio.b-cdn.net/ffmpeg/ffmpeg-util.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -1655,6 +1656,9 @@
             document.getElementById('imageDimsText').innerText = `${w}x${h} px · JPEG 85%`;
             document.getElementById('imageConversionFeedback').style.display = 'flex';
 
+            // Atualiza os inputs do modal com tamanho e formato precisos
+            document.getElementById('editArtworkMasterFormat').value = `JPEG Otimizado (${convertedKB} KB) · ${w}x${h} px`;
+
             const bunny = getBunnySettings();
             const cdnUrl = `${bunny.pullZone}/gigantera/stills/${filename}`;
             document.getElementById('editArtworkImage').value = cdnUrl;
@@ -1767,6 +1771,10 @@
 
           document.getElementById('editArtworkRatio').value = ratioStr;
           document.getElementById('editArtworkMedium').value = 'video';
+          
+          // Atualiza os inputs do modal com tamanho e formato precisos
+          document.getElementById('editArtworkMasterFormat').value = `Vídeo Loop MP4 (${sizeMB} MB) · Duração: 00:${dur < 10 ? '0' + dur : dur}`;
+          
           handleMediumChange();
 
           const bunny = getBunnySettings();
@@ -1927,12 +1935,38 @@
             </label>
           </td>
           <td style="text-align: right; white-space: nowrap;">
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.7rem; cursor: grab;" title="Arraste para reordenar" aria-label="Arraste para reordenar">↕</button>
             <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.7rem;" onclick="openEditArtworkModal('${art.id}')">EDITAR ✎</button>
             <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.7rem; margin-left: 0.3rem;" onclick="deleteArtwork('${art.id}')">✕</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
+
+      // Habilita Drag and Drop para reordenar o Z-Index espacial no Pavilhão
+      if (window.Sortable && artworks.length > 0 && !tbody.sortableInstance) {
+        tbody.sortableInstance = new Sortable(tbody, {
+          animation: 150,
+          handle: '.btn[title="Arraste para reordenar"]',
+          onEnd: function (evt) {
+            const oldIndex = evt.oldIndex;
+            const newIndex = evt.newIndex;
+            if (oldIndex !== newIndex) {
+              if (currentArtworks[oldIndex].spatialCoords && currentArtworks[newIndex].spatialCoords) {
+                const tempCoords = JSON.parse(JSON.stringify(currentArtworks[oldIndex].spatialCoords));
+                currentArtworks[oldIndex].spatialCoords = JSON.parse(JSON.stringify(currentArtworks[newIndex].spatialCoords));
+                currentArtworks[newIndex].spatialCoords = tempCoords;
+              }
+              const movedItem = currentArtworks.splice(oldIndex, 1)[0];
+              currentArtworks.splice(newIndex, 0, movedItem);
+              
+              saveStateToStorage();
+              renderObrasTable(currentArtworks);
+              showToast('Ordem do pavilhão atualizada com sucesso!');
+            }
+          }
+        });
+      }
     }
 
     function toggleArtworkMediaKit(artId, available) {

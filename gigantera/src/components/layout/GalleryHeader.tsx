@@ -37,7 +37,10 @@ export const GalleryHeader: React.FC = () => {
       } else if (e.code === 'KeyB' && !e.metaKey && !e.ctrlKey) {
         setBioOpen(true);
       } else if (e.code === 'KeyM' && !e.metaKey && !e.ctrlKey) {
-        setViewMode(viewMode === 'media' ? 'spatial' : 'media');
+        const state = useAppStore.getState();
+        if (!state.cinemaArtwork && !state.isHoldingCD) {
+          setViewMode(viewMode === 'media' ? 'spatial' : 'media');
+        }
       }
     };
 

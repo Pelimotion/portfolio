@@ -25,12 +25,14 @@ ffmpeg_assets/
 gigantera/works/audio/
 gigantera/public/works/audio/
 gigantera/dist/works/audio/
-gigantera/works/video/
-gigantera/public/works/video/
-gigantera/dist/works/video/
 briefing/video_bg_briefing.mp4
 briefing/bg_briefing.gif
 *.wasm
 *.mp3
 *.mp4
 *.wav
+
+# Allow Gigantera lightweight web-optimized video loops (~5.6MB total)
+!gigantera/works/video/*.mp4
+!gigantera/public/works/video/*.mp4
+!gigantera/dist/works/video/*.mp4

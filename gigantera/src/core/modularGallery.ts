@@ -66,23 +66,60 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
   const zStart = 30.0;
   const cdStationZ = 18.0;
 
-  // Separação por setor
-  const stillWorks = artworks.filter((a) => a.medium === 'still');
+  // Separação por setor: Setor 01 (VÍDEO // MOTION) → Setor 02 (STILL // MATRIZ & ESCULTURA)
   const videoWorks = artworks.filter((a) => a.medium === 'video');
+  const stillWorks = artworks.filter((a) => a.medium === 'still');
 
   // Espaçamento longitudinal entre obras consecutivas
-  const stillSpacing = 6.2;
-  const sectorTransitionGap = 9.0;
-  const videoSpacing = 7.5;
+  const videoSpacing = 5.0;           // Z: +13m a -12m (6 vitrines cinéticas em loop)
+  const sectorTransitionGap = 7.0;    // Portal arquitetural de transição (Z: -12m a -19m)
+  const stillSpacing = 7.0;           // Z: -19m a -40m (4 monolitos de impresso giclée)
 
   const stillStartX = 3.9;  // Distância lateral da parede/centro
   const viewingOffset = 3.6; // Distância do ponto de observação ideal em frente à vitrine
 
-  let currentZ = 12.0; // Início do setor Still após a entrada
+  let currentZ = 13.0; // Início do Setor 01 (Vídeo) logo após a Estação de CD (Z = +18m)
   const artworksWithCoords: ModularGalleryLayout['artworksWithCoords'] = [];
   const viewingSpots: ViewingSpotInfo[] = [];
 
-  // 1. Distribuição das Obras Still (Alternando Esquerda e Direita)
+  // 1. Distribuição das Obras de Vídeo (Setor 01: Alternando Esquerda e Direita)
+  videoWorks.forEach((art, index) => {
+    const isLeft = index % 2 === 0;
+    const x = isLeft ? -stillStartX : stillStartX;
+    const rotY = isLeft ? 0.15 : -0.15;
+
+    const computedCoords = {
+      x,
+      y: 0.0,
+      z: currentZ,
+      rotY
+    };
+
+    const spotX = isLeft ? x + viewingOffset * 0.75 : x - viewingOffset * 0.75;
+    const spotZ = currentZ;
+
+    const viewingSpot: ViewingSpotInfo = {
+      artworkId: art.id,
+      x: spotX,
+      z: spotZ,
+      medium: 'video',
+      title: art.title
+    };
+
+    artworksWithCoords.push({
+      ...art,
+      computedCoords,
+      viewingSpot
+    });
+    viewingSpots.push(viewingSpot);
+
+    currentZ -= videoSpacing;
+  });
+
+  // Espaçamento do portal de transição entre Vídeo e Still
+  currentZ = -19.0;
+
+  // 2. Distribuição das Obras Still (Setor 02: Alternando Esquerda e Direita)
   stillWorks.forEach((art, index) => {
     const isLeft = index % 2 === 0;
     const x = isLeft ? -stillStartX : stillStartX;
@@ -115,43 +152,6 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
     viewingSpots.push(viewingSpot);
 
     currentZ -= stillSpacing;
-  });
-
-  // Espaçamento do portal de transição entre Still e Vídeo
-  currentZ -= sectorTransitionGap;
-
-  // 2. Distribuição das Obras de Vídeo (Alternando Esquerda e Direita)
-  videoWorks.forEach((art, index) => {
-    const isLeft = index % 2 === 0;
-    const x = isLeft ? -stillStartX : stillStartX;
-    const rotY = isLeft ? 0.15 : -0.15;
-
-    const computedCoords = {
-      x,
-      y: 0.0,
-      z: currentZ,
-      rotY
-    };
-
-    const spotX = isLeft ? x + viewingOffset * 0.75 : x - viewingOffset * 0.75;
-    const spotZ = currentZ;
-
-    const viewingSpot: ViewingSpotInfo = {
-      artworkId: art.id,
-      x: spotX,
-      z: spotZ,
-      medium: 'video',
-      title: art.title
-    };
-
-    artworksWithCoords.push({
-      ...art,
-      computedCoords,
-      viewingSpot
-    });
-    viewingSpots.push(viewingSpot);
-
-    currentZ -= videoSpacing;
   });
 
   // Fim do salão calculado proporcionalmente

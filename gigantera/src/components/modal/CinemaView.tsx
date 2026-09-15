@@ -141,8 +141,9 @@ export const CinemaView: React.FC = () => {
         e.stopPropagation();
         toggleLoupeMode();
       } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        e.stopPropagation();
         if (cinemaArtwork.medium === 'video') {
-          e.preventDefault();
           const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
           if (vid) {
             vid.muted = !vid.muted;
@@ -150,8 +151,9 @@ export const CinemaView: React.FC = () => {
           }
         }
       } else if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        e.stopPropagation();
         if (cinemaArtwork.medium === 'video') {
-          e.preventDefault();
           const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
           if (vid) {
             if (vid.paused) { vid.play(); setIsVideoPlaying(true); }
@@ -159,9 +161,13 @@ export const CinemaView: React.FC = () => {
           }
         }
       } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        if (cinemaArtwork.medium === 'still') { e.preventDefault(); nextStillSheet(); }
+        e.preventDefault();
+        e.stopPropagation();
+        if (cinemaArtwork.medium === 'still') { nextStillSheet(); }
       } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        if (cinemaArtwork.medium === 'still') { e.preventDefault(); prevStillSheet(); }
+        e.preventDefault();
+        e.stopPropagation();
+        if (cinemaArtwork.medium === 'still') { prevStillSheet(); }
       }
 
       // Qualquer tecla revela os controles
