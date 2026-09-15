@@ -52,7 +52,14 @@ O visitante flutua ("nada") no espaço tridimensional entre vitrines flutuantes 
 - **Acoustic Heat Haze:** Anéis de distorção de calor e vibração que emanam fisicamente das caixas de som no salão, sincronizados com os picos de energia de sub-graves da Web Audio API.
 - **Crossfade Suave:** Ao entrar no Modo Cinema para assistir a uma obra cinética em vídeo, a música ambiente da galeria realiza um fade exponencial imperceptível em vez de um corte abrupto.
 
-### 7. Dualidade de Temas
+### 7. Acervo 3D In-Scene & Matriz Frontal 4x2 (`[TAB]`)
+- **Pavilhão 3D Contínuo:** Ao abrir o Acervo via `[TAB]` ou menu, a experiência não sai da cena 3D nem aplica filtros escuras/desfocadas. O pavilhão mantém sua iluminação e reflexos em tempo real.
+- **Coreografia Espacial:** As 8 vitrines do pavilhão interpolam suavemente do corredor para uma matriz frontal de 4 colunas × 2 linhas em `z = 0` com reflexos espelhados no chão de vidro (`floorReflector`).
+- **Desativação de Mira & Cursor Livre:** O pointer lock e o retículo são desativados temporariamente; o visitante navega livremente com o cursor do mouse sem precisar andar nem mirar.
+- **Raycasting Tátil & Abertura Direta:** Passar o cursor sobre as vitrines provoca elevação tridimensional tátil (`z += 0.35m`), escala (`1.03x`) e SFX de tick. Um clique direto abre o modo `CinemaView`.
+- **Portfólio Artístico Completo:** Barra de filtros brutalistas (`TODAS AS OBRAS [26]`, `STILL [6]`, `VÍDEO [3]`, `SOM [17]`), gaveta musical para as 17 faixas autorais e botões de portfólio (`[BIO / ARTISTA]`, `[MEDIA KIT]`, `[SALA 3D (TAB)]`).
+
+### 8. Dualidade de Temas
 - **Obsidiana (Dark Noir):** Salão escuro brutalista com concreto grafite, basalto polido e iluminação dourada de claraboias.
 - **Alabastro (White Cube):** Galeria branca brutalista contemporânea em giz e concreto claro, mantendo a profundidade e sombras realistas.
 

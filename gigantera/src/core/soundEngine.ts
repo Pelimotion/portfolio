@@ -345,6 +345,31 @@ class SoundEngine {
     osc.start(t);
     osc.stop(t + 0.09);
   }
+
+  // SFX Procedural: Micro-click tátil suave de hover para interface e vitrines
+  public playTactileHoverTick(): void {
+    if (!this.isInitialized) this.init();
+    if (!this.audioCtx || this.audioCtx.state === 'suspended') return;
+
+    try {
+      const t = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(850, t);
+      osc.frequency.exponentialRampToValueAtTime(340, t + 0.022);
+
+      gain.gain.setValueAtTime(0.035, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.022);
+
+      osc.connect(gain);
+      gain.connect(this.gainNode || this.audioCtx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.025);
+    } catch {}
+  }
 }
 
 export const soundEngine = new SoundEngine();

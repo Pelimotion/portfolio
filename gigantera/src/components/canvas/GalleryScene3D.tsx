@@ -270,6 +270,7 @@ export const GalleryScene3D: React.FC = () => {
   const isMobile = useAppStore((s) => s.isMobile);
   const hasPlayerMoved = useAppStore((s) => s.hasPlayerMoved);
   const introPhase = useAppStore((s) => s.introPhase);
+  const viewMode = useAppStore((s) => s.viewMode);
 
   const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
   const [showDragHint, setShowDragHint] = useState(false);
@@ -772,6 +773,12 @@ export const GalleryScene3D: React.FC = () => {
       posterTex?: THREE.Texture;
       videoTex?: THREE.VideoTexture;
       videoEl?: HTMLVideoElement;
+      hallwayPos: THREE.Vector3;
+      hallwayRotY: number;
+      gridPos: THREE.Vector3;
+      gridRotY: number;
+      gridScale: number;
+      idx: number;
     }[] = [];
 
     layout.artworksWithCoords.forEach((art, idx) => {
@@ -975,9 +982,75 @@ export const GalleryScene3D: React.FC = () => {
         texture: artworkTex,
         posterTex: posterTexture,
         videoTex: videoTexture,
-        videoEl: videoElement
+        videoEl: videoElement,
+        hallwayPos: new THREE.Vector3(coords.x, coords.y, coords.z),
+        hallwayRotY: coords.rotY || 0,
+        gridPos: new THREE.Vector3(0, 0, 0),
+        gridRotY: 0,
+        gridScale: 0.52,
+        idx
       });
     });
+
+    let hoveredArtInGridId: string | null = null;
+
+    // Função de cálculo procedural das coordenadas de grade para o modo Acervo (TAB)
+    const computeGridTargets = (filter: string, page: number) => {
+      let visibleArts: Artwork[] = [];
+      if (filter === 'all') {
+        visibleArts = ARTWORKS_CATALOG;
+      } else if (filter === 'still') {
+        visibleArts = ARTWORKS_CATALOG.filter((a) => a.medium === 'still');
+      } else if (filter === 'video') {
+        visibleArts = ARTWORKS_CATALOG.filter((a) => a.medium === 'video');
+      } else if (filter === 'sound') {
+        visibleArts = []; // No modo som, os quadros recuam suavemente para o console sonoro
+      }
+
+      const pageSize = 8;
+      const startIndex = page * pageSize;
+      const pageArts = visibleArts.slice(startIndex, startIndex + pageSize);
+
+      artworkItems.forEach((item) => {
+        const pageIdx = pageArts.findIndex((a) => a.id === item.artwork.id);
+        if (pageIdx !== -1) {
+          if (filter === 'video') {
+            // 3 obras de vídeo em linha frontal centralizada no horizonte
+            const col = pageIdx;
+            const x = -3.8 + col * 3.8;
+            const y = 0.55;
+            item.gridPos.set(x, y, 0.0);
+            item.gridRotY = 0;
+            item.gridScale = 0.56;
+          } else if (filter === 'still') {
+            // 6 obras still em 3 colunas x 2 linhas
+            const col = pageIdx % 3;
+            const row = Math.floor(pageIdx / 3);
+            const x = -3.8 + col * 3.8;
+            const y = row === 0 ? 1.85 : -0.65;
+            item.gridPos.set(x, y, 0.0);
+            item.gridRotY = 0;
+            item.gridScale = 0.53;
+          } else {
+            // 'all': 4 colunas x 2 linhas idêntica à simulação do usuário (8 obras na tela + reflexo no piso)
+            const col = pageIdx % 4;
+            const row = Math.floor(pageIdx / 4);
+            const x = -5.4 + col * 3.6;
+            const y = row === 0 ? 1.85 : -0.65;
+            item.gridPos.set(x, y, 0.0);
+            item.gridRotY = 0;
+            item.gridScale = 0.52;
+          }
+        } else {
+          // Obras fora do filtro ou da página recuam elegantemente no salão
+          item.gridPos.set(item.hallwayPos.x * 1.5, item.hallwayPos.y + 4.5, -28.0);
+          item.gridRotY = item.hallwayRotY;
+          item.gridScale = 0.001;
+        }
+      });
+    };
+
+    computeGridTargets('all', 0);
 
     // 7. RIG DE INSPEÇÃO 3D EM PRIMEIRO PLANO (A Obra saindo da vitrine em 3D)
     // Acoplado diretamente à câmera com depthTest desativado e renderOrder alta para nunca sofrer cortes por paredes/tetos
@@ -1344,6 +1417,44 @@ export const GalleryScene3D: React.FC = () => {
         return;
       }
 
+      // MODO ACERVO 3D EM GRADE (TAB): Raycasting livre com o cursor do mouse sem Pointer Lock
+      if (state.viewMode === 'archive' && !state.cinemaArtwork) {
+        if ((e.target as HTMLElement).closest('button, aside, nav, header, footer, .archive-brutalist-filters, .archive-portfolio-header, .archive-sound-drawer, [role="dialog"]')) {
+          if (hoveredArtInGridId) {
+            hoveredArtInGridId = null;
+            document.body.style.cursor = 'default';
+          }
+          return;
+        }
+
+        raycaster.setFromCamera(mouseCoord, camera);
+        const gridCandidates = artworkItems
+          .filter((item) => item.gridScale > 0.1)
+          .flatMap((item) => [item.glassMesh, item.paperMesh, item.plaqueMesh]);
+
+        const gridHits = raycaster.intersectObjects(gridCandidates, false);
+        const validGridHits = gridHits.filter((h) => h.distance <= 18.0);
+
+        if (validGridHits.length > 0) {
+          const hitObj = validGridHits[0].object as any;
+          if (hitObj.artworkData) {
+            const hitArt = hitObj.artworkData as Artwork;
+            if (hoveredArtInGridId !== hitArt.id) {
+              hoveredArtInGridId = hitArt.id;
+              soundEngine.playTactileHoverTick();
+            }
+            document.body.style.cursor = 'pointer';
+            return;
+          }
+        }
+
+        if (hoveredArtInGridId) {
+          hoveredArtInGridId = null;
+          document.body.style.cursor = 'default';
+        }
+        return;
+      }
+
       // Raycasting normal na galeria: em Pointer Lock, usa estritamente o centro (0, 0)
       if (playerController.isLocked) {
         mouseCoord.set(0, 0);
@@ -1384,7 +1495,7 @@ export const GalleryScene3D: React.FC = () => {
     };
 
     const onClick = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-bottom-feather-bar, .cinema-top-inspection-hud, .still-prancheta-dock, .modal-backdrop, .controls-guide-card, .controls-guide-card-graphic, header, footer, [role="dialog"]')) {
+      if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-bottom-feather-bar, .cinema-top-inspection-hud, .still-prancheta-dock, .modal-backdrop, .controls-guide-card, .controls-guide-card-graphic, header, footer, [role="dialog"], .archive-brutalist-filters, .archive-portfolio-header, .archive-sound-drawer')) {
         return;
       }
 
@@ -1393,6 +1504,27 @@ export const GalleryScene3D: React.FC = () => {
       } catch {}
 
       const state = useAppStore.getState();
+
+      // MODO ACERVO 3D EM GRADE (TAB): Clique com o mouse livre abre a obra no Cinema sem Pointer Lock
+      if (state.viewMode === 'archive' && !state.cinemaArtwork) {
+        raycaster.setFromCamera(mouseCoord, camera);
+        const gridCandidates = artworkItems
+          .filter((item) => item.gridScale > 0.1)
+          .flatMap((item) => [item.glassMesh, item.paperMesh, item.plaqueMesh]);
+
+        const gridHits = raycaster.intersectObjects(gridCandidates, false);
+        const validGridHits = gridHits.filter((h) => h.distance <= 18.0);
+
+        if (validGridHits.length > 0) {
+          const hitObj = validGridHits[0].object as any;
+          if (hitObj.artworkData) {
+            soundEngine.playGlassPassSound();
+            openCinema(hitObj.artworkData as Artwork);
+            return;
+          }
+        }
+        return;
+      }
 
       // Se uma ação acabou de ser fechada (cooldown anti-clique fantasma de 250ms)
       if (Date.now() - state.lastActionCloseTime < 250) {
@@ -1673,6 +1805,13 @@ export const GalleryScene3D: React.FC = () => {
     let prevCamZ = camera.position.z;
     let prevTargetZ = useAppStore.getState().cameraTargetZ;
 
+    let wasInArchive = false;
+    let archiveTransition = 0.0;
+    const playerSavedPos = new THREE.Vector3();
+    let playerSavedYaw = 0;
+    let playerSavedPitch = 0;
+    const archiveCamPos = new THREE.Vector3(0, 0.6, 9.5);
+
     const clock = new THREE.Clock();
     const cameraFrustum = new THREE.Frustum();
     const cameraProjScreenMatrix = new THREE.Matrix4();
@@ -1694,6 +1833,30 @@ export const GalleryScene3D: React.FC = () => {
       const currentCinemaArt = storeState.cinemaArtwork;
       const holdingCD = storeState.isHoldingCD;
       const isAudioPlaying = storeState.isAudioPlaying;
+
+      // Transição fluida entre Exploração FPS e Modo Acervo 3D em Grade (TAB)
+      const isArchiveMode = storeState.viewMode === 'archive' && !currentCinemaArt;
+      const targetArchT = isArchiveMode ? 1.0 : 0.0;
+
+      if (isArchiveMode) {
+        if (!wasInArchive) {
+          playerSavedPos.copy(playerController.position);
+          playerSavedYaw = playerController.yaw;
+          playerSavedPitch = playerController.pitch;
+          wasInArchive = true;
+          playerController.isArchiveActive = true;
+          if (playerController.isLocked) {
+            playerController.exitLock();
+          }
+        }
+      } else {
+        if (wasInArchive && archiveTransition < 0.02) {
+          wasInArchive = false;
+          playerController.isArchiveActive = false;
+        }
+      }
+
+      archiveTransition = THREE.MathUtils.lerp(archiveTransition, targetArchT, 0.075);
 
       playerController.isHoldingCD = holdingCD;
       playerController.isCinemaActive = Boolean(currentCinemaArt);
@@ -1741,9 +1904,23 @@ export const GalleryScene3D: React.FC = () => {
         prevTargetZ = currentStoreTargetZ;
       }
 
-      // Atualiza física do jogador (só anda se não estiver inspecionando obra)
+      // Atualiza física do jogador (só anda se não estiver inspecionando obra nem em acervo)
       playerController.update(delta);
       cdViewmodel.update(elapsedTime, playerController.isMoving());
+
+      if (archiveTransition > 0.001) {
+        computeGridTargets(storeState.activeFilter, storeState.archiveGridPage);
+
+        // Suaviza a câmera do jogador para a posição frontal monumental do acervo
+        camera.position.lerpVectors(playerSavedPos, archiveCamPos, archiveTransition);
+
+        const curCamYaw = THREE.MathUtils.lerp(playerSavedYaw, 0, archiveTransition);
+        const curCamPitch = THREE.MathUtils.lerp(playerSavedPitch, 0, archiveTransition);
+        camera.rotation.order = 'YXZ';
+        camera.rotation.y = curCamYaw;
+        camera.rotation.x = curCamPitch;
+        camera.rotation.z = 0;
+      }
 
       // Rotina de Materialização das Obras (Intro 4s)
       if (elapsedTime <= 4.2) {
@@ -2075,14 +2252,39 @@ export const GalleryScene3D: React.FC = () => {
       }
       dustPosAttr.needsUpdate = true;
 
-      // Flutuação suave das vitrines quando livres
+      // Coreografia espacial das vitrines 3D: Corredor ↔ Grade 4x2 do Acervo
       if (!currentCinemaArt) {
-        artworkItems.forEach((item, idx) => {
-          item.group.position.y = THREE.MathUtils.lerp(
-            item.group.position.y,
-            Math.sin(elapsedTime * 0.8 + idx * 0.9) * 0.08,
-            0.04
-          );
+        artworkItems.forEach((item) => {
+          if (elapsedTime <= 4.2) return; // respeita animação inicial de materialização
+
+          if (archiveTransition > 0.001) {
+            const targetX = THREE.MathUtils.lerp(item.hallwayPos.x, item.gridPos.x, archiveTransition);
+            const naturalBreathingY = item.hallwayPos.y + Math.sin(elapsedTime * 0.8 + item.idx * 0.9) * 0.08;
+            const targetY = THREE.MathUtils.lerp(naturalBreathingY, item.gridPos.y, archiveTransition);
+            let targetZ = THREE.MathUtils.lerp(item.hallwayPos.z, item.gridPos.z, archiveTransition);
+
+            // Elevação tátil tridimensional ao passar o mouse sobre a vitrine na grade
+            const isHoveredInGrid = hoveredArtInGridId === item.artwork.id && archiveTransition > 0.75;
+            if (isHoveredInGrid) {
+              targetZ += 0.35;
+            }
+
+            item.group.position.set(targetX, targetY, targetZ);
+
+            const targetRotY = THREE.MathUtils.lerp(item.hallwayRotY, item.gridRotY, archiveTransition);
+            item.group.rotation.y = targetRotY;
+
+            const baseScale = THREE.MathUtils.lerp(1.0, item.gridScale, archiveTransition);
+            const hoverScale = isHoveredInGrid ? baseScale * 1.03 : baseScale;
+            item.group.scale.set(hoverScale, hoverScale, hoverScale);
+          } else {
+            // Exploração livre em primeira pessoa pelo pavilhão
+            item.group.position.x = item.hallwayPos.x;
+            item.group.position.y = item.hallwayPos.y + Math.sin(elapsedTime * 0.8 + item.idx * 0.9) * 0.08;
+            item.group.position.z = item.hallwayPos.z;
+            item.group.rotation.y = item.hallwayRotY;
+            item.group.scale.set(1.0, 1.0, 1.0);
+          }
         });
       }
 
@@ -2103,6 +2305,11 @@ export const GalleryScene3D: React.FC = () => {
             if (currentCinemaArt.id !== item.artwork.id && !item.videoEl.paused) {
               item.videoEl.pause();
             }
+          } else if (isArchiveMode && item.gridScale > 0.1) {
+            // No modo Acervo 3D em grade, todos os vídeos ativos na tela rodam simultaneamente
+            if (item.videoEl.paused) {
+              item.videoEl.play().catch(() => {});
+            }
           } else {
             const isNear = Math.abs(camera.position.z - item.group.position.z) < 32;
             const inFrustum = cameraFrustum.containsPoint(item.group.position);
@@ -2117,7 +2324,7 @@ export const GalleryScene3D: React.FC = () => {
         }
       }
 
-      if (minDistance < TOKENS.navigation.proximityThreshold && closestArt && !currentCinemaArt) {
+      if (minDistance < TOKENS.navigation.proximityThreshold && closestArt && !currentCinemaArt && !isArchiveMode) {
         setProximityArtwork(closestArt);
       } else {
         setProximityArtwork(null);
@@ -2127,7 +2334,7 @@ export const GalleryScene3D: React.FC = () => {
       const distToCD = Math.hypot(camera.position.x - 2.8, camera.position.z - 18);
       const currentHoveredTarget = storeState.hoveredTarget;
 
-      if (currentCinemaArt || holdingCD) {
+      if (currentCinemaArt || holdingCD || isArchiveMode) {
         setGameControlPrompt(null);
       } else if (currentHoveredTarget === 'cd' && distToCD < 4.5) {
         setGameControlPrompt('cd');
@@ -2202,7 +2409,7 @@ export const GalleryScene3D: React.FC = () => {
       aria-label="Espaço 3D Brutalista Realista — Caminhe livremente pela galeria entre vitrines de vidro, plaquinhas 3D e o álbum de CD"
     >
       {/* Retículo Central Tático Minimalista Brutalista */}
-      {!isHoldingCD && !cinemaArtwork && (
+      {!isHoldingCD && !cinemaArtwork && viewMode !== 'archive' && (
         <div className={`tactile-center-reticle ${reticleState !== 'idle' ? 'is-targeting' : ''}`} aria-hidden="true">
           <span className="reticle-bracket">[</span>
           <span className="reticle-dot">
@@ -2223,7 +2430,7 @@ export const GalleryScene3D: React.FC = () => {
       )}
 
       {/* Floating Tactical Game Action Prompt (Minimalista com Keycaps e Ícones) */}
-      {gameControlPrompt && !cinemaArtwork && (
+      {gameControlPrompt && !cinemaArtwork && viewMode !== 'archive' && (
         <div className="game-action-prompt-overlay" aria-live="polite">
           <div className="game-action-prompt-badge font-mono">
             {gameControlPrompt === 'cd' ? (

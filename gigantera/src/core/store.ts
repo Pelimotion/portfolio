@@ -107,6 +107,8 @@ interface AppState {
   toggleTheme: () => void;
   setViewMode: (mode: ViewMode) => void;
   setActiveFilter: (filter: 'all' | MediumType) => void;
+  archiveGridPage: number;
+  setArchiveGridPage: (page: number) => void;
   setCameraTargetZ: (z: number) => void;
   updateCameraZ: (currentZ: number, velocity: number) => void;
   warpToSector: (sectorId: string) => void;
@@ -340,7 +342,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setViewMode: (mode) => set({ viewMode: mode }),
-  setActiveFilter: (filter) => set({ activeFilter: filter }),
+  setActiveFilter: (filter) => set({ activeFilter: filter, archiveGridPage: 0 }),
+  archiveGridPage: 0,
+  setArchiveGridPage: (page) => set({ archiveGridPage: page }),
 
   setCameraTargetZ: (z) => {
     const clamped = Math.max(TOKENS.navigation.zEnd, Math.min(TOKENS.navigation.zStart, z));

@@ -84,6 +84,7 @@ export class PlayerController {
 
   public isHoldingCD: boolean = false;
   public isCinemaActive: boolean = false;
+  public isArchiveActive: boolean = false;
 
   // Sistema de Vôo Cinemático Suave (Glide para Waypoints / Obras)
   public glideTarget: { x: number; z: number; targetYaw?: number } | null = null;
@@ -406,14 +407,14 @@ export class PlayerController {
   };
 
   private handleMouseDown = (e: MouseEvent): void => {
-    // Se estiver segurando o CD na mão ou em modo cinema, NÃO captura rotação de câmera
-    if (this.isHoldingCD || this.isCinemaActive) {
+    // Se estiver segurando o CD na mão, em modo cinema ou no modo acervo, NÃO captura rotação de câmera
+    if (this.isHoldingCD || this.isCinemaActive || this.isArchiveActive) {
       this.isPointerDown = false;
       return;
     }
 
     // Não captura se o clique foi em um elemento de interface
-    if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-backdrop, .modal-backdrop, header, footer, [role="dialog"]')) {
+    if ((e.target as HTMLElement).closest('button, aside, nav, .cd-viewmodel-hud-dock, .cinema-backdrop, .modal-backdrop, header, footer, [role="dialog"], .archive-portfolio-overlay')) {
       return;
     }
 
@@ -430,8 +431,8 @@ export class PlayerController {
   };
 
   private handleMouseMove = (e: MouseEvent): void => {
-    // CRÍTICO: Quando segurando o CD ou no cinema, a câmera de fundo NUNCA gira!
-    if (this.isHoldingCD || this.isCinemaActive) {
+    // CRÍTICO: Quando segurando o CD, no cinema ou no acervo, a câmera de fundo NUNCA gira!
+    if (this.isHoldingCD || this.isCinemaActive || this.isArchiveActive) {
       this.prevMouseX = 0;
       this.prevMouseY = 0;
       return;
@@ -540,7 +541,7 @@ export class PlayerController {
   };
 
   private handleDeviceOrientation = (e: DeviceOrientationEvent): void => {
-    if (!this.isGyroActive || this.isHoldingCD || this.isCinemaActive) return;
+    if (!this.isGyroActive || this.isHoldingCD || this.isCinemaActive || this.isArchiveActive) return;
     if (e.beta === null || e.gamma === null) return;
 
     if (!this.gyroCalibrated) {
@@ -578,7 +579,7 @@ export class PlayerController {
           this.onScrollCD(step);
         }
       }
-    } else if (!this.isCinemaActive) {
+    } else if (!this.isCinemaActive && !this.isArchiveActive) {
       // Quando livre no espaço, roda do mouse permite deslizar suavemente pelo eixo Z (calibrado para Trackpad de Mac e Mouse)
       e.preventDefault();
       const clampedDelta = Math.max(-100, Math.min(100, e.deltaY));
@@ -595,10 +596,10 @@ export class PlayerController {
    * Atualização a cada frame do motor físico (delta time em segundos)
    */
   public update(delta: number): void {
-    if (this.isCinemaActive || this.isHoldingCD) {
+    if (this.isCinemaActive || this.isHoldingCD || this.isArchiveActive) {
       this.velocity.set(0, 0, 0);
       this.forwardHoldTime = 0;
-      if (this.isHoldingCD && this.isLocked) {
+      if ((this.isHoldingCD || this.isArchiveActive) && this.isLocked) {
         this.exitLock();
       }
       return;

@@ -5,11 +5,11 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-13
+**Data:** 2026-09-15
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — Produção com Bunny.net CDN Zero-Bandwidth
-**Próxima Ação:** Manutenção contínua e ampliação curatorial
-**Bloqueadores:** Nenhum (Cota da Vercel protegida com 100% da mídia na Bunny CDN)
+**Status:** ESTÁVEL, BLINDADO & ONLINE — Acervo 3D In-Scene Implementado + Build 100% Validado
+**Próxima Ação:** Refinamento de UX de interação na próxima sessão (cursor inteligente de arrasto no CinemaView, ativação de mira com single-click, tutorial unificado e keycaps físicas hiper-realistas)
+**Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
 ---
@@ -25,12 +25,34 @@
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
 | `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
 | `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
-| **Gigantera** (`/gigantera/`) | ✅ Em Produção (`pelimotion.art/gigantera`) | 2026-09-13 |
+| **Gigantera** (`/gigantera/`) | ✅ Acervo 3D In-Scene + Matriz 4x2 + Bunny CDN | 2026-09-15 |
 | **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-15 — Acervo 3D In-Scene, Matriz 4x2 com Reflexos e Otimizações de UX
+**O que foi feito:**
+- [x] **Acervo 3D In-Scene no Mesmo Ambiente (TAB):** O modo Acervo agora ocorre 100% dentro do pavilhão tridimensional, eliminando escurecimento de fundo e desfoque. A câmera desliza suavemente para a posição frontal panorâmica `(0, 0.6, 9.5)`.
+- [x] **Coreografia Espacial das Vitrines em Matriz 4x2:** As vitrines do pavilhão se movem do corredor e se organizam em uma grade frontal suspensa em `z = 0` com reflexos espelhados no chão de vidro (`floorReflector`), reproduzindo com fidelidade a simulação curatorial.
+- [x] **Desativação de Mira e Liberação do Cursor do Mouse:** O Pointer Lock é liberado e o retículo central é ocultado no Acervo. O visitante navega livremente com o cursor do mouse sem precisar andar nem mirar.
+- [x] **Raycasting 3D com Elevação Tátil:** Passar o mouse sobre as vitrines da grade eleva a peça no eixo Z (`z += 0.35m`), escala (`1.03x`), toca som de tick procedimental e um clique direto abre o modo `CinemaView`.
+- [x] **Interface de Portfólio Artístico Completo:** Adicionada barra de filtros brutalistas (`TODAS AS OBRAS [26]`, `STILL [6]`, `VÍDEO [3]`, `SOM [17]`), gaveta de áudio com as 17 faixas autorais e botões de portfólio (`[BIO / ARTISTA]`, `[MEDIA KIT]`, `[SALA 3D (TAB)]`).
+- [x] **Correções Críticas de UX no CinemaView e Pavilhão:**
+  - Corrigido o botão de fechar do `CinemaView` para impedir que abra a tela de contato acidentalmente.
+  - Eliminada a linha/corte na moldura preta das obras via ajustes de renderOrder, z-offset e gradiente radial.
+  - Teclas numéricas `[1]`, `[2]`, `[3]` ativadas para navegação direta entre setores.
+  - Removido minitutorial duplicado do canto direito.
+- [x] **Validação e Build:** `npm run build` e `npx tsc --noEmit` executados e validados com 100% de sucesso.
+
+**Próxima Sessão (Demandas Registradas pelo Usuário):**
+1. **Cursor Criativo/Inteligente no CinemaView:** Visual de mão de arrasto para orbitar perspectiva da obra com chaveamento inteligente para ponteiro comum sobre botões e menus.
+2. **Correção do Clique para Mira (Single-Click):** Ativação imediata do modo de olhar livre com o movimento do mouse a partir de um único clique (sem exigir clique-e-arraste).
+3. **Tutorial Inicial Integrado com Saída Elegante:** Aumentar tempo de tela segundo boas práticas, integrar o minitutorial central inferior no card inicial e animar a transição com saída de 2s e deslocamento do badge para o rodapé.
+4. **Keycaps Físicas Hiper-Realistas:** Redesenhar visualmente todos os atalhos de teclado (`[TAB]`, `[E]`, `[1]`, `[2]`, `[3]`, `[WASD]`, `[ESPAÇO]`, `[ESC]`) com estética mecânica tátil realista.
+
+---
 
 ### 2026-09-13 — Documentação Master & Atualização de Graphify
 **O que foi feito:**
