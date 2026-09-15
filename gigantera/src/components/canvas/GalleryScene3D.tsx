@@ -268,10 +268,29 @@ export const GalleryScene3D: React.FC = () => {
   const isPointerLocked = useAppStore((s) => s.isPointerLocked);
   const hoveredTarget = useAppStore((s) => s.hoveredTarget);
   const isMobile = useAppStore((s) => s.isMobile);
+  const hasPlayerMoved = useAppStore((s) => s.hasPlayerMoved);
+  const introPhase = useAppStore((s) => s.introPhase);
 
   const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
   const [showDragHint, setShowDragHint] = useState(false);
+  const [showAmbientHud, setShowAmbientHud] = useState(false);
   const dragHintTimerRef = useRef<number | null>(null);
+
+  // Ambient HUD: surge 1.5s após a intro e se apaga definitivamente no primeiro passo
+  useEffect(() => {
+    if (hasPlayerMoved) {
+      setShowAmbientHud(false);
+      return;
+    }
+    if (introPhase === 'ready') {
+      const timer = window.setTimeout(() => {
+        if (!useAppStore.getState().hasPlayerMoved) {
+          setShowAmbientHud(true);
+        }
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [introPhase, hasPlayerMoved]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -2130,6 +2149,18 @@ export const GalleryScene3D: React.FC = () => {
             <span className="mouse-icon mouse-left-click" />
             <span className="keycap-label">CLIQUE P/ MIRA LIVRE</span>
           </span>
+        </div>
+      )}
+
+      {/* Ambient HUD — badge discreto contextual que ensina controles e some no primeiro movimento */}
+      {showAmbientHud && !hasPlayerMoved && !cinemaArtwork && !isHoldingCD && !isMobile && (
+        <div className="ambient-hud-badge font-mono" aria-hidden="true">
+          <div className="ambient-hud-row"><span className="ambient-hud-key">WASD</span><span>caminhar</span></div>
+          <div className="ambient-hud-row"><span className="ambient-hud-key">MOUSE</span><span>olhar</span></div>
+          <div className="ambient-hud-row"><span className="ambient-hud-key">E</span><span>abrir obra</span></div>
+          <div className="ambient-hud-divider" />
+          <div className="ambient-hud-row ambient-hud-row-sm"><span className="ambient-hud-key">TAB</span><span>catálogo</span></div>
+          <div className="ambient-hud-row ambient-hud-row-sm"><span className="ambient-hud-key">H</span><span>ajuda</span></div>
         </div>
       )}
     </div>

@@ -29,12 +29,22 @@ export const CinemaView: React.FC = () => {
 
   // Controles visíveis apenas ao hover na zona inferior
   const [controlsVisible, setControlsVisible] = useState(false);
+  const [showIdleHint, setShowIdleHint] = useState(false);
   const controlsTimerRef = React.useRef<number | null>(null);
+  const idleHintTimerRef = React.useRef<number | null>(null);
 
   const showControls = () => {
     setControlsVisible(true);
+    setShowIdleHint(false);
     if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
-    controlsTimerRef.current = window.setTimeout(() => setControlsVisible(false), 2800);
+    if (idleHintTimerRef.current) clearTimeout(idleHintTimerRef.current);
+    controlsTimerRef.current = window.setTimeout(() => {
+      setControlsVisible(false);
+      // Após controles ocultarem, se permanecer ocioso por 2s, mostra dica sutil
+      idleHintTimerRef.current = window.setTimeout(() => {
+        setShowIdleHint(true);
+      }, 2000);
+    }, 2800);
   };
 
   // Função unificada para encerramento gracioso
@@ -86,6 +96,7 @@ export const CinemaView: React.FC = () => {
     return () => {
       if (fadeInterval) cancelAnimationFrame(fadeInterval);
       if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
+      if (idleHintTimerRef.current) clearTimeout(idleHintTimerRef.current);
 
       if (cinemaArtwork.medium === 'video') {
         if (vidElement) {
@@ -338,6 +349,22 @@ export const CinemaView: React.FC = () => {
         <div className="cinema-loupe-active-badge font-mono" aria-live="polite">
           <span className="loupe-icon">⌕</span>
           <span>LUPA ATIVA — ARRASTE PARA EXPLORAR</span>
+        </div>
+      )}
+
+      {/* Badge persistente minimalista — sempre visível no topo direito */}
+      {!isMobile && (
+        <div className="cinema-persistent-badge font-mono" aria-hidden="true">
+          <span>[H] ajuda</span>
+          <span className="cinema-persistent-sep">·</span>
+          <span>[E] fechar</span>
+        </div>
+      )}
+
+      {/* Dica discreta quando o usuário está ocioso e os controles sumiram */}
+      {showIdleHint && !controlsVisible && !isMobile && (
+        <div className="cinema-idle-hint font-mono" aria-hidden="true">
+          <span>mova o mouse para ver os controles</span>
         </div>
       )}
     </div>
