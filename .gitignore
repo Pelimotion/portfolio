@@ -34,9 +34,11 @@ node_modules/
 !gigantera/works/*.jpg
 !gigantera/works/*.png
 !gigantera/works/*.jpeg
+!gigantera/works/video/*.mp4
 !gigantera/public/works/*.jpg
 !gigantera/public/works/*.png
 !gigantera/public/works/*.jpeg
+!gigantera/public/works/video/*.mp4
 !gigantera/cd/*.jpg
 !gigantera/cd/*.png
 !gigantera/cd/*.jpeg

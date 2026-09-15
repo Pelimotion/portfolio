@@ -99,6 +99,7 @@ export const ArchiveIndex: React.FC = () => {
                   {art.medium === 'video' && art.videoSrc ? (
                     <video
                       src={art.videoSrc}
+                      poster={art.imageSrc}
                       muted
                       loop
                       playsInline

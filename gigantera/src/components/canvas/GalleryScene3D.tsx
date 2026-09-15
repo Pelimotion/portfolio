@@ -762,6 +762,8 @@ export const GalleryScene3D: React.FC = () => {
       paperMesh: THREE.Mesh;
       plaqueMesh: THREE.Mesh;
       artwork: Artwork;
+      paperMat: THREE.MeshStandardMaterial;
+      texture: THREE.Texture;
       videoEl?: HTMLVideoElement;
     }[] = [];
 
@@ -811,16 +813,23 @@ export const GalleryScene3D: React.FC = () => {
       group.add(glassMesh);
 
       const edgeGeo = new THREE.EdgesGeometry(glassGeo);
-      const edgeMat = new THREE.LineBasicMaterial({
-        color: currentThemeTokens.wireframe,
-        transparent: true,
-        opacity: isLight ? 0.22 : 0.28
+      // Moldura Arquitetural Minimalista (Filete metálico de 1.8cm em torno do vidro)
+      const frameMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0x2d302e : 0x0a0c0b,
+        metalness: 0.88,
+        roughness: 0.22
       });
-      const wireframe = new THREE.LineSegments(edgeGeo, edgeMat);
+      const frameGeo = new THREE.BoxGeometry(glassW + 0.036, glassH + 0.036, glassD + 0.036);
+      const frameEdges = new THREE.EdgesGeometry(frameGeo);
+      const wireframe = new THREE.LineSegments(frameEdges, new THREE.LineBasicMaterial({
+        color: isLight ? 0x4a4d4b : 0x242826,
+        linewidth: 1
+      }));
       group.add(wireframe);
 
-      let paperMat: THREE.Material;
+      let paperMat: THREE.MeshStandardMaterial;
       let videoElement: HTMLVideoElement | undefined;
+      let artworkTex: THREE.Texture;
 
       if (art.medium === 'video' && art.videoSrc) {
         const vid = document.createElement('video');
@@ -836,6 +845,8 @@ export const GalleryScene3D: React.FC = () => {
         const videoTex = new THREE.VideoTexture(vid);
         videoTex.minFilter = THREE.LinearFilter;
         videoTex.magFilter = THREE.LinearFilter;
+        videoTex.colorSpace = THREE.SRGBColorSpace;
+        artworkTex = videoTex;
 
         paperMat = new THREE.MeshStandardMaterial({
           map: videoTex,
@@ -847,6 +858,8 @@ export const GalleryScene3D: React.FC = () => {
       } else {
         const tex = textureLoader.load(art.imageSrc);
         tex.minFilter = THREE.LinearMipmapLinearFilter;
+        tex.colorSpace = THREE.SRGBColorSpace;
+        artworkTex = tex;
 
         paperMat = new THREE.MeshStandardMaterial({
           map: tex,
@@ -906,6 +919,8 @@ export const GalleryScene3D: React.FC = () => {
         paperMesh,
         plaqueMesh,
         artwork: art,
+        paperMat,
+        texture: artworkTex,
         videoEl: videoElement
       });
     });
@@ -970,6 +985,12 @@ export const GalleryScene3D: React.FC = () => {
       maxX: layout.playerBounds.maxX
     });
     playerController.updateBounds(layout.playerBounds);
+    playerController.obstacles = layout.artworksWithCoords.map((a) => ({
+      x: a.computedCoords.x,
+      z: a.computedCoords.z,
+      radius: 1.8
+    }));
+    playerController.obstacles.push({ x: 2.8, z: 18, radius: 1.3 });
 
     // Enquadramento cinematográfico inicial na entrada: CD em primeiro plano e galeria em perspectiva
     camera.position.set(0, 0.4, 23.5);
@@ -1430,9 +1451,6 @@ export const GalleryScene3D: React.FC = () => {
         (document.activeElement as HTMLElement)?.blur?.();
       } catch {}
       playerController.resumeAimControl();
-      setTimeout(() => {
-        playerController.requestLock();
-      }, 20);
     };
 
     window.addEventListener('mousedown', onMouseDown);
@@ -1562,7 +1580,8 @@ export const GalleryScene3D: React.FC = () => {
     const animate = () => {
       rafId = requestAnimationFrame(animate);
 
-      const delta = Math.min(clock.getDelta(), 0.08);
+      try {
+        const delta = Math.min(clock.getDelta(), 0.08);
       const elapsedTime = clock.getElapsedTime();
 
       const storeState = useAppStore.getState();
@@ -1676,17 +1695,15 @@ export const GalleryScene3D: React.FC = () => {
 
           const found = artworkItems.find((a) => a.artwork.id === currentCinemaArt.id);
           if (found) {
-            // Oculta completamente a vitrine do salão (vidro, moldura, papel, plaquinha)
-            // Eliminando 100% qualquer fantasma ou camada duplicada atrás da obra em visualização!
+            // Oculta completamente a vitrine do salão para eliminar camadas duplicadas
             found.group.visible = false;
 
             const isVid = currentCinemaArt.medium === 'video';
             if (isVid && found.videoEl) {
-              const vidTex = new THREE.VideoTexture(found.videoEl);
-              vidTex.colorSpace = THREE.SRGBColorSpace;
-              artPlaneMat.map = vidTex;
+              artPlaneMat.map = found.texture;
+              found.videoEl.play().catch(() => {});
             } else {
-              artPlaneMat.map = (found.paperMesh.material as any).map;
+              artPlaneMat.map = found.texture;
             }
             artPlaneMat.needsUpdate = true;
 
@@ -1696,21 +1713,63 @@ export const GalleryScene3D: React.FC = () => {
             let h: number;
 
             if (ratio > 1.0) {
-              // Widescreen / Paisagem (ex: 16:9)
-              w = Math.min(1.80, 1.30 * ratio); // 1.80m
-              h = w / ratio; // ~1.01m
+              w = Math.min(1.80, 1.30 * ratio);
+              h = w / ratio;
             } else {
-              // Retrato (ex: 9:16)
               h = 1.30;
-              w = h * ratio; // ~0.725m
+              w = h * ratio;
             }
 
             currentArtW = w;
             currentArtH = h;
 
-            artPlaneGeo.dispose();
+            inspectionArtMesh.geometry.dispose();
             inspectionArtMesh.geometry = new THREE.PlaneGeometry(w, h);
-            backingGeo.dispose();
+            inspectionBacking.geometry.dispose();
+            inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.06, h + 0.06);
+
+            inspectionRig.visible = true;
+            inspectionTransition = 0.1;
+            targetInspRotX = 0;
+            targetInspRotY = 0;
+            curInspRotX = 0;
+            curInspRotY = 0;
+            targetInspZoom = 1.0;
+            curInspZoom = 1.0;
+            curPanX = 0;
+            curPanY = 0;
+            targetPanX = 0;
+            targetPanY = 0;
+            activeCinemaArtId = currentCinemaArt.id;
+          } else {
+            // Obra aberta externamente ou via catálogo/admin
+            const isVid = currentCinemaArt.medium === 'video';
+            if (isVid && currentCinemaArt.videoSrc) {
+              const tempVid = document.createElement('video');
+              tempVid.src = currentCinemaArt.videoSrc;
+              tempVid.crossOrigin = 'anonymous';
+              tempVid.loop = true;
+              tempVid.muted = false;
+              tempVid.playsInline = true;
+              tempVid.play().catch(() => {});
+              const vidTex = new THREE.VideoTexture(tempVid);
+              vidTex.colorSpace = THREE.SRGBColorSpace;
+              artPlaneMat.map = vidTex;
+            } else if (currentCinemaArt.imageSrc) {
+              const tex = textureLoader.load(currentCinemaArt.imageSrc);
+              tex.colorSpace = THREE.SRGBColorSpace;
+              artPlaneMat.map = tex;
+            }
+            artPlaneMat.needsUpdate = true;
+
+            const ratio = currentCinemaArt.aspectRatioNum || 1.0;
+            const h = 1.30;
+            const w = h * ratio;
+            currentArtW = w;
+            currentArtH = h;
+            inspectionArtMesh.geometry.dispose();
+            inspectionArtMesh.geometry = new THREE.PlaneGeometry(w, h);
+            inspectionBacking.geometry.dispose();
             inspectionBacking.geometry = new THREE.PlaneGeometry(w + 0.06, h + 0.06);
 
             inspectionRig.visible = true;
@@ -1922,6 +1981,9 @@ export const GalleryScene3D: React.FC = () => {
       }
 
       renderer.render(scene, camera);
+      } catch (renderErr) {
+        console.warn('[Gigantera 3D Render Non-fatal Error]:', renderErr);
+      }
     };
 
     animate();

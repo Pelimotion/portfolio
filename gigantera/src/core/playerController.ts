@@ -87,6 +87,7 @@ export class PlayerController {
   // Sistema de Vôo Cinemático Suave (Glide para Waypoints / Obras)
   public glideTarget: { x: number; z: number; targetYaw?: number } | null = null;
   public isGliding: boolean = false;
+  public obstacles: { x: number; z: number; radius: number }[] = [];
 
   // Sistema de Giroscópio (Janela Mágica Mobile)
   public isGyroActive: boolean = false;
@@ -205,9 +206,13 @@ export class PlayerController {
 
   public requestLock(): void {
     if (this.isHoldingCD || this.isCinemaActive) return;
+    if (!this.domElement || !this.domElement.isConnected) return;
     if (document.pointerLockElement !== this.domElement) {
       try {
-        this.domElement.requestPointerLock();
+        const p = this.domElement.requestPointerLock() as any;
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {});
+        }
       } catch {
         // Ignora caso bloqueado pelo navegador
       }
@@ -663,6 +668,19 @@ export class PlayerController {
     // Atualiza posição do jogador
     this.position.x += this.velocity.x * delta;
     this.position.z += this.velocity.z * delta;
+
+    // Colisão cilíndrica com vitrines e pedestais (impede atravessar o vidro)
+    for (let i = 0; i < this.obstacles.length; i++) {
+      const obs = this.obstacles[i];
+      const dx = this.position.x - obs.x;
+      const dz = this.position.z - obs.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist < obs.radius && dist > 0.001) {
+        const overlap = obs.radius - dist;
+        this.position.x += (dx / dist) * overlap;
+        this.position.z += (dz / dist) * overlap;
+      }
+    }
 
     // Aplica limites das paredes da galeria
     this.position.x = Math.max(this.config.minX, Math.min(this.config.maxX, this.position.x));
