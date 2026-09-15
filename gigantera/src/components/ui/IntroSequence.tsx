@@ -91,37 +91,47 @@ export const IntroSequence: React.FC = () => {
 
         <p className="cue-narrative-text">{siteConfig.subhead}</p>
 
-        {/* Dois modos de entrada */}
-        <div className="intro-entry-choices">
+        {/* Escolha Primária */}
+        <div className="intro-entry-primary-area">
           <button
-            className="intro-entry-btn intro-entry-primary font-mono"
+            className="intro-entry-main-btn font-mono"
             onClick={handleEnter3D}
-            aria-label="Entrar no Pavilhão 3D e caminhar livremente"
+            aria-label="Entrar no Pavilhão 3D"
           >
-            <span className="entry-icon" aria-hidden="true">▶</span>
-            <span className="entry-content">
-              <span className="entry-label">INICIAR EXPERIÊNCIA 3D</span>
-              <span className="entry-hint">WASD + mouse</span>
+            <span className="entry-icon-mouse">
+              <svg width="18" height="26" viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="32" rx="10"/>
+                <path d="M12 10V14"/>
+              </svg>
             </span>
-          </button>
-
-          <button
-            className="intro-entry-btn intro-entry-secondary font-mono"
-            onClick={handleEnterArchive}
-            aria-label="Ver o acervo completo em catálogo"
-          >
-            <span className="entry-icon" aria-hidden="true">≡</span>
-            <span className="entry-content">
-              <span className="entry-label">VERSÃO ESTÁTICA / CATÁLOGO</span>
-              <span className="entry-hint">catálogo em grade</span>
-            </span>
+            <span className="entry-main-label">CLIQUE PARA ENTRAR NO PAVILHÃO E NAVEGAR</span>
           </button>
         </div>
 
-        {/* Hint do guia */}
-        <p className="intro-guide-hint font-mono">
-          Pressione <kbd className="keycap keycap-xs">H</kbd> a qualquer momento para ver os controles
-        </p>
+        {/* Opções Secundárias / Dicas */}
+        <div className="intro-secondary-hints font-mono">
+          <div className="intro-hint-item" onClick={handleEnterArchive} style={{ cursor: 'pointer' }}>
+            <span className="hint-icon-tab">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="9" y1="21" x2="21" y2="3"></line>
+                <line x1="21" y1="21" x2="3" y2="21"></line>
+                <line x1="3" y1="21" x2="3" y2="3"></line>
+              </svg>
+            </span>
+            <span>Aperte <kbd className="keycap keycap-xs">TAB</kbd> a qualquer momento para ver o acervo em grade (versão estática)</span>
+          </div>
+          <div className="intro-hint-item">
+            <span className="hint-icon-keyboard">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+              </svg>
+            </span>
+            <span>Pressione <kbd className="keycap keycap-xs">H</kbd> a qualquer momento para ver os controles</span>
+          </div>
+        </div>
       </div>
     </div>
   );

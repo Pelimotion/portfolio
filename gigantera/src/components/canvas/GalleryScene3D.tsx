@@ -868,11 +868,19 @@ export const GalleryScene3D: React.FC = () => {
         const videoTex = new THREE.VideoTexture(vid);
         videoTex.minFilter = THREE.LinearFilter;
         videoTex.magFilter = THREE.LinearFilter;
+        videoTex.generateMipmaps = false;
         videoTex.colorSpace = THREE.SRGBColorSpace;
         artworkTex = videoTex;
 
+        vid.addEventListener('loadeddata', () => {
+          vid.play().catch(() => {});
+        });
+
         paperMat = new THREE.MeshStandardMaterial({
           map: videoTex,
+          emissive: new THREE.Color(0xffffff),
+          emissiveMap: videoTex,
+          emissiveIntensity: 0.2, // Give it a slight screen glow
           roughness: 0.95,
           metalness: 0.0,
           side: THREE.DoubleSide
@@ -1493,6 +1501,7 @@ export const GalleryScene3D: React.FC = () => {
         (document.activeElement as HTMLElement)?.blur?.();
       } catch {}
       playerController.resumeAimControl();
+      playerController.requestLock();
     };
 
     window.addEventListener('mousedown', onMouseDown);

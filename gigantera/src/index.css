@@ -474,30 +474,32 @@ a {
 .bottom-bar-scrim {
   pointer-events: auto;
   width: 100%;
-  min-height: 72px;
-  padding: 0 36px 14px;
+  min-height: 84px;
+  padding: 0 36px 16px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   background: linear-gradient(
     0deg,
-    rgba(10, 12, 13, 0.92) 0%,
-    rgba(14, 17, 18, 0.68) 50%,
-    rgba(18, 22, 23, 0.22) 82%,
+    rgba(10, 12, 13, 0.98) 0%,
+    rgba(10, 12, 13, 0.85) 40%,
+    rgba(14, 17, 18, 0.6) 70%,
     transparent 100%
   );
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 [data-theme='light'] .bottom-bar-scrim {
   background: linear-gradient(
     0deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(255, 255, 255, 0.68) 50%,
-    rgba(255, 255, 255, 0.22) 82%,
+    rgba(244, 243, 237, 0.98) 0%,
+    rgba(244, 243, 237, 0.85) 40%,
+    rgba(244, 243, 237, 0.6) 70%,
     transparent 100%
   );
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
 }
 
 /* Navegador de Setores Arquiteturais (SOM · STILLS · VÍDEOS) */
@@ -1272,6 +1274,19 @@ a {
   gap: 6px;
 }
 
+.cinema-persistent-hud {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 50;
+  pointer-events: auto;
+}
+
 /* Barra de Zoom Visual */
 .cinema-zoom-row {
   display: flex;
@@ -1529,55 +1544,9 @@ a {
   box-shadow: 0 6px 20px rgba(228, 195, 121, 0.28);
 }
 
-/* Intro Dual Entry Options */
-.intro-entry-choices {
-  display: flex;
-  gap: 12px;
+.intro-entry-primary-area {
   width: 100%;
   margin-top: 10px;
-}
-
-.intro-entry-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.04);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-}
-
-.intro-entry-primary {
-  border-color: rgba(228, 195, 121, 0.35);
-  background: rgba(228, 195, 121, 0.06);
-}
-
-.intro-entry-primary:hover {
-  background: rgba(228, 195, 121, 0.14);
-  border-color: rgba(228, 195, 121, 0.7);
-  transform: translateY(-1px);
-}
-
-.intro-entry-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.entry-icon {
-  font-size: 14px;
-  color: var(--accent-gold);
-  flex-shrink: 0;
-}
-
-.entry-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .entry-label {
@@ -4750,31 +4719,36 @@ a {
   pointer-events: none; /* Let clicks pass through backdrop */
 }
 
-.guide-card {
-  background: #0d100f;
+.guide-card-modern {
+  background: rgba(13, 16, 15, 0.7);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
+  border-radius: 8px;
   width: min(440px, 94vw);
   max-height: 88vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85);
-  animation: cinemaSmoothIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: auto; /* Ensure card is clickable */
-  transition: all 0.3s ease;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  animation: cinemaSmoothIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.guide-card.is-contextual {
-  width: 320px;
+.guide-card-modern.is-contextual {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 340px;
   max-height: auto;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
-[data-theme='light'] .guide-card {
-  background: #f4f3ed;
+[data-theme='light'] .guide-card-modern {
+  background: rgba(244, 243, 237, 0.75);
   border-color: rgba(0, 0, 0, 0.14);
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
 .guide-card-header {
@@ -4938,38 +4912,46 @@ a {
   border-top-color: rgba(0, 0, 0, 0.08);
 }
 
-.guide-archive-btn {
+.guide-archive-btn-modern {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 3px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.06em;
-  color: #a8b0ad;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.guide-archive-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f4f3ef;
-  border-color: rgba(255, 255, 255, 0.2);
+.guide-archive-btn-modern .btn-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-[data-theme='light'] .guide-archive-btn {
+.guide-archive-btn-modern:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+[data-theme='light'] .guide-archive-btn-modern {
   background: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.1);
-  color: #3a4440;
+  color: var(--text-secondary);
 }
 
-[data-theme='light'] .guide-archive-btn:hover {
+[data-theme='light'] .guide-archive-btn-modern:hover {
   background: rgba(0, 0, 0, 0.06);
-  color: #111413;
+  color: var(--text-primary);
   border-color: rgba(0, 0, 0, 0.2);
 }
 

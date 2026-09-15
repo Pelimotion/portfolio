@@ -388,33 +388,23 @@ export const ARTWORKS_CATALOG: Artwork[] = [
   // ==========================================
   {
     id: 'espinhaco-cinetica-prata',
-    title: 'Tarrafa Cega',
+    title: 'Estudos de Tarrafa',
     series: 'Espinhaço',
     medium: 'still',
     categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
     year: 2026,
     materials: 'Papel de algodão mate 310g/m², vitrine de vidro temperado e liga de prata',
-    description: 'Estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.',
+    description: 'Estudos da estrutura vertebral articulada concebida a partir da biomecânica da ictiologia marinha. O impresso fosco flutua no centro da câmara vítrea.',
     imageSrc: getWorkAssetUrl('espinhaco-cinetica-prata.jpg'),
+    galleryImages: [
+      getWorkAssetUrl('espinhaco-cinetica-prata.jpg'),
+      getWorkAssetUrl('espinhaco-vitrine-aquario.jpg'),
+      getWorkAssetUrl('espinhaco-registro-abissal.jpg')
+    ],
     aspectRatio: '9 / 16',
     aspectRatioNum: 781 / 1400,
     spatialCoords: { x: -3.8, y: 0.0, z: -19.0, rotY: 0.12 },
-    curatorialNotes: 'Peça inaugural da série Espinhaço. A coluna vertebral em prata atua como interface entre anatomia fóssil e cinética computacional.'
-  },
-  {
-    id: 'espinhaco-vitrine-aquario',
-    title: 'Tempo de Espera',
-    series: 'Espinhaço',
-    medium: 'still',
-    categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
-    year: 2026,
-    materials: 'Papel arquivístico mate sem brilho, vitrine de vidro óptico e titânio',
-    description: 'O espécime biomecânico em repouso estático, isolado em volume vítreo de galeria antes da ativação do fluxo hidrodinâmico.',
-    imageSrc: getWorkAssetUrl('espinhaco-vitrine-aquario.jpg'),
-    aspectRatio: '9 / 16',
-    aspectRatioNum: 781 / 1400,
-    spatialCoords: { x: 3.8, y: 0.0, z: -24.5, rotY: -0.15 },
-    curatorialNotes: 'A vitrine transparente funciona como câmara de contenção e pedestal arquitetural sem contato com o piso.'
+    curatorialNotes: 'Peça inaugural da série Espinhaço com pranchetas múltiplas detalhando a evolução da estrutura.'
   },
   {
     id: 'zimbro-estudo-espectral',
@@ -461,21 +451,6 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     spatialCoords: { x: -3.8, y: 0.0, z: -41.0, rotY: 0.1 },
     curatorialNotes: 'Monólito escultural vertical com iluminação emissiva verde e contraste com geologia costeira.'
   },
-  {
-    id: 'espinhaco-registro-abissal',
-    title: 'Quilha',
-    series: 'Espinhaço',
-    medium: 'still',
-    categoryLabel: 'IMPRESSO GICLÉE EM VIDRO',
-    year: 2026,
-    materials: 'Papel de algodão fosco 310g/m², vitrine de vidro selada e pigmentos minerais',
-    description: 'Registro visual submerso da coluna vertebral biomecânica em escala micrométrica, revelando texturas de compressão sedimentar marinha.',
-    imageSrc: getWorkAssetUrl('espinhaco-registro-abissal.jpg'),
-    aspectRatio: '9 / 16',
-    aspectRatioNum: 781 / 1400,
-    spatialCoords: { x: 3.8, y: 0.0, z: -46.5, rotY: -0.12 },
-    curatorialNotes: 'Cartografia gráfica que detalha os pontos de flexão e fadiga de materiais no fundo oceânico.'
-  }
 ];
 
 export const PIPELINE_CLUSTERS: OutputCluster[] = [

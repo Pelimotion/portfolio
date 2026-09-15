@@ -46,8 +46,8 @@ export const ControlsGuideModal: React.FC = () => {
       aria-modal="true"
       aria-label="Guia de controles — Gigantera"
     >
-      <div className={`guide-card font-mono ${cinemaArtwork ? 'is-contextual' : ''}`} onClick={(e) => e.stopPropagation()}>
-
+      <div className={`guide-card-modern font-mono ${cinemaArtwork ? 'is-contextual' : ''}`} onClick={(e) => e.stopPropagation()}>
+        
         {/* Cabeçalho */}
         <div className="guide-card-header">
           <div className="guide-card-brand">
@@ -61,8 +61,10 @@ export const ControlsGuideModal: React.FC = () => {
             aria-label="Fechar guia"
             title="Fechar (H ou ESC)"
           >
-            <span>✕</span>
-            <kbd className="keycap keycap-sm">H</kbd>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
 
@@ -71,26 +73,23 @@ export const ControlsGuideModal: React.FC = () => {
             // ── MOBILE ──
             <>
               {!cinemaArtwork && (
-                <>
-                  <section className="guide-section">
-                    <h3 className="guide-section-title">EXPLORAR O PAVILHÃO</h3>
-                    <div className="guide-rows">
-                      <div className="guide-row">
-                        <span className="guide-key">1 DEDO</span>
-                        <span className="guide-desc">arrastar para olhar em volta</span>
-                      </div>
-                      <div className="guide-row">
-                        <span className="guide-key">◄ ►</span>
-                        <span className="guide-desc">mover de obra em obra</span>
-                      </div>
-                      <div className="guide-row">
-                        <span className="guide-key">TOCAR</span>
-                        <span className="guide-desc">abrir uma obra</span>
-                      </div>
+                <section className="guide-section">
+                  <h3 className="guide-section-title">EXPLORAR O PAVILHÃO</h3>
+                  <div className="guide-rows">
+                    <div className="guide-row">
+                      <span className="guide-key"><span className="icon-finger">☝️</span> 1 DEDO</span>
+                      <span className="guide-desc">arrastar para olhar em volta</span>
                     </div>
-                  </section>
-                  <div className="guide-divider" />
-                </>
+                    <div className="guide-row">
+                      <span className="guide-key">◄ ►</span>
+                      <span className="guide-desc">mover de obra em obra</span>
+                    </div>
+                    <div className="guide-row">
+                      <span className="guide-key">TOCAR</span>
+                      <span className="guide-desc">abrir uma obra</span>
+                    </div>
+                  </div>
+                </section>
               )}
 
               <section className="guide-section">
@@ -106,15 +105,11 @@ export const ControlsGuideModal: React.FC = () => {
                   </div>
                   <div className="guide-row">
                     <span className="guide-key">2× TOQUE</span>
-                    <span className="guide-desc">alternar lupa 300%</span>
+                    <span className="guide-desc">alternar lupa</span>
                   </div>
                   <div className="guide-row">
                     <span className="guide-key">SWIPE</span>
                     <span className="guide-desc">próxima prancheta</span>
-                  </div>
-                  <div className="guide-row">
-                    <span className="guide-key guide-key-close">✕ FECHAR</span>
-                    <span className="guide-desc">devolver à vitrine</span>
                   </div>
                 </div>
               </section>
@@ -123,41 +118,33 @@ export const ControlsGuideModal: React.FC = () => {
             // ── DESKTOP ──
             <>
               {!cinemaArtwork && (
-                <>
-                  <section className="guide-section">
-                    <h3 className="guide-section-title">EXPLORAR O PAVILHÃO</h3>
-                    <div className="guide-rows">
-                      <div className="guide-row">
-                        <span className="guide-key">
-                          <kbd className="keycap keycap-sm">W</kbd>
-                          <kbd className="keycap keycap-sm">A</kbd>
-                          <kbd className="keycap keycap-sm">S</kbd>
-                          <kbd className="keycap keycap-sm">D</kbd>
-                        </span>
-                        <span className="guide-desc">caminhar pelo salão</span>
-                      </div>
-                      <div className="guide-row">
-                        <span className="guide-key">MOUSE</span>
-                        <span className="guide-desc">olhar em volta</span>
-                      </div>
-                      <div className="guide-row">
-                        <span className="guide-key">
-                          <kbd className="keycap keycap-sm">E</kbd>
-                          <span className="guide-or">ou</span>
-                          <span className="guide-key-soft">clique</span>
-                        </span>
-                        <span className="guide-desc">abrir obra / pegar álbum</span>
-                      </div>
-                      <div className="guide-row">
-                        <span className="guide-key">
-                          <kbd className="keycap keycap-sm">TAB</kbd>
-                        </span>
-                        <span className="guide-desc">ver acervo em catálogo</span>
-                      </div>
+                <section className="guide-section">
+                  <h3 className="guide-section-title">EXPLORAR O PAVILHÃO</h3>
+                  <div className="guide-rows">
+                    <div className="guide-row">
+                      <span className="guide-key">
+                        <kbd className="keycap keycap-sm">W</kbd>
+                        <kbd className="keycap keycap-sm">A</kbd>
+                        <kbd className="keycap keycap-sm">S</kbd>
+                        <kbd className="keycap keycap-sm">D</kbd>
+                      </span>
+                      <span className="guide-desc">caminhar pelo salão</span>
                     </div>
-                  </section>
-                  <div className="guide-divider" />
-                </>
+                    <div className="guide-row">
+                      <span className="guide-key">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="7"></rect><path d="M12 6v4"></path></svg>
+                        MOUSE
+                      </span>
+                      <span className="guide-desc">olhar em volta livremente</span>
+                    </div>
+                    <div className="guide-row">
+                      <span className="guide-key">
+                        <kbd className="keycap keycap-sm">E</kbd> / CLIQUE
+                      </span>
+                      <span className="guide-desc">abrir obra ou interagir</span>
+                    </div>
+                  </div>
+                </section>
               )}
 
               <section className="guide-section">
@@ -169,68 +156,41 @@ export const ControlsGuideModal: React.FC = () => {
                   </div>
                   <div className="guide-row">
                     <span className="guide-key">SCROLL</span>
-                    <span className="guide-desc">zoom (mín. 95%)</span>
-                  </div>
-                  <div className="guide-row">
-                    <span className="guide-key">2× CLIQUE</span>
-                    <span className="guide-desc">voltar ao zoom 100%</span>
+                    <span className="guide-desc">zoom in/out suave</span>
                   </div>
                   <div className="guide-row">
                     <span className="guide-key">
                       <kbd className="keycap keycap-sm">R</kbd>
                     </span>
-                    <span className="guide-desc">lupa 300% + arrastar para explorar</span>
+                    <span className="guide-desc">lupa 300% analítica</span>
                   </div>
                   <div className="guide-row">
                     <span className="guide-key guide-key-close">
-                      <kbd className="keycap keycap-sm keycap-coral">E</kbd>
-                      <span className="guide-or">ou</span>
-                      <kbd className="keycap keycap-sm keycap-coral">Q</kbd>
-                      <span className="guide-or">ou</span>
-                      <kbd className="keycap keycap-sm keycap-coral">ESC</kbd>
+                      <kbd className="keycap keycap-sm keycap-coral">ESC</kbd> / <kbd className="keycap keycap-sm keycap-coral">E</kbd>
                     </span>
-                    <span className="guide-desc">fechar e devolver à vitrine</span>
+                    <span className="guide-desc">fechar visualização</span>
                   </div>
                 </div>
               </section>
-
-              {!cinemaArtwork && (
-                <>
-                  <div className="guide-divider" />
-                  <section className="guide-section guide-section-compact">
-                    <div className="guide-rows guide-rows-inline">
-                      <div className="guide-row">
-                        <span className="guide-key"><kbd className="keycap keycap-sm">T</kbd></span>
-                        <span className="guide-desc">tema claro / escuro</span>
-                      </div>
-                      <div className="guide-row">
-                        <span className="guide-key"><kbd className="keycap keycap-sm">H</kbd></span>
-                        <span className="guide-desc">este guia</span>
-                      </div>
-                    </div>
-                  </section>
-                </>
-              )}
             </>
           )}
         </div>
 
-        {/* Rodapé — acesso ao catálogo */}
-        {/* Rodapé — acesso ao catálogo (oculto no modo contexto) */}
         {!cinemaArtwork && (
           <div className="guide-card-footer">
             <button
-              className="guide-archive-btn"
+              className="guide-archive-btn-modern"
               onClick={handleOpenArchive}
               aria-label="Abrir catálogo em grade"
             >
-              <span>≡</span>
-              <span>VER ACERVO COMPLETO</span>
+              <span className="btn-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                VER ACERVO COMPLETO
+              </span>
               <kbd className="keycap keycap-sm">TAB</kbd>
             </button>
           </div>
         )}
-
       </div>
     </div>
   );
