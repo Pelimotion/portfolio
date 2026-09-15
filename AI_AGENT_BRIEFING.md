@@ -1,6 +1,7 @@
 # AI AGENT BRIEFING — PELIMOTION
 **Carregado automaticamente via @import no CLAUDE.md de cada subprojeto.**
-**Versão:** 2.1 | **Última atualização:** 2026-05-17
+**Versão:** 2.5 | **Última atualização:** 2026-09-15
+**Handoff Ativo (Gigantera):** Veja `gigantera/HANDOVER_NEXT_SESSION.md` para as 4 tarefas imediatas da próxima sessão.
 
 ---
 
