@@ -374,12 +374,67 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   warpToSector: (sectorId) => {
-    let targetZ = 22;
-    if (sectorId === 'entrance-audio') targetZ = 20;
-    if (sectorId === 'video') targetZ = 8;
-    if (sectorId === 'still') targetZ = -22;
+    const layout = computeModularGalleryLayout(ARTWORKS_CATALOG);
 
-    get().setCameraTargetZ(targetZ);
+    if (sectorId === 'entrance-audio') {
+      // Estação de CD em x = 2.8, z = 18.0. Fica de frente olhando reto para o estojo:
+      const targetSpot = {
+        x: 2.8,
+        z: 21.0,
+        targetYaw: 0,
+        artworkId: 'cd-station'
+      };
+      set({
+        activeSectorId: sectorId,
+        hasPlayerMoved: true,
+        targetGlideSpot: targetSpot
+      });
+      get().setCameraTargetZ(targetSpot.z);
+      return;
+    }
+
+    if (sectorId === 'video') {
+      const firstVideo = layout.artworksWithCoords.find((a) => a.medium === 'video');
+      if (firstVideo) {
+        const dx = firstVideo.computedCoords.x - firstVideo.viewingSpot.x;
+        const dz = firstVideo.computedCoords.z - firstVideo.viewingSpot.z;
+        const targetYaw = Math.atan2(-dx, -dz);
+        set({
+          activeSectorId: sectorId,
+          hasPlayerMoved: true,
+          targetGlideSpot: {
+            x: firstVideo.viewingSpot.x,
+            z: firstVideo.viewingSpot.z,
+            targetYaw,
+            artworkId: firstVideo.id
+          }
+        });
+        get().setCameraTargetZ(firstVideo.viewingSpot.z);
+        return;
+      }
+    }
+
+    if (sectorId === 'still') {
+      const firstStill = layout.artworksWithCoords.find((a) => a.medium === 'still');
+      if (firstStill) {
+        const dx = firstStill.computedCoords.x - firstStill.viewingSpot.x;
+        const dz = firstStill.computedCoords.z - firstStill.viewingSpot.z;
+        const targetYaw = Math.atan2(-dx, -dz);
+        set({
+          activeSectorId: sectorId,
+          hasPlayerMoved: true,
+          targetGlideSpot: {
+            x: firstStill.viewingSpot.x,
+            z: firstStill.viewingSpot.z,
+            targetYaw,
+            artworkId: firstStill.id
+          }
+        });
+        get().setCameraTargetZ(firstStill.viewingSpot.z);
+        return;
+      }
+    }
+
     set({ activeSectorId: sectorId });
   },
 

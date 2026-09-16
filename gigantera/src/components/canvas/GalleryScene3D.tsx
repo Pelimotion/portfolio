@@ -213,6 +213,61 @@ function createPlaqueTexture(art: Artwork, index: number, isLight: boolean): THR
 }
 
 /**
+ * Gerador procedural da Textura Tátil do Móvel de Exibição do CD (Carvalho Ebanizado Canelado / Concreto Grafite)
+ */
+function createPedestalFurnitureTexture(isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+
+  // Cor base rica e arquitetural (não é preto chapado)
+  const baseColor = isLight ? '#dedad0' : '#272b29';
+  ctx.fillStyle = baseColor;
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Canelado / ripado arquitetural com relevo e luz simulada (fluted slats)
+  const slatWidth = 16;
+  for (let x = 0; x < 512; x += slatWidth) {
+    // Sombra do friso
+    ctx.fillStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.32)';
+    ctx.fillRect(x, 0, 4, 512);
+    // Face principal
+    ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.05)';
+    ctx.fillRect(x + 4, 0, 10, 512);
+    // Chanfro direito suave
+    ctx.fillStyle = isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(x + 14, 0, 2, 512);
+  }
+
+  // Micro-granulação tátil realista
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const data = imgData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    const grain = (Math.random() - 0.5) * (isLight ? 10 : 8);
+    data[i] = Math.min(255, Math.max(0, data[i] + grain));
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain));
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Gradiente vertical de ambient occlusion arquitetural
+  const aoGrad = ctx.createLinearGradient(0, 0, 0, 512);
+  aoGrad.addColorStop(0.0, isLight ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.38)');
+  aoGrad.addColorStop(0.12, 'rgba(0,0,0,0.0)');
+  aoGrad.addColorStop(0.85, 'rgba(0,0,0,0.0)');
+  aoGrad.addColorStop(1.0, isLight ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.44)');
+  ctx.fillStyle = aoGrad;
+  ctx.fillRect(0, 0, 512, 512);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(1, 2);
+  return texture;
+}
+
+/**
  * Gerador procedural da Plaquinha Física 3D do Pedestal de CD
  */
 function createPedestalPlaqueTexture(isLight: boolean): THREE.CanvasTexture {
@@ -280,8 +335,27 @@ export const GalleryScene3D: React.FC = () => {
 
   const [reticleState, setReticleState] = useState<'idle' | 'artwork' | 'cd'>('idle');
   const [showDragHint, setShowDragHint] = useState(false);
+  const [showPointerPrompt, setShowPointerPrompt] = useState(true);
+  const [isPromptDocked, setIsPromptDocked] = useState(false);
   const dragHintTimerRef = useRef<number | null>(null);
   const playerControllerRef = useRef<PlayerController | null>(null);
+
+  // Auto-dismiss do aviso de mira após 20 segundos
+  useEffect(() => {
+    if (introPhase === 'ready') {
+      const timer = setTimeout(() => {
+        setShowPointerPrompt(false);
+      }, 20000);
+      return () => clearTimeout(timer);
+    }
+  }, [introPhase]);
+
+  // Se o usuário assumir pointer lock por clique
+  useEffect(() => {
+    if (isPointerLocked) {
+      setIsPromptDocked(true);
+    }
+  }, [isPointerLocked]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -309,22 +383,22 @@ export const GalleryScene3D: React.FC = () => {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = isLight ? 0.98 : 1.08;
+    renderer.toneMappingExposure = isLight ? 0.88 : 0.92;
     renderer.setClearColor(currentThemeTokens.canvasFog);
     renderer.domElement.style.touchAction = 'none';
     container.appendChild(renderer.domElement);
 
-    // 2. Sistema de Iluminação Realista Contemporâneo com Sombras Suaves e Contraste Arquitetural
+    // 2. Sistema de Iluminação Suave tipo Raytracing: Sombras Aveludadas, Tons Quentes e Sem Brancos Estourados
     const hemiLight = new THREE.HemisphereLight(
-      isLight ? 0xf4f2ea : 0x181c1a,
-      isLight ? 0xdcd8cd : 0x0a0c0b,
-      isLight ? 0.90 : 0.75
+      isLight ? 0xf4f2ea : 0x1a1e1c,
+      isLight ? 0xdcd8cd : 0x0c0e0d,
+      isLight ? 0.52 : 0.44
     );
     scene.add(hemiLight);
 
     const ambientLight = new THREE.AmbientLight(
       isLight ? 0xf0ede4 : 0x141716,
-      isLight ? 0.38 : 0.42
+      isLight ? 0.22 : 0.26
     );
     scene.add(ambientLight);
 
@@ -334,8 +408,8 @@ export const GalleryScene3D: React.FC = () => {
     const hallLen = layout.hallLength;
 
     const sunLight = new THREE.DirectionalLight(
-      isLight ? 0xfff8ed : 0xffebd0,
-      isLight ? 1.65 : 1.95
+      isLight ? 0xfbf6ec : 0xf2e4ce,
+      isLight ? 0.85 : 1.05
     );
     sunLight.position.set(12, 24, hallCenterZ + 30);
     sunLight.castShadow = true;
@@ -352,8 +426,8 @@ export const GalleryScene3D: React.FC = () => {
 
     const visitorLight = new THREE.PointLight(
       isLight ? 0xfff3d8 : 0xe4c379,
-      isLight ? 0.55 : 0.95,
-      32
+      isLight ? 0.28 : 0.38,
+      18
     );
     scene.add(visitorLight);
 
@@ -374,7 +448,7 @@ export const GalleryScene3D: React.FC = () => {
     floorMesh.receiveShadow = true;
     scene.add(floorMesh);
 
-    // Reflexão Planar em Tempo Real do Piso (Simulação Raytracing / RTX)
+    // Reflexão Planar em Tempo Real do Piso (Simulação Raytracing Suave — revela a textura do piso)
     const floorReflector = new Reflector(new THREE.PlaneGeometry(layout.roomWidth, hallLen), {
       clipBias: 0.003,
       textureWidth: Math.min(1024, (typeof window !== 'undefined' ? window.innerWidth : 1280) * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)),
@@ -384,7 +458,7 @@ export const GalleryScene3D: React.FC = () => {
     floorReflector.position.set(0, -3.193, hallCenterZ);
     floorReflector.rotateX(-Math.PI / 2);
     (floorReflector.material as any).transparent = true;
-    (floorReflector.material as any).opacity = isLight ? 0.38 : 0.44;
+    (floorReflector.material as any).opacity = isLight ? 0.18 : 0.22;
     scene.add(floorReflector);
 
     const wallGeo = new THREE.PlaneGeometry(hallLen + 12, 24);
@@ -459,22 +533,22 @@ export const GalleryScene3D: React.FC = () => {
     });
 
     const lightShaftGroup = new THREE.Group();
-    // Cone exterior amplo (luz dispersa)
+    // Cone exterior amplo (luz dispersa suave e aveludada, sem causar grande branco)
     const shaftGeo = new THREE.CylinderGeometry(0.8, 5.2, 18, 16, 1, true);
     const shaftMat = new THREE.MeshBasicMaterial({
-      color: isLight ? 0xfffcf5 : 0xffeed1,
+      color: isLight ? 0xf4ece1 : 0xebd4b2,
       transparent: true,
-      opacity: isLight ? 0.06 : 0.10,
+      opacity: isLight ? 0.012 : 0.018,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     });
-    // Cone interior concentrado (núcleo mais brilhante)
+    // Cone interior concentrado (núcleo âmbar sutil)
     const shaftCoreGeo = new THREE.CylinderGeometry(0.25, 1.8, 18, 12, 1, true);
     const shaftCoreMat = new THREE.MeshBasicMaterial({
-      color: isLight ? 0xfffdf8 : 0xfff5de,
+      color: isLight ? 0xfbf4ea : 0xf4dfbe,
       transparent: true,
-      opacity: isLight ? 0.12 : 0.20,
+      opacity: isLight ? 0.024 : 0.035,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false
@@ -482,24 +556,33 @@ export const GalleryScene3D: React.FC = () => {
 
     const lightShaftMeshes: { outer: THREE.Mesh; inner: THREE.Mesh; baseX: number; baseZ: number }[] = [];
 
-    layout.ceilingBeamsZ.forEach((bz) => {
+    // Apenas 3 claraboias estratégicas ao longo do salão recebem feixes de luz, evitando sobreposição e acúmulo ofuscante
+    const skylightIndices = new Set([
+      0,
+      Math.floor(layout.ceilingBeamsZ.length / 2),
+      Math.max(1, layout.ceilingBeamsZ.length - 1)
+    ]);
+
+    layout.ceilingBeamsZ.forEach((bz, bIdx) => {
       const beam = new THREE.Mesh(beamGeo, beamMat);
       beam.position.set(0, 11, bz);
       beam.castShadow = true;
       beam.receiveShadow = true;
       ceilingBeamsGroup.add(beam);
 
-      const outerShaft = new THREE.Mesh(shaftGeo, shaftMat.clone());
-      outerShaft.position.set(0, 2, bz - 2);
-      outerShaft.rotation.z = -0.15;
-      lightShaftGroup.add(outerShaft);
+      if (skylightIndices.has(bIdx)) {
+        const outerShaft = new THREE.Mesh(shaftGeo, shaftMat.clone());
+        outerShaft.position.set(0, 2, bz - 2);
+        outerShaft.rotation.z = -0.15;
+        lightShaftGroup.add(outerShaft);
 
-      const innerShaft = new THREE.Mesh(shaftCoreGeo, shaftCoreMat.clone());
-      innerShaft.position.set(0, 2, bz - 2);
-      innerShaft.rotation.z = -0.15;
-      lightShaftGroup.add(innerShaft);
+        const innerShaft = new THREE.Mesh(shaftCoreGeo, shaftCoreMat.clone());
+        innerShaft.position.set(0, 2, bz - 2);
+        innerShaft.rotation.z = -0.15;
+        lightShaftGroup.add(innerShaft);
 
-      lightShaftMeshes.push({ outer: outerShaft, inner: innerShaft, baseX: 0, baseZ: bz - 2 });
+        lightShaftMeshes.push({ outer: outerShaft, inner: innerShaft, baseX: 0, baseZ: bz - 2 });
+      }
     });
     scene.add(ceilingBeamsGroup);
     scene.add(lightShaftGroup);
@@ -674,11 +757,13 @@ export const GalleryScene3D: React.FC = () => {
     cdStationGroup.position.set(2.8, -0.6, 18);
     cdStationGroup.rotation.y = -0.32;
 
-    // Plinto Monolítico de Concreto Grafite Arquitetural
+    const cdPedestalTex = createPedestalFurnitureTexture(isLight);
+
+    // Plinto Monolítico Texturizado em Carvalho Ebanizado Canelado / Concreto Grafite Arquitetural
     const plinthGeo = new THREE.BoxGeometry(0.86, 1.9, 0.72);
     const plinthMat = new THREE.MeshStandardMaterial({
-      color: isLight ? 0x222625 : 0x161918,
-      roughness: 0.88,
+      map: cdPedestalTex,
+      roughness: 0.62,
       metalness: 0.12
     });
     const cdStand = new THREE.Mesh(plinthGeo, plinthMat);
@@ -689,23 +774,41 @@ export const GalleryScene3D: React.FC = () => {
 
     // Rodapé de Sombra Negativa da Base
     const plinthBaseGeo = new THREE.BoxGeometry(0.76, 0.12, 0.62);
-    const plinthBaseMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x0c0e0d : 0x050606 });
+    const plinthBaseMat = new THREE.MeshBasicMaterial({ color: isLight ? 0x222624 : 0x111413 });
     const plinthBase = new THREE.Mesh(plinthBaseGeo, plinthBaseMat);
     plinthBase.position.y = -1.94;
     cdStationGroup.add(plinthBase);
 
-    // Tampo Cantilever em Titânio Escovado
+    // Tampo Cantilever em Bronze Champanhe / Titânio Escovado
     const deckGeo = new THREE.BoxGeometry(0.82, 0.08, 0.64);
     const deckMat = new THREE.MeshStandardMaterial({
-      color: isLight ? 0x333836 : 0x242826,
+      color: isLight ? 0x5a554a : 0x3e3a35,
       roughness: 0.35,
-      metalness: 0.78
+      metalness: 0.65
     });
     const deckMesh = new THREE.Mesh(deckGeo, deckMat);
     deckMesh.position.y = 0.04;
     deckMesh.castShadow = true;
     deckMesh.receiveShadow = true;
     cdStationGroup.add(deckMesh);
+
+    // Foco de Luz Cenográfica de Museu dedicado suave sobre o CD e o Móvel (Efeito Raytracing)
+    const cdSpotLight = new THREE.SpotLight(
+      isLight ? 0xfffaee : 0xffebd0,
+      isLight ? 1.6 : 2.0,
+      14,
+      Math.PI / 4.8,
+      0.82,
+      1.8
+    );
+    cdSpotLight.position.set(2.8, 3.8, 19.4);
+    cdSpotLight.target = cdStationGroup;
+    cdSpotLight.castShadow = true;
+    cdSpotLight.shadow.mapSize.width = 1024;
+    cdSpotLight.shadow.mapSize.height = 1024;
+    cdSpotLight.shadow.bias = -0.0002;
+    scene.add(cdSpotLight);
+    scene.add(cdSpotLight.target);
 
     // Plaquinha Arquitetural Metálica Embutida no Plinto
     const cdPlaqueGeo = new THREE.BoxGeometry(0.72, 0.22, 0.02);
@@ -2262,8 +2365,8 @@ export const GalleryScene3D: React.FC = () => {
       updateCameraZ(camera.position.z, velocityZ);
 
       visitorLight.position.set(camera.position.x, camera.position.y + 1.0, camera.position.z);
-      // Luz do visitante firme e constante (elimina oscilação/piscamento dos alto-falantes e paredes)
-      visitorLight.intensity = isLight ? 0.85 : 1.45;
+      // Luz do visitante suave e cinematográfica (iluminação íntima de museu, sem estourar o contraste)
+      visitorLight.intensity = isLight ? 0.28 : 0.38;
 
       // Atualiza matriz de frustum para culling de vídeos e objetos fora do campo de visão
       cameraProjScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
@@ -2295,15 +2398,15 @@ export const GalleryScene3D: React.FC = () => {
           const sway = Math.sin(elapsedTime * shaftSwaySpeed + li * 0.9) * 0.055;
           outer.rotation.z = -0.15 + sway;
           inner.rotation.z = -0.15 + sway * 0.7;
-          // Translação X subtil para simular deslocamento da nuvem de luz
+          // Translação X sutil para simular deslocamento da nuvem de luz
           outer.position.x = baseX + Math.sin(elapsedTime * 0.12 + li * 1.3) * 0.45;
           inner.position.x = baseX + Math.sin(elapsedTime * 0.12 + li * 1.3) * 0.28;
-          // Pulsação de opacidade muito suave
-          const baseOpOuter = isLight ? 0.06 : 0.10;
-          const baseOpInner = isLight ? 0.12 : 0.20;
-          const pulse = Math.sin(elapsedTime * 0.22 + li * 0.7) * 0.02;
-          (outer.material as THREE.MeshBasicMaterial).opacity = baseOpOuter + pulse;
-          (inner.material as THREE.MeshBasicMaterial).opacity = baseOpInner + pulse;
+          // Pulsação de opacidade muito sutil e translúcida
+          const baseOpOuter = isLight ? 0.012 : 0.018;
+          const baseOpInner = isLight ? 0.024 : 0.035;
+          const pulse = Math.sin(elapsedTime * 0.22 + li * 0.7) * 0.004;
+          (outer.material as THREE.MeshBasicMaterial).opacity = Math.max(0.005, baseOpOuter + pulse);
+          (inner.material as THREE.MeshBasicMaterial).opacity = Math.max(0.010, baseOpInner + pulse);
         });
       }
 
@@ -2533,19 +2636,25 @@ export const GalleryScene3D: React.FC = () => {
         </div>
       )}
 
-      {/* Dica discreta de clique para ativar Câmera Livre se não estiver bloqueado (Apenas Desktop) */}
-      {!isPointerLocked && introPhase === 'ready' && !isHoldingCD && !cinemaArtwork && !isMobile && (
+      {/* Aviso de Mira e Controle — Surge em destaque central e desce suavemente para o dock ao clicar, saindo após 20s */}
+      {showPointerPrompt && introPhase === 'ready' && !isHoldingCD && !cinemaArtwork && viewMode !== 'archive' && !isMobile && (
         <div
-          className="pointer-lock-hint-dock font-mono"
-          aria-hidden="true"
+          className={`pointer-lock-callout-hero font-mono ${isPromptDocked ? 'is-docked-down' : 'is-hero-prompt'}`}
           onClick={() => {
+            setIsPromptDocked(true);
             playerControllerRef.current?.requestLock();
           }}
           style={{ cursor: 'pointer' }}
+          role="button"
+          tabIndex={0}
+          title="Clique para assumir o controle da mira e caminhar pelo pavilhão"
         >
+          <span className="callout-reticle-badge">[+]</span>
           <span className="mouse-badge">
             <span className="mouse-icon mouse-left-click" />
-            <span className="keycap-label">CLIQUE P/ MIRA LIVRE</span>
+          </span>
+          <span className="callout-label">
+            {isPromptDocked ? 'MIRA LIVRE ATIVA' : 'CLIQUE NA TELA P/ ASSUMIR A MIRA'}
           </span>
         </div>
       )}

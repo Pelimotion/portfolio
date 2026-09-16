@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-15
+**Data:** 2026-09-15 (noite)
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — 4 Melhorias de UX (Keycaps + Cursor + Single-Click + Tutorial) implementadas | Build 100% Validado
-**Próxima Ação:** Aguardar feedback do usuário sobre as 4 melhorias; possíveis refinamentos de sensibilidade do mouse ou ajustes visuais
+**Status:** ESTÁVEL, BLINDADO & ONLINE — Iluminação Suave Raytracing, Móvel do CD Texturizado com Spotlight, Trajeto Serpentino Intercalado, Atalhos Frontais de Seção, Top Bar Nítida e Callout de Mira com Auto-Dismiss de 20s implementados | Build 100% Validado
+**Próxima Ação:** Conectar novos assets ou refinar sonorização se solicitado
 **Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -25,12 +25,24 @@
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
 | `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
 | `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
-| **Gigantera** (`/gigantera/`) | ✅ Acervo 3D In-Scene + Matriz 4x2 + Bunny CDN | 2026-09-15 |
+| **Gigantera** (`/gigantera/`) | ✅ Iluminação Raytracing + Móvel CD Texturizado + Serpentina + Atalhos Frontais | 2026-09-15 |
 | **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-15 (noite) — Iluminação Raytracing, Móvel CD Texturizado, Trajeto Serpentino, Atalhos Frontais, Top Bar e Callout de Mira
+**O que foi feito:**
+- [x] **Iluminação Suave Raytracing (Sem Brancos Estourados):** Corrigido o acúmulo aditivo dos feixes de luz volumétrica (limitado a 3 claraboias selecionadas com opacidades 0.012/0.025 e tom âmbar aquecido). `visitorLight` ajustado para 0.28-0.38 (evitando lavar a cena). `sunLight` ajustado para 0.85-1.05. `floorReflector` calibrado para 0.18-0.22, revelando a textura aveludada do piso de concreto polido.
+- [x] **Móvel do CD Texturizado com Luz e Sombra:** Criada a função `createPedestalFurnitureTexture(isLight)` para ripado arquitetural vertical de carvalho ebanizado/concreto grafite com micro-granulação e ambient occlusion. Tampo em bronze champanhe escovado. Adicionado `cdSpotLight` dedicado sobre a estação de CD com sombras físicas suaves.
+- [x] **Trajeto Serpentino Intercalado:** Espaçamento longitudinal expandido para 10.0m entre obras e 14.0m no portal de transição. As obras alternam estritamente esquerda e direita (sem emparelhamento), inclinadas a 0.20-0.22 radianos para receber o visitante em um fluxo orgânico em S.
+- [x] **Atalhos Frontais por Seção:** `warpToSector(sectorId)` atualizado para planar e orientar a câmera diretamente de frente para a peça primária de cada setor (Setor 1 na Estação de CD; Setor 2 na 1ª obra de vídeo; Setor 3 na 1ª obra still).
+- [x] **Top Bar de Alta Legibilidade:** `.header-quality-control` com fundo escuro fosco reforçado (`rgba(10, 14, 12, 0.88)`), contador de FPS em 11.5px bold `#ffffff` com dot esmeralda vibrante, botões com 10.5px bold e suporte completo a tema claro.
+- [x] **Callout de Mira e Controle (Hero → Docked) com Auto-Dismiss:** Callout com ícone reticular `[+]` e mouse com clique animado. Inicia em destaque central inferior (`bottom: 110px`), desce suavemente para o dock (`bottom: 82px`) ao ser clicado, e se auto-destrói após 20 segundos para manter a visão desimpedida.
+- [x] **Validação:** `tsc --noEmit` com 0 erros, build em 363ms.
+
+---
 
 ### 2026-09-15 (tarde) — 4 Melhorias de UX: Keycaps, Cursor, Single-Click, Tutorial
 **O que foi feito:**
