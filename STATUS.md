@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-15 (noite)
+**Data:** 2026-09-16 (madrugada)
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — Iluminação Suave Raytracing, Móvel do CD Texturizado com Spotlight, Trajeto Serpentino Intercalado, Atalhos Frontais de Seção, Top Bar Nítida e Callout de Mira com Auto-Dismiss de 20s implementados | Build 100% Validado
-**Próxima Ação:** Conectar novos assets ou refinar sonorização se solicitado
+**Status:** ESTÁVEL, BLINDADO & ONLINE — Setores Frontais, Gráficos TV (Médio/Alto), Tutorial Dark Glassmorphism, Sobre/Contato Dossiê, Raycast Contínuo e Piso Concreto Realista implementados | Build e Deploy no Vercel Validados
+**Próxima Ação:** Avaliar feedback do teste online e novas adições de acervo
 **Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -25,12 +25,26 @@
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
 | `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
 | `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
-| **Gigantera** (`/gigantera/`) | ✅ Iluminação Raytracing + Móvel CD Texturizado + Serpentina + Atalhos Frontais | 2026-09-15 |
+| **Gigantera** (`/gigantera/`) | ✅ Setores Frontais + HUD TV + Tutorial Dark + Sobre/Contato + Raycast Contínuo | 2026-09-16 |
 | **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-16 (madrugada) — Setores Frontais, HUD TV (Médio/Alto), Tutorial Dark, Sobre/Contato e Raycasting Contínuo
+**O que foi feito:**
+- [x] **Navegação Frontal nos Setores (1, 2 e 3):** Corrigido o ângulo de visão e coordenadas do `warpToSector` para que o visitante caia exatamente de frente para a obra/vitrine correspondente ao invés de vê-la de perfil ou de lado.
+- [x] **HUD de Qualidade Gráfica com Ícone de TV:** Simplificado o controle de gráficos para 2 opções objetivas (**Médio** e **Alto**), removido o contador de FPS e adicionado o ícone minimalista de TV (`Tv` do lucide-react), com background escuro idêntico aos demais elementos do menu superior.
+- [x] **Remoção de Callouts de Mira e Elementos Verdes:** Eliminada a mensagem intrusiva de clique para ativar a mira e removido qualquer traço, borda ou stroke verde, mantendo a paleta sofisticada em tons neutros, titânio e âmbar.
+- [x] **Tutorial Inicial Redesenhado:** O modal de guia de controles foi totalmente redesenhado no padrão de design system do site (vidro fosco fumê escuro, bordas finas translúcidas, tipografia Manrope e Space Mono, keycaps táteis de alta fidelidade), substituindo os tons bege/cinza.
+- [x] **Menu "Sobre / Contato" Transformado em Dossiê do Projeto:** O antigo menu de contato foi expandido para um dossiê conceitual completo com a descrição institucional e curatorial do Gigantera, detalhes de sua gênese transmídia, ficha técnica, localização física na Toca.hub (Florianópolis) e botão direto de contato via WhatsApp.
+- [x] **Raycaster Contínuo Durante Movimento:** O sistema de detecção de intersecção das obras agora é avaliado a cada quadro de animação, permitindo que a obra sob a mira do jogador seja realçada ao caminhar (WASD) mesmo se o usuário não mover fisicamente o cursor do mouse.
+- [x] **Prevenção de Clipping das Obras com o Piso:** Ajustada a elevação Y de todas as vitrines no pavilhão tridimensional, garantindo espaçamento limpo entre a base das artes e as placas de identificação no piso.
+- [x] **Reflexos Realistas de Piso de Concreto:** O refletor do piso foi aprimorado com máscara procedural de imperfeições, granulação mineral e reflexo atenuado, reproduzindo a estética de piso de museu em concreto queimado polido.
+- [x] **Validação e Build:** Compilação bem-sucedida (`npm run build`), zero erros no TypeScript e geração dos bundles de produção em `gigantera/assets/`.
+
+---
 
 ### 2026-09-15 (noite) — Iluminação Raytracing, Móvel CD Texturizado, Trajeto Serpentino, Atalhos Frontais, Top Bar e Callout de Mira
 **O que foi feito:**

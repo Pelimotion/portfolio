@@ -108,6 +108,15 @@ export const ArtistBioModal: React.FC = () => {
 
               <div className="contact-links-list font-mono">
                 <a
+                  href="https://wa.me/5547999999999"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                >
+                  <span>WHATSAPP</span>
+                  <span className="link-arrow">↗</span>
+                </a>
+                <a
                   href="https://instagram.com/pelimotion"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -139,7 +148,15 @@ export const ArtistBioModal: React.FC = () => {
 
             <div className="studio-location-box font-mono">
               <span className="loc-label">[ATELIÊ & PIPELINE]</span>
-              <span className="loc-val">BLUMENAU / BRASIL · FUSO UTC-3</span>
+              <span className="loc-val">OPERAÇÕES BASEADAS NA <a href="https://share.google/WR6ZovOEDJxrJ4SCp" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-gold)' }}>TOCA.HUB</a></span>
+              
+              <div style={{ margin: '12px 0', opacity: 0.8, borderRadius: '4px', overflow: 'hidden', height: '60px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <a href="https://share.google/WR6ZovOEDJxrJ4SCp" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'inherit' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  VER NO MAPA
+                </a>
+              </div>
+              
               <span className="loc-engine">RENDERIZADO COM THREE.JS & WEB AUDIO API</span>
             </div>
           </div>

@@ -91,13 +91,14 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
 
     const computedCoords = {
       x,
-      y: 0.0,
+      y: 0.45,
       z: currentZ,
       rotY
     };
 
-    const spotX = isLeft ? x + viewingOffset * 0.75 : x - viewingOffset * 0.75;
-    const spotZ = currentZ;
+    // Ponto ideal de observação: posicionado ao longo da normal frontal da obra (considerando sua rotação rotY)
+    const spotX = x + Math.sin(rotY) * viewingOffset;
+    const spotZ = currentZ + Math.cos(rotY) * viewingOffset;
 
     const viewingSpot: ViewingSpotInfo = {
       artworkId: art.id,
@@ -129,14 +130,14 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
 
     const computedCoords = {
       x,
-      y: 0.0,
+      y: 0.45,
       z: currentZ,
       rotY
     };
 
-    // Ponto ideal de observação: no piso em frente à vitrine voltado para a peça
-    const spotX = isLeft ? x + viewingOffset * 0.7 : x - viewingOffset * 0.7;
-    const spotZ = currentZ;
+    // Ponto ideal de observação: no piso em frente à vitrine voltado perfeitamente para a peça
+    const spotX = x + Math.sin(rotY) * (viewingOffset * 0.95);
+    const spotZ = currentZ + Math.cos(rotY) * (viewingOffset * 0.95);
 
     const viewingSpot: ViewingSpotInfo = {
       artworkId: art.id,

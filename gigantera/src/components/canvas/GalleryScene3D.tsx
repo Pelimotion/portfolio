@@ -35,6 +35,26 @@ function createFloorTexture(isLight: boolean): THREE.CanvasTexture {
   }
   ctx.putImageData(imgData, 0, 0);
 
+  // Manchas orgânicas amplas (sujeira e marcas de uso/dedos)
+  const smudgeCount = isLight ? 40 : 25;
+  for (let i = 0; i < smudgeCount; i++) {
+    const sx = Math.random() * 1024;
+    const sy = Math.random() * 1024;
+    const sSize = 20 + Math.random() * 120;
+    const sOpacity = Math.random() * (isLight ? 0.04 : 0.06);
+    ctx.beginPath();
+    ctx.arc(sx, sy, sSize, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${isLight ? '0,0,0' : '255,255,255'}, ${sOpacity})`;
+    ctx.fill();
+    // Adicionar também algumas marcas ovais mais afiadas (esfregões/marcas de sapato)
+    if (Math.random() > 0.5) {
+      ctx.beginPath();
+      ctx.ellipse(sx + 50, sy + 50, sSize * 0.4, sSize * 0.1, Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${isLight ? '0,0,0' : '200,200,200'}, ${sOpacity * 1.5})`;
+      ctx.fill();
+    }
+  }
+
   // Juntas de dilatação sutis e elegantes
   ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.06)';
   ctx.lineWidth = 2;
@@ -449,16 +469,17 @@ export const GalleryScene3D: React.FC = () => {
     scene.add(floorMesh);
 
     // Reflexão Planar em Tempo Real do Piso (Simulação Raytracing Suave — revela a textura do piso)
+    // Reduzida a resolução para 256/512 para simular o "blur" (roughness) e não parecer um espelho limpo
     const floorReflector = new Reflector(new THREE.PlaneGeometry(layout.roomWidth, hallLen), {
       clipBias: 0.003,
-      textureWidth: Math.min(1024, (typeof window !== 'undefined' ? window.innerWidth : 1280) * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)),
-      textureHeight: Math.min(1024, (typeof window !== 'undefined' ? window.innerHeight : 720) * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)),
+      textureWidth: Math.min(512, (typeof window !== 'undefined' ? window.innerWidth : 1280) * 0.5),
+      textureHeight: Math.min(512, (typeof window !== 'undefined' ? window.innerHeight : 720) * 0.5),
       color: isLight ? 0xd0cec7 : 0x666666
     });
     floorReflector.position.set(0, -3.193, hallCenterZ);
     floorReflector.rotateX(-Math.PI / 2);
     (floorReflector.material as any).transparent = true;
-    (floorReflector.material as any).opacity = isLight ? 0.18 : 0.22;
+    (floorReflector.material as any).opacity = isLight ? 0.12 : 0.16;
     scene.add(floorReflector);
 
     const wallGeo = new THREE.PlaneGeometry(hallLen + 12, 24);
@@ -684,7 +705,7 @@ export const GalleryScene3D: React.FC = () => {
 
       // LED indicador acústico
       const ledGeo = new THREE.CircleGeometry(0.012, 12);
-      const ledMat = new THREE.MeshBasicMaterial({ color: 0x63e2b7 });
+      const ledMat = new THREE.MeshBasicMaterial({ color: isLight ? 0xb88d34 : 0xe4c379 });
       const led = new THREE.Mesh(ledGeo, ledMat);
       led.position.set(0, -0.3, 0.193);
       spkGroup.add(led);
@@ -719,8 +740,7 @@ export const GalleryScene3D: React.FC = () => {
     const viewingSpotsGroup = new THREE.Group();
 
     layout.viewingSpots.forEach((spot) => {
-      const isStill = spot.medium === 'still';
-      const color = isStill ? 0xe4c379 : 0x63e2b7;
+      const color = isLight ? 0xb88d34 : 0xe4c379;
 
       // Anel fino no piso
       const ringGeo = new THREE.RingGeometry(0.68, 0.76, 32);
@@ -1592,10 +1612,20 @@ export const GalleryScene3D: React.FC = () => {
         return;
       }
 
-      // Raycasting normal na galeria: em Pointer Lock, usa estritamente o centro (0, 0)
+      // Chama updateRaycaster ao mover o mouse (se não estiver travado)
+      if (!playerController.isLocked) {
+        updateRaycaster();
+      }
+    };
+
+    const updateRaycaster = () => {
+      const state = useAppStore.getState();
+      if (state.cinemaArtwork || state.isHoldingCD || state.viewMode === 'archive') return;
+
       if (playerController.isLocked) {
         mouseCoord.set(0, 0);
       }
+      
       raycaster.setFromCamera(mouseCoord, camera);
       const candidates = [
         ...artworkItems.map((m) => m.glassMesh),
@@ -1848,12 +1878,12 @@ export const GalleryScene3D: React.FC = () => {
     const applyQualitySettings = (q: 'light' | 'med' | 'high') => {
       if (q === 'high') {
         floorReflector.visible = true;
-        (floorReflector.material as any).opacity = isLight ? 0.38 : 0.44;
+        (floorReflector.material as any).opacity = isLight ? 0.22 : 0.28;
         renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
       } else if (q === 'med') {
         floorReflector.visible = true;
-        (floorReflector.material as any).opacity = isLight ? 0.18 : 0.22;
+        (floorReflector.material as any).opacity = isLight ? 0.12 : 0.16;
         renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
       } else {
@@ -1899,7 +1929,7 @@ export const GalleryScene3D: React.FC = () => {
       wallMat.map = isL ? wallLightTex : wallDarkTex;
       wallMat.needsUpdate = true;
 
-      (floorReflector.material as any).opacity = isL ? 0.38 : 0.44;
+      (floorReflector.material as any).opacity = isL ? 0.22 : 0.28;
 
       plinthMat.color.set(isL ? 0x222625 : 0x161918);
       deckMat.color.set(isL ? 0x333836 : 0x242826);
@@ -2508,6 +2538,9 @@ export const GalleryScene3D: React.FC = () => {
         setProximityArtwork(null);
       }
 
+      // Atualiza raycaster continuamente, garantindo que detectar obras funciona mesmo andando sem mexer o mouse
+      updateRaycaster();
+
       // Atualização dos Prompts Táticos de Jogo (Minimalista & Contextual — sem sobreposições)
       const distToCD = Math.hypot(camera.position.x - 2.8, camera.position.z - 18);
       const currentHoveredTarget = storeState.hoveredTarget;
@@ -2636,28 +2669,7 @@ export const GalleryScene3D: React.FC = () => {
         </div>
       )}
 
-      {/* Aviso de Mira e Controle — Surge em destaque central e desce suavemente para o dock ao clicar, saindo após 20s */}
-      {showPointerPrompt && introPhase === 'ready' && !isHoldingCD && !cinemaArtwork && viewMode !== 'archive' && !isMobile && (
-        <div
-          className={`pointer-lock-callout-hero font-mono ${isPromptDocked ? 'is-docked-down' : 'is-hero-prompt'}`}
-          onClick={() => {
-            setIsPromptDocked(true);
-            playerControllerRef.current?.requestLock();
-          }}
-          style={{ cursor: 'pointer' }}
-          role="button"
-          tabIndex={0}
-          title="Clique para assumir o controle da mira e caminhar pelo pavilhão"
-        >
-          <span className="callout-reticle-badge">[+]</span>
-          <span className="mouse-badge">
-            <span className="mouse-icon mouse-left-click" />
-          </span>
-          <span className="callout-label">
-            {isPromptDocked ? 'MIRA LIVRE ATIVA' : 'CLIQUE NA TELA P/ ASSUMIR A MIRA'}
-          </span>
-        </div>
-      )}
+      {/* O aviso de clique para mirar foi removido conforme solicitação do usuário. */}
     </div>
   );
 };

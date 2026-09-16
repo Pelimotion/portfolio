@@ -30,9 +30,7 @@ export const GalleryHeader: React.FC = () => {
         return;
       }
       if (e.code === 'KeyG' && !e.metaKey && !e.ctrlKey) {
-        if (graphicsQuality === 'light') setGraphicsQuality('med');
-        else if (graphicsQuality === 'med') setGraphicsQuality('high');
-        else setGraphicsQuality('light');
+        setGraphicsQuality(graphicsQuality === 'high' ? 'med' : 'high');
       } else if (e.code === 'KeyT' && !e.metaKey && !e.ctrlKey) {
         toggleTheme();
       } else if (e.code === 'KeyB' && !e.metaKey && !e.ctrlKey) {
@@ -119,36 +117,25 @@ export const GalleryHeader: React.FC = () => {
       {/* Direita: Qualidade Gráfica com FPS integrado, Tema & Bio do Artista */}
       <div className="header-actions-group font-mono">
         {/* Pílula de Fidelidade Gráfica: BAIXO / MÉDIO / ALTO com contador de FPS integrado */}
-        <div className="header-quality-control">
+        <div className="header-quality-control header-minimal-btn" style={{ padding: '0 4px', gap: '4px' }}>
           <div
             className="header-fps-badge"
-            title={`Taxa atual: ${currentFps} FPS ${currentFps < 35 ? '(Clique para otimizar gráficos ou aperte G)' : ''}`}
-            onClick={() => {
-              if (currentFps < 35 && graphicsQuality !== 'light') {
-                setGraphicsQuality(graphicsQuality === 'high' ? 'med' : 'light');
-              }
-            }}
+            title={`Opções gráficas (Taxa atual: ${currentFps} FPS)`}
+            style={{ border: 'none', background: 'transparent', padding: '0 6px', opacity: 0.7 }}
           >
-            <span className={`fps-indicator-dot ${currentFps < 35 ? 'fps-warning' : 'fps-good'}`} />
-            <span className="fps-number">{currentFps} FPS</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+              <polyline points="17 2 12 7 7 2"></polyline>
+            </svg>
           </div>
 
-          <div className="quality-segmented-toggle" role="group" aria-label="Ajuste de fidelidade gráfica">
-            <button
-              onClick={() => setGraphicsQuality('light')}
-              className={`quality-seg-btn ${graphicsQuality === 'light' ? 'is-active' : ''} ${currentFps < 25 && graphicsQuality !== 'light' ? 'is-recommended' : ''}`}
-              title="Modo Baixo: Maior fluidez para notebooks e telas de alta resolução"
-            >
-              <span>BAIXO</span>
-              {currentFps < 25 && graphicsQuality !== 'light' && <span className="rec-micro-dot" title="Sugerido para seu hardware" />}
-            </button>
+          <div className="quality-segmented-toggle" role="group" aria-label="Ajuste de fidelidade gráfica" style={{ border: 'none', background: 'transparent' }}>
             <button
               onClick={() => setGraphicsQuality('med')}
-              className={`quality-seg-btn ${graphicsQuality === 'med' ? 'is-active' : ''} ${currentFps >= 25 && currentFps < 38 && graphicsQuality === 'high' ? 'is-recommended' : ''}`}
+              className={`quality-seg-btn ${graphicsQuality === 'med' ? 'is-active' : ''}`}
               title="Modo Médio: Equilíbrio ótimo entre fidelidade e fluidez"
             >
               <span>MÉDIO</span>
-              {currentFps >= 25 && currentFps < 38 && graphicsQuality === 'high' && <span className="rec-micro-dot" title="Sugerido para seu hardware" />}
             </button>
             <button
               onClick={() => setGraphicsQuality('high')}
@@ -186,9 +173,9 @@ export const GalleryHeader: React.FC = () => {
         <button
           onClick={() => setBioOpen(true)}
           className="header-minimal-btn"
-          title="Declaração conceitual e contato direto (B)"
+          title="Ver biografia e contato do artista"
         >
-          <span>[CONTATO]</span>
+          <span>SOBRE / CONTATO</span>
           <kbd className="header-keycap-hint">B</kbd>
         </button>
       </div>

@@ -5382,17 +5382,17 @@ a {
 }
 
 .guide-card-modern {
-  background: rgba(13, 16, 15, 0.7);
+  background: var(--bg-surface, rgba(13, 16, 15, 0.65));
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
   width: min(440px, 94vw);
   max-height: 88vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
   animation: cinemaSmoothIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: auto;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -5404,13 +5404,13 @@ a {
   right: 24px;
   width: 340px;
   max-height: auto;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme='light'] .guide-card-modern {
-  background: rgba(244, 243, 237, 0.75);
-  border-color: rgba(0, 0, 0, 0.14);
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 .guide-card-header {
