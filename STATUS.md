@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-16 (madrugada)
+**Data:** 2026-09-16 (manhã)
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — Setores Frontais, Gráficos TV (Médio/Alto), Tutorial Dark Glassmorphism, Sobre/Contato Dossiê, Raycast Contínuo e Piso Concreto Realista implementados | Build e Deploy no Vercel Validados
-**Próxima Ação:** Avaliar feedback do teste online e novas adições de acervo
+**Status:** ESTÁVEL, BLINDADO & ONLINE — Experiência Mobile Totalmente Reformulada (FOV Adaptativo, Thumb Dock 2.0, Raycasting Touch, Pinch-to-zoom e CD POV Tátil) | Build e Deploy Vercel em Produção Validados
+**Próxima Ação:** Teste de usabilidade pelo usuário em dispositivos móveis online
 **Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -25,12 +25,23 @@
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
 | `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
 | `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
-| **Gigantera** (`/gigantera/`) | ✅ Setores Frontais + HUD TV + Tutorial Dark + Sobre/Contato + Raycast Contínuo | 2026-09-16 |
+| **Gigantera** (`/gigantera/`) | ✅ Versão Mobile de Alta Fidelidade + FOV Adaptativo + Dock 2.0 + Pinch Zoom | 2026-09-16 |
 | **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-16 (manhã) — Reformulação Master da Versão Mobile do Gigantera & Deploy em Produção
+**O que foi feito:**
+- [x] **FOV Vertical Adaptativo Dinâmico:** Câmera Three.js ajusta o campo de visão dinamicamente de 55° até 74° em telas retrato (`aspect < 1.0`), preservando a magnitude arquitetural, skylights e reflexos no piso em celulares sem distorção.
+- [x] **Mobile Bottom Dock 2.0 (Thumb Zone):** Interface inferior ergonômica com strip de setores no topo (`1 · SOM`, `2 · VÍDEOS`, `3 · STILLS`), stepper central com botão `VER [⌕]`, botões rápidos de utilitários (`GIRO`, `CD`, `ACERVO`, `GUIA`) e gaveta tátil (*bottom sheet*) com carrossel snap de obras e tracklist das 17 faixas de áudio com reprodução direta.
+- [x] **Interação Tátil 3D Direta (Raycasting Touch):** Toques na tela (`onTouchTap`) projetam coordenadas NDC diretamente para vitrines suspensas, chão, estação de escuta e faixas do CD Jewel Case sem depender do mouse.
+- [x] **Pinch-to-Zoom e Gestos Táteis no CinemaView:** Implementado zoom por pinça com dois dedos de 0.85x a 3.5x, toque duplo para lupa analítica 300% e swipe lateral para pranchetas de still.
+- [x] **Ergonomia e Eliminação de Resquícios Desktop:** Tela inicial de entrada, modal de guia e POV do CD 3D substituíram atalhos de teclado (WASD, E, TAB, R, mouse) por convenções táteis nativas e botões de toque dedicados. Bloqueio definitivo de `requestPointerLock` em mobile.
+- [x] **Validação, Build e Deploy Online:** Build limpo com zero erros TypeScript (`npm run build`), atualização dos scripts de empacotamento estático e deploy sincronizado na Vercel em produção (`https://www.pelimotion.art/gigantera`).
+
+---
 
 ### 2026-09-16 (madrugada) — Setores Frontais, HUD TV (Médio/Alto), Tutorial Dark, Sobre/Contato e Raycasting Contínuo
 **O que foi feito:**
