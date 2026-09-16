@@ -16,8 +16,6 @@ export const MinimalBottomBar: React.FC = () => {
 
   const isIntroActive = introPhase !== 'ready' && !tutorialDocked;
 
-  if (isHoldingCD) return null;
-
   // Navegação de setores via teclas 1, 2 e 3
   React.useEffect(() => {
     const handleSectorKeys = (e: KeyboardEvent) => {
@@ -42,6 +40,8 @@ export const MinimalBottomBar: React.FC = () => {
     window.addEventListener('keydown', handleSectorKeys);
     return () => window.removeEventListener('keydown', handleSectorKeys);
   }, [warpToSector]);
+
+  if (isHoldingCD) return null;
 
   return (
     <>

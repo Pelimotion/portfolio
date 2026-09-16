@@ -186,15 +186,30 @@ class SoundEngine {
   public updateSpatialAcoustics(
     playerX: number,
     playerZ: number,
+    playerYaw: number,
     speakers: { x: number; z: number }[],
     masterVolume: number
   ): void {
     if (!this.isInitialized || !this.audioCtx || !this.gainNode) return;
 
-    // Pan Estéreo Físico (-1.0 a +1.0)
-    const normX = Math.max(-1.0, Math.min(1.0, playerX / 11.5));
-    // Amplified for headphones immersive audio
-    const targetPan = Math.max(-1.0, Math.min(1.0, normX * 1.5));
+    // Pan Estéreo Binaural Verdadeiro: considera a posição da fonte (centro do corredor X=0, ou caixas)
+    // e para onde o jogador está olhando (playerYaw).
+    // Assumimos que a fonte principal de som ecoa do longo do eixo Z central (x=0).
+    const dx = 0 - playerX; // direção da fonte central em X
+    const dz = 0 - playerZ; // direção genérica
+    
+    // Simplificando o azimute relativo: 
+    // Se o player está em playerX = -10, a fonte está à direita (+10).
+    // Mas precisamos rotacionar isso pelo yaw do player.
+    // Vetor local da fonte de som:
+    const cosY = Math.cos(-playerYaw);
+    const sinY = Math.sin(-playerYaw);
+    
+    // Posição local X do som (Left/Right)
+    const localX = dx * cosY - dz * sinY;
+    
+    // Normalizando o localX para o Panner
+    const targetPan = Math.max(-1.0, Math.min(1.0, localX * 0.15));
 
     if (this.pannerNode && this.pannerNode.pan) {
       this.pannerNode.pan.setTargetAtTime(targetPan, this.audioCtx.currentTime, 0.06);

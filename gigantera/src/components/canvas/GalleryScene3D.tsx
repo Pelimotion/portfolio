@@ -2046,7 +2046,8 @@ export const GalleryScene3D: React.FC = () => {
     let playerSavedPitch = 0;
     const archiveCamPos = new THREE.Vector3(0, 0.6, 9.5);
 
-    const clock = new THREE.Clock();
+    let lastTime = performance.now();
+    let clockElapsedTime = 0;
     const cameraFrustum = new THREE.Frustum();
     const cameraProjScreenMatrix = new THREE.Matrix4();
 
@@ -2060,8 +2061,11 @@ export const GalleryScene3D: React.FC = () => {
       rafId = requestAnimationFrame(animate);
 
       try {
-        const delta = Math.min(clock.getDelta(), 0.08);
-      const elapsedTime = clock.getElapsedTime();
+        const currentTimeMs = performance.now();
+        const delta = Math.min((currentTimeMs - lastTime) / 1000, 0.08);
+        lastTime = currentTimeMs;
+        clockElapsedTime += delta;
+        const elapsedTime = clockElapsedTime;
 
       const storeState = useAppStore.getState();
       const currentCinemaArt = storeState.cinemaArtwork;
@@ -2459,6 +2463,7 @@ export const GalleryScene3D: React.FC = () => {
         soundEngine.updateSpatialAcoustics(
           camera.position.x,
           camera.position.z,
+          playerController.yaw,
           layout.speakers,
           storeState.soundVolume
         );
