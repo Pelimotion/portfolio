@@ -5,10 +5,10 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-16 (manhã)
+**Data:** 2026-09-16 (tarde)
 **Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — Experiência Mobile Totalmente Reformulada (FOV Adaptativo, Thumb Dock 2.0, Raycasting Touch, Pinch-to-zoom e CD POV Tátil) | Build e Deploy Vercel em Produção Validados
-**Próxima Ação:** Teste de usabilidade pelo usuário em dispositivos móveis online
+**Status:** ESTÁVEL, BLINDADO & ONLINE — Intro Tutorial Simplificado com Morphing Docking + Ficha Curatorial em Flanco Lateral (Centro 100% Desobstruído) + Atalho I Universal + Deploy Vercel em Produção
+**Próxima Ação:** Testes de experiência com usuário e curadoria transmídia
 **Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
@@ -25,12 +25,24 @@
 | Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
 | `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
 | `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
-| **Gigantera** (`/gigantera/`) | ✅ Versão Mobile de Alta Fidelidade + FOV Adaptativo + Dock 2.0 + Pinch Zoom | 2026-09-16 |
+| **Gigantera** (`/gigantera/`) | ✅ Intro Clean & Docking + Ficha Lateral Desobstruída + Atalho I Universal | 2026-09-16 |
 | **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-09-16 (tarde) — Simplificação da Intro (Morphing Dock) & Redesenho da Inspeção de Obras (Placard Lateral)
+**O que foi feito:**
+- [x] **Header e Taglines da Intro Limpos:** Removido o badge repetitivo `[GIGANTERA] • PAVILHÃO DIGITAL` e a tagline `"Concreto, luz e som..."`. Mantido o título nobre `GIGANTERA` e o statement `"Um pavilhão. Não um portfólio."`.
+- [x] **Ocultação da Bottom Bar no Início e Animação de Morphing:** A barra inferior (`MinimalBottomBar`) agora permanece 100% oculta enquanto o tutorial inicial estiver ativo. Ao clicar com o mouse (em qualquer ponto do card ou fundo), o tutorial desliza suavemente para baixo em 450ms (`translateY + scale + blur`) transformando-se diretamente na barra inferior do minimenu tático para continuidade cognitiva do usuário.
+- [x] **Cluster de Ações de Entrada Intuitivo:** Botão primário com cantos arredondados e acabamento dourado `ENTRAR NO PAVILHÃO` e link secundário sutil `[TAB] Ver acervo em grade`.
+- [x] **Ficha Curatorial em Flanco Lateral (Centro 100% Desobstruído):** A ficha de detalhes da obra (`CinemaView`) foi desacoplada do centro da tela e reposicionada como um placard de galeria no flanco esquerdo (`position: fixed; left: 28px; bottom: 74px; width: 380px`), deixando todo o centro do viewport (onde a obra 3D gira e flutua) completamente livre de poluição visual.
+- [x] **Correção Definitiva do Atalho I (Universal):** O estado `isCinemaInfoOpen` e a ação `toggleCinemaInfo()` foram elevados para a store Zustand global (`useAppStore`), e integrados tanto no `playerController.ts`, `GalleryScene3D.tsx` (listener de captura) quanto no `CinemaView.tsx`, garantindo que apertar `I` alterne a exibição da ficha técnica instantaneamente em qualquer contexto.
+- [x] **Auto-Recolhimento com Timer Generoso (8.5s):** A ficha curatorial é recolhida suavemente após 8.5s de leitura, pausando automaticamente caso o mouse esteja sobre a interface (`hover`) e recolhendo-se para o mini-dock inferior tático (onde pode ser reaberta via `[ⓘ FICHA TÉCNICA (I)]`).
+- [x] **Build & Deploy:** Compilação do bundle de produção com sucesso (`npm run build`) e sincronização via push no GitHub para deploy automático na Vercel.
+
+---
 
 ### 2026-09-16 (manhã) — Reformulação Master da Versão Mobile do Gigantera & Deploy em Produção
 **O que foi feito:**

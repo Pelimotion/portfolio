@@ -10,6 +10,10 @@ export const MinimalBottomBar: React.FC = () => {
   const warpToSector = useAppStore((s) => s.warpToSector);
   const hasPlayerMoved = useAppStore((s) => s.hasPlayerMoved);
   const toggleGuideModal = useAppStore((s) => s.toggleGuideModal);
+  const introPhase = useAppStore((s) => s.introPhase);
+  const tutorialDocked = useAppStore((s) => s.tutorialDocked);
+
+  const isIntroActive = introPhase !== 'ready' && !tutorialDocked;
 
   // Navegação de setores via teclas 1, 2 e 3
   React.useEffect(() => {
@@ -39,13 +43,13 @@ export const MinimalBottomBar: React.FC = () => {
   return (
     <>
       {/* Dock Especializado para Smartphone / Mobile na Zona do Polegar */}
-      <div className="mobile-dock-container-wrapper">
+      <div className={`mobile-dock-container-wrapper ${isIntroActive ? 'is-intro-hidden' : ''}`}>
         <MobileBottomDock />
       </div>
 
       {/* Dock Minimalista Desktop com Proteção Feather Escura e Alta Sofisticação */}
       <footer
-        className="minimal-feathered-dock desktop-dock-wrapper"
+        className={`minimal-feathered-dock desktop-dock-wrapper ${isIntroActive ? 'is-intro-hidden' : ''}`}
         role="toolbar"
         aria-label="Controles da Galeria"
       >

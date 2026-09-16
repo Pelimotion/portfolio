@@ -444,6 +444,19 @@ a {
   flex-direction: column;
   align-items: center;
   pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-dock-container-wrapper {
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ocultação limpa da barra inferior durante o tutorial inicial para evitar poluição visual */
+.minimal-feathered-dock.is-intro-hidden,
+.mobile-dock-container-wrapper.is-intro-hidden {
+  opacity: 0 !important;
+  transform: translateY(28px) !important;
+  pointer-events: none !important;
 }
 
 /* Proximity Banner com Bloom Suave (Plinto do CD) */
@@ -1244,56 +1257,55 @@ a {
   font-weight: 700;
 }
 
-/* ─── NAVEGAÇÃO E HUD MODULAR INTELIGENTE DE INSPEÇÃO 3D (Dois Níveis) ─── */
-.cinema-modular-hud-root {
+/* ─── NÍVEL 2: FICHA CURATORIAL LATERAL (No flanco esquerdo, deixando o centro 100% livre) ─── */
+.cinema-lateral-dossier {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1040px, calc(100vw - 32px));
-  z-index: 90;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  left: 28px;
+  bottom: 74px;
+  width: 380px;
+  max-width: calc(100vw - 56px);
+  max-height: calc(100vh - 120px);
+  z-index: 85;
   pointer-events: auto;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(228, 195, 121, 0.3) transparent;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s;
 }
 
-.cinema-modular-hud-root.is-dimmed {
-  opacity: 0.60;
-}
-
-.cinema-modular-hud-root.is-dimmed:hover {
-  opacity: 1;
-}
-
-/* NÍVEL 2: FICHA CURATORIAL EXPANSÍVEL */
-.cinema-curatorial-dossier {
-  width: 100%;
-  max-height: 0;
+.cinema-lateral-dossier.is-closed {
   opacity: 0;
+  visibility: hidden;
+  transform: translateX(-24px) scale(0.96);
   pointer-events: none;
-  overflow: hidden;
-  transform: translateY(12px) scale(0.98);
-  transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s ease, transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cinema-curatorial-dossier.is-open {
-  max-height: 440px;
+.cinema-lateral-dossier.is-open {
   opacity: 1;
+  visibility: visible;
+  transform: translateX(0) scale(1);
   pointer-events: auto;
-  transform: translateY(0) scale(1);
 }
 
 .cinema-dossier-inner {
-  padding: 20px 24px;
-  background: rgba(10, 14, 12, 0.94);
+  padding: 20px 22px;
+  background: rgba(10, 14, 12, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+@media (max-width: 768px) {
+  .cinema-lateral-dossier {
+    left: 14px;
+    right: 14px;
+    bottom: 68px;
+    width: auto;
+    max-width: none;
+    max-height: 52vh;
+  }
 }
 
 .cinema-dossier-header {
@@ -1401,20 +1413,36 @@ a {
   line-height: 1.4;
 }
 
-/* NÍVEL 1: MINI-HUD TÁTICO PERMANENTE */
+/* NÍVEL 1: MINI-HUD TÁTICO PERMANENTE (Barra Dock Ultra-fina Central) */
 .cinema-tactical-mini-dock {
-  width: 100%;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 85;
+  width: auto;
+  max-width: min(1040px, calc(100vw - 32px));
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 9px 18px;
-  background: rgba(10, 14, 12, 0.94);
+  padding: 8px 18px;
+  background: rgba(10, 14, 12, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 9999px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  pointer-events: auto;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cinema-tactical-mini-dock.is-dimmed {
+  opacity: 0.60;
+}
+
+.cinema-tactical-mini-dock.is-dimmed:hover {
+  opacity: 1;
 }
 
 .cinema-mini-identity {
@@ -1806,14 +1834,20 @@ a {
   justify-content: center;
   pointer-events: auto;
   cursor: pointer;
-  /* Transição de entrada rápida; saída de 2s elegante controlada via .is-gliding-down */
-  transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .intro-spatial-overlay.is-gliding-down {
-  transform: translateY(40vh);
   opacity: 0;
   pointer-events: none;
+}
+
+.intro-spatial-overlay.is-gliding-down .intro-floating-cue {
+  transform: translateY(120px) scale(0.88);
+  opacity: 0;
+  filter: blur(6px);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
 }
 
 .intro-floating-cue {
@@ -1824,14 +1858,15 @@ a {
   max-width: 580px;
   gap: 16px;
   padding: 28px 36px;
-  background: rgba(14, 18, 17, 0.92) !important;
+  background: rgba(14, 18, 17, 0.94) !important;
   backdrop-filter: blur(36px) saturate(190%);
   -webkit-backdrop-filter: blur(36px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 20px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 32px rgba(228, 195, 121, 0.1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 32px rgba(228, 195, 121, 0.1);
   animation: introPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   color: #f4f3ef !important;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .intro-floating-cue * {
@@ -1849,76 +1884,45 @@ a {
   }
 }
 
-.intro-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10px;
-}
-
-.cue-badge {
-  font-size: 10px;
-  color: var(--accent-gold, #e4c379) !important;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-}
-
-.intro-session-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #a0a6a2 !important;
-}
-
-.intro-session-text {
-  font-size: 9.5px;
-  color: #a0a6a2 !important;
-  letter-spacing: 0.06em;
-}
-
 .cue-hero-title {
   font-family: var(--font-display, 'Fraunces', serif);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   color: #ffffff !important;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .cue-statement {
   font-family: var(--font-display, 'Fraunces', serif);
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #f4f3ef !important;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #dbe3df !important;
   line-height: 1.3;
-  margin: 0;
+  margin: -4px 0 2px;
 }
 
-.cue-narrative-text {
-  font-family: var(--font-body, 'Manrope', sans-serif);
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: #c5ccc8 !important;
-  margin: 0;
-}
-
-.intro-entry-primary-area {
+.intro-actions-cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   margin-top: 8px;
 }
 
-.intro-entry-main-btn {
+.intro-cta-primary-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 14px 20px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(228, 195, 121, 0.22), rgba(99, 226, 183, 0.15)) !important;
-  border: 1px solid rgba(228, 195, 121, 0.5) !important;
+  padding: 13px 20px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(228, 195, 121, 0.32), rgba(99, 226, 183, 0.18)) !important;
+  border: 1px solid rgba(228, 195, 121, 0.6) !important;
   color: #ffffff !important;
   font-family: var(--font-mono, 'Space Mono', monospace);
   font-size: 11px;
@@ -1926,63 +1930,57 @@ a {
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45), 0 0 16px rgba(228, 195, 121, 0.15) inset;
 }
 
-.intro-entry-main-btn:hover {
-  background: linear-gradient(135deg, rgba(228, 195, 121, 0.42), rgba(99, 226, 183, 0.3)) !important;
-  border-color: rgba(228, 195, 121, 0.85) !important;
+.intro-cta-primary-btn:hover {
+  background: linear-gradient(135deg, rgba(228, 195, 121, 0.48), rgba(99, 226, 183, 0.32)) !important;
+  border-color: rgba(228, 195, 121, 0.95) !important;
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(228, 195, 121, 0.25);
+  box-shadow: 0 8px 28px rgba(228, 195, 121, 0.35);
 }
 
-.entry-icon-mouse {
+.intro-cta-icon {
   display: flex;
   align-items: center;
   color: var(--accent-gold, #e4c379) !important;
 }
 
-.entry-main-label {
+.intro-cta-text {
   color: #ffffff !important;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
 
-.intro-secondary-hints {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  margin-top: 4px;
-}
-
-.intro-hint-item {
+.intro-cta-secondary-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 11px;
-  color: #b8c2bc !important;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 9999px;
+  color: #a4b0ab;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 10.5px;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.intro-hint-item:hover {
+.intro-cta-secondary-btn:hover {
   background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(228, 195, 121, 0.4);
+  color: #ffffff;
 }
 
-.intro-hint-item span {
-  color: #b8c2bc !important;
-}
-
-.intro-hint-item svg {
-  flex-shrink: 0;
-  color: var(--accent-gold, #e4c379) !important;
+.intro-click-to-start-hint {
+  font-size: 9.5px;
+  color: #72807b;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
 }
 
 /* ─── Bloco de Controles Inline no Card do Tutorial ─── */

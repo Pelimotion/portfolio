@@ -340,6 +340,12 @@ export class PlayerController {
           this.onResetStillZoom();
         }
         break;
+      case 'KeyI':
+        if (this.isCinemaActive) {
+          e.preventDefault();
+          useAppStore.getState().toggleCinemaInfo();
+        }
+        break;
       case 'KeyM':
         if (this.isCinemaActive && this.onToggleVideoAudio) {
           this.onToggleVideoAudio();

@@ -56,6 +56,9 @@ interface AppState {
   // Inspeção 3D da Obra
   inspectionZoom: number;
   setInspectionZoom: (zoom: number) => void;
+  isCinemaInfoOpen: boolean;
+  toggleCinemaInfo: () => void;
+  setCinemaInfoOpen: (open: boolean) => void;
 
   // Sistema de Pranchetas de Obras Still (Folheação de Ilustrações)
   stillArtworksList: Artwork[];
@@ -260,6 +263,9 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   inspectionZoom: 1.0,
   setInspectionZoom: (zoom) => set({ inspectionZoom: Math.max(0.5, Math.min(3.5, zoom)) }),
+  isCinemaInfoOpen: true,
+  toggleCinemaInfo: () => set((s) => ({ isCinemaInfoOpen: !s.isCinemaInfoOpen })),
+  setCinemaInfoOpen: (open) => set({ isCinemaInfoOpen: open }),
 
   isLoupeMode: false,
   loupePan: { x: 0, y: 0 },
@@ -454,6 +460,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     set({
       cinemaArtwork: art,
+      isCinemaInfoOpen: true,
       inspectionZoom: 1.0,
       isLoupeMode: false,
       loupePan: { x: 0, y: 0 },
@@ -472,6 +479,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const wasPlayingBefore = get().wasAudioPlayingBeforeVideo;
     set({
       cinemaArtwork: null,
+      isCinemaInfoOpen: true,
       inspectionZoom: 1.0,
       isLoupeMode: false,
       loupePan: { x: 0, y: 0 },

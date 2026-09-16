@@ -1853,6 +1853,12 @@ export const GalleryScene3D: React.FC = () => {
           e.stopPropagation();
           state.toggleLoupeMode();
         }
+      } else if (e.key === 'i' || e.key === 'I') {
+        if (state.cinemaArtwork) {
+          e.preventDefault();
+          e.stopPropagation();
+          state.toggleCinemaInfo();
+        }
       } else if (e.key === 'q' || e.key === 'Q' || e.key === 'Escape' || e.key === 'e' || e.key === 'E') {
         if (state.cinemaArtwork || state.isHoldingCD) {
           e.preventDefault();

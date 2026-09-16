@@ -29,10 +29,11 @@ export const CinemaView: React.FC = () => {
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
-  // Arquitetura Modular de Dois Níveis:
-  // 1. Ficha Curatorial (Dossier): expansível, com texto completo e especificações
-  // 2. Mini-HUD Tático: permanente, compacto, com controles essenciais para nunca se perder
-  const [isDossierOpen, setIsDossierOpen] = useState(true);
+  // Ficha Curatorial (Store Central) + Dimerização Inteligente
+  const isCinemaInfoOpen = useAppStore((s) => s.isCinemaInfoOpen);
+  const toggleCinemaInfo = useAppStore((s) => s.toggleCinemaInfo);
+  const setCinemaInfoOpen = useAppStore((s) => s.setCinemaInfoOpen);
+
   const [isDockDimmed, setIsDockDimmed] = useState(false);
   const isHoveringUIRef = useRef(false);
   const dossierTimerRef = useRef<number | null>(null);
@@ -41,39 +42,37 @@ export const CinemaView: React.FC = () => {
   // Cursor inteligente: grab na zona da obra, default nos botões de UI
   const [cursorStyle, setCursorStyle] = useState<'grab' | 'grabbing' | 'default'>('grab');
 
-  // Inicia o timer para recolhimento suave da ficha curatorial (8 segundos iniciais generosos)
-  const scheduleDossierAutoCollapse = useCallback((delay = 8000) => {
+  // Inicia o timer para recolhimento suave da ficha curatorial (8.5 segundos iniciais generosos de leitura)
+  const scheduleDossierAutoCollapse = useCallback((delay = 8500) => {
     if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
     dossierTimerRef.current = window.setTimeout(() => {
       if (!isHoveringUIRef.current) {
-        setIsDossierOpen(false);
+        setCinemaInfoOpen(false);
       }
     }, delay);
-  }, []);
+  }, [setCinemaInfoOpen]);
 
   // Timer para dimerização suave do dock em inatividade longa (apenas quando dossier já recolhido)
   const resetDockActivity = useCallback(() => {
     setIsDockDimmed(false);
     if (dockIdleTimerRef.current) clearTimeout(dockIdleTimerRef.current);
     dockIdleTimerRef.current = window.setTimeout(() => {
-      if (!isHoveringUIRef.current && !isDossierOpen) {
+      if (!isHoveringUIRef.current && !useAppStore.getState().isCinemaInfoOpen) {
         setIsDockDimmed(true);
       }
     }, 6000);
-  }, [isDossierOpen]);
+  }, []);
 
   // Alterna abertura/recolhimento da ficha curatorial técnica
   const toggleDossier = useCallback(() => {
-    setIsDossierOpen((prev) => {
-      const next = !prev;
-      soundEngine.playTactileHoverTick();
-      if (next) {
-        scheduleDossierAutoCollapse(9000);
-      }
-      return next;
-    });
+    const next = !useAppStore.getState().isCinemaInfoOpen;
+    setCinemaInfoOpen(next);
+    soundEngine.playTactileHoverTick();
+    if (next) {
+      scheduleDossierAutoCollapse(8500);
+    }
     setIsDockDimmed(false);
-  }, [scheduleDossierAutoCollapse]);
+  }, [setCinemaInfoOpen, scheduleDossierAutoCollapse]);
 
   // Função unificada para encerramento gracioso
   const handleCloseCinema = useCallback(() => {
@@ -170,8 +169,8 @@ export const CinemaView: React.FC = () => {
     }
 
     // Abre a ficha curatorial ao entrar e agenda recolhimento suave
-    setIsDossierOpen(true);
-    scheduleDossierAutoCollapse(8000);
+    setCinemaInfoOpen(true);
+    scheduleDossierAutoCollapse(8500);
     resetDockActivity();
 
     return () => {
@@ -355,9 +354,11 @@ export const CinemaView: React.FC = () => {
         </button>
       </div>
 
-      {/* ─── NAVEGAÇÃO E HUD MODULAR INTELIGENTE (Dois Níveis Conectados) ─── */}
-      <div
-        className={`cinema-modular-hud-root font-mono ${isDockDimmed ? 'is-dimmed' : ''}`}
+      {/* ─── NÍVEL 2: FICHA CURATORIAL LATERAL (Flanco Esquerdo - Deixa o centro 100% desobstruído) ─── */}
+      <aside
+        className={`cinema-lateral-dossier font-mono ${isCinemaInfoOpen ? 'is-open' : 'is-closed'}`}
+        aria-hidden={!isCinemaInfoOpen}
+        aria-label="Ficha Técnica Curatorial"
         onMouseEnter={() => {
           isHoveringUIRef.current = true;
           if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
@@ -365,83 +366,93 @@ export const CinemaView: React.FC = () => {
         }}
         onMouseLeave={() => {
           isHoveringUIRef.current = false;
-          if (isDossierOpen) {
-            scheduleDossierAutoCollapse(5000);
+          if (isCinemaInfoOpen) {
+            scheduleDossierAutoCollapse(4500);
           }
           resetDockActivity();
         }}
       >
-        {/* NÍVEL 2: FICHA CURATORIAL EXPANSÍVEL (Dossiê Técnico & Artístico) */}
-        <div
-          className={`cinema-curatorial-dossier ${isDossierOpen ? 'is-open' : ''}`}
-          aria-hidden={!isDossierOpen}
-        >
-          <div className="cinema-dossier-inner">
-            {/* Header da Ficha Técnica */}
-            <div className="cinema-dossier-header">
-              <div className="cinema-dossier-meta-badges">
-                <span className="cinema-dossier-series">
-                  [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
-                </span>
-                <span className="cinema-dossier-category">{cinemaArtwork.categoryLabel}</span>
-              </div>
-              <button
-                type="button"
-                onClick={toggleDossier}
-                className="cinema-dossier-collapse-btn"
-                title="Recolher ficha técnica (Tecla I)"
-                aria-label="Recolher ficha técnica"
-              >
-                <span>RECOLHER</span>
-                <kbd className="keycap keycap-xs">I</kbd>
-                <span className="collapse-chevron">▾</span>
-              </button>
+        <div className="cinema-dossier-inner">
+          {/* Header da Ficha Técnica */}
+          <div className="cinema-dossier-header">
+            <div className="cinema-dossier-meta-badges">
+              <span className="cinema-dossier-series">
+                [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
+              </span>
+              <span className="cinema-dossier-category">{cinemaArtwork.categoryLabel}</span>
             </div>
-
-            {/* Título & Narrativa Curatorial com espaçamento nobre */}
-            <h2 className="cinema-dossier-title">{cinemaArtwork.title}</h2>
-            <p className="cinema-dossier-narrative">{cinemaArtwork.description}</p>
-
-            {/* Grid de Especificações Técnicas e Formato */}
-            <div className="cinema-dossier-specs-grid">
-              <div className="cinema-dossier-spec-item">
-                <span className="spec-label">MATERIAIS:</span>
-                <span className="spec-val">{cinemaArtwork.materials}</span>
-              </div>
-              {cinemaArtwork.dimensionsOrDuration && (
-                <div className="cinema-dossier-spec-item">
-                  <span className="spec-label">DIMENSÕES / DURAÇÃO:</span>
-                  <span className="spec-val">{cinemaArtwork.dimensionsOrDuration}</span>
-                </div>
-              )}
-              {cinemaArtwork.masterFormat && (
-                <div className="cinema-dossier-spec-item">
-                  <span className="spec-label">MASTER:</span>
-                  <span className="spec-val">{cinemaArtwork.masterFormat}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* NÍVEL 1: MINI-HUD TÁTICO PERMANENTE (Barra Dock Ultra-fina com Clusters) */}
-        <div className="cinema-tactical-mini-dock">
-          {/* Módulo A: Identificação da Obra + Botão da Ficha Técnica */}
-          <div className="cinema-mini-identity">
-            <span className="cinema-mini-series">[{cinemaArtwork.series.toUpperCase()}]</span>
-            <span className="cinema-mini-title">{cinemaArtwork.title}</span>
             <button
               type="button"
               onClick={toggleDossier}
-              className={`cinema-mini-info-btn ${isDossierOpen ? 'is-active' : ''}`}
-              title="Abrir/Recolher ficha curatorial completa (Tecla I)"
-              aria-expanded={isDossierOpen}
+              className="cinema-dossier-collapse-btn"
+              title="Recolher ficha técnica (Tecla I)"
+              aria-label="Recolher ficha técnica"
             >
-              <span className="info-icon">{isDossierOpen ? '▾' : 'ⓘ'}</span>
-              <span className="info-label">{isDossierOpen ? 'OCULTAR FICHA' : 'FICHA TÉCNICA'}</span>
+              <span>RECOLHER</span>
               <kbd className="keycap keycap-xs">I</kbd>
+              <span className="collapse-chevron">✕</span>
             </button>
           </div>
+
+          {/* Título & Narrativa Curatorial com espaçamento nobre */}
+          <h2 className="cinema-dossier-title">{cinemaArtwork.title}</h2>
+          <p className="cinema-dossier-narrative">{cinemaArtwork.description}</p>
+
+          {/* Grid de Especificações Técnicas e Formato */}
+          <div className="cinema-dossier-specs-grid">
+            <div className="cinema-dossier-spec-item">
+              <span className="spec-label">MATERIAIS:</span>
+              <span className="spec-val">{cinemaArtwork.materials}</span>
+            </div>
+            {cinemaArtwork.dimensionsOrDuration && (
+              <div className="cinema-dossier-spec-item">
+                <span className="spec-label">DIMENSÕES / DURAÇÃO:</span>
+                <span className="spec-val">{cinemaArtwork.dimensionsOrDuration}</span>
+              </div>
+            )}
+            {cinemaArtwork.masterFormat && (
+              <div className="cinema-dossier-spec-item">
+                <span className="spec-label">MASTER:</span>
+                <span className="spec-val">{cinemaArtwork.masterFormat}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* ─── NÍVEL 1: MINI-HUD TÁTICO PERMANENTE (Barra Dock Ultra-fina Central) ─── */}
+      <nav
+        className={`cinema-tactical-mini-dock font-mono ${isDockDimmed ? 'is-dimmed' : ''}`}
+        aria-label="Controles de Inspeção"
+        onMouseEnter={() => {
+          isHoveringUIRef.current = true;
+          if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
+          setIsDockDimmed(false);
+        }}
+        onMouseLeave={() => {
+          isHoveringUIRef.current = false;
+          if (isCinemaInfoOpen) {
+            scheduleDossierAutoCollapse(4500);
+          }
+          resetDockActivity();
+        }}
+      >
+        {/* Módulo A: Identificação da Obra + Botão da Ficha Técnica */}
+        <div className="cinema-mini-identity">
+          <span className="cinema-mini-series">[{cinemaArtwork.series.toUpperCase()}]</span>
+          <span className="cinema-mini-title">{cinemaArtwork.title}</span>
+          <button
+            type="button"
+            onClick={toggleDossier}
+            className={`cinema-mini-info-btn ${isCinemaInfoOpen ? 'is-active' : ''}`}
+            title="Abrir/Recolher ficha curatorial completa (Tecla I)"
+            aria-expanded={isCinemaInfoOpen}
+          >
+            <span className="info-icon">{isCinemaInfoOpen ? '▾' : 'ⓘ'}</span>
+            <span className="info-label">{isCinemaInfoOpen ? 'OCULTAR FICHA' : 'FICHA TÉCNICA'}</span>
+            <kbd className="keycap keycap-xs">I</kbd>
+          </button>
+        </div>
 
           <div className="cinema-mini-divider" aria-hidden="true" />
 
@@ -564,8 +575,7 @@ export const CinemaView: React.FC = () => {
               <kbd className="keycap keycap-xs">E</kbd>
             </button>
           </div>
-        </div>
+        </nav>
       </div>
-    </div>
   );
 };

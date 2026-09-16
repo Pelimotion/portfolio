@@ -13,17 +13,8 @@ export const IntroSequence: React.FC = () => {
 
   const [isGlidingDown, setIsGlidingDown] = useState(false);
   const [isDone, setIsDone] = useState(false);
-  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
-  // Garante que o tutorial fica na tela pelo menos 7 segundos
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinTimeElapsed(true);
-    }, 7000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const dismiss = (delay = 400) => {
+  const dismiss = (delay = 450) => {
     setIsGlidingDown(true);
     setTutorialDocked(true);
     setTimeout(() => {
@@ -33,13 +24,12 @@ export const IntroSequence: React.FC = () => {
   };
 
   useEffect(() => {
-    // O tutorial permanece na tela até o usuário clicar para começar ou apertar TAB para ver o acervo
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Tab') {
         e.preventDefault();
         e.stopPropagation();
         setViewMode('archive');
-        dismiss(2000);
+        dismiss(450);
       }
     };
 
@@ -52,7 +42,7 @@ export const IntroSequence: React.FC = () => {
   // Se o jogador interagiu diretamente e o avatar se moveu (WASD/setas) ou pegou o CD
   useEffect(() => {
     if ((hasPlayerMoved || isHoldingCD) && !isDone) {
-      dismiss(2000);
+      dismiss(450);
     }
   }, [hasPlayerMoved, isHoldingCD, isDone]);
 
@@ -60,39 +50,33 @@ export const IntroSequence: React.FC = () => {
 
   if (isDone || introPhase === 'ready') return null;
 
-  const handleEnter3D = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleEnter3D = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     window.dispatchEvent(new CustomEvent('gigantera:request-lock'));
-    dismiss(2000);
+    dismiss(450);
   };
 
   const handleEnterArchive = (e: React.MouseEvent) => {
     e.stopPropagation();
     setViewMode('archive');
-    dismiss(2000);
+    dismiss(450);
   };
 
   return (
     <div
       className={`intro-spatial-overlay ${isGlidingDown ? 'is-gliding-down' : ''}`}
-      onClick={handleEnter3D}
+      onClick={() => handleEnter3D()}
       aria-label="Introdução ao Gigantera"
     >
-      <div className="intro-floating-cue" onClick={(e) => e.stopPropagation()}>
-        {/* Marca */}
-        <div className="intro-badge-row font-mono">
-          <span className="cue-badge">[GIGANTERA]</span>
-          <span className="intro-session-dot" />
-          <span className="intro-session-text">PAVILHÃO DIGITAL</span>
-        </div>
-
-        {/* Headline */}
+      <div 
+        className="intro-floating-cue" 
+        onClick={() => handleEnter3D()}
+      >
+        {/* Headline Nobre e Direta — Sem repetições de tags ou taglines dispensáveis */}
         <h1 className="cue-hero-title">GIGANTERA</h1>
         <h2 className="cue-statement">
           {siteConfig.heroHeadline.replace(/^GIGANTERA\s*[\n\r—–-]*\s*/i, '') || 'Um pavilhão. Não um portfólio.'}
         </h2>
-
-        <p className="cue-narrative-text">{siteConfig.subhead}</p>
 
         {/* Bloco de Controles Inline (Contextual Mobile vs Desktop) */}
         {isMobile ? (
@@ -162,7 +146,7 @@ export const IntroSequence: React.FC = () => {
           <div className="intro-controls-block font-mono">
             <div className="intro-controls-title">CONTROLES</div>
 
-            {/* WASD + Mouse Look */}
+            {/* WASD + Direcionais */}
             <div className="intro-controls-row">
               <div className="intro-wasd-grid">
                 <span className="intro-wasd-spacer" />
@@ -186,7 +170,7 @@ export const IntroSequence: React.FC = () => {
                   <line x1="2" y1="14" x2="22" y2="14"/>
                 </svg>
               </span>
-              <span>Clique + mova o mouse para girar a câmera</span>
+              <span>Clique + arraste para girar a câmera</span>
             </div>
 
             <div className="intro-controls-separator" />
@@ -197,56 +181,57 @@ export const IntroSequence: React.FC = () => {
               <span>Inspecionar obras de arte</span>
             </div>
 
-            {/* TAB — Acérvo */}
+            <div className="intro-controls-separator" />
+
+            {/* TAB — Acervo */}
             <div className="intro-controls-row">
               <kbd className="keycap keycap-sm">TAB</kbd>
-              <span>Ver o acérvo completo em grade</span>
+              <span>Ver acervo completo em grade</span>
             </div>
           </div>
         )}
 
-        {/* Escolha Primária */}
-        <div className="intro-entry-primary-area">
+        {/* Ações de Entrada: Primária e Secundária integradas */}
+        <div className="intro-actions-cluster font-mono">
           <button
-            className="intro-entry-main-btn font-mono"
-            onClick={handleEnter3D}
-            aria-label="Entrar no Pavilhão 3D"
+            type="button"
+            className="intro-cta-primary-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEnter3D();
+            }}
+            aria-label="Entrar no Pavilhão e navegar"
           >
-            <span className="entry-icon-mouse">
+            <span className="intro-cta-icon" aria-hidden="true">
               {isMobile ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
               ) : (
-                <svg width="18" height="26" viewBox="0 0 24 36" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="2" width="20" height="32" rx="10"/>
-                  <path d="M12 10V14"/>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"></polygon>
                 </svg>
               )}
             </span>
-            <span className="entry-main-label">
-              {isMobile ? 'TOCAR PARA ENTRAR NO PAVILHÃO' : 'CLIQUE PARA ENTRAR NO PAVILHÃO E NAVEGAR'}
+            <span className="intro-cta-text">
+              {isMobile ? 'TOCAR PARA ENTRAR' : 'ENTRAR NO PAVILHÃO'}
             </span>
+          </button>
+
+          <button
+            type="button"
+            className="intro-cta-secondary-btn"
+            onClick={handleEnterArchive}
+            title="Alternar para catálogo em grade (TAB)"
+          >
+            <kbd className="keycap keycap-xs">TAB</kbd>
+            <span>Ver acervo em grade</span>
           </button>
         </div>
 
-        {/* Opção Secundária: Acérvo */}
-        <div className="intro-secondary-hints font-mono">
-          <div className="intro-hint-item" onClick={handleEnterArchive} style={{ cursor: 'pointer' }}>
-            <span className="hint-icon-tab">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-            </span>
-            <span>
-              {isMobile
-                ? 'Ou toque aqui para ver o acervo em grade'
-                : 'Ou aperte [TAB] para ver o acervo em grade diretamente'}
-            </span>
-          </div>
+        {/* Micro-dica de assimilação intuitiva */}
+        <div className="intro-click-to-start-hint font-mono">
+          <span>ou clique em qualquer ponto para iniciar</span>
         </div>
       </div>
     </div>
