@@ -48,9 +48,12 @@ O visitante flutua ("nada") no espaço tridimensional entre vitrines flutuantes 
 - **Modo Giroscópio:** Opção de controle imersivo orientando a visão 3D através da inclinação física do smartphone (`DeviceOrientationEvent`).
 - **HUD Compacto:** Interface adaptada para telas verticais com tipografia proporcional e gavetas de controle retráteis.
 
-### 6. Sistema Acústico & Partículas de Distorção de Ar
+### 6. Sistema Acústico, Panning Espacial & Master Limiter
 - **Acoustic Heat Haze:** Anéis de distorção de calor e vibração que emanam fisicamente das caixas de som no salão, sincronizados com os picos de energia de sub-graves da Web Audio API.
-- **Crossfade Suave:** Ao entrar no Modo Cinema para assistir a uma obra cinética em vídeo, a música ambiente da galeria realiza um fade exponencial imperceptível em vez de um corte abrupto.
+- **Master Limiter / Compressor Dinâmico:** Integrado `DynamicsCompressorNode` na cadeia de áudio do `soundEngine.ts`, equalizando o volume entre as 17 faixas e os áudios das obras sem picos ou distorções.
+- **Panning Binaural para Fones:** Resposta tátil ao balanço L/R via `StereoPannerNode` de acordo com a rotação da cabeça e orientação da visão do visitante no salão.
+- **Gestão Inteligente de Trilha:** Obras com flag `hasAudio: false` (stills ou vídeos mudos) mantêm a trilha sonora do CD tocando de fundo no Modo Cinema, pausando apenas quando a obra possui áudio próprio (ex: `p-tessitura`).
+- **Atalho Mudo Global (`[M]`):** Silencia ou desmuta instantaneamente todas as fontes sonoras ativas sem abrir gavetas ou interfaces intrusivas.
 
 ### 7. Acervo 3D In-Scene & Matriz Frontal 4x2 (`[TAB]`)
 - **Pavilhão 3D Contínuo:** Ao abrir o Acervo via `[TAB]` ou menu, a experiência não sai da cena 3D nem aplica filtros escuras/desfocadas. O pavilhão mantém sua iluminação e reflexos em tempo real.
