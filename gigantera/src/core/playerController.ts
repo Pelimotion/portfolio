@@ -7,6 +7,7 @@
 
 import * as THREE from 'three';
 import { soundEngine } from './soundEngine';
+import { useAppStore } from './store';
 
 export interface PlayerControlsConfig {
   walkSpeed: number;
@@ -221,7 +222,7 @@ export class PlayerController {
   };
 
   public requestLock(): void {
-    if (this.isHoldingCD || this.isCinemaActive) return;
+    if (this.isHoldingCD || this.isCinemaActive || useAppStore.getState().isMobile) return;
     if (!this.domElement || !this.domElement.isConnected) return;
     const target = this.getLockTarget();
     if (!this.isLocked) {
@@ -518,7 +519,7 @@ export class PlayerController {
   private touchMoved = false;
 
   private handleTouchStart = (e: TouchEvent): void => {
-    if (this.isHoldingCD || this.isCinemaActive) return;
+    if (this.isHoldingCD || this.isCinemaActive || this.isArchiveActive) return;
     if (e.touches.length === 1) {
       this.touchStartX = e.touches[0].clientX;
       this.touchStartY = e.touches[0].clientY;
@@ -529,7 +530,7 @@ export class PlayerController {
   };
 
   private handleTouchMove = (e: TouchEvent): void => {
-    if (this.isHoldingCD || this.isCinemaActive) return;
+    if (this.isHoldingCD || this.isCinemaActive || this.isArchiveActive) return;
     if (!this.isPointerDown || e.touches.length !== 1) return;
 
     const deltaX = e.touches[0].clientX - this.touchStartX;

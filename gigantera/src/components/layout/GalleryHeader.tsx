@@ -22,6 +22,7 @@ export const GalleryHeader: React.FC = () => {
   const takeCD = useAppStore((s) => s.takeCD);
   const isHoldingCD = useAppStore((s) => s.isHoldingCD);
   const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
+  const isMobile = useAppStore((s) => s.isMobile);
 
   // Atalhos de teclado intuitivos para não obrigar o usuário a apertar ESC para clicar com o mouse
   useEffect(() => {
@@ -76,8 +77,12 @@ export const GalleryHeader: React.FC = () => {
         >
           GIGANTERA
         </button>
-        <span className="header-slash font-mono">/</span>
-        <span className="header-pavilion-tag font-mono">PAVILHÃO DIGITAL</span>
+        {!isMobile && (
+          <>
+            <span className="header-slash font-mono">/</span>
+            <span className="header-pavilion-tag font-mono">PAVILHÃO DIGITAL</span>
+          </>
+        )}
       </div>
 
       {/* Centro: Cápsula Dinâmica "Now Playing" — APARECE SOMENTE QUANDO HÁ ÁUDIO TOCANDO */}
@@ -85,7 +90,7 @@ export const GalleryHeader: React.FC = () => {
         <div
           className="header-now-playing-capsule font-mono"
           onClick={handleOpenCD}
-          title="Faixa em reprodução · Clique para abrir o álbum Jewel Case em primeira pessoa"
+          title="Faixa em reprodução · Toque para abrir o álbum Jewel Case em primeira pessoa"
         >
           {/* Barrinhas animadas do equalizador */}
           <div className="header-sound-equalizer" aria-hidden="true">
@@ -96,11 +101,11 @@ export const GalleryHeader: React.FC = () => {
           </div>
 
           <div className="header-track-info">
-            <span className="header-track-label">TOCANDO:</span>
+            {!isMobile && <span className="header-track-label">TOCANDO:</span>}
             <span className="header-track-title">
-              {currentAudioTrack.trackNumber}. {currentAudioTrack.title.toUpperCase()}
+              {currentAudioTrack.title.toUpperCase()}
             </span>
-            <span className="header-track-bpm">[{currentAudioTrack.bpm} BPM]</span>
+            {!isMobile && <span className="header-track-bpm">[{currentAudioTrack.bpm} BPM]</span>}
           </div>
 
           <button
@@ -116,12 +121,12 @@ export const GalleryHeader: React.FC = () => {
 
       {/* Direita: Qualidade Gráfica com FPS integrado, Tema & Bio do Artista */}
       <div className="header-actions-group font-mono">
-        {/* Pílula de Fidelidade Gráfica: BAIXO / MÉDIO / ALTO com contador de FPS integrado */}
+        {/* Pílula de Fidelidade Gráfica: MÉDIO / ALTO */}
         <div className="header-quality-control header-minimal-btn" style={{ padding: '0 4px', gap: '4px' }}>
           <div
             className="header-fps-badge"
             title={`Opções gráficas (Taxa atual: ${currentFps} FPS)`}
-            style={{ border: 'none', background: 'transparent', padding: '0 6px', opacity: 0.7 }}
+            style={{ border: 'none', background: 'transparent', padding: '0 4px', opacity: 0.7 }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
@@ -135,27 +140,27 @@ export const GalleryHeader: React.FC = () => {
               className={`quality-seg-btn ${graphicsQuality === 'med' ? 'is-active' : ''}`}
               title="Modo Médio: Equilíbrio ótimo entre fidelidade e fluidez"
             >
-              <span>MÉDIO</span>
+              <span>{isMobile ? 'MED' : 'MÉDIO'}</span>
             </button>
             <button
               onClick={() => setGraphicsQuality('high')}
               className={`quality-seg-btn ${graphicsQuality === 'high' ? 'is-active' : ''}`}
               title="Modo Alto: Fidelidade máxima, sombras e reflexões aveludadas"
             >
-              <span>ALTO</span>
+              <span>{isMobile ? 'ALT' : 'ALTO'}</span>
             </button>
-            <kbd className="header-keycap-hint" title="Pressione G para alternar gráficos">G</kbd>
+            {!isMobile && <kbd className="header-keycap-hint" title="Pressione G para alternar gráficos">G</kbd>}
           </div>
         </div>
 
-        {/* Alternador de Tema Claro / Escuro com atalho [T] */}
+        {/* Alternador de Tema Claro / Escuro */}
         <button
           onClick={toggleTheme}
           className="header-minimal-btn header-theme-btn"
-          title={theme === 'dark' ? 'Alternar para Galeria Clara (T)' : 'Alternar para Galeria Escura (T)'}
+          title={theme === 'dark' ? 'Alternar para Galeria Clara' : 'Alternar para Galeria Escura'}
         >
-          <span>{theme === 'dark' ? '☼ CLARO' : '☾ ESCURO'}</span>
-          <kbd className="header-keycap-hint">T</kbd>
+          <span>{theme === 'dark' ? '☼' : '☾'}</span>
+          {!isMobile && <kbd className="header-keycap-hint">T</kbd>}
         </button>
 
         {/* Botão de saída visível apenas quando o usuário está dentro da Área de Mídia */}
@@ -165,18 +170,18 @@ export const GalleryHeader: React.FC = () => {
             className="header-minimal-btn header-media-btn is-active"
             title="Sair da Área de Mídia e voltar para a Sala 3D"
           >
-            <span>[✕ SAIR DA MÍDIA]</span>
+            <span>[✕ SAIR]</span>
           </button>
         )}
 
-        {/* Bio do Artista e Contato com atalho [B] */}
+        {/* Bio do Artista e Contato */}
         <button
           onClick={() => setBioOpen(true)}
-          className="header-minimal-btn"
+          className="header-minimal-btn header-bio-btn"
           title="Ver biografia e contato do artista"
         >
-          <span>SOBRE / CONTATO</span>
-          <kbd className="header-keycap-hint">B</kbd>
+          <span>{isMobile ? 'SOBRE' : 'SOBRE / CONTATO'}</span>
+          {!isMobile && <kbd className="header-keycap-hint">B</kbd>}
         </button>
       </div>
     </header>

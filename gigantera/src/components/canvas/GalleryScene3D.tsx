@@ -385,12 +385,23 @@ export const GalleryScene3D: React.FC = () => {
     let height = container.clientHeight;
     const isLight = theme === 'light';
 
+    // Helper para cálculo de FOV dinâmico adaptativo:
+    // Em smartphones verticais (aspect < 1.0), preserva a amplitude visual horizontal do pavilhão
+    const getAdaptiveFov = (w: number, h: number): number => {
+      const aspect = w / h;
+      const baseFov = TOKENS.navigation.cameraFov;
+      if (aspect >= 1.0) return baseFov;
+      const baseHFovRad = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(baseFov) / 2) * (16 / 9));
+      const adaptiveFovRad = 2 * Math.atan(Math.tan(baseHFovRad / 2) / Math.max(aspect, 0.44));
+      return Math.max(55, Math.min(74, THREE.MathUtils.radToDeg(adaptiveFovRad)));
+    };
+
     // 1. Cena, Câmera e Renderizador com Sombras Suaves PCF
     const scene = new THREE.Scene();
     const currentThemeTokens = TOKENS.themes[theme];
     scene.fog = new THREE.FogExp2(currentThemeTokens.canvasFog, 0.014);
 
-    const camera = new THREE.PerspectiveCamera(TOKENS.navigation.cameraFov, width / height, 0.1, 180);
+    const camera = new THREE.PerspectiveCamera(getAdaptiveFov(width, height), width / height, 0.1, 180);
     camera.position.set(0, 0.4, cameraTargetZ);
 
     const renderer = new THREE.WebGLRenderer({
@@ -1374,24 +1385,62 @@ export const GalleryScene3D: React.FC = () => {
 
     playerController.onTouchTap = (clientX: number, clientY: number) => {
       const state = useAppStore.getState();
-      if (state.cinemaArtwork || state.isHoldingCD) return;
+      if (state.cinemaArtwork) return;
 
       const rect = container.getBoundingClientRect();
       const x = ((clientX - rect.left) / rect.width) * 2 - 1;
       const y = -((clientY - rect.top) / rect.height) * 2 + 1;
+      const tapCoord = new THREE.Vector2(x, y);
+      mouseCoord.copy(tapCoord);
 
-      raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+      // CASO A: Usuário segurando o CD Jewel Case 3D
+      if (state.isHoldingCD) {
+        if (cdViewmodel.backInlayMesh) {
+          raycaster.setFromCamera(tapCoord, camera);
+          const cdHits = raycaster.intersectObject(cdViewmodel.backInlayMesh);
+          if (cdHits.length > 0 && cdHits[0].uv) {
+            const trackIdx = cdViewmodel.getTrackIndexAtUV(cdHits[0].uv);
+            if (trackIdx !== null) {
+              cdViewmodel.selectTrackByIndex(trackIdx);
+              return;
+            }
+          }
+        }
+        return;
+      }
 
-      // 1. Toque no CD / Pedestal
+      // CASO B: Usuário no Modo Acervo 3D em Grade (TAB)
+      if (state.viewMode === 'archive') {
+        raycaster.setFromCamera(tapCoord, camera);
+        const gridCandidates = artworkItems
+          .filter((item) => item.gridScale > 0.1)
+          .flatMap((item) => [item.glassMesh, item.paperMesh, item.plaqueMesh]);
+        const gridHits = raycaster.intersectObjects(gridCandidates, false);
+        const validGridHits = gridHits.filter((h) => h.distance <= 25.0);
+        if (validGridHits.length > 0) {
+          const hitObj = validGridHits[0].object as any;
+          if (hitObj.artworkData) {
+            soundEngine.playGlassPassSound();
+            openCinema(hitObj.artworkData as Artwork);
+            return;
+          }
+        }
+        return;
+      }
+
+      // CASO C: Salão 3D Espacial
+      raycaster.setFromCamera(tapCoord, camera);
+
+      // 1. Toque no CD / Pedestal na entrada
       const cdCandidates = [restingCDGroup, cdPlaqueMesh, cdStand, deckMesh];
       const cdHits = raycaster.intersectObjects(cdCandidates, true);
-      if (cdHits.length > 0 && cdHits[0].distance < 15) {
-        if (cdHits[0].distance < 4.8) {
+      if (cdHits.length > 0 && cdHits[0].distance < 16) {
+        if (cdHits[0].distance < 5.0) {
           const isFirst = !useAppStore.getState().hasInspectedCDBefore;
           state.takeCD();
           cdViewmodel.take(isFirst);
         } else {
-          playerController.glideTo(0, 19.5, 0.08);
+          playerController.glideTo(2.8, 21.0, 0);
         }
         return;
       }
@@ -1409,7 +1458,7 @@ export const GalleryScene3D: React.FC = () => {
         if (hitArt) {
           const foundItem = artworkItems.find((a) => a.artwork.id === hitArt.id);
           if (foundItem) {
-            if (hit.distance <= 5.5) {
+            if (hit.distance <= 6.8) {
               soundEngine.playGlassPassSound();
               openCinema(hitArt);
             } else {
@@ -1751,8 +1800,8 @@ export const GalleryScene3D: React.FC = () => {
         }
       }
 
-      // Se clicou no espaço vazio, reativa o Pointer Lock para mira livre
-      if (!playerController.isLocked) {
+      // Se clicou no espaço vazio, reativa o Pointer Lock para mira livre (somente desktop)
+      if (!playerController.isLocked && !useAppStore.getState().isMobile) {
         playerController.requestLock();
       }
     };
@@ -1869,6 +1918,7 @@ export const GalleryScene3D: React.FC = () => {
       width = container.clientWidth;
       height = container.clientHeight;
       camera.aspect = width / height;
+      camera.fov = getAdaptiveFov(width, height);
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
     };
@@ -2079,6 +2129,12 @@ export const GalleryScene3D: React.FC = () => {
         computeGridTargets(storeState.activeFilter, storeState.archiveGridPage);
 
         // Suaviza a câmera do jogador para a posição frontal monumental do acervo
+        // Em telas verticais (mobile portrait), afasta a câmera sutilmente para acomodar a grade sem cortes
+        const isMobPortrait = width < height;
+        const targetArchZ = isMobPortrait ? 13.5 : 9.5;
+        const targetArchY = isMobPortrait ? 0.75 : 0.6;
+        archiveCamPos.set(0, targetArchY, targetArchZ);
+
         camera.position.lerpVectors(playerSavedPos, archiveCamPos, archiveTransition);
 
         const curCamYaw = THREE.MathUtils.lerp(playerSavedYaw, 0, archiveTransition);

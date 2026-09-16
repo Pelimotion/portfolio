@@ -6,6 +6,7 @@ export const CinemaView: React.FC = () => {
   const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
   const closeCinema = useAppStore((s) => s.closeCinema);
   const inspectionZoom = useAppStore((s) => s.inspectionZoom);
+  const setInspectionZoom = useAppStore((s) => s.setInspectionZoom);
   const isLoupeMode = useAppStore((s) => s.isLoupeMode);
   const toggleLoupeMode = useAppStore((s) => s.toggleLoupeMode);
   const isMobile = useAppStore((s) => s.isMobile);
@@ -20,6 +21,8 @@ export const CinemaView: React.FC = () => {
   // Detecção de gestos no mobile
   const lastTapRef = React.useRef(0);
   const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
+  const initialPinchDistRef = React.useRef<number | null>(null);
+  const initialPinchZoomRef = React.useRef<number>(1.0);
 
   // Video audio crossfade
   const wasAudioPlayingBeforeVideo = useAppStore((s) => s.wasAudioPlayingBeforeVideo);
@@ -214,12 +217,33 @@ export const CinemaView: React.FC = () => {
   const zoomPercent = Math.round(inspectionZoom * 100);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      initialPinchDistRef.current = Math.hypot(dx, dy);
+      initialPinchZoomRef.current = inspectionZoom;
+    } else if (e.touches.length === 1) {
       touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     }
   };
 
+  const handleTouchMove = (e: React.TouchEvent) => {
+    showControls();
+    if (e.touches.length === 2 && initialPinchDistRef.current !== null) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const currentDist = Math.hypot(dx, dy);
+      const scaleFactor = currentDist / initialPinchDistRef.current;
+      const newZoom = Math.max(0.85, Math.min(3.5, initialPinchZoomRef.current * scaleFactor));
+      setInspectionZoom(newZoom);
+    }
+  };
+
   const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      initialPinchDistRef.current = null;
+    }
+
     const now = performance.now();
     if (now - lastTapRef.current < 300) {
       toggleLoupeMode();
@@ -250,6 +274,7 @@ export const CinemaView: React.FC = () => {
       onMouseDown={handleViewportMouseDown}
       onMouseUp={handleViewportMouseUp}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       style={{ cursor: cursorStyle }}
     >

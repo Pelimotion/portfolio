@@ -1851,6 +1851,25 @@ a {
   color: #b8c2bc !important;
 }
 
+/* Controles Mobile na Intro */
+.is-mobile-controls .intro-controls-row {
+  gap: 12px;
+  font-size: 11px;
+}
+
+.intro-touch-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
 /* Cluster WASD 2x2 no tutorial */
 .intro-wasd-grid {
   display: grid;
@@ -1969,6 +1988,61 @@ a {
   background: rgba(247, 246, 242, 0.65);
   border-color: rgba(0, 0, 0, 0.10);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 960px) {
+  .archive-portfolio-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 0;
+  }
+
+  .archive-portfolio-header .archive-brand-block {
+    display: none;
+  }
+
+  .archive-simulation-filter-tabs {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 3px;
+    gap: 4px;
+    border-radius: 6px;
+  }
+
+  .sim-filter-tab {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  .archive-actions-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .archive-actions-block .portfolio-nav-btn,
+  .archive-actions-block .portfolio-return-btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    padding: 6px 6px;
+    font-size: 10px;
+  }
+
+  .archive-sound-showcase-drawer {
+    width: calc(100% - 20px);
+    margin: 10px auto;
+    max-height: 48vh;
+  }
 }
 
 /* Identificação Curatorial à Esquerda */
@@ -2565,8 +2639,39 @@ a {
 
 @media (max-width: 960px) {
   .minimal-feathered-header {
-    padding: 0 16px;
-    height: 60px;
+    padding: 0 10px;
+    height: 52px;
+    gap: 6px;
+  }
+
+  .header-brand-group {
+    gap: 6px;
+  }
+
+  .header-brand-name {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+  }
+
+  .header-actions-group {
+    gap: 4px;
+  }
+
+  .header-minimal-btn {
+    padding: 0 6px;
+    height: 30px;
+    font-size: 9.5px;
+  }
+
+  .header-now-playing-capsule {
+    padding: 3px 8px;
+    gap: 5px;
+    max-width: 155px;
+  }
+
+  .header-now-playing-capsule .header-track-title {
+    font-size: 9.5px;
+    max-width: 80px;
   }
 
   .bottom-bar-scrim {
@@ -2914,6 +3019,71 @@ a {
   align-items: center;
   gap: 6px;
   font-size: 10px;
+}
+
+/* HUD Touch Especializado do CD no Mobile */
+.cd-mobile-hud-row {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: calc(100% - 20px);
+  max-width: 440px;
+  margin: 0 10px;
+  padding: 8px 12px;
+  background: rgba(12, 16, 15, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+}
+
+.cd-mobile-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.1s ease, background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.cd-mobile-action-btn:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.cd-mobile-btn-stow {
+  background: rgba(217, 71, 38, 0.18);
+  border-color: rgba(217, 71, 38, 0.4);
+  color: var(--accent-coral);
+}
+
+.cd-mobile-btn-stow:active {
+  background: var(--accent-coral);
+  color: #fff;
+}
+
+.cd-mobile-touch-hint {
+  font-size: 9.5px;
+  color: var(--accent-gold);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
 }
 
 /* Indicador Discreto de Sugestão de Performance */
@@ -3956,6 +4126,60 @@ a {
   overflow: hidden;
 }
 
+/* Architectural Sectors Strip (1 · SOM | 2 · VÍDEOS | 3 · STILLS) */
+.mobile-sectors-strip {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.mobile-sector-pill {
+  flex: 1;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border-subtle);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+}
+
+.mobile-sector-pill:last-child {
+  border-right: none;
+}
+
+.mobile-sector-pill:active {
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(0.97);
+}
+
+.mobile-sector-pill.is-active {
+  color: var(--accent-gold);
+  background: rgba(184, 141, 52, 0.12);
+}
+
+.mobile-sector-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: all 0.15s ease;
+}
+
+.mobile-sector-pill.is-active .mobile-sector-dot {
+  background: var(--accent-gold);
+  box-shadow: 0 0 6px var(--accent-gold);
+}
+
 /* Stepper Row (◄ [Obra 01 / 12] [VER] ►) */
 .mobile-stepper-row {
   display: flex;
@@ -4004,6 +4228,14 @@ a {
   align-items: center;
   gap: 6px;
   font-size: 10px;
+}
+
+.art-drawer-cue {
+  margin-left: auto;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  opacity: 0.85;
 }
 
 .art-counter-badge {
@@ -4228,6 +4460,115 @@ a {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.mobile-drawer-drag-pill {
+  width: 38px;
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  margin: 0 auto 10px auto;
+}
+
+.mobile-drawer-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawer-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+}
+
+.drawer-tab-btn:active {
+  transform: scale(0.96);
+}
+
+.drawer-tab-btn.is-active {
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+  color: var(--accent-gold);
+}
+
+.mobile-drawer-audio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+}
+
+.drawer-audio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 11px;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.drawer-audio-row:active {
+  transform: scale(0.98);
+}
+
+.drawer-audio-row.is-playing {
+  border-color: var(--accent-coral);
+  background: rgba(217, 71, 38, 0.14);
+  color: var(--accent-coral);
+}
+
+.audio-row-track-num {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  width: 18px;
+}
+
+.drawer-audio-row.is-playing .audio-row-track-num {
+  color: var(--accent-coral);
+  font-weight: 700;
+}
+
+.audio-row-title {
+  flex: 1;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-row-bpm {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  margin-right: 4px;
+}
+
+.audio-row-play-state {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-coral);
+  width: 14px;
+  text-align: center;
 }
 
 /* Mobile CinemaView Cue Row */

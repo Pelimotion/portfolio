@@ -15,6 +15,7 @@ export const ArchiveIndex: React.FC = () => {
   const isAudioPlaying = useAppStore((s) => s.isAudioPlaying);
   const setCurrentAudioTrack = useAppStore((s) => s.setCurrentAudioTrack);
   const setIsAudioPlaying = useAppStore((s) => s.setIsAudioPlaying);
+  const isMobile = useAppStore((s) => s.isMobile);
 
   const stillCount = ARTWORKS_CATALOG.filter((a) => a.medium === 'still').length;
   const videoCount = ARTWORKS_CATALOG.filter((a) => a.medium === 'video').length;
@@ -117,7 +118,7 @@ export const ArchiveIndex: React.FC = () => {
             className="portfolio-nav-btn font-mono"
             aria-label="Abrir biografia, currículo e declaração curatorial"
           >
-            [BIO / ARTISTA]
+            {isMobile ? '[BIO]' : '[BIO / ARTISTA]'}
           </button>
 
           <button
@@ -125,7 +126,7 @@ export const ArchiveIndex: React.FC = () => {
             className="portfolio-nav-btn font-mono"
             aria-label="Abrir central de imprensa e download de masters"
           >
-            [MEDIA KIT]
+            {isMobile ? '[MÍDIA]' : '[MEDIA KIT]'}
           </button>
 
           <button
@@ -134,7 +135,7 @@ export const ArchiveIndex: React.FC = () => {
             aria-label="Voltar para a caminhada livre em primeira pessoa na sala 3D"
           >
             <span className="return-icon">↵</span>
-            <span>SALA 3D [TAB]</span>
+            <span>{isMobile ? 'SALA 3D' : 'SALA 3D [TAB]'}</span>
           </button>
         </div>
       </header>
@@ -211,7 +212,7 @@ export const ArchiveIndex: React.FC = () => {
         <span className="footer-tip">
           <span className="tip-bracket">[</span>
           <span className="tip-cursor">☝</span>
-          <span>CLIQUE EM QUALQUER VITRINE 3D PARA INSPECIONAR NO MODO CINEMA</span>
+          <span>{isMobile ? 'TOQUE EM QUALQUER VITRINE 3D PARA INSPECIONAR' : 'CLIQUE EM QUALQUER VITRINE 3D PARA INSPECIONAR NO MODO CINEMA'}</span>
           <span className="tip-bracket">]</span>
         </span>
       </footer>

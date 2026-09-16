@@ -26,7 +26,8 @@ const itemsToCopy = [
   'avatar',
   'shared',
   'en',
-  'legacy'
+  'legacy',
+  'gigantera'
 ];
 
 function deleteFolderRecursive(dirPath) {
