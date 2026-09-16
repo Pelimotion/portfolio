@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../../core/store';
 import { soundEngine } from '../../core/soundEngine';
 
@@ -12,46 +12,68 @@ export const CinemaView: React.FC = () => {
   const isMobile = useAppStore((s) => s.isMobile);
 
   // Still sheets
-  const stillArtworksList = useAppStore((s) => s.stillArtworksList);
   const currentStillSheetIndex = useAppStore((s) => s.currentStillSheetIndex);
   const nextStillSheet = useAppStore((s) => s.nextStillSheet);
   const prevStillSheet = useAppStore((s) => s.prevStillSheet);
   const setStillSheetIndex = useAppStore((s) => s.setStillSheetIndex);
 
   // Detecção de gestos no mobile
-  const lastTapRef = React.useRef(0);
-  const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
-  const initialPinchDistRef = React.useRef<number | null>(null);
-  const initialPinchZoomRef = React.useRef<number>(1.0);
+  const lastTapRef = useRef(0);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const initialPinchDistRef = useRef<number | null>(null);
+  const initialPinchZoomRef = useRef<number>(1.0);
 
-  // Video audio crossfade
+  // Video audio crossfade & playback state
   const wasAudioPlayingBeforeVideo = useAppStore((s) => s.wasAudioPlayingBeforeVideo);
   const soundVolume = useAppStore((s) => s.soundVolume);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
-  // Controles visíveis apenas ao hover na zona inferior
-  const [controlsVisible, setControlsVisible] = useState(false);
-  const [showIdleHint, setShowIdleHint] = useState(false);
-  const controlsTimerRef = React.useRef<number | null>(null);
-  const idleHintTimerRef = React.useRef<number | null>(null);
+  // Arquitetura Modular de Dois Níveis:
+  // 1. Ficha Curatorial (Dossier): expansível, com texto completo e especificações
+  // 2. Mini-HUD Tático: permanente, compacto, com controles essenciais para nunca se perder
+  const [isDossierOpen, setIsDossierOpen] = useState(true);
+  const [isDockDimmed, setIsDockDimmed] = useState(false);
+  const isHoveringUIRef = useRef(false);
+  const dossierTimerRef = useRef<number | null>(null);
+  const dockIdleTimerRef = useRef<number | null>(null);
 
-  // Cursor inteligente: grab na zona da obra, pointer nos botões de UI
+  // Cursor inteligente: grab na zona da obra, default nos botões de UI
   const [cursorStyle, setCursorStyle] = useState<'grab' | 'grabbing' | 'default'>('grab');
 
-  const showControls = () => {
-    setControlsVisible(true);
-    setShowIdleHint(false);
-    if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
-    if (idleHintTimerRef.current) clearTimeout(idleHintTimerRef.current);
-    controlsTimerRef.current = window.setTimeout(() => {
-      setControlsVisible(false);
-      // Após controles ocultarem, se permanecer ocioso por 2s, mostra dica sutil
-      idleHintTimerRef.current = window.setTimeout(() => {
-        setShowIdleHint(true);
-      }, 2000);
-    }, 2800);
-  };
+  // Inicia o timer para recolhimento suave da ficha curatorial (8 segundos iniciais generosos)
+  const scheduleDossierAutoCollapse = useCallback((delay = 8000) => {
+    if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
+    dossierTimerRef.current = window.setTimeout(() => {
+      if (!isHoveringUIRef.current) {
+        setIsDossierOpen(false);
+      }
+    }, delay);
+  }, []);
+
+  // Timer para dimerização suave do dock em inatividade longa (apenas quando dossier já recolhido)
+  const resetDockActivity = useCallback(() => {
+    setIsDockDimmed(false);
+    if (dockIdleTimerRef.current) clearTimeout(dockIdleTimerRef.current);
+    dockIdleTimerRef.current = window.setTimeout(() => {
+      if (!isHoveringUIRef.current && !isDossierOpen) {
+        setIsDockDimmed(true);
+      }
+    }, 6000);
+  }, [isDossierOpen]);
+
+  // Alterna abertura/recolhimento da ficha curatorial técnica
+  const toggleDossier = useCallback(() => {
+    setIsDossierOpen((prev) => {
+      const next = !prev;
+      soundEngine.playTactileHoverTick();
+      if (next) {
+        scheduleDossierAutoCollapse(9000);
+      }
+      return next;
+    });
+    setIsDockDimmed(false);
+  }, [scheduleDossierAutoCollapse]);
 
   // Função unificada para encerramento gracioso
   const handleCloseCinema = useCallback(() => {
@@ -63,21 +85,47 @@ export const CinemaView: React.FC = () => {
     window.dispatchEvent(new CustomEvent('gigantera:request-lock'));
   }, [closeCinema]);
 
-  // Handlers de cursor inteligente
+  // Controles de vídeo
+  const toggleVideoPlay = useCallback(() => {
+    if (!cinemaArtwork) return;
+    const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
+    if (vid) {
+      if (vid.paused) {
+        vid.play().catch(() => {});
+        setIsVideoPlaying(true);
+      } else {
+        vid.pause();
+        setIsVideoPlaying(false);
+      }
+      soundEngine.playTactileHoverTick();
+    }
+  }, [cinemaArtwork]);
+
+  const toggleVideoMute = useCallback(() => {
+    if (!cinemaArtwork) return;
+    const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
+    if (vid) {
+      vid.muted = !vid.muted;
+      setIsVideoMuted(vid.muted);
+      soundEngine.playTactileHoverTick();
+    }
+  }, [cinemaArtwork]);
+
+  // Handlers de cursor inteligente e atividade
   const handleViewportMouseMove = useCallback((e: React.MouseEvent) => {
-    showControls();
+    resetDockActivity();
     const target = e.target as HTMLElement;
-    const isUI = !!target?.closest?.('button, kbd, [role="dialog"] > div:not(.cinema-volumetric-aura), .cinema-top-actions, .cinema-unified-dock-container, .cinema-idle-hint');
+    const isUI = !!target?.closest?.('button, kbd, [role="dialog"] > div:not(.cinema-volumetric-aura), .cinema-top-actions, .cinema-modular-hud-root');
     if (isUI) {
       setCursorStyle('default');
     } else {
-      setCursorStyle(prev => prev === 'grabbing' ? 'grabbing' : 'grab');
+      setCursorStyle((prev) => (prev === 'grabbing' ? 'grabbing' : 'grab'));
     }
-  }, []);
+  }, [resetDockActivity]);
 
   const handleViewportMouseDown = useCallback((e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    const isUI = !!target?.closest?.('button, kbd, .cinema-top-actions, .cinema-unified-dock-container');
+    const isUI = !!target?.closest?.('button, kbd, .cinema-top-actions, .cinema-modular-hud-root');
     if (!isUI) {
       setCursorStyle('grabbing');
     }
@@ -103,6 +151,7 @@ export const CinemaView: React.FC = () => {
         vid.muted = false;
         vid.volume = 0.0;
         setIsVideoMuted(false);
+        setIsVideoPlaying(true);
         vid.play().catch(() => {});
 
         const startTime = performance.now();
@@ -120,13 +169,15 @@ export const CinemaView: React.FC = () => {
       }
     }
 
-    // Mostra controles brevemente na entrada
-    showControls();
+    // Abre a ficha curatorial ao entrar e agenda recolhimento suave
+    setIsDossierOpen(true);
+    scheduleDossierAutoCollapse(8000);
+    resetDockActivity();
 
     return () => {
       if (fadeInterval) cancelAnimationFrame(fadeInterval);
-      if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
-      if (idleHintTimerRef.current) clearTimeout(idleHintTimerRef.current);
+      if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
+      if (dockIdleTimerRef.current) clearTimeout(dockIdleTimerRef.current);
 
       if (cinemaArtwork.medium === 'video') {
         if (vidElement) {
@@ -152,9 +203,9 @@ export const CinemaView: React.FC = () => {
         }
       }
     };
-  }, [cinemaArtwork, wasAudioPlayingBeforeVideo, soundVolume]);
+  }, [cinemaArtwork, wasAudioPlayingBeforeVideo, soundVolume, scheduleDossierAutoCollapse, resetDockActivity]);
 
-  // Atalhos de teclado — capture: true garante prioridade máxima
+  // Atalhos de teclado prioritários (E, Q, ESC, I, Espaço, M, R, A, D)
   useEffect(() => {
     const handleGlobalKey = (e: KeyboardEvent) => {
       if (!cinemaArtwork) return;
@@ -166,6 +217,10 @@ export const CinemaView: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         handleCloseCinema();
+      } else if (e.key === 'i' || e.key === 'I') {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDossier();
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         e.stopPropagation();
@@ -174,49 +229,50 @@ export const CinemaView: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         if (cinemaArtwork.medium === 'video') {
-          const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
-          if (vid) {
-            vid.muted = !vid.muted;
-            setIsVideoMuted(vid.muted);
-          }
+          toggleVideoMute();
         }
       } else if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         e.stopPropagation();
         if (cinemaArtwork.medium === 'video') {
-          const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
-          if (vid) {
-            if (vid.paused) { vid.play(); setIsVideoPlaying(true); }
-            else { vid.pause(); setIsVideoPlaying(false); }
-          }
+          toggleVideoPlay();
         }
       } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         e.preventDefault();
         e.stopPropagation();
-        if (cinemaArtwork.medium === 'still') { nextStillSheet(); }
+        if (cinemaArtwork.medium === 'still') {
+          nextStillSheet();
+        }
       } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         e.preventDefault();
         e.stopPropagation();
-        if (cinemaArtwork.medium === 'still') { prevStillSheet(); }
+        if (cinemaArtwork.medium === 'still') {
+          prevStillSheet();
+        }
       }
 
-      // Qualquer tecla revela os controles
-      showControls();
+      resetDockActivity();
     };
 
     window.addEventListener('keydown', handleGlobalKey, { capture: true });
     return () => {
       window.removeEventListener('keydown', handleGlobalKey, { capture: true });
-      try { document.body.style.cursor = 'default'; } catch {}
+      try {
+        document.body.style.cursor = 'default';
+      } catch {}
     };
-  }, [cinemaArtwork, closeCinema, toggleLoupeMode, nextStillSheet, prevStillSheet]);
+  }, [cinemaArtwork, handleCloseCinema, toggleDossier, toggleLoupeMode, toggleVideoMute, toggleVideoPlay, nextStillSheet, prevStillSheet, resetDockActivity]);
 
   if (!cinemaArtwork) return null;
 
   const isStill = cinemaArtwork.medium === 'still';
   const zoomPercent = Math.round(inspectionZoom * 100);
+  const galleryImages = cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc];
+  const hasMultipleStills = isStill && galleryImages.length > 1;
 
+  // Handlers de toque e gestos no mobile
   const handleTouchStart = (e: React.TouchEvent) => {
+    resetDockActivity();
     if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
@@ -228,7 +284,7 @@ export const CinemaView: React.FC = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    showControls();
+    resetDockActivity();
     if (e.touches.length === 2 && initialPinchDistRef.current !== null) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
@@ -261,7 +317,7 @@ export const CinemaView: React.FC = () => {
       }
     }
     touchStartRef.current = null;
-    showControls();
+    resetDockActivity();
   };
 
   return (
@@ -278,10 +334,10 @@ export const CinemaView: React.FC = () => {
       onTouchEnd={handleTouchEnd}
       style={{ cursor: cursorStyle }}
     >
-      {/* Vinheta atmosférica pura sem cortes lineares */}
+      {/* Vinheta atmosférica pura */}
       <div className="cinema-volumetric-aura" />
 
-      {/* Botão Fechar Interativo Topo Direito (sempre clicável, substitui badge passiva) */}
+      {/* Botão Fechar Interativo Topo Direito (sempre clicável e com atalho E visível) */}
       <div className="cinema-top-actions font-mono">
         <button
           type="button"
@@ -290,7 +346,7 @@ export const CinemaView: React.FC = () => {
             handleCloseCinema();
           }}
           className="cinema-top-close-btn"
-          title="Fechar inspeção e voltar ao salão 3D (Tecla E ou ESC)"
+          title="Fechar inspeção e voltar à galeria (Tecla E ou ESC)"
           aria-label="Fechar inspeção da obra"
         >
           <span className="top-close-icon">✕</span>
@@ -299,121 +355,193 @@ export const CinemaView: React.FC = () => {
         </button>
       </div>
 
-      {/* ─── DOCK UNIFICADO DE INSPEÇÃO (Mesmo padrão estético do MinimalBottomBar) ─── */}
-      <div className={`cinema-unified-dock-container ${controlsVisible ? 'is-visible' : ''}`}>
-        <div className="cinema-unified-dock-card font-mono">
-          {/* Lado Esquerdo: Identificação Curatorial */}
-          <div className="cinema-dock-info">
-            <div className="cinema-dock-badge-row">
-              <span className="cinema-dock-series">
-                [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
-              </span>
-              <span className="cinema-dock-category">{cinemaArtwork.categoryLabel}</span>
+      {/* ─── NAVEGAÇÃO E HUD MODULAR INTELIGENTE (Dois Níveis Conectados) ─── */}
+      <div
+        className={`cinema-modular-hud-root font-mono ${isDockDimmed ? 'is-dimmed' : ''}`}
+        onMouseEnter={() => {
+          isHoveringUIRef.current = true;
+          if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
+          setIsDockDimmed(false);
+        }}
+        onMouseLeave={() => {
+          isHoveringUIRef.current = false;
+          if (isDossierOpen) {
+            scheduleDossierAutoCollapse(5000);
+          }
+          resetDockActivity();
+        }}
+      >
+        {/* NÍVEL 2: FICHA CURATORIAL EXPANSÍVEL (Dossiê Técnico & Artístico) */}
+        <div
+          className={`cinema-curatorial-dossier ${isDossierOpen ? 'is-open' : ''}`}
+          aria-hidden={!isDossierOpen}
+        >
+          <div className="cinema-dossier-inner">
+            {/* Header da Ficha Técnica */}
+            <div className="cinema-dossier-header">
+              <div className="cinema-dossier-meta-badges">
+                <span className="cinema-dossier-series">
+                  [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
+                </span>
+                <span className="cinema-dossier-category">{cinemaArtwork.categoryLabel}</span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleDossier}
+                className="cinema-dossier-collapse-btn"
+                title="Recolher ficha técnica (Tecla I)"
+                aria-label="Recolher ficha técnica"
+              >
+                <span>RECOLHER</span>
+                <kbd className="keycap keycap-xs">I</kbd>
+                <span className="collapse-chevron">▾</span>
+              </button>
             </div>
-            <h2 className="cinema-dock-title">{cinemaArtwork.title}</h2>
-            <p className="cinema-dock-desc">{cinemaArtwork.description}</p>
-            <div className="cinema-dock-materials">
-              <span className="materials-label">MATERIAIS:</span>
-              <span>{cinemaArtwork.materials}</span>
+
+            {/* Título & Narrativa Curatorial com espaçamento nobre */}
+            <h2 className="cinema-dossier-title">{cinemaArtwork.title}</h2>
+            <p className="cinema-dossier-narrative">{cinemaArtwork.description}</p>
+
+            {/* Grid de Especificações Técnicas e Formato */}
+            <div className="cinema-dossier-specs-grid">
+              <div className="cinema-dossier-spec-item">
+                <span className="spec-label">MATERIAIS:</span>
+                <span className="spec-val">{cinemaArtwork.materials}</span>
+              </div>
+              {cinemaArtwork.dimensionsOrDuration && (
+                <div className="cinema-dossier-spec-item">
+                  <span className="spec-label">DIMENSÕES / DURAÇÃO:</span>
+                  <span className="spec-val">{cinemaArtwork.dimensionsOrDuration}</span>
+                </div>
+              )}
+              {cinemaArtwork.masterFormat && (
+                <div className="cinema-dossier-spec-item">
+                  <span className="spec-label">MASTER:</span>
+                  <span className="spec-val">{cinemaArtwork.masterFormat}</span>
+                </div>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Centro: Controles de Mídia & Zoom */}
-          <div className="cinema-dock-controls">
-            {/* Controles de Vídeo */}
+        {/* NÍVEL 1: MINI-HUD TÁTICO PERMANENTE (Barra Dock Ultra-fina com Clusters) */}
+        <div className="cinema-tactical-mini-dock">
+          {/* Módulo A: Identificação da Obra + Botão da Ficha Técnica */}
+          <div className="cinema-mini-identity">
+            <span className="cinema-mini-series">[{cinemaArtwork.series.toUpperCase()}]</span>
+            <span className="cinema-mini-title">{cinemaArtwork.title}</span>
+            <button
+              type="button"
+              onClick={toggleDossier}
+              className={`cinema-mini-info-btn ${isDossierOpen ? 'is-active' : ''}`}
+              title="Abrir/Recolher ficha curatorial completa (Tecla I)"
+              aria-expanded={isDossierOpen}
+            >
+              <span className="info-icon">{isDossierOpen ? '▾' : 'ⓘ'}</span>
+              <span className="info-label">{isDossierOpen ? 'OCULTAR FICHA' : 'FICHA TÉCNICA'}</span>
+              <kbd className="keycap keycap-xs">I</kbd>
+            </button>
+          </div>
+
+          <div className="cinema-mini-divider" aria-hidden="true" />
+
+          {/* Módulo B: Cluster de Ferramentas de Mídia & Inspeção */}
+          <div className="cinema-mini-controls-cluster">
+            {/* Controles de Vídeo (Play/Pause e Áudio) */}
             {!isStill && (
-              <div className="cinema-dock-media-group">
+              <div className="cinema-mini-media-group">
                 <button
                   type="button"
-                  onClick={() => {
-                    const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
-                    if (vid) {
-                      if (vid.paused) { vid.play(); setIsVideoPlaying(true); }
-                      else { vid.pause(); setIsVideoPlaying(false); }
-                    }
-                  }}
-                  className="cinema-action-btn"
+                  onClick={toggleVideoPlay}
+                  className="cinema-mini-action-btn"
                   title="Pausar / Reproduzir (Espaço)"
                 >
-                  <span>{isVideoPlaying ? '❚❚' : '▶'}</span>
+                  <span className="btn-icon">{isVideoPlaying ? '❚❚' : '▶'}</span>
                   <span className="btn-label">{isVideoPlaying ? 'PAUSAR' : 'REPRODUZIR'}</span>
                   <kbd className="keycap keycap-xs">ESPAÇO</kbd>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => {
-                    const vid = document.querySelector(`video[data-art-id="${cinemaArtwork.id}"]`) as HTMLVideoElement;
-                    if (vid) { vid.muted = !vid.muted; setIsVideoMuted(vid.muted); }
-                  }}
-                  className={`cinema-action-btn ${isVideoMuted ? 'is-muted' : ''}`}
+                  onClick={toggleVideoMute}
+                  className={`cinema-mini-action-btn ${isVideoMuted ? 'is-muted' : ''}`}
                   title="Alternar áudio (M)"
                 >
-                  <span>{isVideoMuted ? '🔇' : '🔈'}</span>
+                  <span className="btn-icon">{isVideoMuted ? '🔇' : '🔈'}</span>
                   <span className="btn-label">{isVideoMuted ? 'MUDO' : 'ÁUDIO'}</span>
                   <kbd className="keycap keycap-xs">M</kbd>
                 </button>
               </div>
             )}
 
-            {/* Navegação de Pranchetas (Stills com múltiplas imagens) */}
-            {isStill && (cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length > 1 && (
-              <div className="cinema-dock-sheets-group">
+            {/* Navegação de Pranchetas para Obras Estáticas */}
+            {hasMultipleStills && (
+              <div className="cinema-mini-sheets-group">
                 <button
                   type="button"
                   onClick={() => prevStillSheet()}
-                  className="cinema-sheet-arrow-btn"
+                  className="cinema-mini-arrow-btn"
                   title="Prancheta anterior (← / A)"
                   aria-label="Prancheta anterior"
                 >
                   ← <kbd className="keycap keycap-xs">A</kbd>
                 </button>
-                <div className="cinema-sheet-dots-list">
-                  {(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).map((_, idx) => (
+                <div className="cinema-mini-dots-list">
+                  {galleryImages.map((_, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => setStillSheetIndex(idx)}
-                      className={`cinema-sheet-dot ${idx === currentStillSheetIndex ? 'is-active' : ''}`}
+                      className={`cinema-mini-dot ${idx === currentStillSheetIndex ? 'is-active' : ''}`}
                       title={`Imagem ${idx + 1}`}
-                      aria-label={`Ir para imagem ${idx + 1}`}
+                      aria-label={`Ir para prancheta ${idx + 1}`}
                     />
                   ))}
                 </div>
                 <button
                   type="button"
                   onClick={() => nextStillSheet()}
-                  className="cinema-sheet-arrow-btn"
+                  className="cinema-mini-arrow-btn"
                   title="Próxima prancheta (→ / D)"
                   aria-label="Próxima prancheta"
                 >
                   <kbd className="keycap keycap-xs">D</kbd> →
                 </button>
-                <span className="cinema-sheet-badge">
-                  {currentStillSheetIndex + 1}/{(cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc]).length}
+                <span className="cinema-mini-badge">
+                  {currentStillSheetIndex + 1}/{galleryImages.length}
                 </span>
               </div>
             )}
 
-            {/* Controles de Lupa & Zoom */}
-            <div className="cinema-dock-zoom-group">
+            {/* Cluster Óptico: Modo Lupa e Medidor de Zoom */}
+            <div className="cinema-mini-optical-group">
               <button
                 type="button"
                 onClick={() => toggleLoupeMode()}
-                className={`cinema-action-btn cinema-loupe-btn ${isLoupeMode ? 'is-active' : ''}`}
-                title="Modo Lupa: zoom 300% com arraste livre (R)"
+                className={`cinema-mini-action-btn cinema-mini-loupe-btn ${isLoupeMode ? 'is-active' : ''}`}
+                title="Modo Lupa: zoom tátil 300% com arraste (Tecla R)"
               >
-                <span>⌕</span>
+                <span className="btn-icon">⌕</span>
                 <span className="btn-label">{isLoupeMode ? 'LUPA ATIVA' : 'LUPA (300%)'}</span>
                 <kbd className="keycap keycap-xs">R</kbd>
               </button>
 
-              <div className="cinema-zoom-meter" title="Nível de ampliação atual (Scroll para ajustar)">
+              <div
+                className="cinema-mini-zoom-meter"
+                title="Nível de ampliação atual (Scroll para aproximar / Duplo-clique reseta)"
+                onClick={() => {
+                  const nextZoom = inspectionZoom > 1.4 ? 1.0 : 2.0;
+                  setInspectionZoom(nextZoom);
+                  if (nextZoom > 1.8) toggleLoupeMode();
+                }}
+              >
                 <span className="meter-label">ZOOM</span>
                 <div className="meter-track">
                   <div
                     className="meter-fill"
-                    style={{ width: `${Math.max(0, Math.min(100, ((inspectionZoom - 0.85) / (3.5 - 0.85)) * 100))}%` }}
+                    style={{
+                      width: `${Math.max(0, Math.min(100, ((inspectionZoom - 0.85) / (3.5 - 0.85)) * 100))}%`
+                    }}
                   />
                 </div>
                 <span className="meter-val">{zoomPercent}%</span>
@@ -421,28 +549,23 @@ export const CinemaView: React.FC = () => {
             </div>
           </div>
 
-          {/* Lado Direito: Botão Principal de Saída */}
-          <div className="cinema-dock-actions">
+          <div className="cinema-mini-divider" aria-hidden="true" />
+
+          {/* Módulo C: Botão de Saída Tático */}
+          <div className="cinema-mini-exit">
             <button
               type="button"
               onClick={handleCloseCinema}
-              className="cinema-dock-close-btn"
-              title="Fechar inspeção e devolver à vitrine (E / Q / ESC)"
+              className="cinema-mini-close-btn"
+              title="Fechar inspeção e devolver à vitrine (Tecla E ou ESC)"
             >
               <span className="close-x">✕</span>
               <span>FECHAR</span>
-              <kbd className="keycap keycap-sm">E</kbd>
+              <kbd className="keycap keycap-xs">E</kbd>
             </button>
           </div>
         </div>
       </div>
-
-      {/* Dica discreta quando o usuário está ocioso e os controles sumiram */}
-      {showIdleHint && !controlsVisible && !isMobile && (
-        <div className="cinema-idle-hint font-mono" aria-hidden="true">
-          <span>mova o mouse para revelar os controles</span>
-        </div>
-      )}
     </div>
   );
 };

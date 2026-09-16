@@ -1244,202 +1244,330 @@ a {
   font-weight: 700;
 }
 
-/* ─── DOCK UNIFICADO DE INSPEÇÃO (Mesmo Padrão do MinimalBottomBar) ─── */
-.cinema-unified-dock-container {
+/* ─── NAVEGAÇÃO E HUD MODULAR INTELIGENTE DE INSPEÇÃO 3D (Dois Níveis) ─── */
+.cinema-modular-hud-root {
   position: fixed;
-  bottom: 24px;
+  bottom: 20px;
   left: 50%;
-  transform: translateX(-50%) translateY(12px);
-  width: min(1040px, calc(100vw - 48px));
+  transform: translateX(-50%);
+  width: min(1040px, calc(100vw - 32px));
   z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   pointer-events: auto;
-  opacity: 0;
   transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cinema-unified-dock-container.is-visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.cinema-modular-hud-root.is-dimmed {
+  opacity: 0.60;
 }
 
-.cinema-unified-dock-card {
+.cinema-modular-hud-root.is-dimmed:hover {
+  opacity: 1;
+}
+
+/* NÍVEL 2: FICHA CURATORIAL EXPANSÍVEL */
+.cinema-curatorial-dossier {
+  width: 100%;
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  transform: translateY(12px) scale(0.98);
+  transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s ease, transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cinema-curatorial-dossier.is-open {
+  max-height: 440px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.cinema-dossier-inner {
+  padding: 20px 24px;
+  background: rgba(10, 14, 12, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+.cinema-dossier-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 16px 24px;
-  background: rgba(10, 14, 12, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 16px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
-/* Identificação Curatorial Esquerda */
-.cinema-dock-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-width: 440px;
-  flex: 1;
-}
-
-.cinema-dock-badge-row {
+.cinema-dossier-meta-badges {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
-.cinema-dock-series {
-  font-size: 10.5px;
+.cinema-dossier-series {
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--accent-gold);
   text-transform: uppercase;
 }
 
-.cinema-dock-category {
-  font-size: 9.5px;
+.cinema-dossier-category {
+  font-size: 10px;
   font-weight: 600;
   color: #a4b0ab;
   background: rgba(255, 255, 255, 0.08);
-  padding: 2px 8px;
+  padding: 2px 9px;
   border-radius: 9999px;
   letter-spacing: 0.04em;
 }
 
-.cinema-dock-title {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
-  margin: 0;
-}
-
-.cinema-dock-desc {
-  font-size: 11px;
-  color: #b0bcba;
-  line-height: 1.45;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.cinema-dock-materials {
+.cinema-dossier-collapse-btn {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  color: #e1e7e4;
+  font-family: var(--font-mono);
   font-size: 10px;
-  color: #7a8782;
-  margin-top: 2px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.cinema-dock-materials .materials-label {
-  color: #55615d;
+.cinema-dossier-collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+
+.cinema-dossier-collapse-btn .collapse-chevron {
+  font-size: 9px;
+  transition: transform 0.2s ease;
+}
+
+.cinema-dossier-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 4px 0 10px;
+}
+
+.cinema-dossier-narrative {
+  font-size: 12.5px;
+  color: #b8c4c0;
+  line-height: 1.6;
+  margin: 0 0 16px;
+  max-width: 920px;
+}
+
+.cinema-dossier-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cinema-dossier-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cinema-dossier-spec-item .spec-label {
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  color: #687772;
 }
 
-/* Controles Centrais (Mídia, Zoom, Pranchetas) */
-.cinema-dock-controls {
+.cinema-dossier-spec-item .spec-val {
+  font-size: 11px;
+  color: #d6deda;
+  line-height: 1.4;
+}
+
+/* NÍVEL 1: MINI-HUD TÁTICO PERMANENTE */
+.cinema-tactical-mini-dock {
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
+  padding: 9px 18px;
+  background: rgba(10, 14, 12, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
-.cinema-dock-media-group,
-.cinema-dock-sheets-group,
-.cinema-dock-zoom-group {
+.cinema-mini-identity {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
-/* Botão de Ação Genérico com Estilo MinimalBottomBar */
-.cinema-action-btn {
+.cinema-mini-series {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  letter-spacing: 0.06em;
+}
+
+.cinema-mini-title {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.cinema-mini-info-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 9999px;
-  color: #ffffff;
+  color: #c4d0cc;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
-.cinema-action-btn:hover {
+.cinema-mini-info-btn:hover,
+.cinema-mini-info-btn.is-active {
+  background: rgba(228, 195, 121, 0.18);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+.cinema-mini-info-btn .info-icon {
+  font-size: 10px;
+}
+
+.cinema-mini-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+/* Cluster Central de Controles */
+.cinema-mini-controls-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cinema-mini-media-group,
+.cinema-mini-sheets-group,
+.cinema-mini-optical-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cinema-mini-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cinema-mini-action-btn:hover {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
 }
 
-.cinema-action-btn .btn-label {
+.cinema-mini-action-btn .btn-icon {
   font-size: 10px;
-  text-transform: uppercase;
 }
 
-.cinema-action-btn .keycap {
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.30);
-  color: #ffffff;
-  font-weight: 700;
-}
-
-/* Botão de Lupa Ativo */
-.cinema-loupe-btn.is-active {
-  background: rgba(228, 195, 121, 0.20);
-  border-color: var(--accent-gold);
-  color: var(--accent-gold);
-  box-shadow: 0 0 14px rgba(228, 195, 121, 0.25);
-}
-
-.cinema-action-btn.is-muted {
-  background: rgba(255, 107, 74, 0.15);
-  border-color: rgba(255, 107, 74, 0.3);
+.cinema-mini-action-btn.is-muted {
+  background: rgba(255, 107, 74, 0.16);
+  border-color: rgba(255, 107, 74, 0.32);
   color: var(--accent-coral);
 }
 
-/* Medidor de Zoom */
-.cinema-zoom-meter {
+.cinema-mini-loupe-btn.is-active {
+  background: rgba(228, 195, 121, 0.20);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 12px rgba(228, 195, 121, 0.25);
+}
+
+.cinema-mini-zoom-meter {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 5px 12px;
   background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 9999px;
   font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.cinema-zoom-meter .meter-label {
+.cinema-mini-zoom-meter:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+.cinema-mini-zoom-meter .meter-label {
   font-size: 9px;
   font-weight: 700;
-  color: #6d7874;
+  color: #72807b;
   letter-spacing: 0.08em;
 }
 
-.cinema-zoom-meter .meter-track {
-  width: 60px;
+.cinema-mini-zoom-meter .meter-track {
+  width: 52px;
   height: 3px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 2px;
   overflow: hidden;
   position: relative;
 }
 
-.cinema-zoom-meter .meter-fill {
+.cinema-mini-zoom-meter .meter-fill {
   position: absolute;
   inset-block: 0;
   left: 0;
@@ -1448,20 +1576,20 @@ a {
   transition: width 0.12s ease;
 }
 
-.cinema-zoom-meter .meter-val {
+.cinema-mini-zoom-meter .meter-val {
   font-size: 10px;
   font-weight: 600;
   color: #ffffff;
-  min-width: 32px;
+  min-width: 28px;
   text-align: right;
 }
 
 /* Navegação de Pranchetas */
-.cinema-sheet-arrow-btn {
+.cinema-mini-arrow-btn {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 10px;
+  padding: 5px 9px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
@@ -1472,21 +1600,21 @@ a {
   transition: all 0.2s ease;
 }
 
-.cinema-sheet-arrow-btn:hover {
+.cinema-mini-arrow-btn:hover {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-.cinema-sheet-dots-list {
+.cinema-mini-dots-list {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 4px;
+  gap: 5px;
+  padding: 0 3px;
 }
 
-.cinema-sheet-dot {
-  width: 7px;
-  height: 7px;
+.cinema-mini-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.25);
   border: none;
@@ -1495,49 +1623,51 @@ a {
   transition: all 0.2s ease;
 }
 
-.cinema-sheet-dot.is-active {
+.cinema-mini-dot.is-active {
   background: var(--accent-gold);
   transform: scale(1.35);
   box-shadow: 0 0 8px var(--accent-gold);
 }
 
-.cinema-sheet-dot:hover {
+.cinema-mini-dot:hover {
   background: rgba(255, 255, 255, 0.6);
 }
 
-.cinema-sheet-badge {
-  font-size: 10px;
+.cinema-mini-badge {
+  font-size: 9.5px;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.08);
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 9999px;
   letter-spacing: 0.04em;
 }
 
-/* Lado Direito: Ação de Saída */
-.cinema-dock-actions {
+/* Ação de Saída Tática */
+.cinema-mini-exit {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
-.cinema-dock-close-btn {
+.cinema-mini-close-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
+  gap: 7px;
+  padding: 6px 14px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.20);
   border-radius: 9999px;
   color: #ffffff;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
-.cinema-dock-close-btn:hover {
+.cinema-mini-close-btn:hover {
   background: rgba(255, 107, 74, 0.22);
   border-color: var(--accent-coral);
   color: #ffffff;
@@ -1545,16 +1675,62 @@ a {
   box-shadow: 0 4px 16px rgba(255, 107, 74, 0.3);
 }
 
-.cinema-dock-close-btn .close-x {
-  font-size: 12px;
+.cinema-mini-close-btn .close-x {
+  font-size: 11px;
   font-weight: 900;
 }
 
-.cinema-dock-close-btn .keycap {
+.cinema-mini-close-btn .keycap {
   background: rgba(255, 255, 255, 0.16);
   border: 1px solid rgba(255, 255, 255, 0.30);
   color: #ffffff;
   font-weight: 700;
+}
+
+/* Responsividade Mobile para o HUD de Inspeção */
+@media (max-width: 860px) {
+  .cinema-tactical-mini-dock {
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px 14px;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .cinema-mini-divider {
+    display: none;
+  }
+
+  .cinema-mini-identity {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cinema-mini-controls-cluster {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cinema-mini-exit {
+    display: none; /* No mobile o botão superior direito FECHAR E já cumpre essa função */
+  }
+
+  .cinema-dossier-inner {
+    padding: 16px 18px;
+  }
+
+  .cinema-dossier-title {
+    font-size: 18px;
+  }
+
+  .cinema-dossier-narrative {
+    font-size: 11.5px;
+  }
+
+  .cinema-dossier-specs-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 }
 
 /* Drag hint — aparece no GalleryScene3D via .cinema-drag-hint */

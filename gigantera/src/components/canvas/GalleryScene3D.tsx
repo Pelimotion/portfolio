@@ -1221,38 +1221,43 @@ export const GalleryScene3D: React.FC = () => {
     computeGridTargets('all', 0);
 
     // 7. RIG DE INSPEÇÃO 3D EM PRIMEIRO PLANO (A Obra saindo da vitrine em 3D)
-    // Acoplado diretamente à câmera com depthTest desativado e renderOrder alta para nunca sofrer cortes por paredes/tetos
+    // Renderizado em cena e câmera de inspeção dedicada com clearDepth() no loop de renderização,
+    // tornando matematicamente impossível qualquer chão, parede, viga ou objeto do salão cortar a obra!
+    const inspectionScene = new THREE.Scene();
+    const inspectionCam = new THREE.PerspectiveCamera(getAdaptiveFov(width, height), width / height, 0.1, 50);
+    inspectionCam.position.set(0, 0, 0);
+
     const inspectionRig = new THREE.Group();
     inspectionRig.position.set(0, 0, -1.9);
     inspectionRig.visible = false;
 
-    // Moldura preta sólida e uniforme — depthTest: false garante imunidade a qualquer parede ou viga
+    // Moldura preta sólida e uniforme
     const backingGeo = new THREE.PlaneGeometry(1.0, 1.0);
     const backingMat = new THREE.MeshBasicMaterial({
       color: isLight ? 0x141615 : 0x050606,
-      depthWrite: false,
-      depthTest: false
+      depthWrite: true,
+      depthTest: true
     });
     const inspectionBacking = new THREE.Mesh(backingGeo, backingMat);
-    inspectionBacking.renderOrder = 9998;
+    inspectionBacking.renderOrder = 1;
     inspectionRig.add(inspectionBacking);
 
     // Plano da Obra em Primeiro Plano (Imunidade total à iluminação externa e sem corte geométrico)
-    // z = 0.005 para ficar perfeitamente colado na moldura sem distorção angular
+    // z = 0.005 para ficar perfeitamente colado na moldura sem distorção angular nem z-fighting
     const artPlaneGeo = new THREE.PlaneGeometry(1.0, 1.0);
     const artPlaneMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       side: THREE.FrontSide,
       toneMapped: false, // Imunidade a sombras ou luzes externas da galeria
-      depthWrite: false,
-      depthTest: false
+      depthWrite: true,
+      depthTest: true
     });
     const inspectionArtMesh = new THREE.Mesh(artPlaneGeo, artPlaneMat);
     inspectionArtMesh.position.z = 0.005;
-    inspectionArtMesh.renderOrder = 9999;
+    inspectionArtMesh.renderOrder = 2;
     inspectionRig.add(inspectionArtMesh);
 
-    camera.add(inspectionRig);
+    inspectionScene.add(inspectionRig);
 
     // Variáveis de controle de inspeção 3D (Rotação, Pan e Zoom fluidos)
     let targetInspRotX = 0;
@@ -1920,6 +1925,11 @@ export const GalleryScene3D: React.FC = () => {
       camera.aspect = width / height;
       camera.fov = getAdaptiveFov(width, height);
       camera.updateProjectionMatrix();
+
+      inspectionCam.aspect = width / height;
+      inspectionCam.fov = getAdaptiveFov(width, height);
+      inspectionCam.updateProjectionMatrix();
+
       renderer.setSize(width, height);
     };
     window.addEventListener('resize', onResize);
@@ -1987,6 +1997,7 @@ export const GalleryScene3D: React.FC = () => {
       baffleMat.color.set(isL ? 0x242725 : 0x0c0e0d);
       coneMat.color.set(isL ? 0xd0cec7 : 0x333635);
       bracketMat.color.set(isL ? 0x666866 : 0x242826);
+      backingMat.color.set(isL ? 0x141615 : 0x050606);
     };
 
     const unsubTheme = useAppStore.subscribe((state, prev) => {
@@ -2077,6 +2088,9 @@ export const GalleryScene3D: React.FC = () => {
 
       playerController.isHoldingCD = holdingCD;
       playerController.isCinemaActive = Boolean(currentCinemaArt);
+      if (currentCinemaArt && playerController.isLocked) {
+        playerController.exitLock();
+      }
 
       // Oculta o CD no pedestal quando estiver na mão
       restingCDGroup.visible = !holdingCD;
@@ -2369,6 +2383,10 @@ export const GalleryScene3D: React.FC = () => {
         const totalScale = curInspZoom * inspectionTransition;
         inspectionRig.scale.set(totalScale, totalScale, totalScale);
 
+        // Nivelamento suave da inclinação vertical da câmera para enquadramento equilibrado
+        playerController.pitch = THREE.MathUtils.lerp(playerController.pitch, 0, 0.08);
+        camera.rotation.x = playerController.pitch;
+
         // A iluminação externa da galeria apaga suavemente, isolando a obra em 3D
         ambientLight.intensity = THREE.MathUtils.lerp(ambientLight.intensity, 0.02, 0.08);
         sunLight.intensity = THREE.MathUtils.lerp(sunLight.intensity, 0.02, 0.08);
@@ -2611,7 +2629,14 @@ export const GalleryScene3D: React.FC = () => {
         setGameControlPrompt(null);
       }
 
+      renderer.autoClear = false;
+      renderer.clear();
       renderer.render(scene, camera);
+
+      if (currentCinemaArt && inspectionRig.visible) {
+        renderer.clearDepth();
+        renderer.render(inspectionScene, inspectionCam);
+      }
       } catch (renderErr) {
         console.warn('[Gigantera 3D Render Non-fatal Error]:', renderErr);
       }
@@ -2641,6 +2666,8 @@ export const GalleryScene3D: React.FC = () => {
       playerController.dispose();
       cdViewmodel.rootGroup.removeFromParent();
       inspectionRig.removeFromParent();
+      inspectionCam.removeFromParent();
+      inspectionScene.clear();
       dustGeo.dispose();
       dustMat.dispose();
       hazeTexture.dispose();
