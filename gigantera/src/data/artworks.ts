@@ -53,7 +53,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-02-danse',
     trackNumber: '02',
-    title: 'Danse (v2)',
+    title: 'Danse',
     series: 'Gigantera Acoustic Loops',
     genre: 'MODULAR TECHNO',
     bpm: 128,
@@ -67,7 +67,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-03-apenas',
     trackNumber: '03',
-    title: 'Apenas (v2)',
+    title: 'Apenas',
     series: 'Gigantera Acoustic Loops',
     genre: 'AMBIENT MODULAR',
     bpm: 118,
@@ -81,7 +81,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-04-giant-mullets',
     trackNumber: '04',
-    title: 'Giant Mullets (v2)',
+    title: 'Giant Mullets',
     series: 'Giant Mullets Project',
     genre: 'SUB-BASS EXPERIMENTAL',
     bpm: 122,
@@ -95,7 +95,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-05-notalgia',
     trackNumber: '05',
-    title: 'Notalgia (v2)',
+    title: 'Notalgia',
     series: 'Notalgia Audio Research',
     genre: 'MINIMAL DOWNTEMPO',
     bpm: 115,
@@ -109,7 +109,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-06-un-disney',
     trackNumber: '06',
-    title: 'Un-disney (v4)',
+    title: 'Un-disney',
     series: 'Un-disney Explorations',
     genre: 'DARK ELECTRONIC',
     bpm: 126,
@@ -123,7 +123,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-07-sintetic-olive',
     trackNumber: '07',
-    title: 'Sintetic Olive (v2)',
+    title: 'Sintetic Olive',
     series: 'Palestine Sessions',
     genre: 'JAZZY DEEP HOUSE',
     bpm: 120,
@@ -137,7 +137,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-08-fisherman',
     trackNumber: '08',
-    title: 'Fisherman (v2)',
+    title: 'Fisherman',
     series: 'Fisherman Project',
     genre: 'BRAZILIAN SLAP MINIMAL',
     bpm: 125,
@@ -151,7 +151,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-09-talking-peoplr',
     trackNumber: '09',
-    title: 'Talking Peoplr (v2)',
+    title: 'Talking Peoplr',
     series: 'Talking Peoplr Sessions',
     genre: 'VOCAL MICROHOUSE',
     bpm: 122,
@@ -193,7 +193,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-12-bicho-malandro',
     trackNumber: '12',
-    title: 'Bicho Malandro (v2)',
+    title: 'Bicho Malandro',
     series: 'Pelichakk Productions',
     genre: 'NEO-SAMBA BASS',
     bpm: 126,
@@ -221,7 +221,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-14-todas-linguas',
     trackNumber: '14',
-    title: 'Todas Línguas (v2)',
+    title: 'Todas Línguas',
     series: 'Languages Project',
     genre: 'POLYRHYTHMIC TECHNO',
     bpm: 127,
@@ -235,7 +235,7 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
   {
     id: 'track-15-tranca',
     trackNumber: '15',
-    title: 'Trança (v3)',
+    title: 'Trança',
     series: 'Trança Modular',
     genre: 'MICRO MODULAR LOOP',
     bpm: 122,

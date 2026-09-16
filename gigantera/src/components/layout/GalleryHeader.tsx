@@ -23,6 +23,9 @@ export const GalleryHeader: React.FC = () => {
   const isHoldingCD = useAppStore((s) => s.isHoldingCD);
   const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
   const isMobile = useAppStore((s) => s.isMobile);
+  const isGlobalMuted = useAppStore((s) => s.isGlobalMuted);
+  const toggleGlobalMute = useAppStore((s) => s.toggleGlobalMute);
+  const hasInspectedCDBefore = useAppStore((s) => s.hasInspectedCDBefore);
 
   // Atalhos de teclado intuitivos para não obrigar o usuário a apertar ESC para clicar com o mouse
   useEffect(() => {
@@ -37,10 +40,9 @@ export const GalleryHeader: React.FC = () => {
       } else if (e.code === 'KeyB' && !e.metaKey && !e.ctrlKey) {
         setBioOpen(true);
       } else if (e.code === 'KeyM' && !e.metaKey && !e.ctrlKey) {
-        const state = useAppStore.getState();
-        if (!state.cinemaArtwork && !state.isHoldingCD) {
-          setViewMode(viewMode === 'media' ? 'spatial' : 'media');
-        }
+        e.preventDefault();
+        soundEngine.toggleGlobalMute();
+        toggleGlobalMute();
       }
     };
 
@@ -85,23 +87,23 @@ export const GalleryHeader: React.FC = () => {
         )}
       </div>
 
-      {/* Centro: Cápsula Dinâmica "Now Playing" — APARECE SOMENTE QUANDO HÁ ÁUDIO TOCANDO */}
-      {isAudioPlaying && (
+      {/* Centro: Cápsula Dinâmica "Now Playing" */}
+      {(isAudioPlaying || hasInspectedCDBefore) && (
         <div
-          className="header-now-playing-capsule font-mono"
+          className={`header-now-playing-capsule font-mono ${!isAudioPlaying ? 'is-paused' : ''} ${isGlobalMuted ? 'is-muted' : ''}`}
           onClick={handleOpenCD}
-          title="Faixa em reprodução · Toque para abrir o álbum Jewel Case em primeira pessoa"
+          title={isAudioPlaying ? "Faixa em reprodução · Toque para abrir o CD" : "Música pausada · Toque para abrir o CD"}
         >
-          {/* Barrinhas animadas do equalizador */}
+          {/* Barrinhas animadas do equalizador ou estáticas quando pausado */}
           <div className="header-sound-equalizer" aria-hidden="true">
-            <span className="eq-bar eq-bar-1" />
-            <span className="eq-bar eq-bar-2" />
-            <span className="eq-bar eq-bar-3" />
-            <span className="eq-bar eq-bar-4" />
+            <span className="eq-bar eq-bar-1" style={{ animationPlayState: isAudioPlaying && !isGlobalMuted ? 'running' : 'paused' }} />
+            <span className="eq-bar eq-bar-2" style={{ animationPlayState: isAudioPlaying && !isGlobalMuted ? 'running' : 'paused' }} />
+            <span className="eq-bar eq-bar-3" style={{ animationPlayState: isAudioPlaying && !isGlobalMuted ? 'running' : 'paused' }} />
+            <span className="eq-bar eq-bar-4" style={{ animationPlayState: isAudioPlaying && !isGlobalMuted ? 'running' : 'paused' }} />
           </div>
 
-          <div className="header-track-info">
-            {!isMobile && <span className="header-track-label">TOCANDO:</span>}
+          <div className="header-track-info" style={{ opacity: isAudioPlaying && !isGlobalMuted ? 1 : 0.6 }}>
+            {!isMobile && <span className="header-track-label">{isAudioPlaying && !isGlobalMuted ? 'TOCANDO:' : 'PAUSADO:'}</span>}
             <span className="header-track-title">
               {currentAudioTrack.title.toUpperCase()}
             </span>
@@ -114,7 +116,7 @@ export const GalleryHeader: React.FC = () => {
             title="Pausar / Retomar áudio"
             aria-label="Pausar áudio"
           >
-            ❚❚
+            {isAudioPlaying ? '❚❚' : '▶'}
           </button>
         </div>
       )}

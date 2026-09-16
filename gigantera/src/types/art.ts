@@ -70,6 +70,7 @@ export interface Artwork {
   cloudStorageUrl?: string;
   status?: 'active' | 'hidden';
   galleryImages?: string[]; // Multiple images for a single artwork mosaic
+  hasAudio?: boolean;
 }
 
 

@@ -12,8 +12,11 @@ export const MinimalBottomBar: React.FC = () => {
   const toggleGuideModal = useAppStore((s) => s.toggleGuideModal);
   const introPhase = useAppStore((s) => s.introPhase);
   const tutorialDocked = useAppStore((s) => s.tutorialDocked);
+  const isHoldingCD = useAppStore((s) => s.isHoldingCD);
 
   const isIntroActive = introPhase !== 'ready' && !tutorialDocked;
+
+  if (isHoldingCD) return null;
 
   // Navegação de setores via teclas 1, 2 e 3
   React.useEffect(() => {
@@ -77,8 +80,8 @@ export const MinimalBottomBar: React.FC = () => {
                     title={`Navegar para ${sec.title} (Atalho: Tecla ${info.num})`}
                   >
                     <span className="sector-pill-dot" />
-                    <span className="sector-pill-title">{info.num} · {info.name}</span>
-                    <kbd className="sector-keycap-badge">{info.num}</kbd>
+                    <span className="sector-pill-title">{info.name}</span>
+                    <kbd className="keycap keycap-sm" style={{ marginLeft: '4px' }}>{info.num}</kbd>
                   </button>
                 );
               })}

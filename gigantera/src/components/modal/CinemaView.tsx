@@ -216,15 +216,15 @@ export const CinemaView: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         handleCloseCinema();
-      } else if (e.key === 'i' || e.key === 'I') {
+      } else if (e.code === 'KeyI') {
         e.preventDefault();
         e.stopPropagation();
         toggleDossier();
-      } else if (e.key === 'r' || e.key === 'R') {
+      } else if (e.code === 'KeyR') {
         e.preventDefault();
         e.stopPropagation();
         toggleLoupeMode();
-      } else if (e.key === 'm' || e.key === 'M') {
+      } else if (e.code === 'KeyM') {
         e.preventDefault();
         e.stopPropagation();
         if (cinemaArtwork.medium === 'video') {
@@ -354,11 +354,12 @@ export const CinemaView: React.FC = () => {
         </button>
       </div>
 
-      {/* ─── NÍVEL 2: FICHA CURATORIAL LATERAL (Flanco Esquerdo - Deixa o centro 100% desobstruído) ─── */}
+      {/* ─── NÍVEL 2: FICHA CURATORIAL LATERAL (Suspensa ao topo para não conflitar) ─── */}
       <aside
         className={`cinema-lateral-dossier font-mono ${isCinemaInfoOpen ? 'is-open' : 'is-closed'}`}
         aria-hidden={!isCinemaInfoOpen}
         aria-label="Ficha Técnica Curatorial"
+        style={{ top: '6rem', bottom: 'auto', maxHeight: '70vh', overflowY: 'auto' }}
         onMouseEnter={() => {
           isHoveringUIRef.current = true;
           if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
@@ -560,21 +561,6 @@ export const CinemaView: React.FC = () => {
             </div>
           </div>
 
-          <div className="cinema-mini-divider" aria-hidden="true" />
-
-          {/* Módulo C: Botão de Saída Tático */}
-          <div className="cinema-mini-exit">
-            <button
-              type="button"
-              onClick={handleCloseCinema}
-              className="cinema-mini-close-btn"
-              title="Fechar inspeção e devolver à vitrine (Tecla E ou ESC)"
-            >
-              <span className="close-x">✕</span>
-              <span>FECHAR</span>
-              <kbd className="keycap keycap-xs">E</kbd>
-            </button>
-          </div>
         </nav>
       </div>
   );

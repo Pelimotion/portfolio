@@ -38,6 +38,13 @@ class SoundEngine {
       this.gainNode = this.audioCtx.createGain();
       this.gainNode.gain.value = 0.85;
 
+      const compressorNode = this.audioCtx.createDynamicsCompressor();
+      compressorNode.threshold.value = -12;
+      compressorNode.knee.value = 30;
+      compressorNode.ratio.value = 6;
+      compressorNode.attack.value = 0.05;
+      compressorNode.release.value = 0.25;
+
       this.sourceNode = this.audioCtx.createMediaElementSource(this.audioElement);
       this.sourceNode.connect(this.analyserNode);
 
@@ -50,7 +57,8 @@ class SoundEngine {
         this.analyserNode.connect(this.gainNode);
       }
 
-      this.gainNode.connect(this.audioCtx.destination);
+      this.gainNode.connect(compressorNode);
+      compressorNode.connect(this.audioCtx.destination);
 
       this.freqArray = new Uint8Array(this.analyserNode.frequencyBinCount) as Uint8Array<ArrayBuffer>;
       this.isInitialized = true;
@@ -148,9 +156,24 @@ class SoundEngine {
     }
   }
 
+  private _globalMute = false;
+  private _lastVolume = 0.85;
+
+  public toggleGlobalMute(): boolean {
+    this._globalMute = !this._globalMute;
+    if (this._globalMute) {
+      this.setVolume(0);
+    } else {
+      this.setVolume(this._lastVolume);
+    }
+    return this._globalMute;
+  }
+
   public setVolume(volume: number): void {
+    if (volume > 0) this._lastVolume = volume;
     if (this.gainNode && this.audioCtx) {
-      this.gainNode.gain.setValueAtTime(Math.max(0, Math.min(1, volume)), this.audioCtx.currentTime);
+      const targetVol = this._globalMute ? 0 : Math.max(0, Math.min(1, volume));
+      this.gainNode.gain.setValueAtTime(targetVol, this.audioCtx.currentTime);
     }
   }
 
@@ -170,7 +193,8 @@ class SoundEngine {
 
     // Pan Estéreo Físico (-1.0 a +1.0)
     const normX = Math.max(-1.0, Math.min(1.0, playerX / 11.5));
-    const targetPan = normX * 0.72;
+    // Amplified for headphones immersive audio
+    const targetPan = Math.max(-1.0, Math.min(1.0, normX * 1.5));
 
     if (this.pannerNode && this.pannerNode.pan) {
       this.pannerNode.pan.setTargetAtTime(targetPan, this.audioCtx.currentTime, 0.06);

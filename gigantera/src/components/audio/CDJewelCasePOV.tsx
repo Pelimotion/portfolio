@@ -29,16 +29,40 @@ export const CDJewelCasePOV: React.FC = () => {
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         flipCD();
+      } else if (!cdFlipped && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.code === 'Space')) {
+        // Auto-flip if user tries to interact with tracks while on front cover
+        e.preventDefault();
+        flipCD();
       }
     };
+
+    const onWheelOrClick = (e: Event) => {
+      if (isHoldingCD && !cdFlipped) {
+        // Only prevent default for wheel to avoid scrolling the page, but let clicks pass through after flipping
+        if (e.type === 'wheel') e.preventDefault();
+        flipCD();
+      }
+    };
+
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isHoldingCD, stowCD, flipCD]);
+    window.addEventListener('wheel', onWheelOrClick, { passive: false });
+    window.addEventListener('click', onWheelOrClick, { capture: true });
+    
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('wheel', onWheelOrClick);
+      window.removeEventListener('click', onWheelOrClick, { capture: true });
+    };
+  }, [isHoldingCD, cdFlipped, stowCD, flipCD]);
 
   if (!isHoldingCD) return null;
 
   return (
-    <aside
+    <>
+      <div className="cd-headphones-warning font-mono">
+        ATENÇÃO: EXPERIÊNCIA ESTÉREO BINAURAL. USE FONES DE OUVIDO PARA IMERSÃO TOTAL.
+      </div>
+      <aside
       className="cd-viewmodel-hud-dock"
       role="region"
       aria-label="Controles Táteis do CD"
@@ -133,5 +157,6 @@ export const CDJewelCasePOV: React.FC = () => {
         </div>
       )}
     </aside>
+    </>
   );
 };

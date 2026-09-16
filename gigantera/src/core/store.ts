@@ -32,6 +32,7 @@ interface AppState {
   cdFlipped: boolean; // false = capa frontal, true = contracapa com faixas (como na referência)
   currentAudioTrack: AudioTrackInfo;
   isAudioPlaying: boolean;
+  isGlobalMuted: boolean;
   soundVolume: number;
 
   // Fidelidade Gráfica Moderna (Baixo / Médio / Alto)
@@ -130,6 +131,7 @@ interface AppState {
   setHoveredTrackIndex: (idx: number | null) => void;
   setCurrentAudioTrack: (track: AudioTrackInfo) => void;
   setIsAudioPlaying: (playing: boolean) => void;
+  toggleGlobalMute: () => void;
   setSoundVolume: (volume: number) => void;
   // Central de Mídia & Download de Masters (Press Kit & Curatorial)
   activeMediaTab: 'promo' | 'masters';
@@ -202,6 +204,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   cdFlipped: true, // Começa mostrando a contracapa como na imagem de referência!
   currentAudioTrack: defaultTrack,
   isAudioPlaying: false,
+  isGlobalMuted: false,
   soundVolume: 0.85,
 
   graphicsQuality: 'high',
@@ -465,9 +468,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       isLoupeMode: false,
       loupePan: { x: 0, y: 0 },
       currentStillSheetIndex: stillIdx,
-      // Se for vídeo e o som de fundo estava ativo, fade-out CD e ativa áudio do vídeo
-      wasAudioPlayingBeforeVideo: isVideo ? wasPlaying : false,
-      isAudioPlaying: isVideo && wasPlaying ? false : wasPlaying,
+      // Se for vídeo COM áudio e o som de fundo estava ativo, fade-out CD e ativa áudio do vídeo
+      wasAudioPlayingBeforeVideo: isVideo && art.hasAudio ? wasPlaying : false,
+      isAudioPlaying: isVideo && art.hasAudio && wasPlaying ? false : wasPlaying,
       isVideoAudioMuted: false
     });
   },
@@ -520,6 +523,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setCurrentAudioTrack: (track) => set({ currentAudioTrack: track }),
   setIsAudioPlaying: (playing) => set({ isAudioPlaying: playing }),
+  toggleGlobalMute: () => set((state) => ({ isGlobalMuted: !state.isGlobalMuted })),
   setSoundVolume: (vol) => set({ soundVolume: Math.max(0, Math.min(1, vol)) }),
   setIntroSpawnProgress: (progress) => set({ introSpawnProgress: progress }),
   setIntroPhase: (phase) => set({ introPhase: phase }),
