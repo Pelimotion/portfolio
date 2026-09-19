@@ -51,8 +51,8 @@ export async function loadEspinhacoParticles(
   const wallPositions = new Float32Array(count * 3);
 
   // Dimensões do retângulo da projeção vertical na parede calibradas com a escala do fóssil (9:16)
-  const wallWidth = 1.5;
-  const wallHeight = 2.6;
+  const wallWidth = 0.85;
+  const wallHeight = 1.50;
 
   for (let i = 0; i < count; i++) {
     const idx = i * 3;
@@ -112,12 +112,12 @@ async function sampleFromGLB(
   box.getCenter(center);
 
   const maxDim = Math.max(size.x, size.y, size.z);
-  const targetSize = 7.5;
+  const targetSize = 1.45;
   const scale = targetSize / maxDim;
 
   mainMesh.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(-center.x, -center.y, -center.z));
   mainMesh.geometry.applyMatrix4(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
-  mainMesh.geometry.applyMatrix4(new THREE.Matrix4().makeScale(scale, scale, scale));
+  mainMesh.geometry.applyMatrix4(new THREE.Matrix4().makeScale(-scale, scale, scale));
 
   onProgress?.(0.85, 'Amostrando superfície orgânica…');
 

@@ -59,7 +59,7 @@ export class ARParticleSystem {
   private currentSecondary = new THREE.Color(0xd8f4ff);
   private activeBiomeIndex: number = 0;
 
-  // Ajustes táteis do usuário (toque na tela para reposicionar)
+  // Ajustes táteis do usuário (toque na tela para reposicionar/inspecionar o fóssil)
   public userOffset = new THREE.Vector3(0, 0, 0);
   public userScale: number = 1.0;
   public userRotation = new THREE.Euler(0, 0, 0);
@@ -72,8 +72,9 @@ export class ARParticleSystem {
     this.points = new THREE.Points(this.geometry, this.material);
     this.group.add(this.points);
 
-    // Posicionamento base na parede diante da câmera
-    this.group.position.set(0, 0, -3.2);
+    // Posicionamento base na parede diante da câmera antes do travamento
+    this.group.position.set(0, 0, -3.0);
+    this.group.quaternion.identity();
   }
 
   private buildGeometry(data: ParticleData): void {
@@ -133,43 +134,42 @@ export class ARParticleSystem {
           float t = smoothstep(0.0, 1.0, uBurstProgress);
           vec3 basePos = mix(aPosWall, aPosSpine, t);
 
-          // O SALTO: impulso que ejeta as partículas para fora da parede (Z = 0)
-          // e as mantém flutuando à frente no espaço (+Z)
+          // O SALTO: impulso que ejeta as partículas para fora da parede (+Z em direção à câmera)
           float leapArc = sin(t * 3.14159265);
-          float settleZ = t * 0.75;
-          float forwardBurst = leapArc * (1.6 + aRandom.z * 0.8);
+          float settleZ = t * 0.55;
+          float forwardBurst = leapArc * (1.1 + aRandom.z * 0.5);
           basePos.z += settleZ + forwardBurst;
 
-          // REATIVIDADE A GRAVES: respiração volumétrica e solavanco de profundidade
-          float ribExpansion = 1.0 + (uBass * 0.28 * t);
+          // REATIVIDADE A GRAVES: respiração volumétrica e expansão das vértebras
+          float ribExpansion = 1.0 + (uBass * 0.20 * t);
           basePos.x *= ribExpansion;
-          basePos.y *= 1.0 + (uBass * 0.16 * t);
-          basePos.z += uBass * 0.45 * t;
+          basePos.y *= 1.0 + (uBass * 0.12 * t);
+          basePos.z += uBass * 0.30 * t;
 
           // REATIVIDADE A MÉDIOS: onda cinética que viaja pela coluna vertebral
-          float spineWave = sin(uTime * 3.8 + aIndex * 14.0) * (uMid * 0.22 + 0.03) * t;
+          float spineWave = sin(uTime * 3.8 + aIndex * 14.0) * (uMid * 0.16 + 0.02) * t;
           basePos.x += spineWave;
-          basePos.y += cos(uTime * 3.2 + aIndex * 10.0) * (uMid * 0.14) * t;
+          basePos.y += cos(uTime * 3.2 + aIndex * 10.0) * (uMid * 0.10) * t;
 
           // REATIVIDADE A AGUDOS E PICOS (TRANSIENTES):
           if (uTransient > 0.05) {
-            vec3 scatter = (aRandom - 0.5) * uTransient * 0.5;
+            vec3 scatter = (aRandom - 0.5) * uTransient * 0.35;
             basePos += scatter;
           }
 
           // Turbulência sutil das partículas na parede antes do salto
           if (uBurstProgress < 0.3) {
-            basePos.x += sin(uTime * 2.5 + aRandom.x * 24.0) * 0.02;
-            basePos.y += cos(uTime * 2.0 + aRandom.y * 24.0) * 0.02;
+            basePos.x += sin(uTime * 2.5 + aRandom.x * 24.0) * 0.015;
+            basePos.y += cos(uTime * 2.0 + aRandom.y * 24.0) * 0.015;
           }
 
           vec4 mvPosition = modelViewMatrix * vec4(basePos, 1.0);
           gl_Position = projectionMatrix * mvPosition;
 
-          // Tamanho das partículas calibrado para corpúsculos bioluminescentes delicados
-          float baseSize = mix(2.4, 4.0, aRandom.x);
+          // Tamanho das partículas
+          float baseSize = mix(2.0, 3.6, aRandom.x);
           float soundSparkle = 1.0 + (uTreble * 1.5) + (uBass * 0.7);
-          gl_PointSize = clamp((baseSize * soundSparkle * uPixelRatio) / -mvPosition.z, 1.8, 14.0);
+          gl_PointSize = clamp((baseSize * soundSparkle * uPixelRatio) / -mvPosition.z, 1.5, 11.0);
 
           // Gradiente bioluminescente ao longo das vértebras
           float colorBlend = aIndex + (sin(uTime * 1.8 + aIndex * 5.0) * 0.18 * uMid);
@@ -181,7 +181,7 @@ export class ARParticleSystem {
           }
 
           vColor = particleColor;
-          vAlpha = mix(0.45, 0.90, t);
+          vAlpha = mix(0.40, 0.90, t);
         }
       `,
       fragmentShader: `
@@ -207,12 +207,30 @@ export class ARParticleSystem {
     });
   }
 
+  /**
+   * Trava a âncora do grupo de partículas nas coordenadas mundiais fixadas pela pose da parede
+   */
+  public anchorToWorld(worldPosition: THREE.Vector3, worldOrientation: THREE.Quaternion): void {
+    this.group.position.copy(worldPosition);
+    this.group.quaternion.copy(worldOrientation);
+    this.targetBurstProgress = 1.0;
+  }
+
   public triggerBurst(): void {
     this.targetBurstProgress = 1.0;
   }
 
   public resetToWall(): void {
     this.targetBurstProgress = 0.0;
+    this.burstProgress = 0.0;
+    this.group.position.set(0, 0, -3.0);
+    this.group.quaternion.identity();
+    this.userOffset.set(0, 0, 0);
+    this.userRotation.set(0, 0, 0);
+    this.userScale = 1.0;
+    this.points.position.set(0, 0, 0);
+    this.points.rotation.set(0, 0, 0);
+    this.points.scale.set(1, 1, 1);
   }
 
   public setBiome(index: number): void {
@@ -237,16 +255,10 @@ export class ARParticleSystem {
     u.uColorPrimary.value  = this.currentPrimary;
     u.uColorSecondary.value= this.currentSecondary;
 
-    // Posicionamento ajustável por toque
-    this.group.position.x = this.userOffset.x;
-    this.group.position.y = this.userOffset.y;
-    this.group.position.z = -3.2 + this.userOffset.z;
-
-    this.group.rotation.x = this.userRotation.x;
-    this.group.rotation.y = this.userRotation.y;
-    this.group.rotation.z = this.userRotation.z;
-
-    this.group.scale.set(this.userScale, this.userScale, this.userScale);
+    // Aplica ajustes interativos do usuário no objeto filho `points` (preservando a âncora mundial do `group`)
+    this.points.position.copy(this.userOffset);
+    this.points.rotation.copy(this.userRotation);
+    this.points.scale.set(this.userScale, this.userScale, this.userScale);
   }
 
   public dispose(): void {

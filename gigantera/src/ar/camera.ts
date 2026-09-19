@@ -1,14 +1,35 @@
 /**
- * camera.ts — Câmera Traseira Unificada, Rastreamento Espacial por Giroscópio e Âncora AR
+ * camera.ts — Câmera Traseira Unificada, Rastreamento Espacial por Quatérnions (AR Gyro) e Analisador Óptico
  */
 
 import * as THREE from 'three';
 
-export interface SpatialRotation {
-  pitch: number; // Delta rotação X (rad)
-  yaw: number;   // Delta rotação Y (rad)
-  roll: number;  // Delta rotação Z (rad)
-  isTracking: boolean;
+const _zee = new THREE.Vector3(0, 0, 1);
+const _euler = new THREE.Euler();
+const _q0 = new THREE.Quaternion();
+const _q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)); // -PI/2 em torno de X
+
+/**
+ * Converte DeviceOrientation (alpha, beta, gamma, orient) no quatérnion Three.js da câmera traseira
+ * Elimina gimbal lock e distorção em modo retrato vertical.
+ */
+export function computeDeviceOrientationQuaternion(
+  alphaDeg: number,
+  betaDeg: number,
+  gammaDeg: number,
+  orientDeg: number = 0
+): THREE.Quaternion {
+  const alpha = THREE.MathUtils.degToRad(alphaDeg);
+  const beta  = THREE.MathUtils.degToRad(betaDeg);
+  const gamma = THREE.MathUtils.degToRad(gammaDeg);
+  const orient= THREE.MathUtils.degToRad(orientDeg);
+
+  const q = new THREE.Quaternion();
+  _euler.set(beta, alpha, -gamma, 'YXZ');
+  q.setFromEuler(_euler);
+  q.multiply(_q1);
+  q.multiply(_q0.setFromAxisAngle(_zee, -orient));
+  return q;
 }
 
 export class CameraManager {
@@ -19,30 +40,25 @@ export class CameraManager {
   private wakeLock: any = null;
 
   // Estado do Giroscópio
-  private currentRaw = { alpha: 0, beta: 0, gamma: 0 };
-  private anchorRaw = { alpha: 0, beta: 0, gamma: 0 };
-  private isAnchored: boolean = false;
-  private gyroSupported: boolean = false;
+  public currentQuaternion = new THREE.Quaternion();
+  public targetQuaternion = new THREE.Quaternion();
+  public lockQuaternion = new THREE.Quaternion();
+  public isAnchored: boolean = false;
+  public gyroSupported: boolean = false;
 
-  // Rotação suavizada (LERP)
-  public rotation: SpatialRotation = {
-    pitch: 0,
-    yaw: 0,
-    roll: 0,
-    isTracking: false
-  };
+  private rawOrientation = { alpha: 0, beta: 90, gamma: 0 };
+  private smoothedConfidence: number = 0.10;
 
   constructor(videoElement: HTMLVideoElement, visionCanvas: HTMLCanvasElement) {
     this.videoEl = videoElement;
     this.visionCanvas = visionCanvas;
-    this.visionCanvas.width = 64;
-    this.visionCanvas.height = 64;
+    this.visionCanvas.width = 128;
+    this.visionCanvas.height = 128;
     this.visionCtx = this.visionCanvas.getContext('2d', { willReadFrequently: true });
   }
 
   /**
    * Inicia Câmera Traseira e Microfone em UMA ÚNICA chamada getUserMedia
-   * Isso evita cancelamento mútuo ou erros de permissão duplicada no Android/iOS
    */
   public async startMedia(): Promise<MediaStream> {
     try {
@@ -55,13 +71,13 @@ export class CameraManager {
         audio: true
       });
     } catch (unifiedErr) {
-      console.warn('[CameraManager] Falha ao capturar vídeo+áudio juntos, tentando vídeo isolado:', unifiedErr);
+      console.warn('[CameraManager] Falha na captura unificada, recorrendo a vídeo:', unifiedErr);
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { ideal: 'environment' } },
           audio: false
         });
-      } catch (fallbackErr) {
+      } catch {
         this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       }
     }
@@ -69,9 +85,7 @@ export class CameraManager {
     this.videoEl.srcObject = this.stream;
     await this.videoEl.play();
 
-    // Mantém a tela ligada durante a visualização na galeria
     this.requestWakeLock();
-
     return this.stream;
   }
 
@@ -103,110 +117,140 @@ export class CameraManager {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta === null || e.gamma === null) return;
 
-      this.currentRaw.alpha = e.alpha ?? 0;
-      this.currentRaw.beta  = e.beta;
-      this.currentRaw.gamma = e.gamma;
+      this.rawOrientation.alpha = e.alpha ?? 0;
+      this.rawOrientation.beta  = e.beta;
+      this.rawOrientation.gamma = e.gamma;
       this.gyroSupported = true;
 
-      // Se ainda não estiver ancorado manualmente, define a pose atual como referência
-      if (!this.isAnchored) {
-        this.anchorRaw = { ...this.currentRaw };
+      const screenAngle = (screen.orientation && screen.orientation.angle) || (window.orientation as number) || 0;
+      const q = computeDeviceOrientationQuaternion(
+        this.rawOrientation.alpha,
+        this.rawOrientation.beta,
+        this.rawOrientation.gamma,
+        screenAngle
+      );
+
+      this.targetQuaternion.copy(q);
+
+      // Se ainda não inicializou o quatérnion atual, copia diretamente
+      if (this.currentQuaternion.lengthSq() < 0.1) {
+        this.currentQuaternion.copy(q);
       }
     };
 
     window.addEventListener('deviceorientation', handleOrientation, { passive: true });
-    // Em alguns navegadores Android modernos, deviceorientationabsolute é mais estável
     window.addEventListener('deviceorientationabsolute' as any, handleOrientation, { passive: true });
   }
 
   /**
-   * Trava a âncora espacial na orientação física atual da parede de projeção
-   */
-  public lockSpatialAnchor(): void {
-    this.anchorRaw = { ...this.currentRaw };
-    this.isAnchored = true;
-    this.rotation.pitch = 0;
-    this.rotation.yaw = 0;
-    this.rotation.roll = 0;
-    this.rotation.isTracking = true;
-    console.log('[CameraManager] Âncora espacial travada na parede:', this.anchorRaw);
-  }
-
-  public resetSpatialAnchor(): void {
-    this.anchorRaw = { ...this.currentRaw };
-    this.isAnchored = false;
-    this.rotation.pitch = 0;
-    this.rotation.yaw = 0;
-    this.rotation.roll = 0;
-  }
-
-  /**
-   * Atualiza a rotação relativa a cada frame com suavização LERP
+   * Atualiza a orientação interpolada (slerp suave para evitar jitter)
    */
   public updateOrientation(): void {
     if (!this.gyroSupported) return;
-
-    // Diferença angular com tratamento de descontinuidade 0-360° (wrap-around)
-    const degToRad = Math.PI / 180;
-
-    const diffAlpha = (this.currentRaw.alpha - this.anchorRaw.alpha) * degToRad;
-    const diffBeta  = (this.currentRaw.beta - this.anchorRaw.beta) * degToRad;
-    const diffGamma = (this.currentRaw.gamma - this.anchorRaw.gamma) * degToRad;
-
-    // Normaliza delta de yaw no intervalo [-PI, PI]
-    const deltaYaw   = Math.atan2(Math.sin(diffAlpha), Math.cos(diffAlpha));
-    const deltaPitch = diffBeta;
-    const deltaRoll  = diffGamma;
-
-    // Suavização exponencial para filtrar tremulação natural das mãos
-    const lerpFactor = 0.22;
-    this.rotation.pitch += (deltaPitch - this.rotation.pitch) * lerpFactor;
-    this.rotation.yaw   += (deltaYaw - this.rotation.yaw) * lerpFactor;
-    this.rotation.roll  += (deltaRoll - this.rotation.roll) * lerpFactor;
-    this.rotation.isTracking = true;
+    this.currentQuaternion.slerp(this.targetQuaternion, 0.35);
   }
 
   /**
-   * Analisador óptico: detecta luminância e contraste da projeção central
+   * Trava a âncora espacial na orientação física atual da projeção
    */
-  public analyzeProjectionBeam(): { confidence: number; luminance: number } {
+  public lockSpatialAnchor(): THREE.Quaternion {
+    this.updateOrientation();
+    this.lockQuaternion.copy(this.currentQuaternion);
+    this.isAnchored = true;
+    console.log('[CameraManager] Âncora AR travada com quatérnion:', this.lockQuaternion);
+    return this.lockQuaternion;
+  }
+
+  public resetSpatialAnchor(): void {
+    this.isAnchored = false;
+  }
+
+  /**
+   * Analisador óptico: compara o contraste e textura da área central (retículo 9:16)
+   * com as bordas periféricas da imagem para detectar a projeção de forma autêntica.
+   */
+  public analyzeProjectionBeam(): { confidence: number; isDetected: boolean } {
     if (!this.visionCtx || this.videoEl.readyState < 2) {
-      return { confidence: 0, luminance: 0 };
+      return { confidence: 0, isDetected: false };
     }
 
     const vw = this.videoEl.videoWidth;
     const vh = this.videoEl.videoHeight;
-    if (vw === 0 || vh === 0) return { confidence: 0, luminance: 0 };
+    if (vw === 0 || vh === 0) return { confidence: 0, isDetected: false };
 
-    const cropSize = Math.min(vw, vh) * 0.5;
-    const sx = (vw - cropSize) / 2;
-    const sy = (vh - cropSize) / 2;
+    // Desenha o quadro reduzido no canvas de visão (128x128)
+    this.visionCtx.drawImage(this.videoEl, 0, 0, 128, 128);
+    const img = this.visionCtx.getImageData(0, 0, 128, 128).data;
 
-    this.visionCtx.drawImage(this.videoEl, sx, sy, cropSize, cropSize, 0, 0, 64, 64);
-    const imgData = this.visionCtx.getImageData(0, 0, 64, 64).data;
+    // Região central (aproximadamente o retângulo 9:16 vertical no meio: x: 38..90, y: 16..112)
+    const cxStart = 38, cxEnd = 90;
+    const cyStart = 16, cyEnd = 112;
 
-    let totalLum = 0;
-    let maxLum = 0;
-    let minLum = 255;
-    const count = 64 * 64;
+    let centerLumSum = 0;
+    let centerLumSqSum = 0;
+    let centerCount = 0;
+    let centerMax = 0;
+    let centerMin = 255;
 
-    for (let i = 0; i < imgData.length; i += 4) {
-      const lum = 0.2126 * imgData[i] + 0.7152 * imgData[i + 1] + 0.0722 * imgData[i + 2];
-      totalLum += lum;
-      if (lum > maxLum) maxLum = lum;
-      if (lum < minLum) minLum = lum;
+    let borderLumSum = 0;
+    let borderCount = 0;
+
+    for (let y = 0; y < 128; y += 2) {
+      for (let x = 0; x < 128; x += 2) {
+        const idx = (y * 128 + x) * 4;
+        const lum = 0.2126 * img[idx] + 0.7152 * img[idx + 1] + 0.0722 * img[idx + 2];
+
+        if (x >= cxStart && x <= cxEnd && y >= cyStart && y <= cyEnd) {
+          centerLumSum += lum;
+          centerLumSqSum += lum * lum;
+          centerCount++;
+          if (lum > centerMax) centerMax = lum;
+          if (lum < centerMin) centerMin = lum;
+        } else if (x < 24 || x > 104 || y < 12 || y > 116) {
+          // Borda periférica da sala/parede
+          borderLumSum += lum;
+          borderCount++;
+        }
+      }
     }
 
-    const avgLum = totalLum / count;
-    const contrast = maxLum - minLum;
+    if (centerCount === 0 || borderCount === 0) {
+      return { confidence: 0, isDetected: false };
+    }
 
-    let score = 0;
-    if (avgLum > 30 && avgLum < 240) score += 0.5;
-    if (contrast > 50) score += Math.min((contrast - 50) / 100, 0.5);
+    const avgCenter = centerLumSum / centerCount;
+    const variance = (centerLumSqSum / centerCount) - (avgCenter * avgCenter);
+    const stdDev = Math.sqrt(Math.max(variance, 0));
+    const avgBorder = borderLumSum / borderCount;
+    const centerContrast = centerMax - centerMin;
+
+    // 1. Razão de contraste entre o centro e a periferia (o feixe projetado é mais claro que o ambiente)
+    const beamRatio = avgCenter / (avgBorder + 8.0);
+
+    let rawScore = 0.0;
+
+    // Se o centro se destaca da periferia:
+    if (beamRatio > 1.20) {
+      rawScore += Math.min((beamRatio - 1.20) * 0.8, 0.45);
+    }
+
+    // Se há alta textura/arestas internas (vértebras e costelas contrastadas):
+    if (stdDev > 22) {
+      rawScore += Math.min((stdDev - 22) / 45, 0.35);
+    }
+
+    // Se a faixa dinâmica interna do retângulo é ampla:
+    if (centerContrast > 70) {
+      rawScore += Math.min((centerContrast - 70) / 120, 0.20);
+    }
+
+    // Filtro LERP suave para não ter oscilação nervosa no visor
+    this.smoothedConfidence += (rawScore - this.smoothedConfidence) * 0.25;
+    const finalConfidence = Math.min(Math.max(this.smoothedConfidence, 0), 1);
 
     return {
-      confidence: Math.min(Math.max(score, 0), 1),
-      luminance: avgLum / 255
+      confidence: finalConfidence,
+      isDetected: finalConfidence >= 0.70
     };
   }
 

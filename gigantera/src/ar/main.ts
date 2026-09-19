@@ -1,6 +1,6 @@
 /**
  * main.ts — Orquestrador do Aplicativo Mobile AR Espinhaço
- * Integração de Câmera, Áudio FFT Unificado, Rastreamento Espacial e Three.js
+ * Integração de Câmera, Áudio FFT Unificado, Rastreamento Espacial por Quatérnions e Three.js
  */
 
 import * as THREE from 'three';
@@ -53,7 +53,6 @@ class EspinhacoARApp {
       onSelectBiome: (idx) => this.particleSystem?.setBiome(idx),
       onTouchRotate: (dx, dy) => {
         if (this.particleSystem) {
-          // Permite ao usuário girar o fóssil 3D para inspecionar de lado
           this.particleSystem.userRotation.y += dx * 1.5;
           this.particleSystem.userRotation.x += dy * 1.5;
         }
@@ -76,7 +75,7 @@ class EspinhacoARApp {
       this.ui.showLockScreen();
     }
 
-    // 5. Pré-carregamento dos 50.000 pontos
+    // 5. Pré-carregamento das partículas
     this.preloadParticles();
 
     // 6. Redimensionamento de tela
@@ -118,23 +117,16 @@ class EspinhacoARApp {
   }
 
   private async startExperience(): Promise<void> {
-    // 1. Cria e descongela AudioContext SINCRONAMENTE no gesto do usuário (requisito estrito do Chrome/Safari)
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     const userAudioCtx = new AudioCtx();
     if (userAudioCtx.state === 'suspended') {
       await userAudioCtx.resume();
     }
 
-    // 2. Captura câmera traseira e microfone em uma ÚNICA chamada unificada
     const stream = await this.camera.startMedia();
-
-    // 3. Inicializa giroscópio do celular
     await this.camera.initGyro();
-
-    // 4. Conecta microfone com ganho otimizado
     await this.audio.initFromStream(stream, userAudioCtx);
 
-    // 5. Inicia loop de renderização
     if (!this.isRunning) {
       this.isRunning = true;
       this.startTime = performance.now() * 0.001;
@@ -143,24 +135,31 @@ class EspinhacoARApp {
   }
 
   private lockProjection(): void {
-    if (this.particleSystem) {
-      // Trava a orientação atual como a pose da parede de projeção
-      this.camera.lockSpatialAnchor();
+    if (!this.particleSystem) return;
 
-      // Dispara o salto do Espinhaço para fora da parede (+Z)
-      this.particleSystem.triggerBurst();
-      this.ui.lockProjection();
-    }
+    // 1. Memoriza a orientação do celular no exato instante do travamento
+    const lockQuat = this.camera.lockSpatialAnchor();
+
+    // 2. Calcula o vetor frontal no espaço do mundo (direção para a qual o celular aponta)
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(lockQuat);
+
+    // 3. Posiciona a âncora do fóssil a exatamente 3.0 metros na direção da parede
+    const wallPos = forward.clone().multiplyScalar(3.0);
+
+    // 4. Ancoragem do grupo de partículas nas coordenadas mundiais
+    this.particleSystem.anchorToWorld(wallPos, lockQuat);
+
+    // 5. Atualiza o HUD
+    this.ui.lockProjection();
+    console.log('[EspinhacoAR] ✓ Projeção ancorada na parede em:', wallPos);
   }
 
   private resetAnchor(): void {
     this.camera.resetSpatialAnchor();
     if (this.particleSystem) {
       this.particleSystem.resetToWall();
-      this.particleSystem.userOffset.set(0, 0, 0);
-      this.particleSystem.userRotation.set(0, 0, 0);
-      this.particleSystem.userScale = 1.0;
     }
+    this.threeCamera.quaternion.identity();
   }
 
   private animate(): void {
@@ -176,18 +175,19 @@ class EspinhacoARApp {
 
     // 2. Atualização da orientação espacial do celular
     this.camera.updateOrientation();
-    const rot = this.camera.rotation;
 
-    if (rot.isTracking) {
-      // Rastreamento de perspectiva AR: ao inclinar o celular, a câmera 3D acompanha,
-      // fazendo com que o objeto pareça estar fisicamente ancorado no espaço real
-      this.threeCamera.rotation.set(-rot.pitch, rot.yaw, -rot.roll, 'YXZ');
+    if (this.camera.isAnchored && this.camera.gyroSupported) {
+      // Quando ancorado, a câmera 3D orienta-se no espaço físico pelo giroscópio,
+      // mantendo o fóssil imóvel diante da parede física em 3D
+      this.threeCamera.quaternion.copy(this.camera.currentQuaternion);
+    } else {
+      this.threeCamera.quaternion.identity();
     }
 
-    // 3. Analisador óptico a cada 15 frames
-    if (this.frameCount % 15 === 0) {
+    // 3. Analisador óptico a cada 10 frames
+    if (this.frameCount % 10 === 0) {
       const vision = this.camera.analyzeProjectionBeam();
-      this.ui.updateOpticalStatus(vision.confidence);
+      this.ui.updateOpticalStatus(vision.confidence, vision.isDetected);
     }
 
     // 4. Atualiza animações e shader de partículas

@@ -318,15 +318,42 @@ export class UIManager {
     this.statusText.textContent = 'BUSCANDO PROJEÇÃO';
   }
 
-  public updateOpticalStatus(confidence: number): void {
+  public updateOpticalStatus(confidence: number, isDetected: boolean = false): void {
     if (this.isLocked) return;
 
-    if (confidence > 0.7) {
-      this.statusText.textContent = `PROJEÇÃO RECONHECIDA (${Math.round(confidence * 100)}%)`;
-      this.btnLockProj.style.borderColor = '#00ffb3';
+    if (confidence >= 0.70 || isDetected) {
+      this.statusText.textContent = `PROJEÇÃO ENQUADRADA (${Math.round(confidence * 100)}%)`;
+      this.statusChip.classList.add('detected');
+      this.btnLockProj.classList.add('ready');
+      this.btnLockProj.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 14 14"/>
+        </svg>
+        ● TRAVAR NA PROJEÇÃO
+      `;
+    } else if (confidence >= 0.35) {
+      this.statusText.textContent = `LOCALIZANDO (${Math.round(confidence * 100)}%)`;
+      this.statusChip.classList.remove('detected');
+      this.btnLockProj.classList.remove('ready');
+      this.btnLockProj.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 14 14"/>
+        </svg>
+        TRAVAR NA PROJEÇÃO
+      `;
     } else {
       this.statusText.textContent = 'ALINHE COM A PROJEÇÃO';
-      this.btnLockProj.style.borderColor = '#00f0ff';
+      this.statusChip.classList.remove('detected');
+      this.btnLockProj.classList.remove('ready');
+      this.btnLockProj.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 14 14"/>
+        </svg>
+        TRAVAR NA PROJEÇÃO
+      `;
     }
   }
 
