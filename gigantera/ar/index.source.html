@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>ESPINHAÇO AR // Instalação Imersiva</title>
+    <meta
+      name="description"
+      content="Experiência de Realidade Aumentada da videoarte Espinhaço. Aponte a câmera para a projeção na parede e sinta o fóssil saltar em milhares de partículas reativas ao som ambiente."
+    />
+
+    <!-- Web App / Mobile Fullscreen Capabilities -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Espinhaço AR" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#030508" />
+
+    <!-- Google Fonts: Syne, Space Mono, Manrope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/src/ar/style.css" />
+  </head>
+  <body class="ar-body">
+    <div id="ar-app" class="ar-app-root">
+      <!-- Câmera Traseira de Fundo -->
+      <video id="camera-feed" class="camera-video-bg" playsinline autoplay muted></video>
+
+      <!-- Canvas 3D Three.js de Partículas -->
+      <canvas id="ar-canvas" class="ar-canvas-layer"></canvas>
+
+      <!-- Canvas 2D de Análise & Efeitos Ópticos (Offscreen / Hidden) -->
+      <canvas id="vision-canvas" class="vision-hidden-canvas"></canvas>
+
+      <!-- HUD & Camadas de Interação -->
+      <div id="ar-hud" class="ar-hud-container"></div>
+    </div>
+
+    <script type="module" src="/src/ar/main.ts"></script>
+  </body>
+</html>

@@ -20,7 +20,11 @@ export default defineConfig({
       name: 'dev-html-rewrite',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          if (req.url === '/gigantera/' || req.url === '/gigantera' || req.url === '/gigantera/index.html') {
+          const url = req.url || '';
+          const isAsset = /\.(jpg|jpeg|png|webp|svg|bin|glb|gltf|css|js|map|woff2?|ttf|mp4|mp3)$/i.test(url);
+          if (!isAsset && (url.startsWith('/gigantera/ar') || url.startsWith('/ar'))) {
+            req.url = '/gigantera/ar/index.source.html';
+          } else if (url === '/gigantera/' || url === '/gigantera' || url === '/gigantera/index.html') {
             req.url = '/gigantera/index.source.html';
           }
           next();
@@ -36,7 +40,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       input: {
-        main: path.resolve(import.meta.dirname, 'index.source.html')
+        main: path.resolve(import.meta.dirname, 'index.source.html'),
+        ar: path.resolve(import.meta.dirname, 'ar/index.source.html')
       }
     }
   },

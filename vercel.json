@@ -2,42 +2,166 @@
   "outputDirectory": ".",
   "trailingSlash": false,
   "redirects": [
-    { "source": "/v1", "destination": "/v1/", "permanent": true },
-    { "source": "/curriculum", "destination": "/curriculum/", "permanent": true },
-    { "source": "/curriculum/private", "destination": "/curriculum/private/", "permanent": true }
+    {
+      "source": "/v1",
+      "destination": "/v1/",
+      "permanent": true
+    },
+    {
+      "source": "/curriculum",
+      "destination": "/curriculum/",
+      "permanent": true
+    },
+    {
+      "source": "/curriculum/private",
+      "destination": "/curriculum/private/",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/gigantera/admin", "destination": "/gigantera/admin/index.html" },
-    { "source": "/gigantera/admin/", "destination": "/gigantera/admin/index.html" },
-    { "source": "/gigantera", "destination": "/gigantera/index.html" },
-    { "source": "/gigantera/", "destination": "/gigantera/index.html" },
-    { "source": "/pelispace", "destination": "https://pelispace.vercel.app/pelispace" },
-    { "source": "/pelispace/:path*", "destination": "https://pelispace.vercel.app/pelispace/:path*" },
-    { "source": "/pelimotion-design-system", "destination": "https://pelimotion-design-system.vercel.app" },
-    { "source": "/pelimotion-design-system/:path*", "destination": "https://pelimotion-design-system.vercel.app/:path*" },
-    { "source": "/wide-image-studio/public", "destination": "/wide-image-studio/public/index.html" },
-    { "source": "/login", "destination": "/login/index.html" },
-    { "source": "/v1/", "destination": "/legacy/V1/portfolio/index.html" },
-    { "source": "/v1/:path*", "destination": "/legacy/V1/portfolio/:path*" },
-    { "source": "/portfolio", "destination": "/legacy/V1/portfolio/index.html" },
-    { "source": "/portfolio/:path*", "destination": "/legacy/V1/portfolio/index.html" },
-    { "source": "/curriculum", "destination": "/Curriculum/index.html" },
-    { "source": "/curriculum/:path*", "destination": "/Curriculum/:path*" },
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/:path*", "destination": "/admin/:path*" },
-    { "source": "/briefing/style.css", "destination": "/briefing/style.css" },
-    { "source": "/briefing/briefing.js", "destination": "/briefing/briefing.js" },
-    { "source": "/briefing/sequence/:path*", "destination": "/briefing/sequence/:path*" },
-    { "source": "/briefing/:slug", "destination": "/briefing/index.html" },
-    { "source": "/blog", "destination": "/blog/index.html" },
-    { "source": "/blog/vagas", "destination": "/blog/vagas/index.html" },
-    { "source": "/blog/eventos", "destination": "/blog/eventos/index.html" },
-    { "source": "/blog/recursos", "destination": "/blog/recursos/index.html" },
-    { "source": "/blog/categoria/:slug", "destination": "/blog/categoria/:slug.html" },
-    { "source": "/blog/rss.xml", "destination": "/blog/rss.xml" },
-    { "source": "/blog/:slug", "destination": "/blog/:slug.html" },
-    { "source": "/blog/assets/:path*", "destination": "/blog/assets/:path*" },
-    { "source": "/en/blog", "destination": "/en/blog/index.html" },
-    { "source": "/en/blog/:slug", "destination": "/en/blog/:slug.html" }
+    {
+      "source": "/gigantera/ar",
+      "destination": "/gigantera/ar/index.html"
+    },
+    {
+      "source": "/gigantera/ar/",
+      "destination": "/gigantera/ar/index.html"
+    },
+    {
+      "source": "/espinhaco-ar",
+      "destination": "/gigantera/ar/index.html"
+    },
+    {
+      "source": "/espinhaco-ar/",
+      "destination": "/gigantera/ar/index.html"
+    },
+    {
+      "source": "/gigantera/admin",
+      "destination": "/gigantera/admin/index.html"
+    },
+    {
+      "source": "/gigantera/admin/",
+      "destination": "/gigantera/admin/index.html"
+    },
+    {
+      "source": "/gigantera",
+      "destination": "/gigantera/index.html"
+    },
+    {
+      "source": "/gigantera/",
+      "destination": "/gigantera/index.html"
+    },
+    {
+      "source": "/pelispace",
+      "destination": "https://pelispace.vercel.app/pelispace"
+    },
+    {
+      "source": "/pelispace/:path*",
+      "destination": "https://pelispace.vercel.app/pelispace/:path*"
+    },
+    {
+      "source": "/pelimotion-design-system",
+      "destination": "https://pelimotion-design-system.vercel.app"
+    },
+    {
+      "source": "/pelimotion-design-system/:path*",
+      "destination": "https://pelimotion-design-system.vercel.app/:path*"
+    },
+    {
+      "source": "/wide-image-studio/public",
+      "destination": "/wide-image-studio/public/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/v1/",
+      "destination": "/legacy/V1/portfolio/index.html"
+    },
+    {
+      "source": "/v1/:path*",
+      "destination": "/legacy/V1/portfolio/:path*"
+    },
+    {
+      "source": "/portfolio",
+      "destination": "/legacy/V1/portfolio/index.html"
+    },
+    {
+      "source": "/portfolio/:path*",
+      "destination": "/legacy/V1/portfolio/index.html"
+    },
+    {
+      "source": "/curriculum",
+      "destination": "/Curriculum/index.html"
+    },
+    {
+      "source": "/curriculum/:path*",
+      "destination": "/Curriculum/:path*"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/admin/:path*"
+    },
+    {
+      "source": "/briefing/style.css",
+      "destination": "/briefing/style.css"
+    },
+    {
+      "source": "/briefing/briefing.js",
+      "destination": "/briefing/briefing.js"
+    },
+    {
+      "source": "/briefing/sequence/:path*",
+      "destination": "/briefing/sequence/:path*"
+    },
+    {
+      "source": "/briefing/:slug",
+      "destination": "/briefing/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/vagas",
+      "destination": "/blog/vagas/index.html"
+    },
+    {
+      "source": "/blog/eventos",
+      "destination": "/blog/eventos/index.html"
+    },
+    {
+      "source": "/blog/recursos",
+      "destination": "/blog/recursos/index.html"
+    },
+    {
+      "source": "/blog/categoria/:slug",
+      "destination": "/blog/categoria/:slug.html"
+    },
+    {
+      "source": "/blog/rss.xml",
+      "destination": "/blog/rss.xml"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/blog/:slug.html"
+    },
+    {
+      "source": "/blog/assets/:path*",
+      "destination": "/blog/assets/:path*"
+    },
+    {
+      "source": "/en/blog",
+      "destination": "/en/blog/index.html"
+    },
+    {
+      "source": "/en/blog/:slug",
+      "destination": "/en/blog/:slug.html"
+    }
   ]
 }

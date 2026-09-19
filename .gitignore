@@ -46,6 +46,13 @@ node_modules/
 !gigantera/public/cd/*.png
 !gigantera/public/cd/*.jpeg
 
+# Allow Gigantera AR assets and models
+!gigantera/ar/*.jpg
+!gigantera/public/ar/*.jpg
+!gigantera/models/
+!gigantera/public/models/
+
+
 # Patch scripts and temp files
 patch_*.py
 fix_*.py
