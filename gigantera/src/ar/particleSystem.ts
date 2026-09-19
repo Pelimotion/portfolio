@@ -1,6 +1,6 @@
 /**
  * particleSystem.ts — Trânsito Parede 2D → Salto 3D e Reatividade Acústica
- * Gerencia o enxame de 50.000 partículas com ShaderMaterial WebGL2.
+ * Gerencia o enxame de 50.000 partículas com ShaderMaterial WebGL2 calibrado.
  */
 
 import * as THREE from 'three';
@@ -19,30 +19,30 @@ export const BIOMES: BiomeTheme[] = [
   {
     id: 'abissal',
     name: 'ABISSAL',
-    primary: new THREE.Color(0x00f0ff),
-    secondary: new THREE.Color(0xd6f7ff),
+    primary: new THREE.Color(0x00e5ff),
+    secondary: new THREE.Color(0xd8f4ff),
     accent: new THREE.Color(0x00ffb3)
   },
   {
     id: 'titanio',
     name: 'TITÂNIO',
-    primary: new THREE.Color(0xe6eff8),
-    secondary: new THREE.Color(0x8ab4f8),
+    primary: new THREE.Color(0xf0f6fc),
+    secondary: new THREE.Color(0x9fc5e8),
     accent: new THREE.Color(0xffffff)
   },
   {
     id: 'magma',
     name: 'MAGMA',
-    primary: new THREE.Color(0xff8c00),
-    secondary: new THREE.Color(0xffd700),
-    accent: new THREE.Color(0xff3b30)
+    primary: new THREE.Color(0xff7b00),
+    secondary: new THREE.Color(0xffe066),
+    accent: new THREE.Color(0xff3344)
   },
   {
     id: 'espectral',
     name: 'ESPECTRAL',
-    primary: new THREE.Color(0xbb66ff),
-    secondary: new THREE.Color(0x00ffb3),
-    accent: new THREE.Color(0x70d6ff)
+    primary: new THREE.Color(0xb84dff),
+    secondary: new THREE.Color(0x00ffcc),
+    accent: new THREE.Color(0x5eead4)
   }
 ];
 
@@ -52,17 +52,17 @@ export class ARParticleSystem {
   private geometry!: THREE.BufferGeometry;
   private material!: THREE.ShaderMaterial;
 
-  public burstProgress: number = 0.0; // 0.0 = na parede 2D | 1.0 = saltou para 3D
+  public burstProgress: number = 0.0; // 0.0 = na parede | 1.0 = saltou para 3D
   private targetBurstProgress: number = 0.0;
 
-  private currentPrimary = new THREE.Color(0x00f0ff);
-  private currentSecondary = new THREE.Color(0xd6f7ff);
+  private currentPrimary = new THREE.Color(0x00e5ff);
+  private currentSecondary = new THREE.Color(0xd8f4ff);
   private activeBiomeIndex: number = 0;
 
-  // Parâmetros de rotação e zoom do usuário via touch
-  public userRotation = new THREE.Euler(0, 0, 0);
+  // Ajustes táteis do usuário (toque na tela para reposicionar)
+  public userOffset = new THREE.Vector3(0, 0, 0);
   public userScale: number = 1.0;
-  public userPosition = new THREE.Vector3(0, 0, 0);
+  public userRotation = new THREE.Euler(0, 0, 0);
 
   constructor(scene: THREE.Scene, particleData: ParticleData) {
     this.group = new THREE.Group();
@@ -72,37 +72,28 @@ export class ARParticleSystem {
     this.points = new THREE.Points(this.geometry, this.material);
     this.group.add(this.points);
 
-    // Ajuste de posição padrão: o modelo fica centrado no campo visual
-    this.group.position.set(0, 0, -3.5);
+    // Posicionamento base na parede diante da câmera
+    this.group.position.set(0, 0, -3.2);
   }
 
   private buildGeometry(data: ParticleData): void {
     this.geometry = new THREE.BufferGeometry();
     const count = data.pointCount;
 
-    // 1. Posições iniciais do buffer (começam no plano da parede Z = 0)
     const initialPositions = new Float32Array(count * 3);
     for (let i = 0; i < count * 3; i++) {
       initialPositions[i] = data.wallPositions[i];
     }
     this.geometry.setAttribute('position', new THREE.BufferAttribute(initialPositions, 3));
-
-    // 2. Atributos da parede 2D e do fóssil 3D para interpolação na GPU
     this.geometry.setAttribute('aPosWall', new THREE.BufferAttribute(data.wallPositions, 3));
     this.geometry.setAttribute('aPosSpine', new THREE.BufferAttribute(data.spinePositions, 3));
 
-    // 3. Índice normalizado ao longo da coluna (0 a 1) para onda cinética
     const indices = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      indices[i] = i / count;
-    }
+    for (let i = 0; i < count; i++) indices[i] = i / count;
     this.geometry.setAttribute('aIndex', new THREE.BufferAttribute(indices, 1));
 
-    // 4. Semente pseudo-aleatória por partícula para turbulência e cintilação
     const randoms = new Float32Array(count * 3);
-    for (let i = 0; i < count * 3; i++) {
-      randoms[i] = Math.random();
-    }
+    for (let i = 0; i < count * 3; i++) randoms[i] = Math.random();
     this.geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
   }
 
@@ -139,63 +130,58 @@ export class ARParticleSystem {
         varying float vAlpha;
 
         void main() {
-          // 1. Interpolação suave entre a parede (0.0) e o fóssil 3D (1.0)
-          // Curva cúbica para desaceleração dramática
           float t = smoothstep(0.0, 1.0, uBurstProgress);
           vec3 basePos = mix(aPosWall, aPosSpine, t);
 
-          // 2. O SALTO: impulso hiperbólico no eixo Z que ejeta as partículas da parede
+          // O SALTO: impulso que ejeta as partículas para fora da parede (Z = 0)
+          // e as mantém flutuando à frente no espaço (+Z)
           float leapArc = sin(t * 3.14159265);
-          float forwardBurst = leapArc * (2.4 + aRandom.z * 1.2);
-          basePos.z += forwardBurst;
+          float settleZ = t * 0.75;
+          float forwardBurst = leapArc * (1.6 + aRandom.z * 0.8);
+          basePos.z += settleZ + forwardBurst;
 
-          // 3. REATIVIDADE AO SOM (GRAVES):
-          // Expansão volumétrica radial e empurrão Z com o subwoofer da sala
-          float ribExpansion = 1.0 + (uBass * 0.45 * t);
+          // REATIVIDADE A GRAVES: respiração volumétrica e solavanco de profundidade
+          float ribExpansion = 1.0 + (uBass * 0.28 * t);
           basePos.x *= ribExpansion;
-          basePos.y *= 1.0 + (uBass * 0.25 * t);
-          basePos.z += uBass * 0.7 * t; // O espinhaço avança em direção ao espectador nos graves
+          basePos.y *= 1.0 + (uBass * 0.16 * t);
+          basePos.z += uBass * 0.45 * t;
 
-          // 4. REATIVIDADE AO SOM (MÉDIOS):
-          // Onda senoidal cinética que viaja pela coluna vertebral como um organismo vivo
-          float waveSpeed = uTime * 4.2;
-          float spineWave = sin(waveSpeed + aIndex * 18.0) * (uMid * 0.35 + 0.05) * t;
+          // REATIVIDADE A MÉDIOS: onda cinética que viaja pela coluna vertebral
+          float spineWave = sin(uTime * 3.8 + aIndex * 14.0) * (uMid * 0.22 + 0.03) * t;
           basePos.x += spineWave;
-          basePos.y += cos(waveSpeed * 0.8 + aIndex * 12.0) * (uMid * 0.2) * t;
+          basePos.y += cos(uTime * 3.2 + aIndex * 10.0) * (uMid * 0.14) * t;
 
-          // 5. REATIVIDADE AO SOM (AGUDOS & PICO SÚBITO):
-          // Faíscas estocásticas e dispersão centrífuga
-          if (uTransient > 0.1) {
-            vec3 scatterDir = normalize(aRandom - 0.5);
-            basePos += scatterDir * uTransient * 0.6;
+          // REATIVIDADE A AGUDOS E PICOS (TRANSIENTES):
+          if (uTransient > 0.05) {
+            vec3 scatter = (aRandom - 0.5) * uTransient * 0.5;
+            basePos += scatter;
           }
 
-          // Turbulência sutil nas partículas quando na parede
-          if (uBurstProgress < 0.2) {
-            basePos.x += sin(uTime * 3.0 + aRandom.x * 20.0) * 0.03;
-            basePos.y += cos(uTime * 2.5 + aRandom.y * 20.0) * 0.03;
+          // Turbulência sutil das partículas na parede antes do salto
+          if (uBurstProgress < 0.3) {
+            basePos.x += sin(uTime * 2.5 + aRandom.x * 24.0) * 0.02;
+            basePos.y += cos(uTime * 2.0 + aRandom.y * 24.0) * 0.02;
           }
 
           vec4 mvPosition = modelViewMatrix * vec4(basePos, 1.0);
           gl_Position = projectionMatrix * mvPosition;
 
-          // 6. Tamanho dos pontos ajustado por profundidade, tela e áudio
-          float baseSize = mix(5.5, 7.5, aRandom.x);
-          float soundSparkle = 1.0 + (uTreble * 1.4) + (uBass * 0.6);
-          gl_PointSize = (baseSize * soundSparkle * uPixelRatio) / -mvPosition.z;
-          gl_PointSize = clamp(gl_PointSize, 2.0, 32.0);
+          // Tamanho das partículas calibrado para corpúsculos bioluminescentes delicados
+          float baseSize = mix(2.4, 4.0, aRandom.x);
+          float soundSparkle = 1.0 + (uTreble * 1.5) + (uBass * 0.7);
+          gl_PointSize = clamp((baseSize * soundSparkle * uPixelRatio) / -mvPosition.z, 1.8, 14.0);
 
-          // 7. Gradiente de cor e iluminação bioluminescente
-          float colorBlend = aIndex + (sin(uTime * 2.0 + aIndex * 6.0) * 0.2 * uMid);
+          // Gradiente bioluminescente ao longo das vértebras
+          float colorBlend = aIndex + (sin(uTime * 1.8 + aIndex * 5.0) * 0.18 * uMid);
           vec3 particleColor = mix(uColorPrimary, uColorSecondary, clamp(colorBlend, 0.0, 1.0));
 
-          // Realce de pico de agudos (brilho branco nos pontos)
-          if (aRandom.y > 0.75) {
-            particleColor = mix(particleColor, vec3(1.0, 1.0, 1.0), uTreble * 0.8);
+          // Realce de cintilação branca nos corpúsculos periféricos
+          if (aRandom.y > 0.70) {
+            particleColor = mix(particleColor, vec3(1.0), uTreble * 0.75);
           }
 
           vColor = particleColor;
-          vAlpha = mix(0.55, 0.95, t);
+          vAlpha = mix(0.45, 0.90, t);
         }
       `,
       fragmentShader: `
@@ -203,20 +189,14 @@ export class ARParticleSystem {
         varying float vAlpha;
 
         void main() {
-          // Formato circular com decaimento suave (estilo corpúsculo brilhante)
-          vec2 centerCoord = gl_PointCoord - vec2(0.5);
-          float distSq = dot(centerCoord, centerCoord);
+          vec2 coord = gl_PointCoord - vec2(0.5);
+          float distSq = dot(coord, coord);
+          if (distSq > 0.25) discard;
 
-          if (distSq > 0.25) {
-            discard;
-          }
-
-          // Gradiente radial do centro para a borda
+          // Decaimento suave com núcleo brilhante
           float glow = 1.0 - (distSq * 4.0);
-          glow = pow(glow, 1.5);
-
-          // Centro branco superbrilhante
-          vec3 finalColor = mix(vColor, vec3(1.0), pow(glow, 3.5) * 0.8);
+          glow = pow(glow, 1.6);
+          vec3 finalColor = mix(vColor, vec3(1.0), pow(glow, 4.0) * 0.85);
 
           gl_FragColor = vec4(finalColor, vAlpha * glow);
         }
@@ -239,25 +219,14 @@ export class ARParticleSystem {
     this.activeBiomeIndex = index % BIOMES.length;
   }
 
-  public nextBiome(): void {
-    this.activeBiomeIndex = (this.activeBiomeIndex + 1) % BIOMES.length;
-  }
-
-  public getActiveBiome(): BiomeTheme {
-    return BIOMES[this.activeBiomeIndex];
-  }
-
-  public update(timeSec: number, audio: AudioMetrics, gyroAlpha: number = 0, gyroBeta: number = 0): void {
-    // 1. Transição suave do progresso do salto
-    const burstSpeed = this.targetBurstProgress > this.burstProgress ? 0.035 : 0.08;
+  public update(timeSec: number, audio: AudioMetrics): void {
+    const burstSpeed = this.targetBurstProgress > this.burstProgress ? 0.04 : 0.08;
     this.burstProgress += (this.targetBurstProgress - this.burstProgress) * burstSpeed;
 
-    // 2. Transição suave de cor do bioma
     const targetBiome = BIOMES[this.activeBiomeIndex];
     this.currentPrimary.lerp(targetBiome.primary, 0.08);
     this.currentSecondary.lerp(targetBiome.secondary, 0.08);
 
-    // 3. Atualiza uniforms do Shader
     const u = this.material.uniforms;
     u.uTime.value          = timeSec;
     u.uBurstProgress.value = this.burstProgress;
@@ -268,15 +237,16 @@ export class ARParticleSystem {
     u.uColorPrimary.value  = this.currentPrimary;
     u.uColorSecondary.value= this.currentSecondary;
 
-    // 4. Aplica transformações do usuário e giroscópio (Parallax)
-    this.group.rotation.x = this.userRotation.x + gyroBeta;
-    this.group.rotation.y = this.userRotation.y + gyroAlpha;
+    // Posicionamento ajustável por toque
+    this.group.position.x = this.userOffset.x;
+    this.group.position.y = this.userOffset.y;
+    this.group.position.z = -3.2 + this.userOffset.z;
+
+    this.group.rotation.x = this.userRotation.x;
+    this.group.rotation.y = this.userRotation.y;
     this.group.rotation.z = this.userRotation.z;
 
     this.group.scale.set(this.userScale, this.userScale, this.userScale);
-    this.group.position.x = this.userPosition.x;
-    this.group.position.y = this.userPosition.y;
-    this.group.position.z = this.userPosition.z - 3.5;
   }
 
   public dispose(): void {

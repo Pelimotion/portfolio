@@ -50,9 +50,9 @@ export async function loadEspinhacoParticles(
   const count = spinePositions.length / 3;
   const wallPositions = new Float32Array(count * 3);
 
-  // Dimensões do retângulo da projeção vertical na parede (proporção 9:16)
-  const wallWidth = 4.5;
-  const wallHeight = 8.0;
+  // Dimensões do retângulo da projeção vertical na parede calibradas com a escala do fóssil (9:16)
+  const wallWidth = 1.5;
+  const wallHeight = 2.6;
 
   for (let i = 0; i < count; i++) {
     const idx = i * 3;

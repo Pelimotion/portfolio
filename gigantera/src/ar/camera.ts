@@ -1,29 +1,36 @@
 /**
- * camera.ts — Gerenciamento da Câmera Traseira, Giroscópio (Parallax) e Detecção Óptica
+ * camera.ts — Câmera Traseira Unificada, Rastreamento Espacial por Giroscópio e Âncora AR
  */
 
-export interface GyroState {
-  pitch: number; // Radianos X
-  yaw: number;   // Radianos Y
-  roll: number;  // Radianos Z
-  available: boolean;
+import * as THREE from 'three';
+
+export interface SpatialRotation {
+  pitch: number; // Delta rotação X (rad)
+  yaw: number;   // Delta rotação Y (rad)
+  roll: number;  // Delta rotação Z (rad)
+  isTracking: boolean;
 }
 
 export class CameraManager {
   private videoEl: HTMLVideoElement;
   private visionCanvas: HTMLCanvasElement;
   private visionCtx: CanvasRenderingContext2D | null = null;
-  private stream: MediaStream | null = null;
+  public stream: MediaStream | null = null;
   private wakeLock: any = null;
 
-  public gyro: GyroState = {
+  // Estado do Giroscópio
+  private currentRaw = { alpha: 0, beta: 0, gamma: 0 };
+  private anchorRaw = { alpha: 0, beta: 0, gamma: 0 };
+  private isAnchored: boolean = false;
+  private gyroSupported: boolean = false;
+
+  // Rotação suavizada (LERP)
+  public rotation: SpatialRotation = {
     pitch: 0,
     yaw: 0,
     roll: 0,
-    available: false
+    isTracking: false
   };
-
-  private initialGyro: { pitch: number; yaw: number; roll: number } | null = null;
 
   constructor(videoElement: HTMLVideoElement, visionCanvas: HTMLCanvasElement) {
     this.videoEl = videoElement;
@@ -34,43 +41,44 @@ export class CameraManager {
   }
 
   /**
-   * Inicia o fluxo de vídeo da câmera traseira (environment)
+   * Inicia Câmera Traseira e Microfone em UMA ÚNICA chamada getUserMedia
+   * Isso evita cancelamento mútuo ou erros de permissão duplicada no Android/iOS
    */
-  public async startCamera(): Promise<void> {
+  public async startMedia(): Promise<MediaStream> {
     try {
-      const constraints: MediaStreamConstraints = {
+      this.stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: 'environment' },
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         },
-        audio: false
-      };
-
-      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.videoEl.srcObject = this.stream;
-      await this.videoEl.play();
-
-      // Solicita Screen Wake Lock para impedir que o celular apague a tela na galeria
-      this.requestWakeLock();
-    } catch (err) {
-      console.warn('[CameraManager] Erro ao iniciar câmera traseira:', err);
-      // Fallback para qualquer câmera disponível
+        audio: true
+      });
+    } catch (unifiedErr) {
+      console.warn('[CameraManager] Falha ao capturar vídeo+áudio juntos, tentando vídeo isolado:', unifiedErr);
       try {
-        this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        this.videoEl.srcObject = this.stream;
-        await this.videoEl.play();
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
       } catch (fallbackErr) {
-        console.error('[CameraManager] Falha crítica ao acessar vídeo:', fallbackErr);
-        throw fallbackErr;
+        this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       }
     }
+
+    this.videoEl.srcObject = this.stream;
+    await this.videoEl.play();
+
+    // Mantém a tela ligada durante a visualização na galeria
+    this.requestWakeLock();
+
+    return this.stream;
   }
 
   /**
-   * Solicita permissão do giroscópio (iOS Safari requer requestPermission)
+   * Permissão e escuta de Giroscópio / DeviceOrientation
    */
-  public async requestGyroPermission(): Promise<boolean> {
+  public async initGyro(): Promise<boolean> {
     try {
       if (
         typeof DeviceOrientationEvent !== 'undefined' &&
@@ -78,56 +86,88 @@ export class CameraManager {
       ) {
         const response = await (DeviceOrientationEvent as any).requestPermission();
         if (response === 'granted') {
-          this.bindGyroListener();
+          this.bindGyroEvents();
           return true;
         }
-        return false;
       } else if (typeof window !== 'undefined' && 'ondeviceorientation' in window) {
-        this.bindGyroListener();
+        this.bindGyroEvents();
         return true;
       }
     } catch (e) {
-      console.warn('[CameraManager] Permissão de giroscópio não suportada ou negada:', e);
+      console.warn('[CameraManager] Erro ao registrar giroscópio:', e);
     }
     return false;
   }
 
-  private bindGyroListener(): void {
-    window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
+  private bindGyroEvents(): void {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta === null || e.gamma === null) return;
 
-      const pitchDeg = e.beta;  // [-180, 180]
-      const rollDeg = e.gamma;  // [-90, 90]
-      const yawDeg = e.alpha ?? 0; // [0, 360]
+      this.currentRaw.alpha = e.alpha ?? 0;
+      this.currentRaw.beta  = e.beta;
+      this.currentRaw.gamma = e.gamma;
+      this.gyroSupported = true;
 
-      const pitchRad = (pitchDeg * Math.PI) / 180;
-      const rollRad = (rollDeg * Math.PI) / 180;
-      const yawRad = (yawDeg * Math.PI) / 180;
-
-      if (!this.initialGyro) {
-        this.initialGyro = { pitch: pitchRad, yaw: yawRad, roll: rollRad };
+      // Se ainda não estiver ancorado manualmente, define a pose atual como referência
+      if (!this.isAnchored) {
+        this.anchorRaw = { ...this.currentRaw };
       }
+    };
 
-      // Delta suave a partir da posição inicial
-      const deltaPitch = pitchRad - this.initialGyro.pitch;
-      const deltaRoll = rollRad - this.initialGyro.roll;
-      const deltaYaw = yawRad - this.initialGyro.yaw;
-
-      this.gyro.pitch = deltaPitch * 0.4;
-      this.gyro.roll = deltaRoll * 0.4;
-      this.gyro.yaw = deltaYaw * 0.4;
-      this.gyro.available = true;
-    }, { passive: true });
-  }
-
-  public resetGyroAnchor(): void {
-    this.initialGyro = null;
+    window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+    // Em alguns navegadores Android modernos, deviceorientationabsolute é mais estável
+    window.addEventListener('deviceorientationabsolute' as any, handleOrientation, { passive: true });
   }
 
   /**
-   * Analisador óptico: avalia o centro da imagem para detectar contraste
-   * e intensidade de luz característicos de uma projeção de vídeo na parede.
-   * Retorna um índice de confiança de 0.0 a 1.0.
+   * Trava a âncora espacial na orientação física atual da parede de projeção
+   */
+  public lockSpatialAnchor(): void {
+    this.anchorRaw = { ...this.currentRaw };
+    this.isAnchored = true;
+    this.rotation.pitch = 0;
+    this.rotation.yaw = 0;
+    this.rotation.roll = 0;
+    this.rotation.isTracking = true;
+    console.log('[CameraManager] Âncora espacial travada na parede:', this.anchorRaw);
+  }
+
+  public resetSpatialAnchor(): void {
+    this.anchorRaw = { ...this.currentRaw };
+    this.isAnchored = false;
+    this.rotation.pitch = 0;
+    this.rotation.yaw = 0;
+    this.rotation.roll = 0;
+  }
+
+  /**
+   * Atualiza a rotação relativa a cada frame com suavização LERP
+   */
+  public updateOrientation(): void {
+    if (!this.gyroSupported) return;
+
+    // Diferença angular com tratamento de descontinuidade 0-360° (wrap-around)
+    const degToRad = Math.PI / 180;
+
+    const diffAlpha = (this.currentRaw.alpha - this.anchorRaw.alpha) * degToRad;
+    const diffBeta  = (this.currentRaw.beta - this.anchorRaw.beta) * degToRad;
+    const diffGamma = (this.currentRaw.gamma - this.anchorRaw.gamma) * degToRad;
+
+    // Normaliza delta de yaw no intervalo [-PI, PI]
+    const deltaYaw   = Math.atan2(Math.sin(diffAlpha), Math.cos(diffAlpha));
+    const deltaPitch = diffBeta;
+    const deltaRoll  = diffGamma;
+
+    // Suavização exponencial para filtrar tremulação natural das mãos
+    const lerpFactor = 0.22;
+    this.rotation.pitch += (deltaPitch - this.rotation.pitch) * lerpFactor;
+    this.rotation.yaw   += (deltaYaw - this.rotation.yaw) * lerpFactor;
+    this.rotation.roll  += (deltaRoll - this.rotation.roll) * lerpFactor;
+    this.rotation.isTracking = true;
+  }
+
+  /**
+   * Analisador óptico: detecta luminância e contraste da projeção central
    */
   public analyzeProjectionBeam(): { confidence: number; luminance: number } {
     if (!this.visionCtx || this.videoEl.readyState < 2) {
@@ -138,29 +178,20 @@ export class CameraManager {
     const vh = this.videoEl.videoHeight;
     if (vw === 0 || vh === 0) return { confidence: 0, luminance: 0 };
 
-    // Enquadra o quadrado central 50%
     const cropSize = Math.min(vw, vh) * 0.5;
     const sx = (vw - cropSize) / 2;
     const sy = (vh - cropSize) / 2;
 
-    this.visionCtx.drawImage(
-      this.videoEl,
-      sx, sy, cropSize, cropSize,
-      0, 0, 64, 64
-    );
-
+    this.visionCtx.drawImage(this.videoEl, sx, sy, cropSize, cropSize, 0, 0, 64, 64);
     const imgData = this.visionCtx.getImageData(0, 0, 64, 64).data;
+
     let totalLum = 0;
     let maxLum = 0;
     let minLum = 255;
     const count = 64 * 64;
 
     for (let i = 0; i < imgData.length; i += 4) {
-      const r = imgData[i];
-      const g = imgData[i + 1];
-      const b = imgData[i + 2];
-      // Luminância ITU-R BT.709
-      const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      const lum = 0.2126 * imgData[i] + 0.7152 * imgData[i + 1] + 0.0722 * imgData[i + 2];
       totalLum += lum;
       if (lum > maxLum) maxLum = lum;
       if (lum < minLum) minLum = lum;
@@ -169,15 +200,9 @@ export class CameraManager {
     const avgLum = totalLum / count;
     const contrast = maxLum - minLum;
 
-    // Em ambiente escuro com projeção, a luminância média varia entre 40 e 200,
-    // e o contraste local é significativo (> 70)
     let score = 0;
-    if (avgLum > 35 && avgLum < 235) {
-      score += 0.5;
-    }
-    if (contrast > 60) {
-      score += Math.min((contrast - 60) / 100, 0.5);
-    }
+    if (avgLum > 30 && avgLum < 240) score += 0.5;
+    if (contrast > 50) score += Math.min((contrast - 50) / 100, 0.5);
 
     return {
       confidence: Math.min(Math.max(score, 0), 1),
@@ -190,8 +215,8 @@ export class CameraManager {
       if ('wakeLock' in navigator) {
         this.wakeLock = await (navigator as any).wakeLock.request('screen');
       }
-    } catch (e) {
-      console.warn('[CameraManager] WakeLock não disponível:', e);
+    } catch {
+      // Ignore
     }
   }
 

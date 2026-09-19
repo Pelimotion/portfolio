@@ -40,6 +40,7 @@ html, body {
 .ar-body {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   position: fixed;
   top: 0;
   left: 0;
@@ -50,6 +51,7 @@ html, body {
   position: relative;
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -93,12 +95,13 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
+  height: 100dvh;
   z-index: 10;
   pointer-events: none; /* Deixa toques passarem para o 3D por padrão */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: calc(var(--safe-top) + 14px) calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 16px) calc(var(--safe-left) + 16px);
+  padding: calc(var(--safe-top) + 12px) calc(var(--safe-right) + 14px) calc(var(--safe-bottom) + 20px) calc(var(--safe-left) + 14px);
 }
 
 /* ELEMENTOS INTERATIVOS NO HUD RECEBEM POINTER-EVENTS */
@@ -206,16 +209,16 @@ html, body {
 /* RETÍCULO CENTRAL DE ENQUADRAMENTO DA PROJEÇÃO (9:16 VERTICAL) */
 .hud-target-reticle {
   position: absolute;
-  top: 46%;
+  top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: min(70vw, 270px);
-  height: min(124vw, 480px); /* Proporção 9:16 da projeção na parede */
+  width: min(65vw, 240px);
+  height: min(115vw, 426px); /* Proporção 9:16 da projeção na parede */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: 16px;
+  padding-bottom: 14px;
   transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -425,6 +428,7 @@ html, body {
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  margin-bottom: calc(var(--safe-bottom) + 14px);
 }
 
 .biome-selector-bar {
