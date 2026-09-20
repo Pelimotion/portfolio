@@ -21,6 +21,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { useAppStore } from '../../core/store';
 import { soundEngine } from '../../core/soundEngine';
+import { FloatingMiniPlayer } from '../ui/FloatingMiniPlayer';
+import { DJFilterKnob } from '../ui/DJFilterKnob';
 
 // ---------------------------------------------------------------------------
 // Types & Biomes
@@ -83,6 +85,8 @@ const particleVertexShader = `
   uniform float uMid;
   uniform float uTreble;
   uniform float uTransient;
+  uniform float uDJFilter;
+  uniform vec2  uKeyFlex;
   uniform vec3  uColorPrimary;
   uniform vec3  uColorSecondary;
   uniform float uPixelRatio;
@@ -94,8 +98,16 @@ const particleVertexShader = `
   void main() {
     vec3 pos = position;
 
-    // Respiração e expansão volumétrica das vértebras com sub-graves
-    float ribExpand = 1.0 + (uBass * 0.18);
+    // Modulação pelo Filtro DJ:
+    // uDJFilter < 0 (Submerso): comprime as partículas com viscosidade aquática densa
+    // uDJFilter > 0 (Rarefeito): expande levemente as partículas em dispersão cristalina
+    float filterExpand = 1.0 + max(0.0, uDJFilter) * 0.35;
+    float filterCompress = 1.0 - max(0.0, -uDJFilter) * 0.22;
+    pos.xz *= (filterExpand * filterCompress);
+
+    // Respiração e expansão volumétrica das vértebras com sub-graves (reforçado no low-pass)
+    float bassMultiplier = 1.0 + max(0.0, -uDJFilter) * 1.5;
+    float ribExpand = 1.0 + (uBass * 0.18 * bassMultiplier);
     pos.x *= ribExpand;
     pos.z *= ribExpand;
 
@@ -104,6 +116,19 @@ const particleVertexShader = `
     float spineWaveZ = cos(uTime * 2.2 + pos.y * 3.0) * (uMid * 0.06 + 0.012);
     pos.x += spineWaveX;
     pos.z += spineWaveZ;
+
+    // Deformação da Coluna por Teclado Orgânico (Flexão Anteroposterior & Torção Axial)
+    float spineDist = clamp((pos.y + 1.1) / 2.2, 0.0, 1.0);
+    float flexX = uKeyFlex.x * spineDist * spineDist * 0.55;
+    pos.x += flexX;
+    
+    float torsionAngle = uKeyFlex.y * spineDist * 0.65;
+    float cosT = cos(torsionAngle);
+    float sinT = sin(torsionAngle);
+    float tx = pos.x * cosT - pos.z * sinT;
+    float tz = pos.x * sinT + pos.z * cosT;
+    pos.x = tx;
+    pos.z = tz;
 
     // Dispersão quântica transitória em picos sonoros ou cliques
     if (uTransient > 0.02) {
@@ -116,9 +141,10 @@ const particleVertexShader = `
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    // Tamanho com escala de proximidade e cintilação de agudos
+    // Tamanho com escala de proximidade e cintilação de agudos (turbinada com High-Pass)
     float baseSize = mix(2.2, 4.2, aRandom.x);
-    float sparkle = 1.0 + (uTreble * 1.6) + (uBass * 0.5);
+    float trebleBoost = 1.0 + max(0.0, uDJFilter) * 2.0;
+    float sparkle = 1.0 + (uTreble * 1.6 * trebleBoost) + (uBass * 0.5 * bassMultiplier);
     gl_PointSize = clamp((baseSize * sparkle * uPixelRatio) / -mvPosition.z, 1.5, 12.0);
 
     // Gradiente bioluminescente baseado na posição vertical da vértebra
@@ -127,7 +153,7 @@ const particleVertexShader = `
 
     // Cintilação nos corpúsculos periféricos
     if (aRandom.y > 0.75) {
-      col = mix(col, vec3(1.0), uTreble * 0.8);
+      col = mix(col, vec3(1.0), uTreble * 0.8 * trebleBoost);
     }
 
     vColor = col;
@@ -157,6 +183,16 @@ export const EspinhacoInteractive: React.FC = () => {
   const theme = useAppStore((s) => s.theme);
   const isDark = theme === 'dark';
 
+  const graphicsQuality = useAppStore((s) => s.graphicsQuality);
+  const setGraphicsQuality = useAppStore((s) => s.setGraphicsQuality);
+  const djFilterValue = useAppStore((s) => s.djFilterValue);
+  const stepDJFilter = useAppStore((s) => s.stepDJFilter);
+  const resetDJFilter = useAppStore((s) => s.resetDJFilter);
+  const espinhacoInteractionMode = useAppStore((s) => s.espinhacoInteractionMode);
+  const setEspinhacoInteractionMode = useAppStore((s) => s.setEspinhacoInteractionMode);
+  const toggleEspinhacoInteractionMode = useAppStore((s) => s.toggleEspinhacoInteractionMode);
+  const takeCD = useAppStore((s) => s.takeCD);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -167,6 +203,10 @@ export const EspinhacoInteractive: React.FC = () => {
   const [loadProgress, setLoadProgress] = useState(0);
   const [loadMessage, setLoadMessage] = useState('Carregando geometria original…');
   const [showHUD, setShowHUD] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(true);
+
+  // Deformação da coluna vertebral pelo teclado
+  const keyFlexRef = useRef({ flexX: 0, flexY: 0, targetFlexX: 0, targetFlexY: 0 });
 
   // Telemetria em tempo real para o HUD
   const [hudStats, setHudStats] = useState({
@@ -331,9 +371,11 @@ export const EspinhacoInteractive: React.FC = () => {
             uMid: { value: 0 },
             uTreble: { value: 0 },
             uTransient: { value: 0 },
+            uDJFilter: { value: djFilterValue },
+            uKeyFlex: { value: new THREE.Vector2(0, 0) },
             uColorPrimary: { value: activeBiome.primary },
             uColorSecondary: { value: activeBiome.secondary },
-            uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 2) },
+            uPixelRatio: { value: graphicsQuality === 'light' ? 1.0 : graphicsQuality === 'med' ? 1.25 : Math.min(window.devicePixelRatio || 1, 2) },
             uAlpha: { value: 0.95 }
           },
           vertexShader: particleVertexShader,
@@ -491,8 +533,24 @@ export const EspinhacoInteractive: React.FC = () => {
         u.uMid.value = mid;
         u.uTreble.value = treble;
         u.uTransient.value = transientRef.current;
+        u.uDJFilter.value = useAppStore.getState().djFilterValue;
         u.uColorPrimary.value = activeBiome.primary;
         u.uColorSecondary.value = activeBiome.secondary;
+
+        // Amortecimento suave das forças cinéticas do teclado
+        keyFlexRef.current.flexX += (keyFlexRef.current.targetFlexX - keyFlexRef.current.flexX) * 0.12;
+        keyFlexRef.current.flexY += (keyFlexRef.current.targetFlexY - keyFlexRef.current.flexY) * 0.12;
+        keyFlexRef.current.targetFlexX *= 0.92;
+        keyFlexRef.current.targetFlexY *= 0.92;
+        u.uKeyFlex.value.set(keyFlexRef.current.flexX, keyFlexRef.current.flexY);
+      }
+
+      // Draw range adaptativo conforme a qualidade gráfica
+      if (particlePointsRef.current) {
+        const q = useAppStore.getState().graphicsQuality;
+        const total = 50000;
+        const count = q === 'light' ? 14000 : q === 'med' ? 32000 : total;
+        particlePointsRef.current.geometry.setDrawRange(0, count);
       }
 
       // 3. INÉRCIA ORBITAL & ROTAÇÃO MAJESTOSA
@@ -510,8 +568,10 @@ export const EspinhacoInteractive: React.FC = () => {
       rotVelocityRef.current.x *= 0.90;
       rotVelocityRef.current.y *= 0.90;
 
+      // Grupo da escultura: responde à órbita + torção vertebral do teclado
       group.rotation.y += (targetRotRef.current.y - group.rotation.y) * 0.08;
-      group.rotation.x += (targetRotRef.current.x - group.rotation.x) * 0.08;
+      group.rotation.x += (targetRotRef.current.x + keyFlexRef.current.flexY * 0.25 - group.rotation.x) * 0.08;
+      group.rotation.z += (keyFlexRef.current.flexX * 0.25 - group.rotation.z) * 0.08;
 
       // Respiração volumétrica sutil com os graves
       const pulseScale = 1.0 + Math.sin(t * 1.5) * 0.012 + bass * 0.035;
@@ -715,24 +775,90 @@ export const EspinhacoInteractive: React.FC = () => {
     triggerHaptic(10);
   };
 
-  // Teclas de atalho
+  // Teclas de atalho completas
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') return;
+
+      const currentMode = useAppStore.getState().espinhacoInteractionMode;
+
       if (e.key === '1') handleSetMode('pbr');
       else if (e.key === '2') handleSetMode('particles');
       else if (e.key === '3') handleSetMode('wireframe');
       else if (e.key === 'b' || e.key === 'B') {
         setActiveBiomeIndex((idx) => (idx + 1) % BIOMES.length);
+        soundEngine.playTactileHoverTick();
+        triggerHaptic(10);
+      } else if (e.key === 'c' || e.key === 'C') {
+        setEspinhacoInteractionMode('camera');
+        soundEngine.playTactileHoverTick();
+        triggerHaptic(12);
+      } else if (e.key === 'k' || e.key === 'K') {
+        setEspinhacoInteractionMode('keyboard');
+        soundEngine.playTactileHoverTick();
+        triggerHaptic(12);
+      } else if (e.key === '[' || e.key === 'o' || e.key === 'O') {
+        e.preventDefault();
+        stepDJFilter(-1);
+        soundEngine.playTactileHoverTick();
+      } else if (e.key === ']' || e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        stepDJFilter(1);
+        soundEngine.playTactileHoverTick();
+      } else if (e.key === '0') {
+        e.preventDefault();
+        resetDJFilter();
+        soundEngine.playTactileHoverTick();
+      } else if (e.key === 'g' || e.key === 'G') {
+        e.preventDefault();
+        const curQ = useAppStore.getState().graphicsQuality;
+        const nextQ = curQ === 'high' ? 'med' : curQ === 'med' ? 'light' : 'high';
+        setGraphicsQuality(nextQ);
+        soundEngine.playTactileHoverTick();
+      } else if (e.key === 'h' || e.key === 'H' || e.key === '?') {
+        e.preventDefault();
+        setShowTutorial((prev) => !prev);
+        soundEngine.playTactileHoverTick();
       } else if (e.key === 'r' || e.key === 'R') {
         handleResetCamera();
       } else if (e.code === 'Space') {
         e.preventDefault();
         triggerShockPulse();
+      } else if (currentMode === 'keyboard') {
+        // MODO TECLADO: Curvatura e torção vertebral orgânica direta
+        if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
+          keyFlexRef.current.targetFlexX = Math.max(-1.5, keyFlexRef.current.targetFlexX - 0.25);
+          lastInteractionTimeRef.current = Date.now();
+        } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
+          keyFlexRef.current.targetFlexX = Math.min(1.5, keyFlexRef.current.targetFlexX + 0.25);
+          lastInteractionTimeRef.current = Date.now();
+        } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
+          keyFlexRef.current.targetFlexY = Math.max(-1.5, keyFlexRef.current.targetFlexY - 0.25);
+          lastInteractionTimeRef.current = Date.now();
+        } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
+          keyFlexRef.current.targetFlexY = Math.min(1.5, keyFlexRef.current.targetFlexY + 0.25);
+          lastInteractionTimeRef.current = Date.now();
+        }
+      } else if (currentMode === 'camera') {
+        // MODO CÂMERA: Rotação orbital pelas teclas
+        if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
+          targetRotRef.current.x = Math.max(-0.85, targetRotRef.current.x - 0.06);
+          lastInteractionTimeRef.current = Date.now();
+        } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
+          targetRotRef.current.x = Math.min(0.85, targetRotRef.current.x + 0.06);
+          lastInteractionTimeRef.current = Date.now();
+        } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
+          targetRotRef.current.y -= 0.08;
+          lastInteractionTimeRef.current = Date.now();
+        } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
+          targetRotRef.current.y += 0.08;
+          lastInteractionTimeRef.current = Date.now();
+        }
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [stepDJFilter, resetDJFilter, setGraphicsQuality, setEspinhacoInteractionMode]);
 
   const accentColor = activeBiome.hex;
   const fgColor = isDark ? '#c8cfc8' : '#2a3028';
@@ -813,46 +939,123 @@ export const EspinhacoInteractive: React.FC = () => {
         </div>
       )}
 
-      {/* HUD Telemetria Brutalista — Canto Superior Esquerdo */}
-      {showHUD && (
-        <aside
-          style={{
-            position: 'absolute',
-            top: 24,
-            left: 24,
-            zIndex: 20,
-            fontFamily: '"Space Mono", monospace',
-            fontSize: 11,
-            lineHeight: 1.6,
-            color: fgColor,
-            letterSpacing: '0.06em',
-            background: isDark ? 'rgba(8,12,14,0.72)' : 'rgba(245,247,250,0.78)',
-            backdropFilter: 'blur(10px)',
-            padding: '14px 18px',
-            borderRadius: '4px',
-            border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
-            maxWidth: '310px',
-            pointerEvents: 'auto'
-          }}
-          aria-label="Telemetria da Escultura 3D"
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+      {/* ─── MINI-TUTORIAL TÁTICO DE ONBOARDING (HUD APARANTE) ─── */}
+      <aside
+        style={{
+          position: 'absolute',
+          top: 24,
+          left: 24,
+          zIndex: 25,
+          fontFamily: '"Space Mono", monospace',
+          color: fgColor,
+          background: isDark ? 'rgba(8,12,14,0.88)' : 'rgba(245,247,250,0.92)',
+          backdropFilter: 'blur(16px)',
+          border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.12)',
+          borderRadius: 8,
+          padding: showTutorial ? '14px 18px' : '6px 12px',
+          maxWidth: showTutorial ? 320 : 'auto',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          transition: 'all 0.25s ease-out',
+          userSelect: 'none'
+        }}
+        aria-label="Tutorial do Espinhaço"
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ color: accentColor, fontWeight: 'bold', fontSize: 11 }}>
               ESPINHAÇO // 2026
             </span>
             <span style={{ fontSize: 9, opacity: 0.5 }}>PELIMOTION</span>
           </div>
-          <div style={{ fontSize: 10, opacity: 0.75, marginBottom: 8 }}>
-            ESCULTURA DIGITAL INTERATIVA
-          </div>
 
-          <div style={{ opacity: 0.35, margin: '6px 0' }}>────────────────────────────</div>
+          <button
+            type="button"
+            onClick={() => setShowTutorial(!showTutorial)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: isDark ? '#94a3b8' : '#64748b',
+              cursor: 'pointer',
+              fontSize: 10,
+              fontFamily: 'inherit',
+              padding: 0
+            }}
+            title={showTutorial ? 'Recolher dicas [H]' : 'Ver dicas de controle [H]'}
+          >
+            {showTutorial ? '✕ RECOLHER' : '[?] CONTROLES'}
+          </button>
+        </div>
 
-          {/* Modos de Visão Curatorial */}
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 9, opacity: 0.6, marginBottom: 4 }}>MODO DE VISÃO:</div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {(['pbr', 'particles', 'wireframe'] as RenderMode[]).map((mode) => (
+        {showTutorial && (
+          <div style={{ marginTop: 10, fontSize: 10, lineHeight: 1.6 }}>
+            <div style={{ fontSize: 9, opacity: 0.6, marginBottom: 4 }}>DUALIDADE INTERATIVA:</div>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+              <button
+                type="button"
+                onClick={() => setEspinhacoInteractionMode('camera')}
+                style={{
+                  background: espinhacoInteractionMode === 'camera' ? accentColor : 'transparent',
+                  color: espinhacoInteractionMode === 'camera' ? (isDark ? '#080c0e' : '#ffffff') : fgColor,
+                  border: `1px solid ${espinhacoInteractionMode === 'camera' ? accentColor : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'}`,
+                  padding: '3px 8px',
+                  fontSize: 9,
+                  fontFamily: 'inherit',
+                  borderRadius: 3,
+                  cursor: 'pointer'
+                }}
+              >
+                [C] ÓRBITA 360°
+              </button>
+              <button
+                type="button"
+                onClick={() => setEspinhacoInteractionMode('keyboard')}
+                style={{
+                  background: espinhacoInteractionMode === 'keyboard' ? accentColor : 'transparent',
+                  color: espinhacoInteractionMode === 'keyboard' ? (isDark ? '#080c0e' : '#ffffff') : fgColor,
+                  border: `1px solid ${espinhacoInteractionMode === 'keyboard' ? accentColor : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'}`,
+                  padding: '3px 8px',
+                  fontSize: 9,
+                  fontFamily: 'inherit',
+                  borderRadius: 3,
+                  cursor: 'pointer'
+                }}
+              >
+                [K] TECLADO ORGÂNICO
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '3px 0' }}>
+              <span style={{ opacity: 0.7 }}>
+                {espinhacoInteractionMode === 'keyboard' ? 'CURVATURA VÉRTEBRAS' : 'GIRAR CÂMERA'}
+              </span>
+              <span style={{ display: 'inline-flex', gap: 2 }}>
+                <kbd className="keycap keycap-xs">W</kbd>
+                <kbd className="keycap keycap-xs">A</kbd>
+                <kbd className="keycap keycap-xs">S</kbd>
+                <kbd className="keycap keycap-xs">D</kbd>
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '3px 0' }}>
+              <span style={{ opacity: 0.7 }}>PULSO CINÉTICO</span>
+              <kbd className="keycap keycap-xs">ESPAÇO</kbd>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '3px 0' }}>
+              <span style={{ color: isDark ? '#4deeea' : '#0284c7', fontWeight: 600 }}>FILTRO DJ</span>
+              <span style={{ display: 'inline-flex', gap: 2 }}>
+                <kbd className="keycap keycap-xs">[</kbd>
+                <kbd className="keycap keycap-xs">]</kbd>
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '3px 0' }}>
+              <span style={{ opacity: 0.7 }}>QUALIDADE GRÁFICA</span>
+              <kbd className="keycap keycap-xs">G</kbd>
+            </div>
+
+            <div style={{ opacity: 0.35, margin: '6px 0' }}>────────────────────────────</div>
+
+            {/* Modos de Visão */}
+            <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
+              {(['pbr', 'particles', 'wireframe'] as RenderMode[]).map((mode, i) => (
                 <button
                   key={mode}
                   type="button"
@@ -861,89 +1064,50 @@ export const EspinhacoInteractive: React.FC = () => {
                     background: renderMode === mode ? accentColor : 'transparent',
                     color: renderMode === mode ? (isDark ? '#080c0e' : '#ffffff') : fgColor,
                     border: `1px solid ${renderMode === mode ? accentColor : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'}`,
-                    padding: '3px 8px',
-                    fontSize: 9,
+                    padding: '2px 5px',
+                    fontSize: 8,
                     fontFamily: 'inherit',
                     borderRadius: 3,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    cursor: 'pointer'
                   }}
                 >
-                  {mode === 'pbr' ? 'MATÉRIA' : mode === 'particles' ? 'CORPÚSCULOS' : 'RAIO-X'}
+                  {`[${i + 1}] `}{mode === 'pbr' ? 'MATÉRIA' : mode === 'particles' ? 'PONTOS' : 'RAIO-X'}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Seleção de Biomas */}
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 9, opacity: 0.6, marginBottom: 4 }}>BIOMA CROMÁTICO:</div>
-            <div style={{ display: 'flex', gap: 5 }}>
+            {/* Biomas */}
+            <div style={{ display: 'flex', gap: 4 }}>
               {BIOMES.map((b, idx) => (
                 <button
                   key={b.id}
                   type="button"
                   onClick={() => handleSelectBiome(idx)}
-                  title={`Ativar bioma ${b.name}`}
+                  title={`Bioma ${b.name} [B]`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 4,
+                    gap: 3,
                     background: activeBiomeIndex === idx ? 'rgba(255,255,255,0.08)' : 'transparent',
                     border: `1px solid ${activeBiomeIndex === idx ? b.hex : isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                    padding: '2px 6px',
-                    fontSize: 9,
+                    padding: '2px 5px',
+                    fontSize: 8,
                     fontFamily: 'inherit',
                     borderRadius: 3,
                     color: activeBiomeIndex === idx ? b.hex : fgColor,
                     cursor: 'pointer'
                   }}
                 >
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: b.hex }} />
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: b.hex }} />
                   {b.name}
                 </button>
               ))}
             </div>
           </div>
+        )}
+      </aside>
 
-          <div style={{ opacity: 0.35, margin: '6px 0' }}>────────────────────────────</div>
-
-          {/* Dados Técnicos em Tempo Real */}
-          <div>ROTAÇÃO 3D&nbsp;&nbsp; {hudStats.rotX}° / {hudStats.rotY}°</div>
-          <div>PROXIMIDADE&nbsp; {hudStats.zoom} m</div>
-          <div>ENERGIA FFT&nbsp; {hudStats.fftLevel}%</div>
-          <div>TOPOLOGIA&nbsp;&nbsp;&nbsp; 50K CORPÚSCULOS // PBR</div>
-
-          <div style={{ opacity: 0.35, margin: '6px 0' }}>────────────────────────────</div>
-
-          {/* Instruções Táteis */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, opacity: 0.65 }}>
-            <span>[ARRASTAR] GIRAR 360°</span>
-            <span>[SCROLL] ZOOM</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, opacity: 0.65, marginTop: 2 }}>
-            <span>[2× CLIQUE] PULSO</span>
-            <button
-              type="button"
-              onClick={handleResetCamera}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: accentColor,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                fontSize: 9,
-                padding: 0,
-                textDecoration: 'underline'
-              }}
-            >
-              [R] RECENTRALIZAR
-            </button>
-          </div>
-        </aside>
-      )}
-
-      {/* Floating Mode Toggle Pill (Centro Superior) */}
+      {/* ─── BARRA SUPERIOR: MINIPLAYER DE ÁUDIO CO-REATIVO + SELETOR DE MODOS ─── */}
       <div
         style={{
           position: 'absolute',
@@ -952,35 +1116,72 @@ export const EspinhacoInteractive: React.FC = () => {
           transform: 'translateX(-50%)',
           zIndex: 20,
           display: 'flex',
-          gap: 6,
-          background: isDark ? 'rgba(8,12,14,0.65)' : 'rgba(245,247,250,0.72)',
-          backdropFilter: 'blur(8px)',
-          padding: '4px 8px',
-          borderRadius: 20,
-          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
+          alignItems: 'center',
+          gap: 12
         }}
       >
-        {(['pbr', 'particles', 'wireframe'] as RenderMode[]).map((mode, i) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => handleSetMode(mode)}
-            style={{
-              background: renderMode === mode ? accentColor : 'transparent',
-              color: renderMode === mode ? (isDark ? '#080c0e' : '#ffffff') : (isDark ? '#cbd5e1' : '#475569'),
-              border: 'none',
-              borderRadius: 14,
-              padding: '4px 12px',
-              fontFamily: '"Space Mono", monospace',
-              fontSize: 10,
-              fontWeight: renderMode === mode ? 700 : 400,
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            {`0${i + 1} · `}{mode === 'pbr' ? 'MATÉRIA' : mode === 'particles' ? 'CORPÚSCULOS' : 'RAIO-X'}
-          </button>
-        ))}
+        {/* Miniplayer de Áudio Flutuante */}
+        <FloatingMiniPlayer onOpenCD={takeCD} />
+
+        {/* Pílula de Fidelidade Gráfica */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 3,
+            background: isDark ? 'rgba(8,12,14,0.72)' : 'rgba(245,247,250,0.78)',
+            backdropFilter: 'blur(10px)',
+            padding: '4px 8px',
+            borderRadius: 20,
+            border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+            fontFamily: '"Space Mono", monospace'
+          }}
+          title="Fidelidade gráfica (G)"
+        >
+          {(['light', 'med', 'high'] as const).map((q) => (
+            <button
+              key={q}
+              type="button"
+              onClick={() => setGraphicsQuality(q)}
+              style={{
+                background: graphicsQuality === q ? accentColor : 'transparent',
+                color: graphicsQuality === q ? (isDark ? '#080c0e' : '#ffffff') : fgColor,
+                border: 'none',
+                borderRadius: 12,
+                padding: '2px 6px',
+                fontSize: 8,
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              {q === 'light' ? 'LEVE' : q === 'med' ? 'MÉD' : 'ALTO'}
+            </button>
+          ))}
+          <kbd className="keycap keycap-xs" style={{ fontSize: 8, padding: '0 3px' }}>G</kbd>
+        </div>
+      </div>
+
+      {/* ─── TELEMETRIA BRUTALISTA DE CANTO INFERIOR ESQUERDO ─── */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 24,
+          left: 24,
+          zIndex: 20,
+          fontFamily: '"Space Mono", monospace',
+          fontSize: 10,
+          lineHeight: 1.6,
+          color: fgColor,
+          opacity: 0.75,
+          pointerEvents: 'none'
+        }}
+      >
+        <div>ROTAÇÃO 3D&nbsp;&nbsp; {hudStats.rotX}° / {hudStats.rotY}°</div>
+        <div>PROXIMIDADE&nbsp; {hudStats.zoom} m</div>
+        <div>ENERGIA FFT&nbsp; {hudStats.fftLevel}%</div>
+        <div>
+          MODO ATIVO&nbsp;&nbsp; {espinhacoInteractionMode === 'keyboard' ? 'TECLADO ORGÂNICO' : 'ÓRBITA 360°'}
+        </div>
       </div>
     </div>
   );

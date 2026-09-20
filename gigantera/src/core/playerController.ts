@@ -83,7 +83,7 @@ export class PlayerController {
   public onResetStillZoom?: () => void;
   public onToggleVideoAudio?: () => void;
   public onTouchTap?: (clientX: number, clientY: number) => void;
-  public onSectorSelect?: (sectorNum: 1 | 2 | 3) => void;
+  public onSectorSelect?: (sectorNum: 1 | 2 | 3 | 4) => void;
 
   public isHoldingCD: boolean = false;
   public isCinemaActive: boolean = false;
@@ -367,6 +367,27 @@ export class PlayerController {
       case 'Numpad3':
         if (!this.isCinemaActive && !this.isHoldingCD) {
           if (this.onSectorSelect) this.onSectorSelect(3);
+        }
+        break;
+      case 'Digit4':
+      case 'Numpad4':
+        if (!this.isCinemaActive && !this.isHoldingCD) {
+          if (this.onSectorSelect) this.onSectorSelect(4);
+        }
+        break;
+      case 'BracketLeft':
+        useAppStore.getState().stepDJFilter(-1);
+        soundEngine.playTactileHoverTick();
+        break;
+      case 'BracketRight':
+        useAppStore.getState().stepDJFilter(1);
+        soundEngine.playTactileHoverTick();
+        break;
+      case 'Digit0':
+      case 'Numpad0':
+        if (!this.isCinemaActive && !this.isHoldingCD) {
+          useAppStore.getState().resetDJFilter();
+          soundEngine.playTactileHoverTick();
         }
         break;
       case 'Escape':

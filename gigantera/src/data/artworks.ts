@@ -7,21 +7,30 @@ export const SECTORS_CATALOG: SectorInfo[] = [
     title: 'SOM // ESTAÇÃO DE CD',
     medium: 'sound',
     zRange: 'Z: +24m → +18m',
-    description: 'Estação física de áudio logo na entrada. Pegue o estojo acrílico de CD e folheie a contracapa com 17 faixas autorais.',
+    description: 'Estação física de áudio logo na entrada. Pegue o estojo acrílico de CD, regule o filtro e folheie 17 faixas autorais.',
     accentColor: '#FF6B4A'
   },
   {
-    id: 'video',
+    id: 'interactive',
     sectorCode: '02',
+    title: 'ESPINHAÇO // ESCULTURA INTERATIVA',
+    medium: 'interactive',
+    zRange: 'Z: +17m → +11m',
+    description: 'Fóssil vivente no átrio monumental. Vivencie a peça em tempo real com controle por teclado ou órbita 360° da câmera.',
+    accentColor: '#4DEEEA'
+  },
+  {
+    id: 'video',
+    sectorCode: '03',
     title: 'VÍDEOS // CINÉTICA & MOTION',
     medium: 'video',
-    zRange: 'Z: +15m → -14m',
+    zRange: 'Z: +10m → -14m',
     description: 'Vitrines cinéticas onde os impressos ganham vida em loops animados contínuos em tempo real.',
     accentColor: '#63E2B7'
   },
   {
     id: 'still',
-    sectorCode: '03',
+    sectorCode: '04',
     title: 'STILLS // MATRIZ & ESCULTURA',
     medium: 'still',
     zRange: 'Z: -18m → -50m',

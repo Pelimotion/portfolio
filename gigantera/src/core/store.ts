@@ -3,6 +3,7 @@ import { Artwork, AudioTrackInfo, ThemeMode, ViewMode, MediumType } from '../typ
 import { ARTWORKS_CATALOG, AUTHORIAL_TRACKS_CATALOG, SECTORS_CATALOG } from '../data/artworks';
 import { applyThemeTokens, TOKENS } from '../tokens';
 import { computeModularGalleryLayout } from './modularGallery';
+import { soundEngine } from './soundEngine';
 
 interface AppState {
   // Tema & Visualização
@@ -34,6 +35,24 @@ interface AppState {
   isAudioPlaying: boolean;
   isGlobalMuted: boolean;
   soundVolume: number;
+
+  // Filtro DJ Bipolar Ressonante (-1.0 Submerso a +1.0 Rarefeito)
+  djFilterValue: number;
+  setDJFilterValue: (val: number) => void;
+  stepDJFilter: (direction: -1 | 1, step?: number) => void;
+  resetDJFilter: () => void;
+
+  // Modos de Interação com a Obra Espinhaço (Câmera 360° vs Teclado Orgânico)
+  espinhacoInteractionMode: 'camera' | 'keyboard';
+  setEspinhacoInteractionMode: (mode: 'camera' | 'keyboard') => void;
+  toggleEspinhacoInteractionMode: () => void;
+  espinhacoKineticParams: {
+    flexX: number;
+    flexY: number;
+    torsion: number;
+    waveSpeed: number;
+  };
+  setEspinhacoKineticParams: (params: Partial<{ flexX: number; flexY: number; torsion: number; waveSpeed: number }>) => void;
 
   // Fidelidade Gráfica Moderna (Baixo / Médio / Alto)
   graphicsQuality: 'light' | 'med' | 'high';
@@ -207,6 +226,40 @@ export const useAppStore = create<AppState>((set, get) => ({
   isGlobalMuted: false,
   soundVolume: 0.85,
 
+  djFilterValue: 0,
+  setDJFilterValue: (val) => {
+    const clamped = Math.max(-1.0, Math.min(1.0, val));
+    soundEngine.setDJFilter(clamped);
+    set({ djFilterValue: clamped });
+  },
+  stepDJFilter: (direction, step = 0.08) => {
+    const current = get().djFilterValue;
+    const next = Math.max(-1.0, Math.min(1.0, current + direction * step));
+    soundEngine.setDJFilter(next);
+    set({ djFilterValue: next });
+  },
+  resetDJFilter: () => {
+    soundEngine.setDJFilter(0);
+    set({ djFilterValue: 0 });
+  },
+
+  espinhacoInteractionMode: 'camera',
+  setEspinhacoInteractionMode: (mode) => set({ espinhacoInteractionMode: mode }),
+  toggleEspinhacoInteractionMode: () =>
+    set((s) => ({
+      espinhacoInteractionMode: s.espinhacoInteractionMode === 'camera' ? 'keyboard' : 'camera'
+    })),
+  espinhacoKineticParams: {
+    flexX: 0,
+    flexY: 0,
+    torsion: 0,
+    waveSpeed: 1.0
+  },
+  setEspinhacoKineticParams: (params) =>
+    set((s) => ({
+      espinhacoKineticParams: { ...s.espinhacoKineticParams, ...params }
+    })),
+
   graphicsQuality: 'high',
   setGraphicsQuality: (quality) => set({ graphicsQuality: quality }),
   currentFps: 60,
@@ -360,8 +413,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     let sectorId = 'entrance-audio';
     if (clamped < -16) {
       sectorId = 'still';
-    } else if (clamped < 16) {
+    } else if (clamped < 11) {
       sectorId = 'video';
+    } else if (clamped < 17.5) {
+      sectorId = 'interactive';
+    } else {
+      sectorId = 'entrance-audio';
     }
 
     set({ cameraTargetZ: clamped, activeSectorId: sectorId });
@@ -371,8 +428,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     let sectorId = 'entrance-audio';
     if (currentZ < -16) {
       sectorId = 'still';
-    } else if (currentZ < 16) {
+    } else if (currentZ < 11) {
       sectorId = 'video';
+    } else if (currentZ < 17.5) {
+      sectorId = 'interactive';
+    } else {
+      sectorId = 'entrance-audio';
     }
 
     if (sectorId !== get().activeSectorId) {
@@ -400,6 +461,27 @@ export const useAppStore = create<AppState>((set, get) => ({
       });
       get().setCameraTargetZ(targetSpot.z);
       return;
+    }
+
+    if (sectorId === 'interactive') {
+      const interactiveArt = layout.artworksWithCoords.find((a) => a.medium === 'interactive');
+      if (interactiveArt) {
+        const dx = interactiveArt.computedCoords.x - interactiveArt.viewingSpot.x;
+        const dz = interactiveArt.computedCoords.z - interactiveArt.viewingSpot.z;
+        const targetYaw = Math.atan2(-dx, -dz);
+        set({
+          activeSectorId: sectorId,
+          hasPlayerMoved: true,
+          targetGlideSpot: {
+            x: interactiveArt.viewingSpot.x,
+            z: interactiveArt.viewingSpot.z,
+            targetYaw,
+            artworkId: interactiveArt.id
+          }
+        });
+        get().setCameraTargetZ(interactiveArt.viewingSpot.z);
+        return;
+      }
     }
 
     if (sectorId === 'video') {

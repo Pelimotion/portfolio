@@ -13,6 +13,9 @@ class SoundEngine {
   private gainNode: GainNode | null = null;
   private pannerNode: StereoPannerNode | null = null;
   private sourceNode: MediaElementAudioSourceNode | null = null;
+  private djLowPassNode: BiquadFilterNode | null = null;
+  private djHighPassNode: BiquadFilterNode | null = null;
+  private djFilterVal: number = 0;
   private freqArray: Uint8Array<ArrayBuffer> | null = null;
   private isInitialized = false;
 
@@ -45,8 +48,23 @@ class SoundEngine {
       compressorNode.attack.value = 0.05;
       compressorNode.release.value = 0.25;
 
+      // Filtro DJ Bipolar: Low-Pass + High-Pass com ressonância dinâmica
+      this.djLowPassNode = this.audioCtx.createBiquadFilter();
+      this.djLowPassNode.type = 'lowpass';
+      this.djLowPassNode.frequency.value = 20000;
+      this.djLowPassNode.Q.value = 0.707;
+
+      this.djHighPassNode = this.audioCtx.createBiquadFilter();
+      this.djHighPassNode.type = 'highpass';
+      this.djHighPassNode.frequency.value = 20;
+      this.djHighPassNode.Q.value = 0.707;
+
       this.sourceNode = this.audioCtx.createMediaElementSource(this.audioElement);
-      this.sourceNode.connect(this.analyserNode);
+
+      // Conexão: Fonte -> Filtro LowPass -> Filtro HighPass -> Analisador FFT
+      this.sourceNode.connect(this.djLowPassNode);
+      this.djLowPassNode.connect(this.djHighPassNode);
+      this.djHighPassNode.connect(this.analyserNode);
 
       if (this.audioCtx.createStereoPanner) {
         this.pannerNode = this.audioCtx.createStereoPanner();
@@ -291,6 +309,85 @@ class SoundEngine {
 
   public isFullActive(): boolean {
     return this.isFullStreaming;
+  }
+
+  /**
+   * Filtro DJ Bipolar de Vanguarda:
+   * -1.0 a 0.0: Low-Pass Sweep (Submersão Aquática / Graves Encorpados / Club Warmth)
+   *  0.0:        Bypass Neutro Puro
+   *  0.0 a 1.0:  High-Pass Sweep (Rarefação Aérea / Rádio / Agudos Cristalinos)
+   */
+  public setDJFilter(val: number): void {
+    const clamped = Math.max(-1.0, Math.min(1.0, val));
+    this.djFilterVal = clamped;
+    if (!this.audioCtx || !this.djLowPassNode || !this.djHighPassNode) return;
+
+    const t = this.audioCtx.currentTime;
+    const rampTime = 0.04;
+
+    if (clamped < -0.005) {
+      // LOW-PASS ATIVO: Corta agudos com curva logarítmica musical (20kHz -> 180Hz)
+      const factor = Math.abs(clamped);
+      const cutoff = 20000 * Math.pow(180 / 20000, factor);
+      const q = 0.707 + factor * 1.65; // Ressonância quente e controlada
+
+      this.djLowPassNode.frequency.setTargetAtTime(cutoff, t, rampTime);
+      this.djLowPassNode.Q.setTargetAtTime(q, t, rampTime);
+
+      // High-Pass neutro
+      this.djHighPassNode.frequency.setTargetAtTime(20, t, rampTime);
+      this.djHighPassNode.Q.setTargetAtTime(0.707, t, rampTime);
+    } else if (clamped > 0.005) {
+      // HIGH-PASS ATIVO: Corta graves com curva logarítmica musical (20Hz -> 5200Hz)
+      const cutoff = 20 * Math.pow(5200 / 20, clamped);
+      const q = 0.707 + clamped * 1.5; // Ressonância cristalina
+
+      this.djHighPassNode.frequency.setTargetAtTime(cutoff, t, rampTime);
+      this.djHighPassNode.Q.setTargetAtTime(q, t, rampTime);
+
+      // Low-Pass neutro
+      this.djLowPassNode.frequency.setTargetAtTime(20000, t, rampTime);
+      this.djLowPassNode.Q.setTargetAtTime(0.707, t, rampTime);
+    } else {
+      // BYPASS NEUTRO (Centro exato)
+      this.djLowPassNode.frequency.setTargetAtTime(20000, t, rampTime);
+      this.djLowPassNode.Q.setTargetAtTime(0.707, t, rampTime);
+      this.djHighPassNode.frequency.setTargetAtTime(20, t, rampTime);
+      this.djHighPassNode.Q.setTargetAtTime(0.707, t, rampTime);
+    }
+  }
+
+  public getDJFilter(): number {
+    return this.djFilterVal;
+  }
+
+  /**
+   * Extração de telemetria espectral por bandas harmônicas (Sub, Médios, Agudos e Global)
+   */
+  public getFrequenciesDetail(): { bass: number; mid: number; treble: number; overall: number } {
+    const data = this.getFrequencyData();
+    if (!data || data.length === 0) {
+      return { bass: 0, mid: 0, treble: 0, overall: 0 };
+    }
+    const len = data.length;
+    let sumLow = 0;
+    let sumMid = 0;
+    let sumHigh = 0;
+
+    const lowCount = Math.min(len, 4);
+    const midCount = Math.min(len - lowCount, 16);
+    const highCount = Math.min(len - (lowCount + midCount), 40);
+
+    for (let i = 0; i < lowCount; i++) sumLow += data[i];
+    for (let i = lowCount; i < lowCount + midCount; i++) sumMid += data[i];
+    for (let i = lowCount + midCount; i < lowCount + midCount + highCount; i++) sumHigh += data[i];
+
+    const bass = sumLow / (Math.max(1, lowCount) * 255);
+    const mid = sumMid / (Math.max(1, midCount) * 255);
+    const treble = sumHigh / (Math.max(1, highCount) * 255);
+    const overall = bass * 0.5 + mid * 0.3 + treble * 0.2;
+
+    return { bass, mid, treble, overall };
   }
 
   // SFX Procedural: Clique tátil do estojo de CD (Jewel case plastic snap)

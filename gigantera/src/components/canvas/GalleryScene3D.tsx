@@ -1556,8 +1556,9 @@ export const GalleryScene3D: React.FC = () => {
     playerController.onSectorSelect = (sectorNum) => {
       const state = useAppStore.getState();
       if (sectorNum === 1) state.warpToSector('entrance-audio');
-      else if (sectorNum === 2) state.warpToSector('video');
-      else if (sectorNum === 3) state.warpToSector('still');
+      else if (sectorNum === 2) state.warpToSector('interactive');
+      else if (sectorNum === 3) state.warpToSector('video');
+      else if (sectorNum === 4) state.warpToSector('still');
     };
 
     playerController.onInteract = () => {
@@ -2717,8 +2718,60 @@ export const GalleryScene3D: React.FC = () => {
       updateCameraZ(camera.position.z, velocityZ);
 
       visitorLight.position.set(camera.position.x, camera.position.y + 1.0, camera.position.z);
-      // Luz do visitante suave e cinematográfica (iluminação íntima de museu, sem estourar o contraste)
-      visitorLight.intensity = isLight ? 0.28 : 0.38;
+
+      // ─── REATIVIDADE DA ILUMINAÇÃO AO ÁUDIO & AO FILTRO DJ ───
+      const isAudioActive = isAudioPlaying && !storeState.isGlobalMuted;
+      const audioDetail = isAudioActive ? soundEngine.getFrequenciesDetail() : { bass: 0, mid: 0, treble: 0, overall: 0 };
+      const djFilter = storeState.djFilterValue;
+
+      // Micro-respiração da luz do visitante com os sub-graves
+      const baseVisitorInt = isLight ? 0.28 : 0.38;
+      visitorLight.intensity = baseVisitorInt + audioDetail.bass * 0.14;
+
+      // Micro-respiração da luz solar e claraboias com o ritmo da música
+      const baseSunInt = isLight ? 0.85 : 1.05;
+      sunLight.intensity = baseSunInt + (audioDetail.bass * 0.15) + (audioDetail.mid * 0.08);
+
+      // Modulação de temperatura de cor e mood pelo Filtro DJ:
+      // djFilter < 0 (Submerso): clima oceânico/mineral frio sutil
+      // djFilter > 0 (Rarefeito): clima dourado champanhe aéreo sutil
+      if (djFilter < -0.02) {
+        const factor = Math.abs(djFilter);
+        sunLight.color.setRGB(
+          THREE.MathUtils.lerp(isLight ? 0.98 : 0.95, 0.75, factor * 0.3),
+          THREE.MathUtils.lerp(isLight ? 0.96 : 0.89, 0.88, factor * 0.2),
+          THREE.MathUtils.lerp(isLight ? 0.92 : 0.81, 1.0, factor * 0.4)
+        );
+        visitorLight.color.setRGB(
+          THREE.MathUtils.lerp(isLight ? 1.0 : 0.89, 0.70, factor * 0.35),
+          THREE.MathUtils.lerp(isLight ? 0.95 : 0.76, 0.90, factor * 0.2),
+          THREE.MathUtils.lerp(isLight ? 0.85 : 0.47, 1.0, factor * 0.4)
+        );
+      } else if (djFilter > 0.02) {
+        const factor = djFilter;
+        sunLight.color.setRGB(
+          THREE.MathUtils.lerp(isLight ? 0.98 : 0.95, 1.0, factor * 0.2),
+          THREE.MathUtils.lerp(isLight ? 0.96 : 0.89, 0.94, factor * 0.2),
+          THREE.MathUtils.lerp(isLight ? 0.92 : 0.81, 0.70, factor * 0.3)
+        );
+        visitorLight.color.setRGB(
+          THREE.MathUtils.lerp(isLight ? 1.0 : 0.89, 1.0, factor * 0.2),
+          THREE.MathUtils.lerp(isLight ? 0.95 : 0.76, 0.88, factor * 0.2),
+          THREE.MathUtils.lerp(isLight ? 0.85 : 0.47, 0.55, factor * 0.2)
+        );
+      } else {
+        sunLight.color.setHex(isLight ? 0xfbf6ec : 0xf2e4ce);
+        visitorLight.color.setHex(isLight ? 0xfff3d8 : 0xe4c379);
+      }
+
+      // Micro-pulso volumétrico nos feixes de claraboia
+      if (lightShaftMeshes.length > 0) {
+        const shaftPulse = (isLight ? 0.012 : 0.018) + (audioDetail.mid * 0.015) + (Math.abs(djFilter) * 0.008);
+        lightShaftMeshes.forEach((meshObj) => {
+          (meshObj.outer.material as THREE.MeshBasicMaterial).opacity = shaftPulse;
+          (meshObj.inner.material as THREE.MeshBasicMaterial).opacity = shaftPulse * 1.8;
+        });
+      }
 
       // Atualiza matriz de frustum para culling de vídeos e objetos fora do campo de visão
       cameraProjScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);

@@ -30,8 +30,11 @@ export const MinimalBottomBar: React.FC = () => {
         warpToSector('entrance-audio');
       } else if (e.code === 'Digit2' || e.code === 'Numpad2' || e.key === '2') {
         e.preventDefault();
-        warpToSector('video');
+        warpToSector('interactive');
       } else if (e.code === 'Digit3' || e.code === 'Numpad3' || e.key === '3') {
+        e.preventDefault();
+        warpToSector('video');
+      } else if (e.code === 'Digit4' || e.code === 'Numpad4' || e.key === '4') {
         e.preventDefault();
         warpToSector('still');
       }
@@ -57,18 +60,20 @@ export const MinimalBottomBar: React.FC = () => {
         aria-label="Controles da Galeria"
       >
         <div className="bottom-bar-scrim">
-          {/* Esquerda: Navegador de Setores Arquiteturais (1 · SOM · 2 · VÍDEOS · 3 · STILLS) */}
+          {/* Esquerda: Navegador de Setores Arquiteturais (1 · SOM · 2 · ESPINHAÇO · 3 · VÍDEOS · 4 · STILLS) */}
           <div className="bottom-sectors-navigator font-mono">
             <span className="sector-nav-tag">SETOR:</span>
-            <div className="sector-pills-cluster" role="tablist" aria-label="Navegação por setores (Teclas 1, 2, 3)">
+            <div className="sector-pills-cluster" role="tablist" aria-label="Navegação por setores (Teclas 1, 2, 3, 4)">
               {SECTORS_CATALOG.map((sec) => {
                 const isActive = activeSectorId === sec.id;
                 const info =
                   sec.id === 'entrance-audio'
                     ? { num: '1', name: 'SOM' }
+                    : sec.id === 'interactive'
+                    ? { num: '2', name: 'ESPINHAÇO' }
                     : sec.id === 'video'
-                    ? { num: '2', name: 'VÍDEOS' }
-                    : { num: '3', name: 'STILLS' };
+                    ? { num: '3', name: 'VÍDEOS' }
+                    : { num: '4', name: 'STILLS' };
 
                 return (
                   <button
