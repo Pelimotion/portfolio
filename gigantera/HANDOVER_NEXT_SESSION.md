@@ -1,104 +1,67 @@
-# BRIEFING ESTRATÉGICO DE TRANSIÇÃO — GIGANTERA (SISTEMA INTERATIVO & ACÚSTICO COMPLETO)
+# BRIEFING ESTRATÉGICO DE TRANSIÇÃO — GIGANTERA (EXPOGRAFIA EM U, ILUMINAÇÃO PENUMBRA & SHADERS VANGUARDA)
 > **Documento mestre de handoff para continuidade autônoma imediata no próximo chat.**
-> **Data:** 2026-09-20 | **Branch:** `main` | **Status do Build:** 100% Validado (0 erros TypeScript, build ~890ms, 0 erros de console)
+> **Data:** 2026-09-20 | **Branch:** `main` | **Status do Build:** 100% Validado (0 erros TypeScript, build ultra-rápido, 0 erros de console)
 
 ---
 
-## 🎯 RESUMO EXECUTIVO DA SESSÃO: VIVÊNCIA INTERATIVA TOTAL & ENGENHARIA ACÚSTICA (2026-09-20)
+## 🎯 RESUMO EXECUTIVO DA SESSÃO: EXPOGRAFIA EM MEIA-LUA, PENUMBRA CENOGRÁFICA & SHADERS DO ESPINHAÇO
 
-Nesta sessão foi realizada uma transformação monumental na experiência do usuário, UX e engenharia do **Pavilhão Digital Gigantera**, elevando a imersão artística com controle universal por teclado, modulação sonora tátil de DJ, visualizador generativo no CD Lounge, escultura viva do Espinhaço com dualidade teclado/câmera, 4 setores espaciais e iluminação acousto-fotônica:
+Nesta sessão foi realizada uma transformação artística, arquitetural e de engenharia no **Pavilhão Digital Gigantera**, focando na macro e micro narrativa visual, expografia orgânica, atmosfera de penumbra intimista e polimento visual de vanguarda:
 
-### 1. Controle Universal por Teclado & Mini-Tutoriais Brutalistas (HUD)
-- **Navegação Global sem Fricção**: Todo o pavilhão e as experiências modais respondem a atalhos de teclado padronizados:
-  - Setores espaciais: `1` (SOM), `2` (ESPINHAÇO), `3` (VÍDEOS), `4` (STILLS).
-  - Inspeção & Ações: `E` ou `Enter` para interagir, `Espaço` para play/pause/ejetar, `Esc` para retornar.
-  - Filtro DJ: `[` e `]` ou `O` e `P` para modular, `0` para reset centralizado.
-  - Fidelidade gráfica: `G` para alternar entre `LEVE`, `MÉDIO` e `ALTO`.
-  - Ajuda/Tutorial: `H` para exibir/ocultar guia tático.
-- **HUDs Contextuais & Tutoriais Flutuantes**: Telas do CD Lounge e do Espinhaço contam com cartões informativos semi-translúcidos brutalistas com badges de teclado claros e diretos.
+### 1. Expografia Polar em "U" (Layout Meia-Lua / Semicircular)
+- **Ruptura com o Corredor Tradicional**: O layout do pavilhão (`modularGallery.ts`) foi reconfigurado de um corredor reto estreito para uma disposição semicircular orgânica em ferradura ("U").
+- **Centralidade Monumental do Espinhaço**: A escultura interativa do Espinhaço permanece na posição central de ancoragem (`Z = 14.0`), enquanto as vitrines de vídeos e imagens orbitam ao seu redor através de coordenadas polares trigonométricas (`sin`/`cos`).
+- **Narrativa Visual Dinâmica**: O visitante tem visão perimétrica e contemplativa da escultura a partir de múltiplos ângulos enquanto transita entre as vitrines de acervo.
 
-### 2. Espinhaço Interativo: Dualidade Câmera 360° vs. Teclado Orgânico
-- **Alternância Instantânea**: Tecla `C` ativa o modo **Órbita 360°** (câmera cinematográfica orbitando a escultura) e tecla `K` ativa o modo **Teclado Orgânico**.
-- **Cinética Vertebral em Tempo Real**: No modo Teclado (`K`), o visitante deforma, flexiona e torce as 50.000 partículas e os nós ósseos da escultura usando `WASD` / Setas direcionais.
-  - `W` / `S`: Flexão vertical e ondulação crânio-caudal.
-  - `A` / `D`: Torção e encurvamento lateral.
-  - `Espaço`: Pulso cinético sísmico irradiando pela coluna.
-- **HUD de Telemetria Dinâmica**: Monitoramento em tempo real da curvatura de torção, rotação 3D e proximidade da escultura.
+### 2. Iluminação de Penumbra & Oclusão Cenográfica no Espinhaço
+- **Atmosfera de Penumbra Dramática**: Na cena 3D principal (`GalleryScene3D.tsx`), a iluminação ao redor do Espinhaço foi atenuada e calibrada com sombras suaves e máscara de oclusão cenográfica (`penumbraBlocker`).
+- **Contraste de Alto Impacto**: O ambiente circundante é mantido quase escuro, fazendo com que o brilho bioluminescente e as partículas da escultura se destaquem de forma sutil, discreta e misteriosa.
 
-### 3. Knob de Filtro DJ Bipolar Ressonante (Low/High Cut)
-- **Mecanismo de Áudio Musical Web Audio API** (`soundEngine.ts`):
-  - Cadeia de filtros em cascata com Passa-Baixa (Sweep para a esquerda: -1.0 a 0.0, 20kHz → 180Hz) simulando submersão/abafamento atmosférico e Passa-Alta (Sweep para a direita: 0.0 a +1.0, 20Hz → 4.5kHz) simulando rarefação/transparência radiante.
-  - Fator Q de ressonância dinâmica calibrado para zero-clipping via nó compressor integrado.
-- **Componente de Controle Tátil (`DJFilterKnob.tsx`)**:
-  - Dial circular de 270° com arco SVG brutalista, ponteiro graduado, arrasto vertical/angular, duplo clique para reset no centro `0` e suporte a teclas `[` e `]`.
+### 3. Redesign Fullscreen Cinemático de Sobre/Contato (`ArtistBioModal.tsx`)
+- **Imersão Contínua**: O modal pop-up flutuante que quebrava o ritmo visual do site foi substituído por uma tela cheia cinematográfica estilizada.
+- **Narrativa do Artista & Pelimotion**: Declaração curatorial autêntica, tipografia brutalista refinada, ficha técnica, links diretos de contato (Email, Instagram, WhatsApp, GitHub, LinkedIn).
+- **Desconflito de Atalhos**: Atalho de Sobre/Contato atualizado para `[C]` em `GalleryHeader.tsx`, liberando a tecla `[B]` exclusivamente para a troca de Biomas cromáticos sem qualquer sobreposição.
 
-### 4. CD Listening Lounge com Visualizador Generativo de Partículas
-- **Visualizador Espectral (`CDVisualizerField.tsx`)**:
-  - Renderizado no espaço de fundo atrás do estojo de CD em perspectiva isométrica/POV.
-  - 7 famílias topológicas procedurais distribuídas deterministicamente pelo hash de cada uma das 17 faixas (`rings`, `matrix`, `nebula`, `vortex`, `strata`, `fractal`, `torus`).
-  - Paletas cromáticas exclusivas e coerentes com a identidade Pelimotion (Oceanic, Magma, Spectral, Bronze, Monocromo, etc.).
-  - Totalmente acoplado ao analisador de frequências (graves, médios, agudos) e modulado em tempo real pelo filtro DJ.
+### 4. Espinhaço Interactive: Unificação HUD, Shaders & Deformação WASD
+- **Unificação da HUD Lateral**: O `FloatingMiniPlayer` e o seletor de Fidelidade Gráfica (`LEVE`, `MÉD`, `ALTO`) foram realocados para dentro do painel lateral retrátil (`aside`). O topo da tela agora fica 100% limpo e sem distrações visuais.
+- **Reenquadramento de Câmera (Pan Offset)**: Ao abrir ou fechar o menu lateral de dicas (`[H]`), a câmera Three.js desloca suavemente seu eixo X (`targetCamX = 0.45`), mantendo o modelo 3D perfeitamente centralizado na área livre restante.
+- **Keycaps Táteis com Relevo Físico**: Os botões de seleção de visualização (`[1] MATÉRIA`, `[2] CORPÚSCULOS`, `[3] RAIO-X`) agora utilizam o estilo físico mecânico `.keycap` sem sobreposições planas.
+- **Shader Raio-X Holográfico com Glitch**: O modo Raio-X foi reconstruído via `ShaderMaterial` GLSL customizado com scanlines verticais móveis e jitter/glitch de vértices de alta frequência, integrando a cor do bioma selecionado.
+- **Deformação Axial Acentuada (`onBeforeCompile`)**: Injetamos lógica de torção e flexão vertebral diretamente no shader do material PBR (`MeshStandardMaterial`). As teclas `W`, `A`, `S`, `D` e setas produzem deformações sinuosas e elásticas visivelmente intensas na coluna vertebral.
 
-### 5. Miniplayer Co-Reativo Flutuante Contínuo (`FloatingMiniPlayer.tsx`)
-- Presente na vivência do Espinhaço e expansível para as demais salas:
-  - Botão Play/Pause tátil, indicador da faixa em reprodução e BPM pulsante.
-  - Equalizador de barras espectrais animado em tempo real conforme o áudio.
-  - Mini-knob do filtro DJ integrado com leitura instantânea do corte de frequência.
+---
 
-### 6. Tiers de Fidelidade Gráfica (Leve / Médio / Alto)
-- Alternável em tempo real pelo atalho `G` ou pelo menu HUD:
-  - **LEVE (60 FPS garantidos em laptops/GPUs integradas)**: Redução de partículas ativas no Espinhaço (20.000) e no CD Lounge (320 partículas), desativação de reflexos pesados.
-  - **MÉDIO**: Equilíbrio estético (35.000 partículas no Espinhaço, 750 no CD).
-  - **ALTO**: Fidelidade máxima (50.000 partículas com dispersão física completa e 1.500 partículas no CD).
+## 🎮 MAPA COMPLETO DE CONTROLES & ATALHOS
 
-### 7. Reorganização Espacial em 4 Setores Arquiteturais
-- Reformulação do pavilhão e do dock inferior em 4 alas modulares com atalhos numéricos diretos:
-  - `1 · SOM`: Altar e estojo do CD com o acervo musical completo.
-  - `2 · ESPINHAÇO`: Vitrine museológica do fóssil vivente interativo.
-  - `3 · VÍDEOS`: Galeria audiovisual para obras cinematográficas.
-  - `4 · STILLS`: Galeria de giclées e gravuras estáticas.
-
-### 8. Iluminação Acousto-Fotônica da Galeria
-- A iluminação do pavilhão tridimensional (sol, claraboias e spot do visitante) respira sutilmente sincronizada com as ondas sub-graves da música ativa e desloca sua temperatura de cor (kelvins/matiz) em sintonia com a modulação do filtro DJ.
-
-### 8. Gestos Mobile & Feedback Háptico no Espinhaço
-- Adicionado suporte a gestos de toque no visualizador interativo: rotação orbital com 1 dedo, pinch-to-zoom com 2 dedos e duplo toque para disparo de pulso de choque cinético.
-- Feedback háptico via `navigator.vibrate` acionado ao alternar modos de visão (`MATÉRIA`, `CORPÚSCULOS`, `RAIO-X`), biomas cromáticos e pulsos.
-
-### 9. Higienização do Pipeline de Build
-- O script de `build` no `package.json` foi corrigido com `rm -rf ./assets && cp -r dist/assets ./`, eliminando bundles históricos órfãos que inflavam a pasta raiz.
+| Tecla / Gesto | Contexto | Ação Realizada |
+| :--- | :--- | :--- |
+| `W`, `A`, `S`, `D` / Setas | Galeria 3D | Caminhar pelo pavilhão |
+| `Shift` | Galeria 3D | Correr / Acelerar locomoção |
+| `Mouse Drag` | Galeria 3D | Rotação orbital / Olhar ao redor |
+| `E` ou `Enter` | Galeria 3D | Interagir / Inspecionar obra ou CD |
+| `Esc` | Modais / Cinema | Retornar à galeria principal |
+| `W`, `A`, `S`, `D` | Espinhaço 3D | Flexão anteroposterior e torção axial da coluna |
+| `Espaço` | Espinhaço 3D | Pulso cinético sísmico (onda de choque) |
+| `1`, `2`, `3` | Espinhaço 3D | Modos de Visão: MATÉRIA (PBR), CORPÚSCULOS (50k pontos), RAIO-X (Glitch Shader) |
+| `B` | Espinhaço 3D | Alternar Biomas: Titânio, Abissal, Magma, Espectral |
+| `H` | Espinhaço 3D | Exibir / Recolher painel lateral (com auto pan de câmera) |
+| `I` | Espinhaço 3D | Reabrir Splash Screen com ficha técnica |
+| `[` e `]` ou `O` e `P` | Global | Modular Filtro DJ (Passa-Baixa / Passa-Alta) |
+| `0` | Global | Resetar Filtro DJ para neutro |
+| `G` | Global | Alternar fidelidade gráfica (Leve / Médio / Alto) |
+| `C` | Global | Abrir painel Fullscreen de Sobre & Contato |
+| `M` | Global | Mudo global (silenciar / desilenciar áudios) |
+| `TAB` | Galeria 3D | Acervo frontal 4x2 |
 
 ---
 
 ## 🛠️ ESTADO TÉCNICO & INTEGRIDADE DO CÓDIGO
 
 - **Branch Atual:** `main`
-- **Commits Locais:**
-  - `aff1e52`: `docs: atualizar README, HANDOVER_NEXT_SESSION e grafo de conhecimento...`
-  - `1501557`: `feat: integrar escultura 3D autêntica do Espinhaço no totem com wake-on-interaction`
-  - `31a1341`: `wip: Espinhaço 3D model integration and handoff setup`
-- **Validação de Tipos:** `npx tsc --noEmit` aprovado com **0 erros**.
+- **Validação TypeScript:** `npx tsc --noEmit` aprovado com **0 erros**.
 - **Build de Produção:** `npm run build` executado com sucesso em ~470ms.
-- **Knowledge Graph:** Pipeline `graphify` executado e atualizado em `graphify-out/`.
-
----
-
-## 🚀 PONTOS DE PARTIDA & TAREFAS PARA AS PRÓXIMAS SESSÕES
-
-Nas próximas sessões, o time pode avançar nas seguintes frentes:
-
-### 1. Sincronização Git (`origin/main`)
-- Quando conveniente para o usuário, fazer `git push origin main` para publicar os 2 commits pendentes e acionar o build/deploy automático da Vercel.
-
-### 2. Engenharia Acústica Espacial do Totem Espinhaço
-- Adicionar um drone sonoro ou campo sonoro sub-grave textural contínuo quando o visitante estiver a menos de 5.8m do totem na galeria 3D, ampliando a sensação táctil de "despertar" do fóssil vivente.
-
-### 3. Curadoria de Obras Adicionais ou Variações de Bioma
-- Expandir novos biomas na interface do `EspinhacoInteractive.tsx` se desejado pelo curador.
-- Possibilidade de adicionar presets de câmera na inspeção interativa (ex: vista transversal, macro nas vértebras lombares).
-
-### 4. Refinamento de Pointers & UX Mobile
-- Aprimorar o feedback háptico (vibração no mobile via `navigator.vibrate`) ao tocar nas vértebras do Espinhaço no modo interativo e no WebAR.
+- **Bundle Distribuível:** Assets sincronizados em `/assets`, `./index.html` e `./ar`.
+- **Knowledge Graph:** Mantido via `graphify`.
 
 ---
 
@@ -108,23 +71,20 @@ Nas próximas sessões, o time pode avançar nas seguintes frentes:
 # Entrar na pasta do projeto
 cd "/Volumes/PLM_SSD_01/Google Drive/Pelimotion/Pipeline SSD 01/Pelimotion/Site/gigantera"
 
-# Executar dev server
+# Executar dev server local
 npm run dev
 
 # Checagem de tipagem TypeScript
 npx tsc --noEmit
 
-# Compilar build de produção
+# Compilar build de produção local
 npm run build
-
-# Consultar o grafo de conhecimento do projeto
-graphify query "<pergunta sobre arquitetura>"
 ```
 
 ---
 
 ## 🔒 DIRETRIZES E REGRAS PERMANENTES
-1. **Modelos 3D e Binários Autênticos:** O modelo do Espinhaço (`espinhaco.glb` e `espinhaco_points.bin`) deve sempre manter suas proporções originais calibradas (rotação Z 90°, altura 2.40m).
-2. **Desempenho & 60 FPS:** O cálculo da aura de partículas e ondas na escultura só roda quando `wakeFactor > 0.01` para não sobrecarregar a GPU quando o visitante estiver distante.
-3. **Zero-Bandwidth Git para Mídias Pesadas:** Vídeos, giclées e áudios continuam hospedados na Bunny CDN. Apenas o GLB e binário calibrados de 12MB residem no bundle local.
-4. **Deploy Blindado:** Toda alteração deve passar sem erros no `npx tsc --noEmit` e `npm run build`.
+1. **Modelos 3D e Binários Autênticos:** O modelo do Espinhaço (`espinhaco.glb` e `espinhaco_points.bin`) deve sempre manter suas proporções originais calibradas.
+2. **Zero-Bandwidth Git para Mídias Pesadas:** Vídeos, giclées e áudios continuam hospedados na Bunny CDN. Apenas o GLB e binário calibrados de 12MB residem no bundle local.
+3. **Deploy Blindado:** Toda alteração deve passar sem erros no `npx tsc --noEmit` e `npm run build`.
+4. **Deploy Vercel:** Acionado automaticamente via push no repositório GitHub (`main`).

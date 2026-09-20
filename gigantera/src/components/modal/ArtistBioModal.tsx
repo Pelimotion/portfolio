@@ -24,141 +24,153 @@ export const ArtistBioModal: React.FC = () => {
 
   return (
     <div
-      className="bio-modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="bio-artist-name"
       onClick={(e) => {
         if (e.target === e.currentTarget) setBioOpen(false);
       }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 90,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(5, 6, 6, 0.96)',
+        backdropFilter: 'blur(24px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(150%)',
+        color: '#f4f3ef',
+        padding: '5vh 5vw',
+        overflowY: 'auto'
+      }}
     >
-      <div className="bio-dossier-card">
-        {/* Cantoneiras brutas */}
-        <span className="bio-bracket bb-tl">┌</span>
-        <span className="bio-bracket bb-tr">┐</span>
-        <span className="bio-bracket bb-bl">└</span>
-        <span className="bio-bracket bb-br">┘</span>
-
-        {/* Topo do Painel */}
-        <div className="bio-header-bar">
-          <span className="bio-tag font-mono">[ARTIST DOSSIER // CURATORIAL STATEMENT]</span>
+      <div style={{ maxWidth: '1000px', width: '100%', display: 'flex', flexDirection: 'column', gap: '6vh', position: 'relative' }}>
+        
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2vh' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.2em', color: 'var(--accent-gold)' }}>
+            [MANIFESTO & CONTACT]
+          </span>
           <button
             onClick={() => setBioOpen(false)}
-            className="bio-close-btn"
             aria-label="Fechar biografia e contato"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              color: '#fff',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              letterSpacing: '0.1em',
+              opacity: 0.6,
+              transition: 'opacity 0.3s'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.6')}
           >
-            [✕ FECHAR · ESC]
+            [✕ CLOSE / ESC]
           </button>
         </div>
 
-        {/* Corpo Editorial do Dossier */}
-        <div className="bio-content-grid">
-          {/* Coluna 1: Declaração Conceitual */}
-          <div className="bio-statement-col">
-            <span className="bio-sub font-mono">[DIREÇÃO & CRIAÇÃO]</span>
-            <h2 id="bio-artist-name" className="bio-artist-title">
-              Felipe Conceição
+        {/* Content */}
+        <div style={{ display: 'flex', gap: '8vw', flexWrap: 'wrap' }}>
+          
+          {/* Manifesto Column */}
+          <div style={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column', gap: '3vh' }}>
+            <h2 id="bio-artist-name" style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 300, lineHeight: 1.1, letterSpacing: '-0.02em', margin: 0 }}>
+              Felipe<br/>Conceição
             </h2>
-            <div className="bio-role-badge font-mono">
-              GIGANTERA · ARTISTA DIGITAL, ESCULTURA COMPUTACIONAL & SOM
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', letterSpacing: '0.15em', color: 'var(--accent-gold)', textTransform: 'uppercase' }}>
+              Gigantera · Digital Artist, Computational Sculpture & Sound
             </div>
 
-            <p className="bio-paragraph">
-              <strong>Gigantera</strong> é o pavilhão digital de Felipe Conceição. Um espaço brutalista tridimensional onde obra still, vídeo cinético e som autoral flutuam entre vitrines de vidro. Você não navega. Você atravessa.
+            <p style={{ fontSize: '1rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.7)', fontWeight: 300, maxWidth: '600px' }}>
+              <strong style={{ color: '#fff', fontWeight: 500 }}>Gigantera</strong> is the digital pavilion of Felipe Conceição. A three-dimensional brutalist space where still artworks, kinetic video, and original sound float between glass vitrines. You do not browse. You traverse.
             </p>
 
-            <p className="bio-paragraph">
-              Felipe Conceição atua como <strong>Gigantera</strong>, articulando código, mídias generativas e projeção com a fisicalidade da prata, aço, areia e redes de pesca. Sua pesquisa fricciona o acabamento polido da indústria de imagens com o apagamento de sua herança territorial caiçara, investigando a perda do tempo orgânico na aceleração do nosso modelo econômico.
+            <p style={{ fontSize: '1rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.7)', fontWeight: 300, maxWidth: '600px' }}>
+              Felipe Conceição acts as <strong style={{ color: '#fff', fontWeight: 500 }}>Gigantera</strong>, articulating code, generative media, and projection with the physicality of silver, steel, sand, and fishing nets. His research creates friction between the polished finish of the image industry and the erasure of his Caiçara territorial heritage, investigating the loss of organic time in the acceleration of our economic model.
             </p>
 
-            <div className="bio-pillars-strip">
-              <div className="pillar-item">
-                <span className="pillar-num font-mono">01 // STILL</span>
-                <span className="pillar-label">Escultura digital e fotogrametria mineral</span>
-              </div>
-              <div className="pillar-item">
-                <span className="pillar-num font-mono">02 // VIDEO</span>
-                <span className="pillar-label">Simulação cinemática e estocástica de partículas</span>
-              </div>
-              <div className="pillar-item">
-                <span className="pillar-num font-mono">03 // SOUND</span>
-                <span className="pillar-label">Síntese de música eletrônica e dispersão acústica</span>
-              </div>
+            {/* Pillars */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5vh', marginTop: '2vh' }}>
+              {[
+                { n: '01', l: 'STILL', d: 'Digital sculpture and mineral photogrammetry' },
+                { n: '02', l: 'VIDEO', d: 'Cinematic and stochastic particle simulation' },
+                { n: '03', l: 'SOUND', d: 'Electronic music synthesis and acoustic dispersion' }
+              ].map((p, i) => (
+                <div key={i} style={{ display: 'flex', gap: '2vw', alignItems: 'baseline', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1vh' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--accent-gold)', minWidth: '40px' }}>{p.n} // {p.l}</span>
+                  <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>{p.d}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Coluna 2: Transmissão Direta & Contatos */}
-          <div className="bio-contact-col">
-            <div className="contact-box">
-              <span className="box-title font-mono">[TRANSMISSÃO DIRETA & CONTATO]</span>
-              <p className="contact-desc">
-                Disponível para encomendas curatoriais, direções de arte, instalações imersivas e colaborações musicais.
+          {/* Contact Column */}
+          <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '4vh', justifyContent: 'center' }}>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--accent-coral)', letterSpacing: '0.1em' }}>[DIRECT TRANSMISSION]</span>
+              <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'rgba(255,255,255,0.6)' }}>
+                Available for curatorial commissions, art direction, immersive installations, and musical collaborations.
               </p>
-
-              <div className="email-copy-action">
-                <span className="email-display font-mono">pelimotion@gmail.com</span>
-                <button
-                  onClick={handleCopyEmail}
-                  className="copy-btn font-mono"
-                  aria-label="Copiar endereço de e-mail"
-                >
-                  {copiedEmail ? '✓ COPIADO!' : '[COPIAR E-MAIL]'}
-                </button>
-              </div>
-
-              <div className="contact-links-list font-mono">
-                <a
-                  href="https://wa.me/5547999999999"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-link"
-                >
-                  <span>WHATSAPP</span>
-                  <span className="link-arrow">↗</span>
-                </a>
-                <a
-                  href="https://instagram.com/pelimotion"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-link"
-                >
-                  <span>INSTAGRAM</span>
-                  <span className="link-arrow">↗</span>
-                </a>
-                <a
-                  href="https://www.pelimotion.art"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-link"
-                >
-                  <span>PELIMOTION STUDIO</span>
-                  <span className="link-arrow">↗</span>
-                </a>
-                <a
-                  href="https://vimeo.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-link"
-                >
-                  <span>VIMEO ARCHIVE</span>
-                  <span className="link-arrow">↗</span>
-                </a>
+              
+              <div 
+                onClick={handleCopyEmail}
+                style={{ 
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                  padding: '1.5vh 1.5vw', background: 'rgba(255,255,255,0.03)', 
+                  border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.3s'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
+              >
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', letterSpacing: '0.05em' }}>pelimotion@gmail.com</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--accent-gold)' }}>
+                  {copiedEmail ? '✓ COPIED!' : '[COPY]'}
+                </span>
               </div>
             </div>
 
-            <div className="studio-location-box font-mono">
-              <span className="loc-label">[ATELIÊ & PIPELINE]</span>
-              <span className="loc-val">OPERAÇÕES BASEADAS NA <a href="https://share.google/WR6ZovOEDJxrJ4SCp" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-gold)' }}>TOCA.HUB</a></span>
-              
-              <div style={{ margin: '12px 0', opacity: 0.8, borderRadius: '4px', overflow: 'hidden', height: '60px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <a href="https://share.google/WR6ZovOEDJxrJ4SCp" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'inherit' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  VER NO MAPA
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
+              {[
+                { l: 'WHATSAPP', url: 'https://wa.me/5547999999999' },
+                { l: 'INSTAGRAM', url: 'https://instagram.com/pelimotion' },
+                { l: 'PELIMOTION STUDIO', url: 'https://www.pelimotion.art' },
+                { l: 'VIMEO ARCHIVE', url: 'https://vimeo.com' }
+              ].map((link, i) => (
+                <a
+                  key={i}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '1vh 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    textDecoration: 'none', color: 'rgba(255,255,255,0.6)',
+                    fontFamily: 'var(--font-mono)', fontSize: '11px', letterSpacing: '0.1em', transition: 'color 0.3s'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                >
+                  <span>{link.l}</span>
+                  <span style={{ opacity: 0.5 }}>↗</span>
                 </a>
-              </div>
-              
-              <span className="loc-engine">RENDERIZADO COM THREE.JS & WEB AUDIO API</span>
+              ))}
             </div>
+
+            <div style={{ marginTop: '2vh', padding: '2vh 1.5vw', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '1vh' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>[ATELIER & PIPELINE]</span>
+              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.05em' }}>
+                OPERATIONS BASED AT <a href="https://share.google/WR6ZovOEDJxrJ4SCp" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-gold)', textDecoration: 'none' }}>TOCA.HUB</a>
+              </span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.05em', marginTop: '1vh' }}>
+                RENDERED WITH THREE.JS & WEB AUDIO API
+              </span>
+            </div>
+
           </div>
         </div>
       </div>

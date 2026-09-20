@@ -79,26 +79,23 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
   const stillStartX = 4.6;   // Distância lateral da parede/centro (salão amplo e arejado)
   const viewingOffset = 3.6; // Distância do ponto de observação ideal em frente à vitrine
 
-  let currentZ = 12.0; // Início do Setor 01 (Vídeo) logo após a Estação de CD (Z = +18m)
+  let currentZ = 12.0; // Posição de Z da obra interativa central
   const artworksWithCoords: ModularGalleryLayout['artworksWithCoords'] = [];
   const viewingSpots: ViewingSpotInfo[] = [];
 
-  // 0. Obra Interativa Monumental: Vitrine no Átrio da Entrada (Z = 14.0m, X = -2.2m)
-  // Posicionada em destaque frontal perfeito no campo de visão natural de entrada do salão (Z = 22m)
+  const centerInteractiveZ = 10.0;
+  
+  // 0. Obra Interativa Monumental: No epicentro do U-Shape (Z = 10.0m, X = 0.0m)
   interactiveWorks.forEach((art) => {
-    const x = -2.2;
-    const z = 14.0;
-    const rotY = 0.12; // Orientada suavemente para o visitante que entra no salão (+Z)
+    const x = 0.0;
+    const z = centerInteractiveZ;
+    const rotY = 0.0; // Voltada para a entrada (+Z)
 
-    const computedCoords = {
-      x,
-      y: 0.45,
-      z,
-      rotY
-    };
+    const computedCoords = { x, y: 0.45, z, rotY };
 
-    const spotX = x + Math.sin(rotY) * viewingOffset;
-    const spotZ = z + Math.cos(rotY) * viewingOffset;
+    // Ponto de visualização mais próximo para interação
+    const spotX = x + Math.sin(rotY) * (viewingOffset * 0.8);
+    const spotZ = z + Math.cos(rotY) * (viewingOffset * 0.8);
 
     const viewingSpot: ViewingSpotInfo = {
       artworkId: art.id,
@@ -108,88 +105,60 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
       title: art.title
     };
 
-    artworksWithCoords.push({
-      ...art,
-      computedCoords,
-      viewingSpot
-    });
+    artworksWithCoords.push({ ...art, computedCoords, viewingSpot });
     viewingSpots.push(viewingSpot);
   });
 
-  // 1. Distribuição das Obras de Vídeo (Setor 01: Alternando rigorosamente Esquerda e Direita)
-  videoWorks.forEach((art, index) => {
-    const isLeft = index % 2 === 0;
-    const x = isLeft ? -stillStartX : stillStartX;
-    // Angulado suavemente em direção ao visitante que se aproxima (+Z)
-    const rotY = isLeft ? 0.22 : -0.22;
+  // 1. Obras em U-Shape (Meia-Lua) orbitando a obra interativa
+  // Vamos juntar vídeos e stills e distribuí-los em um semicírculo
+  const uShapeWorks = [...videoWorks, ...stillWorks];
+  
+  // Intercalar para que os vídeos não fiquem todos juntos
+  // (temos tipicamente 3 vídeos e 6 stills)
+  const interleavedWorks: Artwork[] = [];
+  let vIndex = 0;
+  let sIndex = 0;
+  while (vIndex < videoWorks.length || sIndex < stillWorks.length) {
+    if (sIndex < stillWorks.length) interleavedWorks.push(stillWorks[sIndex++]);
+    if (sIndex < stillWorks.length) interleavedWorks.push(stillWorks[sIndex++]);
+    if (vIndex < videoWorks.length) interleavedWorks.push(videoWorks[vIndex++]);
+  }
 
-    const computedCoords = {
-      x,
-      y: 0.45,
-      z: currentZ,
-      rotY
-    };
+  const radius = 9.0;
+  const totalItems = interleavedWorks.length;
+  
+  interleavedWorks.forEach((art, i) => {
+    // theta varia de Math.PI até 0 para distribuir da esquerda para a direita
+    const theta = Math.PI - (i / (totalItems - 1)) * Math.PI;
+    const x = 0.0 + radius * Math.cos(theta);
+    const z = centerInteractiveZ - radius * Math.sin(theta);
+    
+    // Calcula o ângulo rotY para apontar para o centro (0, centerInteractiveZ)
+    const dx = 0.0 - x;
+    const dz = centerInteractiveZ - z;
+    const rotY = Math.atan2(dx, dz);
 
-    // Ponto ideal de observação: posicionado ao longo da normal frontal da obra (considerando sua rotação rotY)
+    const computedCoords = { x, y: 0.45, z, rotY };
+
+    // O viewing spot fica na normal da obra, mas numa distância confortável
     const spotX = x + Math.sin(rotY) * viewingOffset;
-    const spotZ = currentZ + Math.cos(rotY) * viewingOffset;
+    const spotZ = z + Math.cos(rotY) * viewingOffset;
 
     const viewingSpot: ViewingSpotInfo = {
       artworkId: art.id,
       x: spotX,
       z: spotZ,
-      medium: 'video',
+      medium: art.medium as 'video' | 'still',
       title: art.title
     };
 
-    artworksWithCoords.push({
-      ...art,
-      computedCoords,
-      viewingSpot
-    });
+    artworksWithCoords.push({ ...art, computedCoords, viewingSpot });
     viewingSpots.push(viewingSpot);
-
-    currentZ -= videoSpacing;
   });
 
-  // Espaçamento do portal de transição entre Vídeo e Still (com banco monumental no centro)
-  currentZ -= sectorTransitionGap;
+  // Fim do salão calculado proporcionalmente à meia-lua
+  currentZ = centerInteractiveZ - radius;
 
-  // 2. Distribuição das Obras Still (Setor 02: Continuando a alternância serpentina)
-  // Como o último vídeo (index 2) ficou na esquerda (index % 2 === 0), o primeiro Still começa na direita para manter o fluxo
-  stillWorks.forEach((art, index) => {
-    const isLeft = index % 2 === 1; // começa na Direita e alterna para Esquerda
-    const x = isLeft ? -stillStartX : stillStartX;
-    const rotY = isLeft ? 0.20 : -0.20;
-
-    const computedCoords = {
-      x,
-      y: 0.45,
-      z: currentZ,
-      rotY
-    };
-
-    // Ponto ideal de observação: no piso em frente à vitrine voltado perfeitamente para a peça
-    const spotX = x + Math.sin(rotY) * (viewingOffset * 0.95);
-    const spotZ = currentZ + Math.cos(rotY) * (viewingOffset * 0.95);
-
-    const viewingSpot: ViewingSpotInfo = {
-      artworkId: art.id,
-      x: spotX,
-      z: spotZ,
-      medium: 'still',
-      title: art.title
-    };
-
-    artworksWithCoords.push({
-      ...art,
-      computedCoords,
-      viewingSpot
-    });
-    viewingSpots.push(viewingSpot);
-
-    currentZ -= stillSpacing;
-  });
 
   // Fim do salão calculado proporcionalmente
   const zEnd = currentZ - 14.0;

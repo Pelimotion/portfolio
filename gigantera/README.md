@@ -11,28 +11,37 @@ O visitante flutua ("nada") no espaço tridimensional entre vitrines flutuantes 
 
 ```
        [ENTRADA Z: +20M] ── Estação do CD Jewel Case 3D (Álbum Autoral em POV)
-       [ÁTRIO   Z: +14M] ── TOTEM INTERATIVO: ESPINHAÇO (Escultura 3D PBR + 50k Pontos com Wake-on-Interaction)
-       [SETOR 01 Z: +10M] ── STILL (Imagens & Esculturas em Papel Mate Suspenso)
-       [SETOR 02 Z: -22M] ── VÍDEO (Cinética & Motion Textures em Loop Real)
-       [SETOR 03 Z: -75M] ── MONUMENTO FINAL & ACERVO COMPLETO
+       [ÁTRIO CENTRAL   ] ── TOTEM INTERATIVO: ESPINHAÇO (Âncora Central em Penumbra Cênica)
+       [EXPOGRAFIA EM U ] ── Meia-lua concêntrica em torno do Espinhaço:
+                             ├── ASA ESQUERDA: VÍDEOS (Cinética & Motion Textures em Loop Real)
+                             └── ASA DIREITA:  STILL (Imagens & Esculturas em Papel Mate Suspenso)
+       [SETOR POSTERIOR ] ── MONUMENTO FINAL & ACERVO COMPLETO
 ```
+
+---
+
+## 🏛️ Expografia Orgânica & Expansão Cenográfica
+
+- **Disposição Polar em "U" (Meia-Lua):** Abandonando corredores retos lineares, o acervo de vitrines agora se distribui em um semicírculo concêntrico em torno da obra interativa central *Espinhaço*. O visitante pode contemplar tanto as obras periféricas quanto a silhueta da escultura central de múltiplos ângulos.
+- **Iluminação em Penumbra & Contraste:** A zona do Espinhaço é mantida sob iluminação baixa e sombra cenográfica controlada (`penumbraBlocker`), permitindo que a luminescência orgânica e a nuvem de pontos da escultura se destaquem de forma intimista e imersiva.
 
 ---
 
 ## 🎮 Mecânicas de Game 3D & POV (Estética PS1 / PS2)
 
 ### 1. Totem Interativo 3D & Sistema Wake-on-Interaction (Espinhaço)
-- **Escultura 3D Autêntica Integrada ao Pavilhão:** A obra interativa "Espinhaço" está ancorada no átrio da galeria (`x: -2.2m, z: 14.0m`) protegida por uma vitrine tridimensional de vidro museológico de 1.10m de profundidade com transmissão física de 99%, cabos verticais de suspensão em grafite anodizado e clamps de montagem técnica.
+- **Escultura 3D Autêntica Integrada ao Pavilhão:** A obra interativa "Espinhaço" está ancorada no centro do átrio da galeria (`Z: 14.0m`) protegida por uma vitrine tridimensional de vidro museológico com transmissão física, cabos verticais de suspensão em grafite anodizado e iluminação ascendente suave.
 - **Mecânica Wake-on-Interaction (Fóssil Vivente):**
-  - **Estado Dormente:** Preservada inerte como um espécime fóssil de museu, sem consumir ciclos desnecessários de animação quando o visitante está distante.
-  - **Despertar Sensorial:** Ao se aproximar a menos de 5.8m ou mirar o retículo diretamente na vitrine, a escultura acorda suavemente: onda ondulatória vertebral cinética, orientação magnética sutil em direção à câmera (até ±18°), luz de preenchimento e holofote interior ascendentes, e emanação de aura de 800 partículas voláteis.
+  - **Estado Dormente:** Preservada inerte como um espécime fóssil de museu quando o visitante está distante.
+  - **Despertar Sensorial:** Ao se aproximar a menos de 5.8m ou mirar o retículo diretamente na vitrine, a escultura acorda suavemente com onda cinética vertebral, orientação magnética em direção à câmera e aura de partículas voláteis.
   - **HUD Tático de Interação:** Retículo exibe `[E] / [CLIQUE] VIVENCIAR ESPINHAÇO`.
 - **Experiência Interativa 360° Dedicada (`EspinhacoInteractive.tsx`):**
-  - Ao inspecionar via `[E]` ou clique, a câmera adentra a escultura em modo interativo de tela cheia.
-  - **3 Modos de Visão de Vanguarda:** `MATÉRIA` (malha metálica PBR hiper-realista), `CORPÚSCULOS` (nuvem espacial de 50.000 pontos capturados) e `RAIO-X` (malha translúcida revelando o núcleo interno de pontos).
-  - **4 Biomas Cromáticos:** `TITÂNIO` (grafite metálico frio e ciano), `ABISSAL` (esmeralda e bioluminescência oceânica profunda), `MAGMA` (âmbar incandescente e ouro vulcânico) e `ESPECTRAL` (ultravioleta e magenta prismático).
-  - **Áudio-Reatividade FFT:** Deformação vertebral e pulsação luminosa acopladas ao espectro de frequências da Web Audio API em tempo real.
-  - **Controles Híbridos:** Órbita esférica livre 360°, arrasto tátil para mobile/touch, zoom e giroscópio.
+  - Ao inspecionar via `[E]` ou clique, a câmera transiciona para a experiência 360° de tela cheia.
+  - **3 Modos de Visão com Keycaps Físicas:** `[1] MATÉRIA` (malha metálica PBR hiper-realista), `[2] CORPÚSCULOS` (nuvem de 50.000 pontos capturados) e `[3] RAIO-X` (ShaderMaterial customizado com scanlines verticais e glitch de vértices).
+  - **4 Biomas Cromáticos (`[B]`):** `TITÂNIO` (grafite e ciano), `ABISSAL` (esmeralda oceânico), `MAGMA` (âmbar vulcânico) e `ESPECTRAL` (ultravioleta e magenta).
+  - **Deformação Acentuada via Teclado (`W`, `A`, `S`, `D`):** Injeção direta no pipeline de shaders PBR via `onBeforeCompile`, permitindo torção axial e flexão elástica extrema da coluna em tempo real.
+  - **HUD Unificada & Auto-Pan:** Miniplayer e fidelidade gráfica integrados no menu lateral recolhível (`[H]`); ao abrir ou fechar, a câmera compensa no eixo X mantendo a escultura perfeitamente centralizada.
+  - **Áudio-Reatividade FFT & Choque Sísmico:** Deformação vertebral e pulsação luminosa em tempo real com a música; a tecla `Espaço` desencadeia uma onda de choque de partículas.
 
 ### 2. Mão 3D Low-Poly Facetada & CD Jewel Case em POV (Fiel à Referência)
 - **Mão 3D Facetada em Primeira Pessoa:** Construída proceduralmente com sombreamento *flat* (`flatShading: true`), reproduzindo exatamente as facetas poligonais de gesso/cerâmica angular segurando a quina do estojo de acrílico.
@@ -145,10 +154,10 @@ gigantera/
     │   │   └── CDJewelCasePOV.tsx    ← HUD tátil minimalista do álbum em POV
     │   ├── modal/
     │   │   ├── CinemaView.tsx        ← Modo cinema, loupe mode, prancheta e integração interativa
-    │   │   ├── ArtistBioModal.tsx    ← Declaração conceitual e contato direto
+    │   │   ├── ArtistBioModal.tsx    ← Interface Fullscreen cinematográfica de Sobre & Contato [C]
     │   │   └── ControlsGuideModal.tsx← Guia interativo gráfico de controles
     │   ├── layout/
-    │   │   ├── GalleryHeader.tsx     ← Top bar minimalista com tema e qualidade gráfica
+    │   │   ├── GalleryHeader.tsx     ← Top bar com atalho Sobre [C], tema e qualidade gráfica
     │   │   ├── MinimalBottomBar.tsx  ← Bottom dock feathered com Z, setores e stepper mobile
     │   │   ├── MobileBottomDock.tsx  ← Dock mobile responsivo com filtro ✦ INTERATIVO
     │   │   └── ArchiveIndex.tsx      ← Catálogo tradicional com filtro interativo

@@ -37,7 +37,7 @@ export const GalleryHeader: React.FC = () => {
         setGraphicsQuality(graphicsQuality === 'high' ? 'med' : 'high');
       } else if (e.code === 'KeyT' && !e.metaKey && !e.ctrlKey) {
         toggleTheme();
-      } else if (e.code === 'KeyB' && !e.metaKey && !e.ctrlKey) {
+      } else if (e.code === 'KeyC' && !e.metaKey && !e.ctrlKey) {
         setBioOpen(true);
       } else if (e.code === 'KeyM' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
@@ -183,7 +183,7 @@ export const GalleryHeader: React.FC = () => {
           title="Ver biografia e contato do artista"
         >
           <span>{isMobile ? 'SOBRE' : 'SOBRE / CONTATO'}</span>
-          {!isMobile && <kbd className="header-keycap-hint">B</kbd>}
+          {!isMobile && <kbd className="header-keycap-hint">C</kbd>}
         </button>
       </div>
     </header>

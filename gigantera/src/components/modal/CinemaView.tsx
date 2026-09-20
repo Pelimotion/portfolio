@@ -220,7 +220,7 @@ export const CinemaView: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         handleCloseCinema();
-      } else if (e.code === 'KeyI') {
+      } else if (e.key.toLowerCase() === 'i' || e.code === 'KeyI') {
         e.preventDefault();
         e.stopPropagation();
         toggleDossier();
@@ -397,89 +397,92 @@ export const CinemaView: React.FC = () => {
       </div>
 
       {/* ─── NÍVEL 2: FICHA CURATORIAL LATERAL (Suspensa ao topo para não conflitar) ─── */}
-      <aside
-        className={`cinema-lateral-dossier font-mono ${isCinemaInfoOpen ? 'is-open' : 'is-closed'}`}
-        aria-hidden={!isCinemaInfoOpen}
-        aria-label="Ficha Técnica Curatorial"
-        style={{ top: '6rem', bottom: 'auto', maxHeight: '70vh', overflowY: 'auto' }}
-        onMouseEnter={() => {
-          isHoveringUIRef.current = true;
-          if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
-          setIsDockDimmed(false);
-        }}
-        onMouseLeave={() => {
-          isHoveringUIRef.current = false;
-          if (isCinemaInfoOpen) {
-            scheduleDossierAutoCollapse(4500);
-          }
-          resetDockActivity();
-        }}
-      >
-        <div className="cinema-dossier-inner">
-          {/* Header da Ficha Técnica */}
-          <div className="cinema-dossier-header">
-            <div className="cinema-dossier-meta-badges">
-              <span className="cinema-dossier-series">
-                [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
-              </span>
-              <span className="cinema-dossier-category">{cinemaArtwork.categoryLabel}</span>
-            </div>
-            <button
-              type="button"
-              onClick={toggleDossier}
-              className="cinema-dossier-collapse-btn"
-              title="Recolher ficha técnica (Tecla I)"
-              aria-label="Recolher ficha técnica"
-            >
-              <span>RECOLHER</span>
-              <kbd className="keycap keycap-xs">I</kbd>
-              <span className="collapse-chevron">✕</span>
-            </button>
-          </div>
-
-          {/* Título & Narrativa Curatorial com espaçamento nobre */}
-          <h2 className="cinema-dossier-title">{cinemaArtwork.title}</h2>
-          <p className="cinema-dossier-narrative">{cinemaArtwork.description}</p>
-
-          {/* Grid de Especificações Técnicas e Formato */}
-          <div className="cinema-dossier-specs-grid">
-            <div className="cinema-dossier-spec-item">
-              <span className="spec-label">MATERIAIS:</span>
-              <span className="spec-val">{cinemaArtwork.materials}</span>
-            </div>
-            {cinemaArtwork.dimensionsOrDuration && (
-              <div className="cinema-dossier-spec-item">
-                <span className="spec-label">DIMENSÕES / DURAÇÃO:</span>
-                <span className="spec-val">{cinemaArtwork.dimensionsOrDuration}</span>
+      {!isInteractive && (
+        <aside
+          className={`cinema-lateral-dossier font-mono ${isCinemaInfoOpen ? 'is-open' : 'is-closed'}`}
+          aria-hidden={!isCinemaInfoOpen}
+          aria-label="Ficha Técnica Curatorial"
+          style={{ top: '6rem', bottom: 'auto', maxHeight: '70vh', overflowY: 'auto' }}
+          onMouseEnter={() => {
+            isHoveringUIRef.current = true;
+            if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
+            setIsDockDimmed(false);
+          }}
+          onMouseLeave={() => {
+            isHoveringUIRef.current = false;
+            if (isCinemaInfoOpen) {
+              scheduleDossierAutoCollapse(4500);
+            }
+            resetDockActivity();
+          }}
+        >
+          <div className="cinema-dossier-inner">
+            {/* Header da Ficha Técnica */}
+            <div className="cinema-dossier-header">
+              <div className="cinema-dossier-meta-badges">
+                <span className="cinema-dossier-series">
+                  [{cinemaArtwork.series.toUpperCase()}] · {cinemaArtwork.year}
+                </span>
+                <span className="cinema-dossier-category">{cinemaArtwork.categoryLabel}</span>
               </div>
-            )}
-            {cinemaArtwork.masterFormat && (
+              <button
+                type="button"
+                onClick={toggleDossier}
+                className="cinema-dossier-collapse-btn"
+                title="Recolher ficha técnica (Tecla I)"
+                aria-label="Recolher ficha técnica"
+              >
+                <span>RECOLHER</span>
+                <kbd className="keycap keycap-xs">I</kbd>
+                <span className="collapse-chevron">✕</span>
+              </button>
+            </div>
+
+            {/* Título & Narrativa Curatorial com espaçamento nobre */}
+            <h2 className="cinema-dossier-title">{cinemaArtwork.title}</h2>
+            <p className="cinema-dossier-narrative">{cinemaArtwork.description}</p>
+
+            {/* Grid de Especificações Técnicas e Formato */}
+            <div className="cinema-dossier-specs-grid">
               <div className="cinema-dossier-spec-item">
-                <span className="spec-label">MASTER:</span>
-                <span className="spec-val">{cinemaArtwork.masterFormat}</span>
+                <span className="spec-label">MATERIAIS:</span>
+                <span className="spec-val">{cinemaArtwork.materials}</span>
               </div>
-            )}
+              {cinemaArtwork.dimensionsOrDuration && (
+                <div className="cinema-dossier-spec-item">
+                  <span className="spec-label">DIMENSÕES / DURAÇÃO:</span>
+                  <span className="spec-val">{cinemaArtwork.dimensionsOrDuration}</span>
+                </div>
+              )}
+              {cinemaArtwork.masterFormat && (
+                <div className="cinema-dossier-spec-item">
+                  <span className="spec-label">MASTER:</span>
+                  <span className="spec-val">{cinemaArtwork.masterFormat}</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </aside>
+        </aside>
+      )}
 
       {/* ─── NÍVEL 1: MINI-HUD TÁTICO PERMANENTE (Barra Dock Ultra-fina Central) ─── */}
-      <nav
-        className={`cinema-tactical-mini-dock font-mono ${isDockDimmed ? 'is-dimmed' : ''}`}
-        aria-label="Controles de Inspeção"
-        onMouseEnter={() => {
-          isHoveringUIRef.current = true;
-          if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
-          setIsDockDimmed(false);
-        }}
-        onMouseLeave={() => {
-          isHoveringUIRef.current = false;
-          if (isCinemaInfoOpen) {
-            scheduleDossierAutoCollapse(4500);
-          }
-          resetDockActivity();
-        }}
-      >
+      {!isInteractive && (
+        <nav
+          className={`cinema-tactical-mini-dock font-mono ${isDockDimmed ? 'is-dimmed' : ''}`}
+          aria-label="Controles de Inspeção"
+          onMouseEnter={() => {
+            isHoveringUIRef.current = true;
+            if (dossierTimerRef.current) clearTimeout(dossierTimerRef.current);
+            setIsDockDimmed(false);
+          }}
+          onMouseLeave={() => {
+            isHoveringUIRef.current = false;
+            if (isCinemaInfoOpen) {
+              scheduleDossierAutoCollapse(4500);
+            }
+            resetDockActivity();
+          }}
+        >
         {/* Módulo A: Identificação da Obra + Botão da Ficha Técnica */}
         <div className="cinema-mini-identity">
           <span className="cinema-mini-series">[{cinemaArtwork.series.toUpperCase()}]</span>
@@ -616,6 +619,7 @@ export const CinemaView: React.FC = () => {
           </div>
 
         </nav>
+      )}
       </div>
   );
 };

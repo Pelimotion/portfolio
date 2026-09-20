@@ -42,10 +42,7 @@ interface AppState {
   stepDJFilter: (direction: -1 | 1, step?: number) => void;
   resetDJFilter: () => void;
 
-  // Modos de Interação com a Obra Espinhaço (Câmera 360° vs Teclado Orgânico)
-  espinhacoInteractionMode: 'camera' | 'keyboard';
-  setEspinhacoInteractionMode: (mode: 'camera' | 'keyboard') => void;
-  toggleEspinhacoInteractionMode: () => void;
+  // Parâmetros Cinéticos da Obra Espinhaço
   espinhacoKineticParams: {
     flexX: number;
     flexY: number;
@@ -243,12 +240,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ djFilterValue: 0 });
   },
 
-  espinhacoInteractionMode: 'camera',
-  setEspinhacoInteractionMode: (mode) => set({ espinhacoInteractionMode: mode }),
-  toggleEspinhacoInteractionMode: () =>
-    set((s) => ({
-      espinhacoInteractionMode: s.espinhacoInteractionMode === 'camera' ? 'keyboard' : 'camera'
-    })),
   espinhacoKineticParams: {
     flexX: 0,
     flexY: 0,

@@ -194,6 +194,9 @@ function createPlaqueTexture(art: Artwork, index: number, isLight: boolean): THR
   ctx.textAlign = 'left';
   // Truncar título longo para não ultrapassar a largura
   let titleText = `${numStr}. ${art.title.toUpperCase()}`;
+  if (art.medium === 'interactive') {
+    titleText += ' ✦ OBRA INTERATIVA';
+  }
   if (ctx.measureText(titleText).width > 880) {
     titleText = `${numStr}. ${art.title.toUpperCase().substring(0, 18)}...`;
   }
@@ -459,6 +462,15 @@ export const GalleryScene3D: React.FC = () => {
     sunLight.shadow.camera.bottom = -22;
     sunLight.shadow.bias = -0.0003;
     scene.add(sunLight);
+
+    // Teto flutuante invisível para gerar penumbra e contraste em volta da obra Espinhaço (Z = 10)
+    const penumbraBlockerGeo = new THREE.PlaneGeometry(24, 24);
+    const penumbraBlockerMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+    const penumbraBlocker = new THREE.Mesh(penumbraBlockerGeo, penumbraBlockerMat);
+    penumbraBlocker.position.set(0, 11.5, 10);
+    penumbraBlocker.rotation.x = Math.PI / 2;
+    penumbraBlocker.castShadow = true;
+    scene.add(penumbraBlocker);
 
     const visitorLight = new THREE.PointLight(
       isLight ? 0xfff3d8 : 0xe4c379,
@@ -986,32 +998,56 @@ export const GalleryScene3D: React.FC = () => {
       const glassH = paperH + 0.50;
       const glassD = isEspinhaco ? 1.10 : 0.45; // Profundidade 3D autêntica para a vitrine escultórica
 
-      const glassGeo = new THREE.BoxGeometry(glassW, glassH, glassD);
-      const glassMat = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        transmission: isEspinhaco ? 0.99 : 0.97,
-        roughness: isLight ? 0.04 : 0.06,
-        roughnessMap: glassRoughnessTex,
-        ior: 1.48,
-        thickness: isEspinhaco ? 0.20 : 0.40,
-        attenuationColor: new THREE.Color(0xe8fff8),
-        attenuationDistance: isEspinhaco ? 8.0 : 4.5,
-        transparent: true,
-        opacity: isEspinhaco ? 0.35 : 0.88,
-        reflectivity: 0.65
-      });
-      const glassMesh = new THREE.Mesh(glassGeo, glassMat);
-      glassMesh.castShadow = true;
-      glassMesh.receiveShadow = true;
-      group.add(glassMesh);
+      let glassMesh: THREE.Mesh;
+      
+      if (isEspinhaco) {
+        // Pedestal circular monumental sem vidro
+        const pedGeo = new THREE.CylinderGeometry(0.9, 0.9, 0.2, 32);
+        const pedMat = new THREE.MeshStandardMaterial({
+          color: isLight ? 0x333333 : 0x111111,
+          roughness: 0.8,
+          metalness: 0.2
+        });
+        glassMesh = new THREE.Mesh(pedGeo, pedMat);
+        glassMesh.position.y = -1.4; // Fica no piso
+        glassMesh.castShadow = true;
+        glassMesh.receiveShadow = true;
+        group.add(glassMesh);
+        
+        // Área de colisão invisível para o raycaster (cobre toda a escultura)
+        const hitGeo = new THREE.CylinderGeometry(1.2, 1.2, 3.0, 16);
+        const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+        const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+        group.add(hitMesh);
+        (hitMesh as any).artworkData = art;
+      } else {
+        const glassGeo = new THREE.BoxGeometry(glassW, glassH, glassD);
+        const glassMat = new THREE.MeshPhysicalMaterial({
+          color: 0xffffff,
+          transmission: 0.97,
+          roughness: isLight ? 0.04 : 0.06,
+          roughnessMap: glassRoughnessTex,
+          ior: 1.48,
+          thickness: 0.40,
+          attenuationColor: new THREE.Color(0xe8fff8),
+          attenuationDistance: 4.5,
+          transparent: true,
+          opacity: 0.88,
+          reflectivity: 0.65
+        });
+        glassMesh = new THREE.Mesh(glassGeo, glassMat);
+        glassMesh.castShadow = true;
+        glassMesh.receiveShadow = true;
+        group.add(glassMesh);
 
-      const frameGeo = new THREE.BoxGeometry(glassW + 0.036, glassH + 0.036, glassD + 0.036);
-      const frameEdges = new THREE.EdgesGeometry(frameGeo);
-      const wireframe = new THREE.LineSegments(frameEdges, new THREE.LineBasicMaterial({
-        color: isLight ? 0x4a4d4b : 0x242826,
-        linewidth: 1
-      }));
-      group.add(wireframe);
+        const frameGeo = new THREE.BoxGeometry(glassW + 0.036, glassH + 0.036, glassD + 0.036);
+        const frameEdges = new THREE.EdgesGeometry(frameGeo);
+        const wireframe = new THREE.LineSegments(frameEdges, new THREE.LineBasicMaterial({
+          color: isLight ? 0x4a4d4b : 0x242826,
+          linewidth: 1
+        }));
+        group.add(wireframe);
+      }
 
       let paperMat: THREE.MeshStandardMaterial;
       let videoElement: HTMLVideoElement | undefined;
@@ -1150,32 +1186,9 @@ export const GalleryScene3D: React.FC = () => {
       (glassMesh as any).artworkData = art;
       group.add(paperMesh);
 
-      // ─── ESCULTURA 3D DO ESPINHAÇO DENTRO DA VITRINE DO TOTEM ───
+      // ─── ESCULTURA 3D DO ESPINHAÇO ───
       if (isEspinhaco) {
         const espinhacoTotemGroup = new THREE.Group();
-
-        // 1. Cabo/Estrutura de Suspensão Minimalista de Museu (anodizado grafite)
-        const cableGeo = new THREE.CylinderGeometry(0.008, 0.008, glassH * 0.94, 8);
-        const cableMat = new THREE.MeshStandardMaterial({
-          color: isLight ? 0x222423 : 0x0e100f,
-          metalness: 0.9,
-          roughness: 0.25
-        });
-        const cableMesh = new THREE.Mesh(cableGeo, cableMat);
-        espinhacoTotemGroup.add(cableMesh);
-
-        const clampGeo = new THREE.BoxGeometry(0.14, 0.06, 0.14);
-        const clampMat = new THREE.MeshStandardMaterial({
-          color: isLight ? 0x383e3b : 0x1a1d1c,
-          metalness: 0.85,
-          roughness: 0.28
-        });
-        const topClamp = new THREE.Mesh(clampGeo, clampMat);
-        topClamp.position.set(0, 1.35, 0);
-        const btmClamp = new THREE.Mesh(clampGeo, clampMat);
-        btmClamp.position.set(0, -1.35, 0);
-        espinhacoTotemGroup.add(topClamp);
-        espinhacoTotemGroup.add(btmClamp);
 
         // 2. Grupo Suporte do Modelo (Ondulação Cinética + Giro Interativo)
         const spineHolder = new THREE.Group();
@@ -1199,7 +1212,7 @@ export const GalleryScene3D: React.FC = () => {
             pGeo.setAttribute('position', new THREE.BufferAttribute(rawArr, 3));
             const pCloud = new THREE.Points(pGeo, pCloudMat);
             // espinhaco_points.bin já é orientado na vertical e centralizado (altura 1.45m)
-            pCloud.scale.set(1.65, 1.65, 1.65);
+            pCloud.scale.set(1.9, 1.9, 1.9); // Escala ampliada 15% para presença monumental
             spineHolder.add(pCloud);
             if (espinhacoTotem) {
               espinhacoTotem.pointsCloud = pCloud;
@@ -1228,7 +1241,7 @@ export const GalleryScene3D: React.FC = () => {
               const box = new THREE.Box3().setFromBufferAttribute(geom.attributes.position as THREE.BufferAttribute);
               const sz = new THREE.Vector3();
               box.getSize(sz);
-              const targetHeight = 2.4;
+              const targetHeight = 2.76; // Escala monumental (+15%)
               const s = targetHeight / Math.max(sz.x, sz.y, sz.z);
               geom.scale(s, s, s);
 

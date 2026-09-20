@@ -351,6 +351,18 @@ export class PlayerController {
           this.onToggleVideoAudio();
         }
         break;
+      default:
+        // Handle e.key for characters that might not map to the expected e.code on some layouts
+        if (e.key.toLowerCase() === 'i') {
+          if (this.isCinemaActive) {
+            e.preventDefault();
+            useAppStore.getState().toggleCinemaInfo();
+          }
+        }
+        break;
+    }
+    
+    switch (e.code) {
       case 'Digit1':
       case 'Numpad1':
         if (!this.isCinemaActive && !this.isHoldingCD) {
