@@ -3124,8 +3124,286 @@ a {
 }
 
 /* ==========================================================================
-   CD 3D VIEWMODEL HUD DOCK (Tactile In-Hand Controller - Feathered Scrim)
+   CD SPLIT STAGE & INTERACTIVE SOUND CHAMBER
    ========================================================================== */
+
+.cd-split-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: hidden;
+  user-select: none;
+  animation: cdFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cdFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Painel Esquerdo: Visualizador Interativo Bounded */
+.cd-visualizer-pane {
+  position: relative;
+  width: 48%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 36px 40px 100px 44px;
+  box-sizing: border-box;
+  pointer-events: auto;
+  background: linear-gradient(
+    90deg,
+    rgba(7, 9, 10, 0.75) 0%,
+    rgba(7, 9, 10, 0.55) 70%,
+    rgba(7, 9, 10, 0) 100%
+  );
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .cd-visualizer-pane {
+  background: linear-gradient(
+    90deg,
+    rgba(245, 247, 248, 0.8) 0%,
+    rgba(245, 247, 248, 0.6) 70%,
+    rgba(245, 247, 248, 0) 100%
+  );
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cd-visualizer-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 420px;
+}
+
+.cd-visualizer-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 3px 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--accent-gold, #e4c379);
+}
+
+[data-theme='light'] .cd-visualizer-meta-pill {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--accent-gold, #b88d34);
+}
+
+.cd-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.cd-meta-tag {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cd-current-title {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(22px, 2.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 4px 0 2px 0;
+  color: var(--text-primary, #ffffff);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+}
+
+.cd-current-sub {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+}
+
+/* Dynamic Live FFT Bars */
+.cd-fft-meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 20px;
+  margin-top: 10px;
+}
+
+.cd-fft-bar {
+  width: 3px;
+  height: 4px;
+  background: rgba(77, 238, 234, 0.75);
+  border-radius: 2px;
+  transition: height 0.15s ease, background-color 0.2s ease;
+}
+
+[data-theme='light'] .cd-fft-bar {
+  background: rgba(2, 132, 199, 0.75);
+}
+
+.cd-fft-bar.is-active {
+  animation: cdFftDance 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes cdFftDance {
+  0% {
+    height: 4px;
+  }
+  30% {
+    height: 14px;
+  }
+  60% {
+    height: 8px;
+  }
+  100% {
+    height: 20px;
+  }
+}
+
+/* Canvas Wrap bounded no lado esquerdo */
+.cd-visualizer-canvas-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.cd-visualizer-footer {
+  position: relative;
+  z-index: 10;
+}
+
+.cd-visualizer-hint {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary, #64748b);
+  opacity: 0.8;
+}
+
+/* Painel Direito: 3D CD Jewel Case */
+.cd-jewel-pane {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 36px 44px 100px 20px;
+  box-sizing: border-box;
+}
+
+.cd-jewel-top-info {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.cd-jewel-status-capsule {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 8px 14px;
+  background: rgba(12, 16, 15, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme='light'] .cd-jewel-status-capsule {
+  background: rgba(245, 247, 248, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.cd-view-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent-cyan, #4deeea);
+}
+
+[data-theme='light'] .cd-view-badge {
+  color: var(--accent-cyan, #0284c7);
+}
+
+.cd-action-subhint {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary, #94a3b8);
+}
+
+/* Responsividade Mobile para CD Split Stage */
+@media (max-width: 768px) {
+  .cd-split-stage {
+    flex-direction: column;
+  }
+
+  .cd-visualizer-pane {
+    width: 100%;
+    height: 38%;
+    padding: 20px 16px 10px 16px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(
+      180deg,
+      rgba(7, 9, 10, 0.85) 0%,
+      rgba(7, 9, 10, 0.6) 80%,
+      rgba(7, 9, 10, 0) 100%
+    );
+  }
+
+  .cd-current-title {
+    font-size: 18px;
+  }
+
+  .cd-visualizer-footer {
+    display: none;
+  }
+
+  .cd-jewel-pane {
+    width: 100%;
+    height: 62%;
+    padding: 12px 16px 80px 16px;
+    align-items: center;
+  }
+
+  .cd-jewel-top-info {
+    align-items: center;
+  }
+
+  .cd-jewel-status-capsule {
+    align-items: center;
+    padding: 6px 12px;
+  }
+}
 
 /* ==========================================================================
    CD JEWEL CASE VIEWMODEL HUD (Cápsula Minimalista de Atalhos)

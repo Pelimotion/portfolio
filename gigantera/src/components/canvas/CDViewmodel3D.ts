@@ -58,8 +58,9 @@ export class CDViewmodel3D {
   constructor(onTrackSelected?: (track: AudioTrackInfo) => void) {
     this.onTrackSelected = onTrackSelected;
 
+    const isMob = typeof window !== 'undefined' && window.innerWidth < 768;
     this.rootGroup = new THREE.Group();
-    this.rootGroup.position.set(0.06, this.currentY, this.currentZ);
+    this.rootGroup.position.set(isMob ? 0.02 : 0.18, this.currentY, this.currentZ);
 
     this.caseGroup = new THREE.Group();
     this.handGroup = new THREE.Group();
@@ -105,8 +106,8 @@ export class CDViewmodel3D {
     // 2. Constrói o estojo de acrílico Jewel Case 3D
     this.buildJewelCase();
 
-    // 3. Constrói a mão 3D low-poly facetada (PS1/PS2)
-    this.buildLowPolyHand();
+    // 3. Constrói a mão 3D em wireframe cibernético detalhado (carne 100% invisível)
+    this.buildWireframeCyberHand();
 
     // Monta hierarquia
     this.rootGroup.add(this.caseGroup);
@@ -211,95 +212,100 @@ export class CDViewmodel3D {
   }
 
   /**
-   * Constrói a mão 3D low-poly facetada (Flat Shading) segurando o CD na borda direita
+   * Constrói a mão 3D em wireframe cibernético detalhado e arredondado (16-24 segmentos)
+   * A carne/pele é 100% invisível — renderizam-se apenas as linhas de contorno e nós articulares luminosos.
    */
-  private buildLowPolyHand(): void {
-    const handMat = new THREE.MeshStandardMaterial({
-      color: 0xd2cfc7,
-      roughness: 0.78,
-      metalness: 0.06,
-      flatShading: true
+  private buildWireframeCyberHand(): void {
+    const wireMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8, // Cianita luminescente de alta precisão
+      transparent: true,
+      opacity: 0.76,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
 
-    // Antebraço entrando da direita inferior
-    const armGeo = new THREE.CylinderGeometry(0.075, 0.11, 0.55, 6);
-    const armMesh = new THREE.Mesh(armGeo, handMat);
-    armMesh.position.set(0.38, -0.28, -0.08);
-    armMesh.rotation.set(0.35, 0.2, -0.75);
-    this.handGroup.add(armMesh);
+    const nodeMat = new THREE.LineBasicMaterial({
+      color: 0x6df5b5, // Jade terminal neon para nós articulares
+      transparent: true,
+      opacity: 0.88,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
 
-    // Pulso angular
-    const wristGeo = new THREE.BoxGeometry(0.12, 0.08, 0.09);
-    const wristMesh = new THREE.Mesh(wristGeo, handMat);
-    wristMesh.position.set(0.26, -0.12, -0.05);
-    wristMesh.rotation.set(0.2, 0.1, -0.4);
-    this.handGroup.add(wristMesh);
+    const addWireGeo = (geo: THREE.BufferGeometry, px: number, py: number, pz: number, rx: number, ry: number, rz: number) => {
+      const wireGeo = new THREE.WireframeGeometry(geo);
+      const lines = new THREE.LineSegments(wireGeo, wireMat);
+      lines.position.set(px, py, pz);
+      lines.rotation.set(rx, ry, rz);
+      this.handGroup.add(lines);
+      return lines;
+    };
 
-    // Palma da mão apoiada no canto direito
-    const palmGeo = new THREE.BoxGeometry(0.14, 0.16, 0.07);
-    const palmMesh = new THREE.Mesh(palmGeo, handMat);
-    palmMesh.position.set(0.24, -0.05, -0.02);
-    palmMesh.rotation.set(0.1, -0.15, -0.25);
-    this.handGroup.add(palmMesh);
+    const addJointNode = (radius: number, px: number, py: number, pz: number) => {
+      const sphGeo = new THREE.SphereGeometry(radius, 10, 8);
+      const wireGeo = new THREE.WireframeGeometry(sphGeo);
+      const node = new THREE.LineSegments(wireGeo, nodeMat);
+      node.position.set(px, py, pz);
+      this.handGroup.add(node);
+      return node;
+    };
 
-    // Polegar
-    const thumbProxGeo = new THREE.CylinderGeometry(0.024, 0.028, 0.09, 5);
-    const thumbProx = new THREE.Mesh(thumbProxGeo, handMat);
-    thumbProx.position.set(0.18, 0.02, 0.028);
-    thumbProx.rotation.set(-0.4, 0.3, -0.6);
-    this.handGroup.add(thumbProx);
+    // 1. Antebraço arredondado e anatômico (20 segmentos radiais)
+    const armGeo = new THREE.CylinderGeometry(0.075, 0.11, 0.55, 20, 5);
+    addWireGeo(armGeo, 0.38, -0.28, -0.08, 0.35, 0.2, -0.75);
 
-    const thumbDistGeo = new THREE.CylinderGeometry(0.02, 0.024, 0.08, 5);
-    const thumbDist = new THREE.Mesh(thumbDistGeo, handMat);
-    thumbDist.position.set(0.16, 0.07, 0.035);
-    thumbDist.rotation.set(-0.6, 0.1, -0.2);
-    this.handGroup.add(thumbDist);
+    // 2. Pulso cilíndrico curvo
+    const wristGeo = new THREE.CylinderGeometry(0.065, 0.075, 0.12, 18, 2);
+    addWireGeo(wristGeo, 0.26, -0.12, -0.05, 0.2, 0.1, -0.4);
+    addJointNode(0.038, 0.26, -0.12, -0.05);
 
-    // Dedo Indicador
-    const indexGeo1 = new THREE.CylinderGeometry(0.02, 0.024, 0.09, 5);
-    const index1 = new THREE.Mesh(indexGeo1, handMat);
-    index1.position.set(0.26, 0.08, -0.02);
-    index1.rotation.set(0.2, 0.1, 0.4);
-    this.handGroup.add(index1);
+    // 3. Palma da mão curvilínea com subdivisões finas
+    const palmGeo = new THREE.BoxGeometry(0.14, 0.16, 0.07, 3, 3, 2);
+    addWireGeo(palmGeo, 0.24, -0.05, -0.02, 0.1, -0.15, -0.25);
 
-    const indexGeo2 = new THREE.CylinderGeometry(0.017, 0.02, 0.08, 5);
-    const index2 = new THREE.Mesh(indexGeo2, handMat);
-    index2.position.set(0.23, 0.13, -0.015);
-    index2.rotation.set(0.1, -0.4, 0.9);
-    this.handGroup.add(index2);
+    // Nós dos nós dos dedos (Knuckles)
+    addJointNode(0.022, 0.21, 0.02, 0.015);  // Polegar base
+    addJointNode(0.018, 0.26, 0.06, -0.02);  // Indicador base
+    addJointNode(0.018, 0.27, 0.00, -0.03);  // Médio base
+    addJointNode(0.017, 0.26, -0.05, -0.04); // Anelar base
+    addJointNode(0.015, 0.24, -0.11, -0.045);// Mindinho base
 
-    // Dedo Médio
-    const midGeo1 = new THREE.CylinderGeometry(0.021, 0.025, 0.1, 5);
-    const mid1 = new THREE.Mesh(midGeo1, handMat);
-    mid1.position.set(0.27, 0.01, -0.03);
-    mid1.rotation.set(0.1, 0.0, 0.25);
-    this.handGroup.add(mid1);
+    // 4. Polegar arredondado (16 segmentos radiais)
+    const thumbProxGeo = new THREE.CylinderGeometry(0.024, 0.028, 0.09, 16, 2);
+    addWireGeo(thumbProxGeo, 0.18, 0.02, 0.028, -0.4, 0.3, -0.6);
+    addJointNode(0.016, 0.165, 0.05, 0.032);
 
-    const midGeo2 = new THREE.CylinderGeometry(0.018, 0.021, 0.085, 5);
-    const mid2 = new THREE.Mesh(midGeo2, handMat);
-    mid2.position.set(0.24, 0.02, -0.015);
-    mid2.rotation.set(0.0, -0.4, 0.85);
-    this.handGroup.add(mid2);
+    const thumbDistGeo = new THREE.CylinderGeometry(0.02, 0.024, 0.08, 16, 2);
+    addWireGeo(thumbDistGeo, 0.16, 0.07, 0.035, -0.6, 0.1, -0.2);
 
-    // Dedo Anelar
-    const ringGeo1 = new THREE.CylinderGeometry(0.019, 0.023, 0.09, 5);
-    const ring1 = new THREE.Mesh(ringGeo1, handMat);
-    ring1.position.set(0.26, -0.06, -0.04);
-    ring1.rotation.set(0.0, 0.0, 0.15);
-    this.handGroup.add(ring1);
+    // 5. Dedo Indicador arredondado
+    const indexGeo1 = new THREE.CylinderGeometry(0.02, 0.024, 0.09, 16, 2);
+    addWireGeo(indexGeo1, 0.26, 0.08, -0.02, 0.2, 0.1, 0.4);
+    addJointNode(0.016, 0.245, 0.11, -0.018);
 
-    const ringGeo2 = new THREE.CylinderGeometry(0.016, 0.019, 0.075, 5);
-    const ring2 = new THREE.Mesh(ringGeo2, handMat);
-    ring2.position.set(0.23, -0.06, -0.02);
-    ring2.rotation.set(-0.1, -0.3, 0.75);
-    this.handGroup.add(ring2);
+    const indexGeo2 = new THREE.CylinderGeometry(0.017, 0.02, 0.08, 16, 2);
+    addWireGeo(indexGeo2, 0.23, 0.13, -0.015, 0.1, -0.4, 0.9);
 
-    // Dedo Mindinho
-    const pinkyGeo = new THREE.CylinderGeometry(0.015, 0.019, 0.08, 5);
-    const pinky = new THREE.Mesh(pinkyGeo, handMat);
-    pinky.position.set(0.24, -0.13, -0.045);
-    pinky.rotation.set(-0.2, 0.0, 0.35);
-    this.handGroup.add(pinky);
+    // 6. Dedo Médio arredondado
+    const midGeo1 = new THREE.CylinderGeometry(0.021, 0.025, 0.1, 16, 2);
+    addWireGeo(midGeo1, 0.27, 0.01, -0.03, 0.1, 0.0, 0.25);
+    addJointNode(0.016, 0.255, 0.015, -0.022);
+
+    const midGeo2 = new THREE.CylinderGeometry(0.018, 0.021, 0.085, 16, 2);
+    addWireGeo(midGeo2, 0.24, 0.02, -0.015, 0.0, -0.4, 0.85);
+
+    // 7. Dedo Anelar arredondado
+    const ringGeo1 = new THREE.CylinderGeometry(0.019, 0.023, 0.09, 16, 2);
+    addWireGeo(ringGeo1, 0.26, -0.06, -0.04, 0.0, 0.0, 0.15);
+    addJointNode(0.015, 0.245, -0.06, -0.03);
+
+    const ringGeo2 = new THREE.CylinderGeometry(0.016, 0.019, 0.075, 16, 2);
+    addWireGeo(ringGeo2, 0.23, -0.06, -0.02, -0.1, -0.3, 0.75);
+
+    // 8. Dedo Mindinho arredondado
+    const pinkyGeo = new THREE.CylinderGeometry(0.015, 0.019, 0.08, 16, 2);
+    addWireGeo(pinkyGeo, 0.24, -0.13, -0.045, -0.2, 0.0, 0.35);
+    addJointNode(0.014, 0.22, -0.14, -0.035);
   }
 
   /**
@@ -662,7 +668,10 @@ export class CDViewmodel3D {
     const breathingY = Math.sin(time * 1.8) * 0.0018;
     const breathingX = Math.cos(time * 0.9) * 0.001;
 
-    this.rootGroup.position.x = 0.06 + breathingX;
+    const isMob = useAppStore.getState().isMobile;
+    const baseTargetX = isMob ? 0.02 : 0.18;
+
+    this.rootGroup.position.x = baseTargetX + breathingX;
     this.rootGroup.position.y = this.currentY + breathingY;
     this.rootGroup.position.z = this.currentZ;
 

@@ -119,6 +119,122 @@ function createWallTexture(isLight: boolean): THREE.CanvasTexture {
 }
 
 /**
+ * Gerador procedural de textura para o piso do Santuário da Obra Interativa:
+ * Ardósia/Basalto escuro mineral com degradê longitudinal suave (do tom da galeria para o grafite profundo),
+ * agregados finos de quartzo, juntas de dilatação sutis e nunca 100% preto chapado.
+ */
+function createSanctuaryFloorTexture(isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d')!;
+
+  // Gradiente longitudinal: do tom inicial de transição (topo y=0) ao carvão mineral no clímax (y=1024)
+  const grad = ctx.createLinearGradient(0, 0, 0, 1024);
+  if (isLight) {
+    grad.addColorStop(0.0, '#eae7df'); // Cor de entrada idêntica ao microcimento
+    grad.addColorStop(0.35, '#787a76'); // Transição em degradê
+    grad.addColorStop(0.75, '#2c312e'); // Ardósia mineral profunda
+    grad.addColorStop(1.0, '#1c201e');  // Grafite aveludado minimalista
+  } else {
+    grad.addColorStop(0.0, '#121514'); // Cor de entrada idêntica ao microcimento dark
+    grad.addColorStop(0.35, '#101312'); // Transição suave
+    grad.addColorStop(0.75, '#0b0d0c'); // Basalto profundo
+    grad.addColorStop(1.0, '#070908');  // Grafite abissal sofisticado (nunca 0x000000)
+  }
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  const imgData = ctx.getImageData(0, 0, 1024, 1024);
+  const data = imgData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    // Granulação mineral tátil e micro-cristais de quartzo
+    const grain = (Math.random() - 0.5) * (isLight ? 12 : 7);
+    const fleck = Math.random() > 0.985 ? (isLight ? 28 : 22) : 0;
+    data[i] = Math.min(255, Math.max(0, data[i] + grain + fleck));
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain + fleck));
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain + fleck));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Manchas minerais orgânicas e esfumados sutis
+  for (let s = 0; s < 30; s++) {
+    const sx = Math.random() * 1024;
+    const sy = Math.random() * 1024;
+    const sSize = 30 + Math.random() * 100;
+    const sOpacity = Math.random() * 0.04;
+    ctx.beginPath();
+    ctx.arc(sx, sy, sSize, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${isLight ? '255,255,255' : '150,180,170'}, ${sOpacity})`;
+    ctx.fill();
+  }
+
+  // Juntas de dilatação arquiteturais de placas de ardósia (512x512)
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(512, 0); ctx.lineTo(512, 1024);
+  ctx.moveTo(0, 512); ctx.lineTo(1024, 512);
+  ctx.stroke();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Gerador procedural de textura para as paredes do Santuário:
+ * Gesso acústico profundo com degradê que acompanha o piso, micro-relevo tátil e oclusão vertical.
+ */
+function createSanctuaryWallTexture(isLight: boolean): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d')!;
+
+  // Gradiente horizontal (da entrada da sala ao fundo Z)
+  const grad = ctx.createLinearGradient(0, 0, 1024, 0);
+  if (isLight) {
+    grad.addColorStop(0.0, '#edeae2');
+    grad.addColorStop(0.4, '#8a8d88');
+    grad.addColorStop(1.0, '#2b2f2d');
+  } else {
+    grad.addColorStop(0.0, '#111413');
+    grad.addColorStop(0.4, '#0f1110');
+    grad.addColorStop(1.0, '#090b0a');
+  }
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  // Oclusão vertical (rodapé e teto mais profundos)
+  const vGrad = ctx.createLinearGradient(0, 0, 0, 1024);
+  vGrad.addColorStop(0.0, 'rgba(0,0,0,0.28)');
+  vGrad.addColorStop(0.12, 'rgba(0,0,0,0)');
+  vGrad.addColorStop(0.88, 'rgba(0,0,0,0)');
+  vGrad.addColorStop(1.0, 'rgba(0,0,0,0.32)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  const imgData = ctx.getImageData(0, 0, 1024, 1024);
+  const data = imgData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    const grain = (Math.random() - 0.5) * (isLight ? 8 : 5);
+    data[i] = Math.min(255, Math.max(0, data[i] + grain));
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain));
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
  * Gerador procedural de mapa de rugosidade para os vidros das vitrines:
  * Simula a presença física do vidro com sutis impressões digitais nas bordas,
  * leves marcas de limpeza de museu e reflexo não uniforme.
@@ -465,10 +581,10 @@ export const GalleryScene3D: React.FC = () => {
 
     // Encontrar a posição Z da obra interativa para posicionar a penumbra
     const interactiveArt = layout.artworksWithCoords.find(a => a.medium === 'interactive');
-    const penumbraZ = interactiveArt ? interactiveArt.computedCoords.z : 10;
+    const penumbraZ = interactiveArt ? interactiveArt.computedCoords.z : -76.5;
 
     // Teto flutuante invisível para gerar penumbra e contraste em volta da obra Espinhaço
-    const penumbraBlockerGeo = new THREE.PlaneGeometry(36, 36);
+    const penumbraBlockerGeo = new THREE.PlaneGeometry(36, 44);
     const penumbraBlockerMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
     const penumbraBlocker = new THREE.Mesh(penumbraBlockerGeo, penumbraBlockerMat);
     penumbraBlocker.position.set(0, 11.5, penumbraZ);
@@ -476,43 +592,103 @@ export const GalleryScene3D: React.FC = () => {
     penumbraBlocker.castShadow = true;
     scene.add(penumbraBlocker);
 
-    // Spotlight dramático focado na obra interativa no Sanctuary of Penumbra
+    // ─── NOVA ILUMINAÇÃO CURATORIAL & EXPOGRAFIA DO SANTUÁRIO DO ESPINHAÇO ───
     if (interactiveArt) {
+      const sanctuaryFloorLightTex = createSanctuaryFloorTexture(true);
+      const sanctuaryFloorDarkTex = createSanctuaryFloorTexture(false);
+      const sanctuaryWallLightTex = createSanctuaryWallTexture(true);
+      const sanctuaryWallDarkTex = createSanctuaryWallTexture(false);
+
+      // 1. Sculptural Downlight focado suavemente nas partículas (sem sombras duras na GPU)
       const dramaLight = new THREE.SpotLight(
-        isLight ? 0xfffcf0 : 0xe4c379,
-        isLight ? 1.5 : 2.5,
-        30,
-        Math.PI / 6,
-        0.5,
+        isLight ? 0xfffcf2 : 0xfcf5e8,
+        isLight ? 2.4 : 3.2,
+        34,
+        Math.PI / 5,
+        0.75,
         1.2
       );
-      dramaLight.position.set(0, 10, penumbraZ + 5);
-      dramaLight.target.position.set(0, 0, penumbraZ);
-      dramaLight.castShadow = true;
+      dramaLight.position.set(0, 10.5, penumbraZ + 3.5);
+      dramaLight.target.position.set(0, 0.4, penumbraZ);
+      dramaLight.castShadow = false; // Partículas não necessitam de shadow mapping custoso
       scene.add(dramaLight);
       scene.add(dramaLight.target);
 
-      // Luz de contorno cianita/azul-turquesa suave atrás da escultura viva
+      // 2. Contraluz Escultural (Rim/Kicker) em cianita suave para silhueta tridimensional
       const rimLight = new THREE.PointLight(
-        isLight ? 0x165d6b : 0x38bdf8,
-        isLight ? 0.65 : 0.95,
-        14
+        0x38bdf8,
+        isLight ? 0.85 : 1.25,
+        18,
+        1.2
       );
-      rimLight.position.set(0, 1.2, penumbraZ - 3.2);
+      rimLight.position.set(0, 1.4, penumbraZ - 3.2);
       scene.add(rimLight);
 
-      // Plinto/piso arquitetural escuro no Sanctuary of Penumbra (traz suspense tátil e diferenciação)
-      const penumbraFloorGeo = new THREE.PlaneGeometry(24, 28);
+      // 3. Wall Washers Laterais Suaves (revelam a textura das paredes do santuário)
+      const leftWallWasher = new THREE.PointLight(
+        isLight ? 0xfff5ea : 0xbed4dc,
+        isLight ? 0.65 : 0.85,
+        18,
+        1.4
+      );
+      leftWallWasher.position.set(-layout.halfWidth + 2.0, 4.5, penumbraZ);
+      scene.add(leftWallWasher);
+
+      const rightWallWasher = new THREE.PointLight(
+        isLight ? 0xfff5ea : 0xbed4dc,
+        isLight ? 0.65 : 0.85,
+        18,
+        1.4
+      );
+      rightWallWasher.position.set(layout.halfWidth - 2.0, 4.5, penumbraZ);
+      scene.add(rightWallWasher);
+
+      // 4. Piso em degradê procedural do Santuário (Ardósia/Basalto com transição suave a partir de Z ≈ -52m)
+      const sanctuaryFloorLength = Math.abs(layout.backWallZ - (-52));
+      const sanctuaryCenterZ = (-52 + layout.backWallZ) / 2;
+      const penumbraFloorGeo = new THREE.PlaneGeometry(layout.roomWidth + 4, sanctuaryFloorLength);
       penumbraFloorGeo.rotateX(-Math.PI / 2);
       const penumbraFloorMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0x222524 : 0x090b0a,
-        roughness: 0.92,
-        metalness: 0.08
+        map: isLight ? sanctuaryFloorLightTex : sanctuaryFloorDarkTex,
+        roughness: isLight ? 0.62 : 0.68,
+        metalness: 0.12
       });
       const penumbraFloorMesh = new THREE.Mesh(penumbraFloorGeo, penumbraFloorMat);
-      penumbraFloorMesh.position.set(0, -3.18, penumbraZ);
+      penumbraFloorMesh.position.set(0, -3.185, sanctuaryCenterZ);
       penumbraFloorMesh.receiveShadow = true;
       scene.add(penumbraFloorMesh);
+
+      // 5. Paredes do Santuário com degradê acústico harmonizado
+      const sanctuaryWallGeo = new THREE.PlaneGeometry(sanctuaryFloorLength, 24);
+      const sanctuaryWallMat = new THREE.MeshStandardMaterial({
+        map: isLight ? sanctuaryWallLightTex : sanctuaryWallDarkTex,
+        roughness: 0.92,
+        metalness: 0.02
+      });
+
+      const leftSanctuaryWall = new THREE.Mesh(sanctuaryWallGeo, sanctuaryWallMat);
+      leftSanctuaryWall.position.set(-layout.halfWidth - 0.98, 6, sanctuaryCenterZ);
+      leftSanctuaryWall.rotation.y = Math.PI / 2;
+      leftSanctuaryWall.receiveShadow = true;
+      scene.add(leftSanctuaryWall);
+
+      const rightSanctuaryWall = new THREE.Mesh(sanctuaryWallGeo, sanctuaryWallMat);
+      rightSanctuaryWall.position.set(layout.halfWidth + 0.98, 6, sanctuaryCenterZ);
+      rightSanctuaryWall.rotation.y = -Math.PI / 2;
+      rightSanctuaryWall.receiveShadow = true;
+      scene.add(rightSanctuaryWall);
+
+      // Parede de fundo do Santuário em gesso aveludado profundo
+      const sanctuaryBackWallGeo = new THREE.PlaneGeometry(layout.roomWidth + 4, 24);
+      const sanctuaryBackWallMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0x242826 : 0x080a09,
+        roughness: 0.95,
+        metalness: 0.01
+      });
+      const sanctuaryBackWall = new THREE.Mesh(sanctuaryBackWallGeo, sanctuaryBackWallMat);
+      sanctuaryBackWall.position.set(0, 6, layout.backWallZ + 0.02);
+      sanctuaryBackWall.receiveShadow = true;
+      scene.add(sanctuaryBackWall);
     }
 
     // Paredes Arquitetônicas Baffle (Foyer -> Journey)
@@ -1261,12 +1437,12 @@ export const GalleryScene3D: React.FC = () => {
         const spineHolder = new THREE.Group();
         espinhacoTotemGroup.add(spineHolder);
 
-        // 3. Nuvem de Pontos Imediata (Carrega em milissegundos via espinhaco_points.bin)
+        // 3. Nuvem de Pontos Pura & Otimizada (50k pontos, zero malha sólida duplicada)
         const pCloudMat = new THREE.PointsMaterial({
-          color: isLight ? 0x165d6b : 0x4fc3f7,
-          size: 0.016,
+          color: isLight ? 0x009bb5 : 0x4deeea,
+          size: 0.020,
           transparent: true,
-          opacity: 0.85,
+          opacity: 0.92,
           blending: THREE.AdditiveBlending,
           depthWrite: false
         });
@@ -1279,7 +1455,7 @@ export const GalleryScene3D: React.FC = () => {
             pGeo.setAttribute('position', new THREE.BufferAttribute(rawArr, 3));
             const pCloud = new THREE.Points(pGeo, pCloudMat);
             // espinhaco_points.bin já é orientado na vertical e centralizado (altura 1.45m)
-            pCloud.scale.set(1.9, 1.9, 1.9); // Escala ampliada 15% para presença monumental
+            pCloud.scale.set(1.9, 1.9, 1.9); // Escala monumental
             spineHolder.add(pCloud);
             if (espinhacoTotem) {
               espinhacoTotem.pointsCloud = pCloud;
@@ -1287,56 +1463,7 @@ export const GalleryScene3D: React.FC = () => {
           })
           .catch((err) => console.warn('[Totem pointsCloud] Load error:', err));
 
-        // 4. Modelo 3D GLB Texturizado PBR Autêntico (espinhaco.glb)
-        const gltfLoader = new GLTFLoader();
-        gltfLoader.setMeshoptDecoder(MeshoptDecoder);
-        gltfLoader.load(
-          `${cleanBase}models/espinhaco.glb`,
-          (gltf) => {
-            let originalMesh: THREE.Mesh | null = null;
-            gltf.scene.traverse((obj) => {
-              if ((obj as THREE.Mesh).isMesh && !originalMesh) {
-                originalMesh = obj as THREE.Mesh;
-              }
-            });
-            if (originalMesh) {
-              const geom = (originalMesh as THREE.Mesh).geometry.clone();
-              geom.computeVertexNormals();
-              geom.center();
-              geom.rotateZ(Math.PI / 2); // Deita o eixo X para a vertical Y
-
-              const box = new THREE.Box3().setFromBufferAttribute(geom.attributes.position as THREE.BufferAttribute);
-              const sz = new THREE.Vector3();
-              box.getSize(sz);
-              const targetHeight = 2.76; // Escala monumental (+15%)
-              const s = targetHeight / Math.max(sz.x, sz.y, sz.z);
-              geom.scale(s, s, s);
-
-              const solidMat = new THREE.MeshStandardMaterial({
-                color: isLight ? 0x8a9290 : 0xd2dad6,
-                roughness: 0.26,
-                metalness: 0.92,
-                emissive: new THREE.Color(0x0e2832),
-                emissiveIntensity: 0.35,
-                envMapIntensity: 1.8
-              });
-              const solidMesh = new THREE.Mesh(geom, solidMat);
-              solidMesh.castShadow = true;
-              solidMesh.receiveShadow = true;
-              spineHolder.add(solidMesh);
-              if (espinhacoTotem) {
-                espinhacoTotem.solidMesh = solidMesh;
-                if (espinhacoTotem.pointsCloud) {
-                  (espinhacoTotem.pointsCloud.material as THREE.PointsMaterial).opacity = 0.20;
-                }
-              }
-            }
-          },
-          undefined,
-          (err) => console.warn('[Totem GLB] Load error:', err)
-        );
-
-        // 5. Luz Interna Focal da Vitrine (Projeta brilho especular sobre a coluna metálica)
+        // 4. Luz Interna Focal da Escultura
         const totemLight = new THREE.PointLight(0x70d8ff, 1.8, 6.0, 1.2);
         totemLight.position.set(0, 1.6, 0.55);
         espinhacoTotemGroup.add(totemLight);
@@ -1725,8 +1852,8 @@ export const GalleryScene3D: React.FC = () => {
 
       // CASO A: Usuário segurando o CD Jewel Case 3D
       if (state.isHoldingCD) {
-        if (cdViewmodel.backInlayMesh) {
-          raycaster.setFromCamera(tapCoord, camera);
+        raycaster.setFromCamera(tapCoord, camera);
+        if (state.cdFlipped && cdViewmodel.backInlayMesh) {
           const cdHits = raycaster.intersectObject(cdViewmodel.backInlayMesh);
           if (cdHits.length > 0 && cdHits[0].uv) {
             const trackIdx = cdViewmodel.getTrackIndexAtUV(cdHits[0].uv);
@@ -1735,6 +1862,12 @@ export const GalleryScene3D: React.FC = () => {
               return;
             }
           }
+        }
+        const caseHits = raycaster.intersectObjects(cdViewmodel.caseGroup.children, true);
+        if (caseHits.length > 0) {
+          state.flipCD();
+          cdViewmodel.flip();
+          return;
         }
         return;
       }
@@ -2084,8 +2217,8 @@ export const GalleryScene3D: React.FC = () => {
 
       // Se estiver segurando o CD na mão
       if (state.isHoldingCD) {
-        if (cdViewmodel.backInlayMesh) {
-          raycaster.setFromCamera(mouseCoord, camera);
+        raycaster.setFromCamera(mouseCoord, camera);
+        if (state.cdFlipped && cdViewmodel.backInlayMesh) {
           const cdHits = raycaster.intersectObject(cdViewmodel.backInlayMesh);
           if (cdHits.length > 0 && cdHits[0].uv) {
             const trackIdx = cdViewmodel.getTrackIndexAtUV(cdHits[0].uv);
@@ -2095,10 +2228,13 @@ export const GalleryScene3D: React.FC = () => {
             }
           }
         }
-        // Se clicou fora da tracklist, guarda o CD e volta a controlar a mira
-        state.stowCD();
-        cdViewmodel.stow();
-        playerController.requestLock();
+        // Se clicou no estojo de CD (capa, borda ou acrílico), alterna entre capa e contracapa
+        const caseHits = raycaster.intersectObjects(cdViewmodel.caseGroup.children, true);
+        if (caseHits.length > 0) {
+          state.flipCD();
+          cdViewmodel.flip();
+          return;
+        }
         return;
       }
 
@@ -2249,6 +2385,14 @@ export const GalleryScene3D: React.FC = () => {
     window.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('keydown', onGlobalKeyDown, { capture: true });
     window.addEventListener('gigantera:request-lock', handleRequestLock);
+
+    const handleFlipCDEvent = () => {
+      const state = useAppStore.getState();
+      if (state.isHoldingCD) {
+        cdViewmodel.flip();
+      }
+    };
+    window.addEventListener('gigantera:flip-cd', handleFlipCDEvent);
 
     const onResize = () => {
       width = container.clientWidth;
@@ -2903,42 +3047,26 @@ export const GalleryScene3D: React.FC = () => {
         espinhacoWakeFactor = espinhacoTotem.wakeFactor;
         const wf = espinhacoWakeFactor;
 
+        // Rotação contínua 360° em turntable (gira continuamente sem congelar)
+        espinhacoTotem.spineHolder.rotation.y += delta * 0.45;
+        const baseFloat = Math.sin(elapsedTime * 1.5) * 0.04;
+        espinhacoTotem.spineHolder.position.y = baseFloat;
+
         if (wf > 0.001) {
-          // 1. Ondulação da coluna de aço viva em meio denso
+          // Ondulação cinética acoplada ao áudio ao se aproximar
           const waveFreq = 2.2 + audioEnergy * 1.5;
-          const waveAmp = (0.09 + audioEnergy * 0.16) * wf;
-          const spineWave = Math.sin(elapsedTime * waveFreq) * waveAmp;
-          const spinePitch = Math.cos(elapsedTime * (waveFreq * 0.75)) * 0.05 * wf;
-
-          // 2. Consciência interativa: a escultura gira sutilmente na direção do visitante
-          const dx = camera.position.x - item.hallwayPos.x;
-          const dz = camera.position.z - item.hallwayPos.z;
-          const angleToPlayer = Math.atan2(dx, dz) - item.hallwayRotY;
-          const clampedTargetYaw = THREE.MathUtils.clamp(angleToPlayer, -0.32, 0.32);
-          espinhacoTotem.currentYawOffset = THREE.MathUtils.lerp(espinhacoTotem.currentYawOffset, clampedTargetYaw, 0.06);
-
-          espinhacoTotem.spineHolder.rotation.y = espinhacoTotem.currentYawOffset * wf + spineWave;
+          const spinePitch = Math.cos(elapsedTime * (waveFreq * 0.75)) * 0.06 * wf;
           espinhacoTotem.spineHolder.rotation.z = spinePitch;
-          espinhacoTotem.spineHolder.rotation.x = Math.sin(elapsedTime * 1.1) * 0.03 * wf;
-          espinhacoTotem.spineHolder.position.y = Math.sin(elapsedTime * 1.8) * 0.04 * wf;
+          espinhacoTotem.spineHolder.rotation.x = Math.sin(elapsedTime * 1.1) * 0.035 * wf;
 
-          // 3. Luz interna da vitrine acende e pulsa em harmonia
-          espinhacoTotem.totemLight.intensity = 1.6 + (2.4 * wf) + (audioEnergy * 1.8 * wf);
-          espinhacoTotem.totemLight.color.setHex(audioEnergy > 0.4 ? 0x4deeea : 0x74c0fc);
-          if (espinhacoTotem.solidMesh) {
-            const mat = espinhacoTotem.solidMesh.material as THREE.MeshStandardMaterial;
-            mat.emissiveIntensity = 0.35 + (0.55 * wf) + (audioEnergy * 0.4 * wf);
-          }
+          // Luz interna pulsa em harmonia
+          espinhacoTotem.totemLight.intensity = 1.4 + (1.6 * wf) + (audioEnergy * 1.4 * wf);
+          espinhacoTotem.totemLight.color.setHex(audioEnergy > 0.4 ? 0x38bdf8 : 0x00e5ff);
         } else {
-          // 4. Repouso absoluto preservado (fóssil inerte)
-          espinhacoTotem.spineHolder.rotation.set(0, 0, 0);
-          espinhacoTotem.spineHolder.position.set(0, 0, 0);
+          espinhacoTotem.spineHolder.rotation.z = THREE.MathUtils.lerp(espinhacoTotem.spineHolder.rotation.z, 0, 0.05);
+          espinhacoTotem.spineHolder.rotation.x = THREE.MathUtils.lerp(espinhacoTotem.spineHolder.rotation.x, 0, 0.05);
           espinhacoTotem.totemLight.intensity = 1.4;
-          espinhacoTotem.totemLight.color.setHex(0xd0e8ff);
-          if (espinhacoTotem.solidMesh) {
-            const mat = espinhacoTotem.solidMesh.material as THREE.MeshStandardMaterial;
-            mat.emissiveIntensity = 0.30;
-          }
+          espinhacoTotem.totemLight.color.setHex(0x70d8ff);
         }
 
         // Acopla o drone acústico de proximidade do fóssil vivente ao wakeFactor
@@ -3155,6 +3283,7 @@ export const GalleryScene3D: React.FC = () => {
       window.removeEventListener('dblclick', onDblClick);
       window.removeEventListener('keydown', onGlobalKeyDown, { capture: true });
       window.removeEventListener('gigantera:request-lock', handleRequestLock);
+      window.removeEventListener('gigantera:flip-cd', handleFlipCDEvent);
       window.removeEventListener('resize', onResize);
       if (dragHintTimerRef.current) clearTimeout(dragHintTimerRef.current);
       window.removeEventListener('resize', checkMobile);

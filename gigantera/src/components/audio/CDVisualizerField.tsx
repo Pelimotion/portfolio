@@ -51,16 +51,26 @@ export const CDVisualizerField: React.FC<CDVisualizerFieldProps> = ({ className 
     if (!ctx) return;
 
     let animId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let width = 0;
+    let height = 0;
 
     // Ajuste de DPI e quantidade de partículas conforme o tier gráfico selecionado
     const dpr = graphicsQuality === 'light' ? 1.0 : graphicsQuality === 'med' ? 1.25 : Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.scale(dpr, dpr);
 
-    const particleCount = graphicsQuality === 'light' ? 320 : graphicsQuality === 'med' ? 750 : 1500;
+    const updateSize = () => {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width > 0 ? rect.width : window.innerWidth * 0.48;
+      height = rect.height > 0 ? rect.height : window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    };
+
+    updateSize();
+
+    const particleCount = graphicsQuality === 'light' ? 320 : graphicsQuality === 'med' ? 650 : 1200;
 
     // Inicialização do campo de partículas com coordenadas parametrizadas
     const trackTheme = getThemeForTrack(currentAudioTrack.id);
@@ -69,22 +79,17 @@ export const CDVisualizerField: React.FC<CDVisualizerFieldProps> = ({ className 
       const radiusDist = Math.pow(Math.random(), 0.6); // distribuição com densidade central
       return {
         baseAngle: angle,
-        baseDist: 40 + radiusDist * Math.min(width, height) * 0.42,
+        baseDist: 30 + radiusDist * Math.min(width || 400, height || 600) * 0.44,
         angleOffset: Math.random() * Math.PI * 2,
         speed: (Math.random() * 0.5 + 0.5) * (i % 2 === 0 ? 1 : -1),
-        size: Math.random() * 2.4 + 1.2,
+        size: Math.random() * 2.2 + 1.2,
         z: Math.random(),
         seed: Math.random() * 100
       };
     });
 
     const handleResize = () => {
-      if (!canvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx.scale(dpr, dpr);
+      updateSize();
     };
 
     window.addEventListener('resize', handleResize);
@@ -206,11 +211,10 @@ export const CDVisualizerField: React.FC<CDVisualizerFieldProps> = ({ className 
       ref={canvasRef}
       className={`cd-visualizer-canvas ${className}`}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         inset: 0,
         width: '100%',
         height: '100%',
-        zIndex: 2,
         pointerEvents: 'none'
       }}
       aria-hidden="true"
