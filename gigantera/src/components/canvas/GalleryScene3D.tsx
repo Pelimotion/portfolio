@@ -2800,6 +2800,11 @@ export const GalleryScene3D: React.FC = () => {
             mat.emissiveIntensity = 0.30;
           }
         }
+
+        // Acopla o drone acústico de proximidade do fóssil vivente ao wakeFactor
+        soundEngine.setEspinhacoProximityHum(espinhacoWakeFactor);
+      } else {
+        soundEngine.setEspinhacoProximityHum(0);
       }
 
       // ─── ANIMAÇÃO DA AURA MAGNÉTICA ESPINHAÇO (Acoplada ao Wake-on-Interaction) ───
@@ -3020,6 +3025,7 @@ export const GalleryScene3D: React.FC = () => {
       unsubGyro();
 
       playerController.dispose();
+      soundEngine.setEspinhacoProximityHum(0);
       cdViewmodel.rootGroup.removeFromParent();
       inspectionRig.removeFromParent();
       inspectionCam.removeFromParent();

@@ -409,6 +409,81 @@ class SoundEngine {
       osc.stop(t + 0.025);
     } catch {}
   }
+
+  // ─── DRONE PROCEDURAL ESPACIAL: ESPINHAÇO PROXIMITY HUM ───
+  // Campo acústico sub-grave orgânico de museu (48Hz + 96Hz) que emerge suavemente quando a escultura desperta
+  private espinhacoOsc1: OscillatorNode | null = null;
+  private espinhacoOsc2: OscillatorNode | null = null;
+  private espinhacoGain: GainNode | null = null;
+  private espinhacoFilter: BiquadFilterNode | null = null;
+  private isEspinhacoHumRunning = false;
+
+  public setEspinhacoProximityHum(wakeFactor: number): void {
+    if (!this.isInitialized) return;
+    if (!this.audioCtx || this.audioCtx.state === 'suspended') return;
+
+    const clampedWf = Math.max(0, Math.min(1, wakeFactor));
+
+    if (clampedWf > 0.01) {
+      if (!this.isEspinhacoHumRunning) {
+        try {
+          const t = this.audioCtx.currentTime;
+          this.espinhacoOsc1 = this.audioCtx.createOscillator();
+          this.espinhacoOsc2 = this.audioCtx.createOscillator();
+          this.espinhacoGain = this.audioCtx.createGain();
+          this.espinhacoFilter = this.audioCtx.createBiquadFilter();
+
+          // Sub-grave orgânico 48Hz (fundamental) + 96Hz (oitava com leve batimento acústico)
+          this.espinhacoOsc1.type = 'sine';
+          this.espinhacoOsc1.frequency.setValueAtTime(48, t);
+
+          this.espinhacoOsc2.type = 'triangle';
+          this.espinhacoOsc2.frequency.setValueAtTime(96.2, t);
+
+          this.espinhacoFilter.type = 'lowpass';
+          this.espinhacoFilter.frequency.setValueAtTime(140, t);
+          this.espinhacoFilter.Q.setValueAtTime(2.8, t);
+
+          this.espinhacoGain.gain.setValueAtTime(0.0001, t);
+
+          this.espinhacoOsc1.connect(this.espinhacoFilter);
+          this.espinhacoOsc2.connect(this.espinhacoFilter);
+          this.espinhacoFilter.connect(this.espinhacoGain);
+          this.espinhacoGain.connect(this.gainNode || this.audioCtx.destination);
+
+          this.espinhacoOsc1.start(t);
+          this.espinhacoOsc2.start(t);
+          this.isEspinhacoHumRunning = true;
+        } catch (e) {
+          console.warn('[EspinhacoHum] Falha ao iniciar oscilador:', e);
+          return;
+        }
+      }
+
+      // Modulação contínua e suave de ganho e filtro de corte de acordo com a vigília
+      if (this.espinhacoGain && this.espinhacoFilter) {
+        const t = this.audioCtx.currentTime;
+        const targetVol = clampedWf * 0.11; // Volume suave de atmosfera, não invasivo
+        const targetCutoff = 100 + clampedWf * 130;
+        this.espinhacoGain.gain.setTargetAtTime(targetVol, t, 0.12);
+        this.espinhacoFilter.frequency.setTargetAtTime(targetCutoff, t, 0.12);
+      }
+    } else {
+      if (this.isEspinhacoHumRunning && this.espinhacoGain) {
+        const t = this.audioCtx.currentTime;
+        this.espinhacoGain.gain.setTargetAtTime(0.0001, t, 0.18);
+        if (this.espinhacoGain.gain.value < 0.002) {
+          try {
+            this.espinhacoOsc1?.stop(t + 0.25);
+            this.espinhacoOsc2?.stop(t + 0.25);
+            this.espinhacoOsc1?.disconnect();
+            this.espinhacoOsc2?.disconnect();
+          } catch {}
+          this.isEspinhacoHumRunning = false;
+        }
+      }
+    }
+  }
 }
 
 export const soundEngine = new SoundEngine();

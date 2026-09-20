@@ -1,7 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useAppStore } from '../../core/store';
 import { soundEngine } from '../../core/soundEngine';
-import { EspinhacoInteractive } from '../works/EspinhacoInteractive';
+
+const EspinhacoInteractive = React.lazy(() =>
+  import('../works/EspinhacoInteractive').then((m) => ({ default: m.EspinhacoInteractive }))
+);
 
 export const CinemaView: React.FC = () => {
   const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
@@ -347,7 +350,28 @@ export const CinemaView: React.FC = () => {
             pointerEvents: 'all'
           }}
         >
-          <EspinhacoInteractive />
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: '"Space Mono", monospace',
+                  fontSize: '11px',
+                  color: 'var(--accent, #e4c379)',
+                  letterSpacing: '0.15em',
+                  background: 'rgba(5, 8, 10, 0.95)'
+                }}
+              >
+                CARREGANDO ESCULTURA INTERATIVA // WEBGL...
+              </div>
+            }
+          >
+            <EspinhacoInteractive />
+          </Suspense>
         </div>
       )}
 

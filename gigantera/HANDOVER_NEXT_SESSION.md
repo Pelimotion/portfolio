@@ -51,12 +51,28 @@ Nesta sessão foi realizada a **integração monumental da escultura interativa 
 - `ArchiveIndex.tsx` e `MobileBottomDock.tsx` atualizados com o filtro `✦ INTERATIVO`.
 - `data/artworks.ts` calibrado: apenas o totem do Espinhaço possui `interactiveExperience: 'espinhaco'`, preservando as obras de vídeo ("Tração" e "Encalhe") como vídeos de alta fidelidade.
 
+### 6. Drone Procedural de Proximidade (Espinhaço Proximity Hum)
+- Síntese de campo acústico sub-grave orgânico de museu (48Hz fundamental + 96.2Hz harmônico com leve batimento acústico e filtro passa-baixa ressonante em 140Hz) diretamente na Web Audio API (`soundEngine.setEspinhacoProximityHum`).
+- Acoplado ao `wakeFactor` na render loop da galeria 3D: ganho e frequência de corte se abrem conforme o visitante se aproxima da vitrine, silenciando suavemente em repouso. Zero dependência de arquivo de áudio externo.
+
+### 7. Otimização de Performance & Code-Splitting Dinâmico
+- `EspinhacoInteractive.tsx` agora é carregado dinamicamente via `React.lazy()` e `<Suspense>` dentro de `CinemaView.tsx`, gerando um chunk isolado de 16KB (`EspinhacoInteractive-[hash].js`) e reduzindo o bundle principal `main.js` para 421KB.
+- O visitante do pavilhão baixa a lógica 3D pesada da vivência interativa apenas quando clica para inspecioná-la.
+
+### 8. Gestos Mobile & Feedback Háptico no Espinhaço
+- Adicionado suporte a gestos de toque no visualizador interativo: rotação orbital com 1 dedo, pinch-to-zoom com 2 dedos e duplo toque para disparo de pulso de choque cinético.
+- Feedback háptico via `navigator.vibrate` acionado ao alternar modos de visão (`MATÉRIA`, `CORPÚSCULOS`, `RAIO-X`), biomas cromáticos e pulsos.
+
+### 9. Higienização do Pipeline de Build
+- O script de `build` no `package.json` foi corrigido com `rm -rf ./assets && cp -r dist/assets ./`, eliminando bundles históricos órfãos que inflavam a pasta raiz.
+
 ---
 
 ## 🛠️ ESTADO TÉCNICO & INTEGRIDADE DO CÓDIGO
 
 - **Branch Atual:** `main`
 - **Commits Locais:**
+  - `aff1e52`: `docs: atualizar README, HANDOVER_NEXT_SESSION e grafo de conhecimento...`
   - `1501557`: `feat: integrar escultura 3D autêntica do Espinhaço no totem com wake-on-interaction`
   - `31a1341`: `wip: Espinhaço 3D model integration and handoff setup`
 - **Validação de Tipos:** `npx tsc --noEmit` aprovado com **0 erros**.

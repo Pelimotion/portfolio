@@ -575,10 +575,19 @@ export const EspinhacoInteractive: React.FC = () => {
     };
   }, [initScene, loadAssets]);
 
+  const triggerHaptic = (pattern: number | number[] = 14) => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        navigator.vibrate(pattern);
+      } catch {}
+    }
+  };
+
   // Alternador de Modo de Renderização
   const handleSetMode = (mode: RenderMode) => {
     setRenderMode(mode);
     soundEngine.playTactileHoverTick();
+    triggerHaptic(12);
 
     if (pbrMeshRef.current) {
       pbrMeshRef.current.visible = mode === 'pbr';
@@ -596,6 +605,7 @@ export const EspinhacoInteractive: React.FC = () => {
   const handleSelectBiome = (index: number) => {
     setActiveBiomeIndex(index);
     soundEngine.playTactileHoverTick();
+    triggerHaptic(14);
     const b = BIOMES[index];
 
     if (wireframeMeshRef.current) {
@@ -611,6 +621,7 @@ export const EspinhacoInteractive: React.FC = () => {
   const triggerShockPulse = () => {
     transientRef.current = 1.0;
     soundEngine.playTactileHoverTick();
+    triggerHaptic([20, 40, 20]);
   };
 
   // Handlers de Mouse & Touch
@@ -644,12 +655,64 @@ export const EspinhacoInteractive: React.FC = () => {
     lastInteractionTimeRef.current = Date.now();
   };
 
+  // Gestos de toque mobile: órbita com 1 dedo, pinch zoom com 2 dedos, duplo toque para pulso
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchDistRef = useRef<number | null>(null);
+  const lastTouchTimeRef = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTouchTimeRef.current < 280) {
+        triggerShockPulse();
+      }
+      lastTouchTimeRef.current = now;
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      prevMouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      isMouseDownRef.current = true;
+    } else if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      touchDistRef.current = Math.hypot(dx, dy);
+    }
+    lastInteractionTimeRef.current = Date.now();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isMouseDownRef.current) {
+      const dx = e.touches[0].clientX - prevMouseRef.current.x;
+      const dy = e.touches[0].clientY - prevMouseRef.current.y;
+      prevMouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+
+      rotVelocityRef.current.y = dx * 0.006;
+      rotVelocityRef.current.x = dy * 0.006;
+
+      targetRotRef.current.x = Math.max(-0.85, Math.min(0.85, targetRotRef.current.x + dy * 0.006));
+      targetRotRef.current.y += dx * 0.006;
+    } else if (e.touches.length === 2 && touchDistRef.current !== null) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const newDist = Math.hypot(dx, dy);
+      const deltaDist = touchDistRef.current - newDist;
+      targetZoomRef.current = Math.max(1.2, Math.min(4.2, targetZoomRef.current + deltaDist * 0.008));
+      touchDistRef.current = newDist;
+    }
+    lastInteractionTimeRef.current = Date.now();
+  };
+
+  const handleTouchEnd = () => {
+    isMouseDownRef.current = false;
+    touchStartRef.current = null;
+    touchDistRef.current = null;
+  };
+
   // Reset de câmera
   const handleResetCamera = () => {
     targetRotRef.current = { x: 0.1, y: 0.2 };
     targetZoomRef.current = 2.5;
     rotVelocityRef.current = { x: 0, y: 0 };
     soundEngine.playTactileHoverTick();
+    triggerHaptic(10);
   };
 
   // Teclas de atalho
@@ -682,6 +745,9 @@ export const EspinhacoInteractive: React.FC = () => {
       onMouseUp={handleMouseUp}
       onWheel={handleWheel}
       onDoubleClick={triggerShockPulse}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{
         position: 'relative',
         width: '100%',
