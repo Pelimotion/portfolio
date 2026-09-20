@@ -1,4 +1,4 @@
-export type MediumType = 'still' | 'video' | 'sound';
+export type MediumType = 'still' | 'video' | 'sound' | 'interactive';
 export type ThemeMode = 'dark' | 'light';
 export type ViewMode = 'spatial' | 'archive' | 'media';
 
@@ -71,6 +71,8 @@ export interface Artwork {
   status?: 'active' | 'hidden';
   galleryImages?: string[]; // Multiple images for a single artwork mosaic
   hasAudio?: boolean;
+  /** Key identifying the dedicated interactive experience component to render in CinemaView */
+  interactiveExperience?: 'espinhaco';
 }
 
 

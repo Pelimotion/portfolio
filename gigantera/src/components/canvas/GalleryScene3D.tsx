@@ -199,7 +199,9 @@ function createPlaqueTexture(art: Artwork, index: number, isLight: boolean): THR
 
   ctx.fillStyle = isLight ? '#484d4a' : '#c8d0cc';
   ctx.font = '600 28px "Space Mono", monospace';
-  const mediumStr = art.medium === 'video' ? 'VITRINE CINÉTICA // LOOP' : 'IMPRESSO GICLÉE EM VIDRO';
+  const mediumStr = art.medium === 'video'
+    ? 'VITRINE CINÉTICA // LOOP'
+    : (art.medium === 'interactive' ? 'OBRA INTERATIVA // INSTALAÇÃO' : 'IMPRESSO GICLÉE EM VIDRO');
   ctx.fillText(`${art.year} · ${mediumStr}`, 52, 142);
 
   ctx.font = '400 22px "Space Mono", monospace';
@@ -208,7 +210,8 @@ function createPlaqueTexture(art: Artwork, index: number, isLight: boolean): THR
 
   ctx.font = 'bold 20px "Space Mono", monospace';
   ctx.fillStyle = isLight ? '#b88d34' : '#e4c379';
-  ctx.fillText('[E] INSPECIONAR', 52, 240);
+  const ctaText = art.medium === 'interactive' ? '[E] VIVENCIAR OBRA' : '[E] INSPECIONAR';
+  ctx.fillText(ctaText, 52, 240);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = isLight ? '#8a908c' : '#4d5551';
@@ -1171,6 +1174,8 @@ export const GalleryScene3D: React.FC = () => {
         visibleArts = ARTWORKS_CATALOG.filter((a) => a.medium === 'still');
       } else if (filter === 'video') {
         visibleArts = ARTWORKS_CATALOG.filter((a) => a.medium === 'video');
+      } else if (filter === 'interactive') {
+        visibleArts = ARTWORKS_CATALOG.filter((a) => a.medium === 'interactive');
       } else if (filter === 'sound') {
         visibleArts = []; // No modo som, os quadros recuam suavemente para o console sonoro
       }
@@ -1190,6 +1195,11 @@ export const GalleryScene3D: React.FC = () => {
             item.gridPos.set(x, y, 0.0);
             item.gridRotY = 0;
             item.gridScale = 0.54;
+          } else if (filter === 'interactive') {
+            // Obra interativa em destaque central monumental
+            item.gridPos.set(0.0, 0.6, 0.0);
+            item.gridRotY = 0;
+            item.gridScale = 0.68;
           } else if (filter === 'still') {
             // 3 colunas × 2 linhas, mais compactas
             const col = pageIdx % 3;
@@ -1219,6 +1229,67 @@ export const GalleryScene3D: React.FC = () => {
     };
 
     computeGridTargets('all', 0);
+
+    // ─── AURA DE PARTÍCULAS MAGNÉTICAS — Vitrines Espinhaço ───
+    // Sistema de halo orbital para as obras interativas da série Espinhaço.
+    // Partículas orbitam com física de ruído, dando presença tátil à obra no salão.
+    const espinhacoAuraItems: {
+      points: THREE.Points;
+      mat: THREE.PointsMaterial;
+      positions: Float32Array;
+      phases: Float32Array;
+      speeds: Float32Array;
+      artworkIdx: number;
+    }[] = [];
+
+    const espinhacoItems = artworkItems.filter(
+      (item) => (item.artwork as any).interactiveExperience === 'espinhaco'
+    );
+
+    espinhacoItems.forEach((item, aIdx) => {
+      const auraCount = 800;
+      const auraPositions = new Float32Array(auraCount * 3);
+      const auraPhases = new Float32Array(auraCount);
+      const auraSpeeds = new Float32Array(auraCount);
+
+      // Distribute particles in a 3D ellipsoid around the vitrine
+      for (let p = 0; p < auraCount; p++) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = 1.2 + Math.random() * 1.8; // 1.2 – 3.0m radius
+        auraPositions[p * 3]     = r * Math.sin(phi) * Math.cos(theta);
+        auraPositions[p * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.7;
+        auraPositions[p * 3 + 2] = r * Math.cos(phi) * 0.5;
+        auraPhases[p] = Math.random() * Math.PI * 2;
+        auraSpeeds[p] = 0.3 + Math.random() * 0.7;
+      }
+
+      const auraGeo = new THREE.BufferGeometry();
+      auraGeo.setAttribute('position', new THREE.BufferAttribute(auraPositions, 3));
+
+      const auraMat = new THREE.PointsMaterial({
+        color: isLight ? 0x4488cc : 0x63b8e8,
+        size: 0.028,
+        transparent: true,
+        opacity: 0.0, // starts invisible — fades in when player is nearby
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true
+      });
+
+      const auraPoints = new THREE.Points(auraGeo, auraMat);
+      // Attach to the artwork group so it moves with it
+      item.group.add(auraPoints);
+
+      espinhacoAuraItems.push({
+        points: auraPoints,
+        mat: auraMat,
+        positions: auraPositions,
+        phases: auraPhases,
+        speeds: auraSpeeds,
+        artworkIdx: aIdx
+      });
+    });
 
     // 7. RIG DE INSPEÇÃO 3D EM PRIMEIRO PLANO (A Obra saindo da vitrine em 3D)
     // Renderizado em cena e câmera de inspeção dedicada com clearDepth() no loop de renderização,
@@ -2504,6 +2575,57 @@ export const GalleryScene3D: React.FC = () => {
         dustPosArr[p * 3] += Math.sin(elapsedTime * 0.3 + p) * 0.001;
       }
       dustPosAttr.needsUpdate = true;
+
+      // ─── ANIMAÇÃO DA AURA MAGNÉTICA ESPINHAÇO ───
+      const audioEnergy = isAudioPlaying ? soundEngine.getEnergy() : 0;
+      espinhacoAuraItems.forEach((aura, aIdx) => {
+        const artItem = espinhacoItems[aIdx];
+        if (!artItem) return;
+
+        // Proximity fade: aura becomes visible when camera is within 8m
+        const dx = camera.position.x - artItem.hallwayPos.x;
+        const dz = camera.position.z - artItem.hallwayPos.z;
+        const proximityDist = Math.sqrt(dx * dx + dz * dz);
+        const proximityFactor = Math.max(0, 1 - proximityDist / 8);
+        const targetOpacity = proximityFactor * (0.18 + audioEnergy * 0.22);
+        aura.mat.opacity = THREE.MathUtils.lerp(aura.mat.opacity, targetOpacity, 0.04);
+
+        // Animate particle positions (orbital noise drift)
+        const posArr = aura.positions;
+        const attr = aura.points.geometry.attributes.position as THREE.BufferAttribute;
+        const count = posArr.length / 3;
+        for (let p = 0; p < count; p++) {
+          const phase = aura.phases[p];
+          const speed = aura.speeds[p];
+          const orbitT = elapsedTime * speed * 0.35 + phase;
+          // Noise-driven perturbation
+          const pertX = Math.sin(orbitT * 1.3 + p * 0.07) * 0.008;
+          const pertY = Math.cos(orbitT * 0.9 + p * 0.05) * 0.006;
+          const pertZ = Math.sin(orbitT * 1.1 + p * 0.09) * 0.005;
+          posArr[p * 3]     += pertX;
+          posArr[p * 3 + 1] += pertY;
+          posArr[p * 3 + 2] += pertZ;
+          // Soft re-centering (keeps particles in ~spherical shell)
+          const newR = Math.sqrt(
+            posArr[p * 3] ** 2 + posArr[p * 3 + 1] ** 2 + posArr[p * 3 + 2] ** 2
+          );
+          const targetR = 1.2 + (aura.phases[p] / (Math.PI * 2)) * 1.8;
+          const correction = (targetR - newR) * 0.01;
+          if (newR > 0.01) {
+            posArr[p * 3]     += (posArr[p * 3] / newR) * correction;
+            posArr[p * 3 + 1] += (posArr[p * 3 + 1] / newR) * correction;
+            posArr[p * 3 + 2] += (posArr[p * 3 + 2] / newR) * correction;
+          }
+          // Pulse with audio (burst outward on beat)
+          if (audioEnergy > 0.5 && Math.random() < audioEnergy * 0.002) {
+            posArr[p * 3]     *= 1.0 + audioEnergy * 0.04;
+            posArr[p * 3 + 1] *= 1.0 + audioEnergy * 0.03;
+          }
+        }
+        (attr as THREE.BufferAttribute).needsUpdate = true;
+        // Size pulse with audio
+        aura.mat.size = 0.028 + audioEnergy * 0.018;
+      });
 
       // Animação dos raios de luz volumétrica — oscilação lenta e orgânica
       if (!currentCinemaArt) {

@@ -278,6 +278,26 @@ export const AUTHORIAL_TRACKS_CATALOG: AudioTrackInfo[] = [
 
 export const ARTWORKS_CATALOG: Artwork[] = [
   // ==========================================
+  // OBRA INTERATIVA RAIZ: ESPINHAÇO (Entrada — Experiência Imersiva Dedicada)
+  // ==========================================
+  {
+    id: 'espinhaco-interactive-root',
+    title: 'Espinhaço',
+    series: 'Espinhaço',
+    medium: 'interactive',
+    categoryLabel: 'OBRA INTERATIVA // INSTALAÇÃO DIGITAL',
+    year: 2026,
+    materials: 'Simulação hidrodinâmica em tempo real, sistema de partículas GPU, shader de distorção GLSL e física vertebral por cursor',
+    description: 'Coluna vertebral biomecânica de aço em meio denso. Cada vértebra transmite torque desacelerado para a seguinte. A obra responde à presença do cursor como um organismo vivo submerso — partículas fogem, resistem, pulsam. A experiência é gerada proceduralmente em tempo real.',
+    imageSrc: `${BUNNY_CDN_GIGANTERA}/stills/espinhaco-descida-crepuscular.jpg`,
+    aspectRatio: '9 / 16',
+    aspectRatioNum: 540 / 960,
+    spatialCoords: { x: 0, y: 0.0, z: 20.0, rotY: 0 },
+    curatorialNotes: 'Obra interativa que reimagina a biomecânica da espinha fóssil como interface responsiva. O visitante torna-se agente de força no campo hidrodinâmico. Desenvolvida em WebGL + Canvas 2D procedural.',
+    interactiveExperience: 'espinhaco'
+  },
+
+  // ==========================================
   // SETOR 01: VÍDEOS (Vitrines Cinéticas em Loop Contínuo)
   // ==========================================
   {
@@ -295,7 +315,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
     spatialCoords: { x: -3.8, y: 0.0, z: 12.0, rotY: 0.12 },
-    curatorialNotes: 'O impresso dentro da caixa de vidro ganha vida com a física computacional de viscosidade do meio.'
+    curatorialNotes: 'O impresso dentro da caixa de vidro ganha vida com a física computacional de viscosidade do meio.',
+    interactiveExperience: 'espinhaco'
   },
   {
     id: 'video-stipples-particulas',
@@ -329,7 +350,8 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
     spatialCoords: { x: -3.8, y: 0.0, z: -4.0, rotY: 0.14 },
-    curatorialNotes: 'Estudo de iluminação e materialidade em superfícies reflexivas curvas sob vidro.'
+    curatorialNotes: 'Estudo de iluminação e materialidade em superfícies reflexivas curvas sob vidro.',
+    interactiveExperience: 'espinhaco'
   },
 
   // ==========================================

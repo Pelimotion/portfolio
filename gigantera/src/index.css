@@ -4456,6 +4456,12 @@ a {
   border: 1px solid rgba(184, 141, 52, 0.3);
 }
 
+.art-medium-pill.is-interactive {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
 .art-card-title-text {
   font-size: 12px;
   font-weight: 700;
@@ -4634,6 +4640,19 @@ a {
   padding: 1px 4px;
   border-radius: 3px;
   border: 1px solid var(--accent-coral);
+}
+
+.drawer-interactive-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #38bdf8;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid rgba(56, 189, 248, 0.6);
 }
 
 .drawer-art-meta {

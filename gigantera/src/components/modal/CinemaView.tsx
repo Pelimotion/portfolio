@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../../core/store';
 import { soundEngine } from '../../core/soundEngine';
+import { EspinhacoInteractive } from '../works/EspinhacoInteractive';
 
 export const CinemaView: React.FC = () => {
   const cinemaArtwork = useAppStore((s) => s.cinemaArtwork);
@@ -223,17 +224,19 @@ export const CinemaView: React.FC = () => {
       } else if (e.code === 'KeyR') {
         e.preventDefault();
         e.stopPropagation();
-        toggleLoupeMode();
+        if (!isInteractive) {
+          toggleLoupeMode();
+        }
       } else if (e.code === 'KeyM') {
         e.preventDefault();
         e.stopPropagation();
-        if (cinemaArtwork.medium === 'video') {
+        if (!isInteractive && cinemaArtwork.medium === 'video') {
           toggleVideoMute();
         }
       } else if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         e.stopPropagation();
-        if (cinemaArtwork.medium === 'video') {
+        if (!isInteractive && cinemaArtwork.medium === 'video') {
           toggleVideoPlay();
         }
       } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
@@ -264,6 +267,7 @@ export const CinemaView: React.FC = () => {
 
   if (!cinemaArtwork) return null;
 
+  const isInteractive = cinemaArtwork.interactiveExperience === 'espinhaco';
   const isStill = cinemaArtwork.medium === 'still';
   const zoomPercent = Math.round(inspectionZoom * 100);
   const galleryImages = cinemaArtwork.galleryImages || [cinemaArtwork.imageSrc];
@@ -331,10 +335,24 @@ export const CinemaView: React.FC = () => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      style={{ cursor: cursorStyle }}
+      style={{ cursor: isInteractive ? 'none' : cursorStyle }}
     >
-      {/* Vinheta atmosférica pura */}
-      <div className="cinema-volumetric-aura" />
+      {/* Camada imersiva da obra interativa Espinhaço */}
+      {isInteractive && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: 'all'
+          }}
+        >
+          <EspinhacoInteractive />
+        </div>
+      )}
+
+      {/* Vinheta atmosférica pura (apenas para obras não-interativas) */}
+      {!isInteractive && <div className="cinema-volumetric-aura" />}
 
       {/* Botão Fechar Interativo Topo Direito (sempre clicável e com atalho E visível) */}
       <div className="cinema-top-actions font-mono">
@@ -459,8 +477,18 @@ export const CinemaView: React.FC = () => {
 
           {/* Módulo B: Cluster de Ferramentas de Mídia & Inspeção */}
           <div className="cinema-mini-controls-cluster">
+            {/* Status de Instalação Interativa */}
+            {isInteractive && (
+              <div className="cinema-mini-interactive-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 8px' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--accent, #e4c379)' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#4ade80', boxShadow: '0 0 6px #4ade80' }} />
+                  SIMULAÇÃO EM TEMPO REAL // WEBGL
+                </span>
+              </div>
+            )}
+
             {/* Controles de Vídeo (Play/Pause e Áudio) */}
-            {!isStill && (
+            {!isStill && !isInteractive && (
               <div className="cinema-mini-media-group">
                 <button
                   type="button"
@@ -525,11 +553,12 @@ export const CinemaView: React.FC = () => {
               </div>
             )}
 
-            {/* Cluster Óptico: Modo Lupa e Medidor de Zoom */}
-            <div className="cinema-mini-optical-group">
-              <button
-                type="button"
-                onClick={() => toggleLoupeMode()}
+            {/* Cluster Óptico: Modo Lupa e Medidor de Zoom (apenas obras estáticas e vídeo) */}
+            {!isInteractive && (
+              <div className="cinema-mini-optical-group">
+                <button
+                  type="button"
+                  onClick={() => toggleLoupeMode()}
                 className={`cinema-mini-action-btn cinema-mini-loupe-btn ${isLoupeMode ? 'is-active' : ''}`}
                 title="Modo Lupa: zoom tátil 300% com arraste (Tecla R)"
               >
@@ -556,9 +585,10 @@ export const CinemaView: React.FC = () => {
                     }}
                   />
                 </div>
-                <span className="meter-val">{zoomPercent}%</span>
+                <span className="meter-value">{zoomPercent}%</span>
               </div>
             </div>
+            )}
           </div>
 
         </nav>

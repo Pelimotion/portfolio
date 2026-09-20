@@ -114,6 +114,9 @@ export const MobileBottomDock: React.FC = () => {
                     {art.medium === 'video' && (
                       <span className="drawer-video-badge font-mono">VÍDEO</span>
                     )}
+                    {art.medium === 'interactive' && (
+                      <span className="drawer-interactive-badge font-mono">INTERATIVO</span>
+                    )}
                   </div>
                   <div className="drawer-art-meta font-mono">
                     <span className="drawer-art-num">#{String(idx + 1).padStart(2, '0')}</span>
@@ -201,8 +204,8 @@ export const MobileBottomDock: React.FC = () => {
               <span className="art-counter-badge">
                 {artNumberStr} / {String(totalArtworks).padStart(2, '0')}
               </span>
-              <span className={`art-medium-pill ${currentArt.medium === 'video' ? 'is-video' : 'is-still'}`}>
-                {currentArt.medium === 'video' ? '▶ VÍDEO' : '◼ STILL'}
+              <span className={`art-medium-pill ${currentArt.medium === 'video' ? 'is-video' : currentArt.medium === 'interactive' ? 'is-interactive' : 'is-still'}`}>
+                {currentArt.medium === 'video' ? '▶ VÍDEO' : currentArt.medium === 'interactive' ? '✦ INTERATIVO' : '◼ STILL'}
               </span>
               <span className="art-drawer-cue">▲ LISTA</span>
             </div>

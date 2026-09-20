@@ -19,6 +19,7 @@ export const ArchiveIndex: React.FC = () => {
 
   const stillCount = ARTWORKS_CATALOG.filter((a) => a.medium === 'still').length;
   const videoCount = ARTWORKS_CATALOG.filter((a) => a.medium === 'video').length;
+  const interactiveCount = ARTWORKS_CATALOG.filter((a) => a.medium === 'interactive').length;
   const soundCount = AUTHORIAL_TRACKS_CATALOG.length;
   const totalCount = ARTWORKS_CATALOG.length + soundCount;
 
@@ -99,6 +100,18 @@ export const ArchiveIndex: React.FC = () => {
             <span className="tab-label">VÍDEO (MOTION)</span>
             <span className="tab-count font-mono">[{videoCount}]</span>
           </button>
+
+          {interactiveCount > 0 && (
+            <button
+              onClick={() => setActiveFilter('interactive')}
+              className={`sim-filter-tab ${activeFilter === 'interactive' ? 'is-active' : ''}`}
+              aria-pressed={activeFilter === 'interactive'}
+            >
+              <span className="tab-square">{activeFilter === 'interactive' ? '■' : '□'}</span>
+              <span className="tab-label">INTERATIVO</span>
+              <span className="tab-count font-mono">[{interactiveCount}]</span>
+            </button>
+          )}
 
           <button
             onClick={() => setActiveFilter('sound')}
