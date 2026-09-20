@@ -11,7 +11,7 @@ export interface ViewingSpotInfo {
   artworkId: string;
   x: number;
   z: number;
-  medium: 'still' | 'video';
+  medium: 'still' | 'video' | 'interactive';
   title: string;
 }
 
@@ -66,7 +66,8 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
   const zStart = 30.0;
   const cdStationZ = 18.0;
 
-  // Separação por setor: Setor 01 (VÍDEO // MOTION) → Setor 02 (STILL // MATRIZ & ESCULTURA)
+  // Separação por setor: Interativo (Átrio) → Setor 01 (VÍDEO) → Setor 02 (STILL)
+  const interactiveWorks = artworks.filter((a) => a.medium === 'interactive');
   const videoWorks = artworks.filter((a) => a.medium === 'video');
   const stillWorks = artworks.filter((a) => a.medium === 'still');
 
@@ -81,6 +82,39 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
   let currentZ = 12.0; // Início do Setor 01 (Vídeo) logo após a Estação de CD (Z = +18m)
   const artworksWithCoords: ModularGalleryLayout['artworksWithCoords'] = [];
   const viewingSpots: ViewingSpotInfo[] = [];
+
+  // 0. Obra Interativa Monumental: Vitrine no Átrio da Entrada (Z = 14.0m, X = -2.2m)
+  // Posicionada em destaque frontal perfeito no campo de visão natural de entrada do salão (Z = 22m)
+  interactiveWorks.forEach((art) => {
+    const x = -2.2;
+    const z = 14.0;
+    const rotY = 0.12; // Orientada suavemente para o visitante que entra no salão (+Z)
+
+    const computedCoords = {
+      x,
+      y: 0.45,
+      z,
+      rotY
+    };
+
+    const spotX = x + Math.sin(rotY) * viewingOffset;
+    const spotZ = z + Math.cos(rotY) * viewingOffset;
+
+    const viewingSpot: ViewingSpotInfo = {
+      artworkId: art.id,
+      x: spotX,
+      z: spotZ,
+      medium: 'interactive',
+      title: art.title
+    };
+
+    artworksWithCoords.push({
+      ...art,
+      computedCoords,
+      viewingSpot
+    });
+    viewingSpots.push(viewingSpot);
+  });
 
   // 1. Distribuição das Obras de Vídeo (Setor 01: Alternando rigorosamente Esquerda e Direita)
   videoWorks.forEach((art, index) => {

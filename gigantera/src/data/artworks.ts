@@ -315,8 +315,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
     spatialCoords: { x: -3.8, y: 0.0, z: 12.0, rotY: 0.12 },
-    curatorialNotes: 'O impresso dentro da caixa de vidro ganha vida com a física computacional de viscosidade do meio.',
-    interactiveExperience: 'espinhaco'
+    curatorialNotes: 'O impresso dentro da caixa de vidro ganha vida com a física computacional de viscosidade do meio.'
   },
   {
     id: 'video-stipples-particulas',
@@ -350,8 +349,7 @@ export const ARTWORKS_CATALOG: Artwork[] = [
     aspectRatio: '9 / 16',
     aspectRatioNum: 540 / 960,
     spatialCoords: { x: -3.8, y: 0.0, z: -4.0, rotY: 0.14 },
-    curatorialNotes: 'Estudo de iluminação e materialidade em superfícies reflexivas curvas sob vidro.',
-    interactiveExperience: 'espinhaco'
+    curatorialNotes: 'Estudo de iluminação e materialidade em superfícies reflexivas curvas sob vidro.'
   },
 
   // ==========================================

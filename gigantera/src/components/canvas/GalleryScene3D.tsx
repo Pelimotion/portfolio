@@ -9,6 +9,8 @@ import { soundEngine } from '../../core/soundEngine';
 import { CDViewmodel3D } from './CDViewmodel3D';
 import { PlayerController } from '../../core/playerController';
 import { computeModularGalleryLayout, ViewingSpotInfo } from '../../core/modularGallery';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 
 /**
  * Gerador procedural de textura de piso: Microcimento / Marmorite Alabastro claro
@@ -945,6 +947,18 @@ export const GalleryScene3D: React.FC = () => {
       idx: number;
     }[] = [];
 
+    interface EspinhacoTotemController {
+      item: any;
+      group: THREE.Group;
+      spineHolder: THREE.Group;
+      totemLight: THREE.PointLight;
+      solidMesh: THREE.Mesh | null;
+      pointsCloud: THREE.Points | null;
+      wakeFactor: number;
+      currentYawOffset: number;
+    }
+    let espinhacoTotem: EspinhacoTotemController | null = null;
+
     layout.artworksWithCoords.forEach((art, idx) => {
       const coords = art.computedCoords;
       const group = new THREE.Group();
@@ -967,23 +981,24 @@ export const GalleryScene3D: React.FC = () => {
         paperW = paperH * ratio; // ~2.68m
       }
 
+      const isEspinhaco = art.medium === 'interactive' || (art as any).interactiveExperience === 'espinhaco';
       const glassW = paperW + 0.35;  // vitrine mais compacta e minimalista
       const glassH = paperH + 0.50;
-      const glassD = 0.45;
+      const glassD = isEspinhaco ? 1.10 : 0.45; // Profundidade 3D autêntica para a vitrine escultórica
 
       const glassGeo = new THREE.BoxGeometry(glassW, glassH, glassD);
       const glassMat = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        transmission: 0.97,
-        roughness: isLight ? 0.05 : 0.07,
+        transmission: isEspinhaco ? 0.99 : 0.97,
+        roughness: isLight ? 0.04 : 0.06,
         roughnessMap: glassRoughnessTex,
         ior: 1.48,
-        thickness: 0.40,
+        thickness: isEspinhaco ? 0.20 : 0.40,
         attenuationColor: new THREE.Color(0xe8fff8),
-        attenuationDistance: 4.5,
+        attenuationDistance: isEspinhaco ? 8.0 : 4.5,
         transparent: true,
-        opacity: 0.88,
-        reflectivity: 0.60
+        opacity: isEspinhaco ? 0.35 : 0.88,
+        reflectivity: 0.65
       });
       const glassMesh = new THREE.Mesh(glassGeo, glassMat);
       glassMesh.castShadow = true;
@@ -1078,6 +1093,20 @@ export const GalleryScene3D: React.FC = () => {
 
         vid.play().then(swapToVideo).catch(() => {});
         videoElement = vid;
+      } else if (isEspinhaco) {
+        // Obra Interativa 3D: painel de papel é transparente para visualização 360° da escultura
+        const tex = textureLoader.load(art.imageSrc);
+        tex.minFilter = THREE.LinearMipmapLinearFilter;
+        tex.colorSpace = THREE.SRGBColorSpace;
+        artworkTex = tex;
+
+        paperMat = new THREE.MeshStandardMaterial({
+          map: tex,
+          transparent: true,
+          opacity: 0.0,
+          roughness: 0.96,
+          metalness: 0.0
+        });
       } else {
         const tex = textureLoader.load(art.imageSrc);
         tex.minFilter = THREE.LinearMipmapLinearFilter;
@@ -1114,9 +1143,142 @@ export const GalleryScene3D: React.FC = () => {
       const paperMesh = new THREE.Mesh(paperGeo, panelMaterials);
       // Posição no centro físico e geométrico absoluto da caixa de vidro (Z = 0)
       paperMesh.position.set(0, 0, 0);
+      if (isEspinhaco) {
+        paperMesh.visible = false;
+      }
       (paperMesh as any).artworkData = art;
       (glassMesh as any).artworkData = art;
       group.add(paperMesh);
+
+      // ─── ESCULTURA 3D DO ESPINHAÇO DENTRO DA VITRINE DO TOTEM ───
+      if (isEspinhaco) {
+        const espinhacoTotemGroup = new THREE.Group();
+
+        // 1. Cabo/Estrutura de Suspensão Minimalista de Museu (anodizado grafite)
+        const cableGeo = new THREE.CylinderGeometry(0.008, 0.008, glassH * 0.94, 8);
+        const cableMat = new THREE.MeshStandardMaterial({
+          color: isLight ? 0x222423 : 0x0e100f,
+          metalness: 0.9,
+          roughness: 0.25
+        });
+        const cableMesh = new THREE.Mesh(cableGeo, cableMat);
+        espinhacoTotemGroup.add(cableMesh);
+
+        const clampGeo = new THREE.BoxGeometry(0.14, 0.06, 0.14);
+        const clampMat = new THREE.MeshStandardMaterial({
+          color: isLight ? 0x383e3b : 0x1a1d1c,
+          metalness: 0.85,
+          roughness: 0.28
+        });
+        const topClamp = new THREE.Mesh(clampGeo, clampMat);
+        topClamp.position.set(0, 1.35, 0);
+        const btmClamp = new THREE.Mesh(clampGeo, clampMat);
+        btmClamp.position.set(0, -1.35, 0);
+        espinhacoTotemGroup.add(topClamp);
+        espinhacoTotemGroup.add(btmClamp);
+
+        // 2. Grupo Suporte do Modelo (Ondulação Cinética + Giro Interativo)
+        const spineHolder = new THREE.Group();
+        espinhacoTotemGroup.add(spineHolder);
+
+        // 3. Nuvem de Pontos Imediata (Carrega em milissegundos via espinhaco_points.bin)
+        const pCloudMat = new THREE.PointsMaterial({
+          color: isLight ? 0x165d6b : 0x4fc3f7,
+          size: 0.016,
+          transparent: true,
+          opacity: 0.85,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        fetch(`${cleanBase}models/espinhaco_points.bin`)
+          .then((r) => r.arrayBuffer())
+          .then((buf) => {
+            const rawArr = new Float32Array(buf);
+            const pGeo = new THREE.BufferGeometry();
+            pGeo.setAttribute('position', new THREE.BufferAttribute(rawArr, 3));
+            const pCloud = new THREE.Points(pGeo, pCloudMat);
+            // espinhaco_points.bin já é orientado na vertical e centralizado (altura 1.45m)
+            pCloud.scale.set(1.65, 1.65, 1.65);
+            spineHolder.add(pCloud);
+            if (espinhacoTotem) {
+              espinhacoTotem.pointsCloud = pCloud;
+            }
+          })
+          .catch((err) => console.warn('[Totem pointsCloud] Load error:', err));
+
+        // 4. Modelo 3D GLB Texturizado PBR Autêntico (espinhaco.glb)
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.setMeshoptDecoder(MeshoptDecoder);
+        gltfLoader.load(
+          `${cleanBase}models/espinhaco.glb`,
+          (gltf) => {
+            let originalMesh: THREE.Mesh | null = null;
+            gltf.scene.traverse((obj) => {
+              if ((obj as THREE.Mesh).isMesh && !originalMesh) {
+                originalMesh = obj as THREE.Mesh;
+              }
+            });
+            if (originalMesh) {
+              const geom = (originalMesh as THREE.Mesh).geometry.clone();
+              geom.computeVertexNormals();
+              geom.center();
+              geom.rotateZ(Math.PI / 2); // Deita o eixo X para a vertical Y
+
+              const box = new THREE.Box3().setFromBufferAttribute(geom.attributes.position as THREE.BufferAttribute);
+              const sz = new THREE.Vector3();
+              box.getSize(sz);
+              const targetHeight = 2.4;
+              const s = targetHeight / Math.max(sz.x, sz.y, sz.z);
+              geom.scale(s, s, s);
+
+              const solidMat = new THREE.MeshStandardMaterial({
+                color: isLight ? 0x8a9290 : 0xd2dad6,
+                roughness: 0.26,
+                metalness: 0.92,
+                emissive: new THREE.Color(0x0e2832),
+                emissiveIntensity: 0.35,
+                envMapIntensity: 1.8
+              });
+              const solidMesh = new THREE.Mesh(geom, solidMat);
+              solidMesh.castShadow = true;
+              solidMesh.receiveShadow = true;
+              spineHolder.add(solidMesh);
+              if (espinhacoTotem) {
+                espinhacoTotem.solidMesh = solidMesh;
+                if (espinhacoTotem.pointsCloud) {
+                  (espinhacoTotem.pointsCloud.material as THREE.PointsMaterial).opacity = 0.20;
+                }
+              }
+            }
+          },
+          undefined,
+          (err) => console.warn('[Totem GLB] Load error:', err)
+        );
+
+        // 5. Luz Interna Focal da Vitrine (Projeta brilho especular sobre a coluna metálica)
+        const totemLight = new THREE.PointLight(0x70d8ff, 1.8, 6.0, 1.2);
+        totemLight.position.set(0, 1.6, 0.55);
+        espinhacoTotemGroup.add(totemLight);
+
+        // Luz suave de preenchimento inferior
+        const fillLight = new THREE.PointLight(0x4fc3f7, 0.9, 5.0, 1.4);
+        fillLight.position.set(0, -1.6, 0.35);
+        espinhacoTotemGroup.add(fillLight);
+
+        group.add(espinhacoTotemGroup);
+
+        espinhacoTotem = {
+          item: null as any,
+          group: espinhacoTotemGroup,
+          spineHolder,
+          totemLight,
+          solidMesh: null,
+          pointsCloud: null,
+          wakeFactor: 0.0,
+          currentYawOffset: 0.0
+        };
+      }
 
       // Plaquinha Física 3D em Baixo da Obra
       // NOTA: A plaquinha NÃO é adicionada ao group para evitar que flutue com a obra.
@@ -1161,6 +1323,10 @@ export const GalleryScene3D: React.FC = () => {
         gridScale: 0.48,
         idx
       });
+
+      if (isEspinhaco && espinhacoTotem) {
+        espinhacoTotem.item = artworkItems[artworkItems.length - 1];
+      }
     });
 
     let hoveredArtInGridId: string | null = null;
@@ -2576,55 +2742,112 @@ export const GalleryScene3D: React.FC = () => {
       }
       dustPosAttr.needsUpdate = true;
 
-      // ─── ANIMAÇÃO DA AURA MAGNÉTICA ESPINHAÇO ───
+      // ─── LÓGICA DE INTERAÇÃO DO TOTEM ESPINHAÇO (WAKE-ON-INTERACTION) ───
+      // O fóssil fica em repouso preservado no totem e só desperta quando o visitante interage (proximidade < 4.8m ou mira/hover)
       const audioEnergy = isAudioPlaying ? soundEngine.getEnergy() : 0;
+      let espinhacoWakeFactor = 0;
+
+      if (espinhacoTotem && espinhacoTotem.item) {
+        const item = espinhacoTotem.item;
+        const distToCamera = Math.hypot(camera.position.x - item.hallwayPos.x, camera.position.z - item.hallwayPos.z);
+        const isHovered = (storeState.hoveredArtwork?.id === item.artwork.id) || (storeState.proximityArtwork?.id === item.artwork.id);
+        const shouldBeAwake = (distToCamera <= 5.8 || isHovered) && !currentCinemaArt && !isArchiveMode;
+
+        // Suavização do estado de vigília: desperta em ~0.55s, retorna ao repouso fossilizado em ~1.2s
+        if (shouldBeAwake) {
+          espinhacoTotem.wakeFactor = Math.min(1.0, espinhacoTotem.wakeFactor + delta * 2.4);
+        } else {
+          espinhacoTotem.wakeFactor = Math.max(0.0, espinhacoTotem.wakeFactor - delta * 1.0);
+        }
+
+        espinhacoWakeFactor = espinhacoTotem.wakeFactor;
+        const wf = espinhacoWakeFactor;
+
+        if (wf > 0.001) {
+          // 1. Ondulação da coluna de aço viva em meio denso
+          const waveFreq = 2.2 + audioEnergy * 1.5;
+          const waveAmp = (0.09 + audioEnergy * 0.16) * wf;
+          const spineWave = Math.sin(elapsedTime * waveFreq) * waveAmp;
+          const spinePitch = Math.cos(elapsedTime * (waveFreq * 0.75)) * 0.05 * wf;
+
+          // 2. Consciência interativa: a escultura gira sutilmente na direção do visitante
+          const dx = camera.position.x - item.hallwayPos.x;
+          const dz = camera.position.z - item.hallwayPos.z;
+          const angleToPlayer = Math.atan2(dx, dz) - item.hallwayRotY;
+          const clampedTargetYaw = THREE.MathUtils.clamp(angleToPlayer, -0.32, 0.32);
+          espinhacoTotem.currentYawOffset = THREE.MathUtils.lerp(espinhacoTotem.currentYawOffset, clampedTargetYaw, 0.06);
+
+          espinhacoTotem.spineHolder.rotation.y = espinhacoTotem.currentYawOffset * wf + spineWave;
+          espinhacoTotem.spineHolder.rotation.z = spinePitch;
+          espinhacoTotem.spineHolder.rotation.x = Math.sin(elapsedTime * 1.1) * 0.03 * wf;
+          espinhacoTotem.spineHolder.position.y = Math.sin(elapsedTime * 1.8) * 0.04 * wf;
+
+          // 3. Luz interna da vitrine acende e pulsa em harmonia
+          espinhacoTotem.totemLight.intensity = 1.6 + (2.4 * wf) + (audioEnergy * 1.8 * wf);
+          espinhacoTotem.totemLight.color.setHex(audioEnergy > 0.4 ? 0x4deeea : 0x74c0fc);
+          if (espinhacoTotem.solidMesh) {
+            const mat = espinhacoTotem.solidMesh.material as THREE.MeshStandardMaterial;
+            mat.emissiveIntensity = 0.35 + (0.55 * wf) + (audioEnergy * 0.4 * wf);
+          }
+        } else {
+          // 4. Repouso absoluto preservado (fóssil inerte)
+          espinhacoTotem.spineHolder.rotation.set(0, 0, 0);
+          espinhacoTotem.spineHolder.position.set(0, 0, 0);
+          espinhacoTotem.totemLight.intensity = 1.4;
+          espinhacoTotem.totemLight.color.setHex(0xd0e8ff);
+          if (espinhacoTotem.solidMesh) {
+            const mat = espinhacoTotem.solidMesh.material as THREE.MeshStandardMaterial;
+            mat.emissiveIntensity = 0.30;
+          }
+        }
+      }
+
+      // ─── ANIMAÇÃO DA AURA MAGNÉTICA ESPINHAÇO (Acoplada ao Wake-on-Interaction) ───
       espinhacoAuraItems.forEach((aura, aIdx) => {
         const artItem = espinhacoItems[aIdx];
         if (!artItem) return;
 
-        // Proximity fade: aura becomes visible when camera is within 8m
-        const dx = camera.position.x - artItem.hallwayPos.x;
-        const dz = camera.position.z - artItem.hallwayPos.z;
-        const proximityDist = Math.sqrt(dx * dx + dz * dz);
-        const proximityFactor = Math.max(0, 1 - proximityDist / 8);
-        const targetOpacity = proximityFactor * (0.18 + audioEnergy * 0.22);
-        aura.mat.opacity = THREE.MathUtils.lerp(aura.mat.opacity, targetOpacity, 0.04);
+        // Aura só se torna visível quando o fóssil é despertado
+        const targetOpacity = espinhacoWakeFactor * (0.22 + audioEnergy * 0.28);
+        aura.mat.opacity = THREE.MathUtils.lerp(aura.mat.opacity, targetOpacity, 0.06);
 
-        // Animate particle positions (orbital noise drift)
-        const posArr = aura.positions;
-        const attr = aura.points.geometry.attributes.position as THREE.BufferAttribute;
-        const count = posArr.length / 3;
-        for (let p = 0; p < count; p++) {
-          const phase = aura.phases[p];
-          const speed = aura.speeds[p];
-          const orbitT = elapsedTime * speed * 0.35 + phase;
-          // Noise-driven perturbation
-          const pertX = Math.sin(orbitT * 1.3 + p * 0.07) * 0.008;
-          const pertY = Math.cos(orbitT * 0.9 + p * 0.05) * 0.006;
-          const pertZ = Math.sin(orbitT * 1.1 + p * 0.09) * 0.005;
-          posArr[p * 3]     += pertX;
-          posArr[p * 3 + 1] += pertY;
-          posArr[p * 3 + 2] += pertZ;
-          // Soft re-centering (keeps particles in ~spherical shell)
-          const newR = Math.sqrt(
-            posArr[p * 3] ** 2 + posArr[p * 3 + 1] ** 2 + posArr[p * 3 + 2] ** 2
-          );
-          const targetR = 1.2 + (aura.phases[p] / (Math.PI * 2)) * 1.8;
-          const correction = (targetR - newR) * 0.01;
-          if (newR > 0.01) {
-            posArr[p * 3]     += (posArr[p * 3] / newR) * correction;
-            posArr[p * 3 + 1] += (posArr[p * 3 + 1] / newR) * correction;
-            posArr[p * 3 + 2] += (posArr[p * 3 + 2] / newR) * correction;
+        if (aura.mat.opacity > 0.005) {
+          // Animate particle positions (orbital noise drift)
+          const posArr = aura.positions;
+          const attr = aura.points.geometry.attributes.position as THREE.BufferAttribute;
+          const count = posArr.length / 3;
+          for (let p = 0; p < count; p++) {
+            const phase = aura.phases[p];
+            const speed = aura.speeds[p];
+            const orbitT = elapsedTime * speed * 0.35 + phase;
+            // Noise-driven perturbation
+            const pertX = Math.sin(orbitT * 1.3 + p * 0.07) * 0.008;
+            const pertY = Math.cos(orbitT * 0.9 + p * 0.05) * 0.006;
+            const pertZ = Math.sin(orbitT * 1.1 + p * 0.09) * 0.005;
+            posArr[p * 3]     += pertX;
+            posArr[p * 3 + 1] += pertY;
+            posArr[p * 3 + 2] += pertZ;
+            // Soft re-centering (keeps particles in ~spherical shell)
+            const newR = Math.sqrt(
+              posArr[p * 3] ** 2 + posArr[p * 3 + 1] ** 2 + posArr[p * 3 + 2] ** 2
+            );
+            const targetR = 1.2 + (aura.phases[p] / (Math.PI * 2)) * 1.8;
+            const correction = (targetR - newR) * 0.01;
+            if (newR > 0.01) {
+              posArr[p * 3]     += (posArr[p * 3] / newR) * correction;
+              posArr[p * 3 + 1] += (posArr[p * 3 + 1] / newR) * correction;
+              posArr[p * 3 + 2] += (posArr[p * 3 + 2] / newR) * correction;
+            }
+            // Pulse with audio (burst outward on beat)
+            if (audioEnergy > 0.5 && Math.random() < audioEnergy * 0.002) {
+              posArr[p * 3]     *= 1.0 + audioEnergy * 0.04;
+              posArr[p * 3 + 1] *= 1.0 + audioEnergy * 0.03;
+            }
           }
-          // Pulse with audio (burst outward on beat)
-          if (audioEnergy > 0.5 && Math.random() < audioEnergy * 0.002) {
-            posArr[p * 3]     *= 1.0 + audioEnergy * 0.04;
-            posArr[p * 3 + 1] *= 1.0 + audioEnergy * 0.03;
-          }
+          (attr as THREE.BufferAttribute).needsUpdate = true;
+          // Size pulse with audio
+          aura.mat.size = 0.028 + audioEnergy * 0.018;
         }
-        (attr as THREE.BufferAttribute).needsUpdate = true;
-        // Size pulse with audio
-        aura.mat.size = 0.028 + audioEnergy * 0.018;
       });
 
       // Animação dos raios de luz volumétrica — oscilação lenta e orgânica
@@ -2876,7 +3099,9 @@ export const GalleryScene3D: React.FC = () => {
                 <span className="mouse-badge">
                   <span className="mouse-icon mouse-left-click" />
                 </span>
-                <span className="keycap-label">INSPECIONAR {gameControlPrompt.replace('art:', '')}</span>
+                <span className="keycap-label">
+                  {gameControlPrompt.includes('ESPINHAÇO') ? 'VIVENCIAR' : 'INSPECIONAR'} {gameControlPrompt.replace('art:', '')}
+                </span>
               </>
             ) : (
               <span className="keycap-label">{gameControlPrompt}</span>
