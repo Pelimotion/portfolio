@@ -1,84 +1,112 @@
 # BRIEFING ESTRATÉGICO DE TRANSIÇÃO — GIGANTERA (PRÓXIMA SESSÃO)
 > **Documento mestre de handoff para continuidade autônoma imediata no próximo chat.**
-> **Data:** 2026-09-16 | **Branch:** `main` | **Status do Build:** 100% Validado & Deploy Realizado no Vercel
+> **Data:** 2026-09-20 | **Branch:** `main` (2 commits à frente do `origin/main`) | **Status do Build:** 100% Validado (0 erros TypeScript, build ~470ms)
 
 ---
 
-## 🎯 RESUMO EXECUTIVO DA SESSÃO ATUAL (2026-09-16)
+## 🎯 RESUMO EXECUTIVO DA SESSÃO (2026-09-20)
 
-Nesta sessão, foram refinados profundamente a engenharia acústica (Web Audio API), a imersão espacial binaural/fone de ouvido, a experiência tátil com o CD Jewel Case 3D e a ergonomia de navegação no pavilhão de arte digital:
+Nesta sessão foi realizada a **integração monumental da escultura interativa 3D "Espinhaço"** (`/Volumes/PLM_SSD_01/Dev/Gigantera - Espinhaco`) diretamente no pavilhão tridimensional Gigantera, preservando a autenticidade estética da geometria original e implementando engenharia interativa de vanguarda:
 
-1. **Atalho 'M' Exclusivo para Mudo Global (Sem Abrir Gaveta)**:
-   - A tecla `M` (`KeyM`) agora atua **estritamente como mute/unmute do som global** (música do CD e áudios de obras).
-   - Não abre nem fecha mais gavetas de mídia ou outros painéis.
-   - O botão do Now Playing no `GalleryHeader` reflete o estado mutado/pausado de forma tática.
+### 1. Escultura 3D Autêntica Integrada ao Pavilhão Tridimensional
+- **Geometria Autêntica Importada**: Utilização do modelo PBR oficial (`public/models/espinhaco.glb`, 12MB) e nuvem de 50.000 coordenadas espaciais (`public/models/espinhaco_points.bin`, 586KB). Zero aproximação cartoon ou estilização 2D descaracterizante.
+- **Ancoragem Arquitetural no Átrio**: Posicionada em `x: -2.2m, z: 14.0m, rotY: 0.12` em `modularGallery.ts` com identificador `espinhaco-interactive-root` e `medium: 'interactive'`.
+- **Vitrine Museológica Especializada**:
+  - Profundidade ampliada para `1.10m` em `GalleryScene3D.tsx` com `transmission: 0.99` e `opacity: 0.35` (vidro cristalino anti-reflexivo de exposição).
+  - Cabos de suspensão verticais em grafite anodizado e clamps de montagem técnica travando a vértebra no interior.
+  - Iluminação dedicada interna com holofote focado (`SpotLight`) e luz de preenchimento (`PointLight`).
 
-2. **Identificação de Obras com Áudio Real (`hasAudio: boolean`)**:
-   - Adicionado o campo booleano `hasAudio` na tipagem `Artwork` (`types/art.ts`).
-   - Mapeadas todas as obras no catálogo (`data/artworks.ts`):
-     - `p-tessitura`: `hasAudio: true` (com trilha/design sonoro).
-     - `p-espinhaco` e `p-fagulha`: `hasAudio: false` (vídeos silenciosos).
-     - Stills: `hasAudio: false`.
-   - **Comportamento Inteligente**: Ao abrir uma obra em `CinemaView`, a música do CD de fundo só é pausada se a obra realmente contiver áudio próprio (`cinemaArtwork.hasAudio === true`). Se for silenciosa, a música da galeria continua tocando sem interrupção.
+### 2. Mecânica "Wake-on-Interaction" (Fóssil Vivente)
+- **Máquina de Estados de Preservação & Despertar**:
+  - **Estado Dormente:** Preservada inerte na vitrine como um fóssil histórico. Sem ciclos de render supérfluos (aura invisível).
+  - **Sensibilidade de Proximidade & Retículo:** Dispara quando o visitante se aproxima a menos de `5.8m` ou focaliza o retículo na vitrine.
+  - **Interpolação Orgânica (`wakeFactor` 0.0 → 1.0):**
+    - Onda cinética vertebral de curvatura suave ao longo do eixo vertical Y.
+    - Orientação magnética discreta acompanhando a câmera do jogador (rotação até ±18°).
+    - Flare luminoso das luzes internas e transição de emissividade.
+    - Ativação da nuvem periférica com 800 corpúsculos orbitais.
+  - **HUD Tático:** Retículo acende com aviso: `[E] / [CLIQUE] VIVENCIAR ESPINHAÇO`.
 
-3. **Master Limiter / Compressor de Áudio Dinâmico (Web Audio API)**:
-   - Implementado nó de compressão em `soundEngine.ts` com `DynamicsCompressorNode` (`threshold: -14dB`, `knee: 12dB`, `ratio: 8`, `attack: 0.003s`, `release: 0.25s`).
-   - Garante que todas as 17 faixas do álbum e as obras de vídeo soem em nível homogêneo e controlado, eliminando distorções, clipping ou variações bruscas de volume.
+### 3. Vivência Interativa 360° em Tela Cheia (`EspinhacoInteractive.tsx`)
+- Ao pressionar `[E]` ou clicar no totem do Espinhaço, a câmera transpassa o vidro e abre a experiência interativa em tela cheia via `CinemaView.tsx`.
+- **3 Modos de Visão de Vanguarda**:
+  - `MATÉRIA`: Malha metálica PBR hiper-realista com reflexos metálicos e rugosidade precisa.
+  - `CORPÚSCULOS`: Nuvem de 50.000 pontos espaciais renderizados com profundidade e atenuação de tamanho.
+  - `RAIO-X`: Casca externa translúcida de policarbonato/vidro revelando a espinha interna de pontos.
+- **4 Biomas Cromáticos**:
+  - `TITÂNIO`: Grafite metálico frio e ciano atmosférico.
+  - `ABISSAL`: Esmeralda e bioluminescência marinha profunda.
+  - `MAGMA`: Âmbar incandescente e ouro vulcânico.
+  - `ESPECTRAL`: Ultravioleta e magenta prismático.
+- **Áudio-Reatividade FFT**: Web Audio API com analisador em tempo real modulando a deformação vertebral e pulso de luz.
+- **Controles Híbridos**: Órbita 360° com arrasto de mouse/touch, zoom por scroll/pinch e tecla `[E]` ou `[ESC]` para retornar ao pavilhão em primeira pessoa.
 
-4. **Áudio Imersivo & Balanço L/R para Fones de Ouvido**:
-   - Ajustada a função de panning estereofônico para fones de ouvido: ganho da curva de azimute ampliado com `Math.sin(angle) * 0.9` e `StereoPannerNode`.
-   - Rotação da cabeça do jogador provoca deslocamento acústico espacial nítido e natural entre os canais esquerdo e direito.
+### 4. Módulo WebAR Mobile (`/ar/`)
+- Módulo independente de Realidade Aumentada para mobile (`ar/index.html` e `src/ar/*`).
+- Tracking de rotação real via giroscópio com quatérnios espaciais (`gyroTracking.ts`).
+- Detector óptico centro-periferia (`opticalDetector.ts`) e carregador binário de pontos (`pointsLoader.ts`).
 
-5. **Interação com o CD Jewel Case 3D**:
-   - **Aviso Narrativo de Fones**: Adicionado toast sutil tático com ícone de fones de ouvido (`cd-headphones-warning`) ao interagir com o CD.
-   - **Giro Automático de Capa**: Ao visualizar a capa frontal, qualquer interação por `wheel` (scroll do mouse), clique no case ou setas do teclado vira automaticamente o CD para a contracapa (`flipCD`), facilitando a seleção das faixas.
-   - **HUD Limpo Durante Interação**: A barra inferior com atalhos `[1]`, `[2]`, `[3]` é ocultada suavemente quando o CD está na mão (`isHoldingCD = true`), mantendo apenas a interface essencial.
-
-6. **Refinamentos no Modo Cinema (`CinemaView.tsx`)**:
-   - **Compatibilidade macOS**: Mapeamento de teclas de atalho atualizado para `e.code` (`KeyI`, `KeyR`, `KeyM`, `KeyF`, `Escape`) evitando conflitos com dead keys/Option no Mac.
-   - **Cartão Curatorial Sem Sobreposição**: O dossiê lateral (`.cinema-lateral-dossier`) agora tem posicionamento absoluto superior (`top: 1.5rem`), sem sobrepor botões ou o dock inferior.
-   - **Eliminação de Botão Duplicado**: Removido o botão de fechar redundante (`cinema-mini-exit`).
-   - **Padronização de Títulos**: Removidas tags de versão (`(v2)`) dos nomes das faixas de áudio no catálogo.
-
----
-
-## 🚀 PONTOS DE PARTIDA & TAREFAS PARA A PRÓXIMA SESSÃO
-
-Na próxima sessão, o time pode avançar nas seguintes frentes já mapeadas:
-
-### 1. Cursor Customizado na Inspeção de Obra (`CinemaView.tsx`)
-- Cursor de mão de arrasto estilo brutalista (`grab` / `grabbing`) sobre o canvas/imagem da obra, transitando para ponteiro tradicional (`pointer`) ao passar o mouse sobre botões, controles e dock inferior.
-
-### 2. Single-Click Pointer Lock no Pavilhão 3D
-- Assegurar que um único clique (`pointerdown`) no salão trave a mira sem requerer segurar o botão do mouse para olhar ao redor.
-
-### 3. Transição Suave do Tutorial de Entrada
-- Harmonizar o tempo de exibição do card introdutório com transição de fade-out de 2 segundos para o minitutorial docado no rodapé.
-
-### 4. Keycaps Físicas Padronizadas em Todo o Sistema
-- Expandir o estilo de keycaps mecânicas (`.keycap`) já aplicado em `MinimalBottomBar.tsx` para todas as interfaces (Modal de Ajuda, CinemaView e ArchiveIndex).
+### 5. Taxonomia, Filtros e Categorias
+- Adicionada a categoria `medium: 'interactive'` nas tipagens (`types/art.ts`).
+- `ArchiveIndex.tsx` e `MobileBottomDock.tsx` atualizados com o filtro `✦ INTERATIVO`.
+- `data/artworks.ts` calibrado: apenas o totem do Espinhaço possui `interactiveExperience: 'espinhaco'`, preservando as obras de vídeo ("Tração" e "Encalhe") como vídeos de alta fidelidade.
 
 ---
 
-## 🛠️ VERIFICAÇÃO E COMANDOS
+## 🛠️ ESTADO TÉCNICO & INTEGRIDADE DO CÓDIGO
+
+- **Branch Atual:** `main`
+- **Commits Locais:**
+  - `1501557`: `feat: integrar escultura 3D autêntica do Espinhaço no totem com wake-on-interaction`
+  - `31a1341`: `wip: Espinhaço 3D model integration and handoff setup`
+- **Validação de Tipos:** `npx tsc --noEmit` aprovado com **0 erros**.
+- **Build de Produção:** `npm run build` executado com sucesso em ~470ms.
+- **Knowledge Graph:** Pipeline `graphify` executado e atualizado em `graphify-out/`.
+
+---
+
+## 🚀 PONTOS DE PARTIDA & TAREFAS PARA AS PRÓXIMAS SESSÕES
+
+Nas próximas sessões, o time pode avançar nas seguintes frentes:
+
+### 1. Sincronização Git (`origin/main`)
+- Quando conveniente para o usuário, fazer `git push origin main` para publicar os 2 commits pendentes e acionar o build/deploy automático da Vercel.
+
+### 2. Engenharia Acústica Espacial do Totem Espinhaço
+- Adicionar um drone sonoro ou campo sonoro sub-grave textural contínuo quando o visitante estiver a menos de 5.8m do totem na galeria 3D, ampliando a sensação táctil de "despertar" do fóssil vivente.
+
+### 3. Curadoria de Obras Adicionais ou Variações de Bioma
+- Expandir novos biomas na interface do `EspinhacoInteractive.tsx` se desejado pelo curador.
+- Possibilidade de adicionar presets de câmera na inspeção interativa (ex: vista transversal, macro nas vértebras lombares).
+
+### 4. Refinamento de Pointers & UX Mobile
+- Aprimorar o feedback háptico (vibração no mobile via `navigator.vibrate`) ao tocar nas vértebras do Espinhaço no modo interativo e no WebAR.
+
+---
+
+## ⚡ COMANDOS RÁPIDOS DE DESENVOLVIMENTO
 
 ```bash
-# Pasta do projeto
+# Entrar na pasta do projeto
 cd "/Volumes/PLM_SSD_01/Google Drive/Pelimotion/Pipeline SSD 01/Pelimotion/Site/gigantera"
 
-# Checagem de tipos
+# Executar dev server
+npm run dev
+
+# Checagem de tipagem TypeScript
 npx tsc --noEmit
 
-# Build de produção
+# Compilar build de produção
 npm run build
 
-# Dev server local
-npm run dev
+# Consultar o grafo de conhecimento do projeto
+graphify query "<pergunta sobre arquitetura>"
 ```
 
 ---
 
-## 🔒 REGRAS ABSOLUTAS
-- **Zero-Bandwidth Git:** Mídias pesadas (áudios, vídeos e giclées) residem 100% na Bunny CDN (`https://pelimotion-portfolio.b-cdn.net/`).
-- **Deploy:** Cada `git push origin main` dispara automaticamente o build e deploy na Vercel.
-- **Escopo Isolado:** Modificações devem ficar restritas a `/gigantera/`, mantendo a estabilidade do site principal.
+## 🔒 DIRETRIZES E REGRAS PERMANENTES
+1. **Modelos 3D e Binários Autênticos:** O modelo do Espinhaço (`espinhaco.glb` e `espinhaco_points.bin`) deve sempre manter suas proporções originais calibradas (rotação Z 90°, altura 2.40m).
+2. **Desempenho & 60 FPS:** O cálculo da aura de partículas e ondas na escultura só roda quando `wakeFactor > 0.01` para não sobrecarregar a GPU quando o visitante estiver distante.
+3. **Zero-Bandwidth Git para Mídias Pesadas:** Vídeos, giclées e áudios continuam hospedados na Bunny CDN. Apenas o GLB e binário calibrados de 12MB residem no bundle local.
+4. **Deploy Blindado:** Toda alteração deve passar sem erros no `npx tsc --noEmit` e `npm run build`.
