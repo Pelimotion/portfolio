@@ -402,12 +402,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCameraTargetZ: (z) => {
     const clamped = Math.max(TOKENS.navigation.zEnd, Math.min(TOKENS.navigation.zStart, z));
     let sectorId = 'entrance-audio';
-    if (clamped < -16) {
-      sectorId = 'still';
-    } else if (clamped < 11) {
-      sectorId = 'video';
-    } else if (clamped < 17.5) {
+    if (clamped < -60) {
       sectorId = 'interactive';
+    } else if (clamped < -25) {
+      sectorId = 'still';
+    } else if (clamped < 14) {
+      sectorId = 'video';
     } else {
       sectorId = 'entrance-audio';
     }
@@ -417,12 +417,12 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   updateCameraZ: (currentZ, velocity) => {
     let sectorId = 'entrance-audio';
-    if (currentZ < -16) {
-      sectorId = 'still';
-    } else if (currentZ < 11) {
-      sectorId = 'video';
-    } else if (currentZ < 17.5) {
+    if (currentZ < -60) {
       sectorId = 'interactive';
+    } else if (currentZ < -25) {
+      sectorId = 'still';
+    } else if (currentZ < 14) {
+      sectorId = 'video';
     } else {
       sectorId = 'entrance-audio';
     }

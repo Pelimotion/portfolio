@@ -62,30 +62,69 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
   const halfWidth = 14.0;
   const roomHeight = 12.0;
 
-  const entranceZ = 22.0;
   const zStart = 30.0;
+  const entranceZ = 24.0;
   const cdStationZ = 18.0;
 
-  // Separação por setor: Interativo (Átrio) → Setor 01 (VÍDEO) → Setor 02 (STILL)
+  // Separação por setor
   const interactiveWorks = artworks.filter((a) => a.medium === 'interactive');
   const videoWorks = artworks.filter((a) => a.medium === 'video');
   const stillWorks = artworks.filter((a) => a.medium === 'still');
 
-  // Espaçamento longitudinal amplo entre obras consecutivas para criar um percurso serpentino intercalado
-  const videoSpacing = 10.0;          // Z: +12m a -8m (3 vitrines cinéticas bem espaçadas)
-  const sectorTransitionGap = 14.0;   // Portal arquitetural de transição (área contemplativa ampla)
-  const stillSpacing = 10.0;          // Z: -22m a -85m (monólitos giclée intercalados sem sobreposição)
+  // Intercalar para que os vídeos não fiquem todos juntos
+  const interleavedWorks: Artwork[] = [];
+  let vIndex = 0;
+  let sIndex = 0;
+  while (vIndex < videoWorks.length || sIndex < stillWorks.length) {
+    if (sIndex < stillWorks.length) interleavedWorks.push(stillWorks[sIndex++]);
+    if (sIndex < stillWorks.length) interleavedWorks.push(stillWorks[sIndex++]);
+    if (vIndex < videoWorks.length) interleavedWorks.push(videoWorks[vIndex++]);
+  }
 
-  const stillStartX = 4.6;   // Distância lateral da parede/centro (salão amplo e arejado)
-  const viewingOffset = 3.6; // Distância do ponto de observação ideal em frente à vitrine
-
-  let currentZ = 12.0; // Posição de Z da obra interativa central
   const artworksWithCoords: ModularGalleryLayout['artworksWithCoords'] = [];
   const viewingSpots: ViewingSpotInfo[] = [];
+  const viewingOffset = 3.6; 
+  let currentZ = 10.0;
 
-  const centerInteractiveZ = 10.0;
-  
-  // 0. Obra Interativa Monumental: No epicentro do U-Shape (Z = 10.0m, X = 0.0m)
+  // 1. The Journey (Staggered Zig-Zag layout for stills and videos)
+  // Progressive disclosure: left, then right, then left...
+  const spacingZ = 8.5; // Distância entre as obras no eixo Z
+  const sideX = 7.5; // Distância da obra do eixo central
+
+  interleavedWorks.forEach((art, i) => {
+    // Alterna esquerda e direita
+    const isLeft = i % 2 === 0;
+    const x = isLeft ? -sideX : sideX;
+    const z = currentZ;
+    
+    // Obra encosta na "parede" imaginária (ou defletor), apontando para o centro
+    // Esquerda: rotY = Math.PI/2 (90 graus)
+    // Direita: rotY = -Math.PI/2 (-90 graus)
+    const rotY = isLeft ? Math.PI / 2 : -Math.PI / 2;
+
+    const computedCoords = { x, y: 0.45, z, rotY };
+
+    const spotX = isLeft ? x + viewingOffset : x - viewingOffset;
+    const spotZ = z;
+
+    const viewingSpot: ViewingSpotInfo = {
+      artworkId: art.id,
+      x: spotX,
+      z: spotZ,
+      medium: art.medium as 'video' | 'still',
+      title: art.title
+    };
+
+    artworksWithCoords.push({ ...art, computedCoords, viewingSpot });
+    viewingSpots.push(viewingSpot);
+
+    currentZ -= spacingZ;
+  });
+
+  // 2. The Penumbra Sanctuary (Epic climax at the end)
+  currentZ -= 10.0; // Um respiro maior antes da obra final
+  const centerInteractiveZ = currentZ;
+
   interactiveWorks.forEach((art) => {
     const x = 0.0;
     const z = centerInteractiveZ;
@@ -93,9 +132,9 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
 
     const computedCoords = { x, y: 0.45, z, rotY };
 
-    // Ponto de visualização mais próximo para interação
-    const spotX = x + Math.sin(rotY) * (viewingOffset * 0.8);
-    const spotZ = z + Math.cos(rotY) * (viewingOffset * 0.8);
+    // Ponto de visualização
+    const spotX = x;
+    const spotZ = z + viewingOffset * 1.2;
 
     const viewingSpot: ViewingSpotInfo = {
       artworkId: art.id,
@@ -108,57 +147,6 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
     artworksWithCoords.push({ ...art, computedCoords, viewingSpot });
     viewingSpots.push(viewingSpot);
   });
-
-  // 1. Obras em U-Shape (Meia-Lua) orbitando a obra interativa
-  // Vamos juntar vídeos e stills e distribuí-los em um semicírculo
-  const uShapeWorks = [...videoWorks, ...stillWorks];
-  
-  // Intercalar para que os vídeos não fiquem todos juntos
-  // (temos tipicamente 3 vídeos e 6 stills)
-  const interleavedWorks: Artwork[] = [];
-  let vIndex = 0;
-  let sIndex = 0;
-  while (vIndex < videoWorks.length || sIndex < stillWorks.length) {
-    if (sIndex < stillWorks.length) interleavedWorks.push(stillWorks[sIndex++]);
-    if (sIndex < stillWorks.length) interleavedWorks.push(stillWorks[sIndex++]);
-    if (vIndex < videoWorks.length) interleavedWorks.push(videoWorks[vIndex++]);
-  }
-
-  const radius = 9.0;
-  const totalItems = interleavedWorks.length;
-  
-  interleavedWorks.forEach((art, i) => {
-    // theta varia de Math.PI até 0 para distribuir da esquerda para a direita
-    const theta = Math.PI - (i / (totalItems - 1)) * Math.PI;
-    const x = 0.0 + radius * Math.cos(theta);
-    const z = centerInteractiveZ - radius * Math.sin(theta);
-    
-    // Calcula o ângulo rotY para apontar para o centro (0, centerInteractiveZ)
-    const dx = 0.0 - x;
-    const dz = centerInteractiveZ - z;
-    const rotY = Math.atan2(dx, dz);
-
-    const computedCoords = { x, y: 0.45, z, rotY };
-
-    // O viewing spot fica na normal da obra, mas numa distância confortável
-    const spotX = x + Math.sin(rotY) * viewingOffset;
-    const spotZ = z + Math.cos(rotY) * viewingOffset;
-
-    const viewingSpot: ViewingSpotInfo = {
-      artworkId: art.id,
-      x: spotX,
-      z: spotZ,
-      medium: art.medium as 'video' | 'still',
-      title: art.title
-    };
-
-    artworksWithCoords.push({ ...art, computedCoords, viewingSpot });
-    viewingSpots.push(viewingSpot);
-  });
-
-  // Fim do salão calculado proporcionalmente à meia-lua
-  currentZ = centerInteractiveZ - radius;
-
 
   // Fim do salão calculado proporcionalmente
   const zEnd = currentZ - 14.0;

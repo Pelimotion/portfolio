@@ -213,6 +213,7 @@ export class PlayerController {
     }
     if (!this.isLocked) {
       this.isPointerDown = false;
+      this.hasClickedCanvas = false;
     } else {
       // Pointer Lock recém concedido: reseta deltas para evitar salto na câmera
       // O próximo mousemove usará e.movementX/Y limpos em vez de delta com prevMouseX

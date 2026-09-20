@@ -463,14 +463,79 @@ export const GalleryScene3D: React.FC = () => {
     sunLight.shadow.bias = -0.0003;
     scene.add(sunLight);
 
-    // Teto flutuante invisível para gerar penumbra e contraste em volta da obra Espinhaço (Z = 10)
-    const penumbraBlockerGeo = new THREE.PlaneGeometry(24, 24);
+    // Encontrar a posição Z da obra interativa para posicionar a penumbra
+    const interactiveArt = layout.artworksWithCoords.find(a => a.medium === 'interactive');
+    const penumbraZ = interactiveArt ? interactiveArt.computedCoords.z : 10;
+
+    // Teto flutuante invisível para gerar penumbra e contraste em volta da obra Espinhaço
+    const penumbraBlockerGeo = new THREE.PlaneGeometry(36, 36);
     const penumbraBlockerMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
     const penumbraBlocker = new THREE.Mesh(penumbraBlockerGeo, penumbraBlockerMat);
-    penumbraBlocker.position.set(0, 11.5, 10);
+    penumbraBlocker.position.set(0, 11.5, penumbraZ);
     penumbraBlocker.rotation.x = Math.PI / 2;
     penumbraBlocker.castShadow = true;
     scene.add(penumbraBlocker);
+
+    // Spotlight dramático focado na obra interativa no Sanctuary of Penumbra
+    if (interactiveArt) {
+      const dramaLight = new THREE.SpotLight(
+        isLight ? 0xfffcf0 : 0xe4c379,
+        isLight ? 1.5 : 2.5,
+        30,
+        Math.PI / 6,
+        0.5,
+        1.2
+      );
+      dramaLight.position.set(0, 10, penumbraZ + 5);
+      dramaLight.target.position.set(0, 0, penumbraZ);
+      dramaLight.castShadow = true;
+      scene.add(dramaLight);
+      scene.add(dramaLight.target);
+
+      // Luz de contorno cianita/azul-turquesa suave atrás da escultura viva
+      const rimLight = new THREE.PointLight(
+        isLight ? 0x165d6b : 0x38bdf8,
+        isLight ? 0.65 : 0.95,
+        14
+      );
+      rimLight.position.set(0, 1.2, penumbraZ - 3.2);
+      scene.add(rimLight);
+
+      // Plinto/piso arquitetural escuro no Sanctuary of Penumbra (traz suspense tátil e diferenciação)
+      const penumbraFloorGeo = new THREE.PlaneGeometry(24, 28);
+      penumbraFloorGeo.rotateX(-Math.PI / 2);
+      const penumbraFloorMat = new THREE.MeshStandardMaterial({
+        color: isLight ? 0x222524 : 0x090b0a,
+        roughness: 0.92,
+        metalness: 0.08
+      });
+      const penumbraFloorMesh = new THREE.Mesh(penumbraFloorGeo, penumbraFloorMat);
+      penumbraFloorMesh.position.set(0, -3.18, penumbraZ);
+      penumbraFloorMesh.receiveShadow = true;
+      scene.add(penumbraFloorMesh);
+    }
+
+    // Paredes Arquitetônicas Baffle (Foyer -> Journey)
+    const baffleGeo = new THREE.BoxGeometry(8, 24, 1.2);
+    const baffleWallMat = new THREE.MeshStandardMaterial({
+      color: isLight ? 0xeeece5 : 0x111413,
+      roughness: 0.9,
+      metalness: 0.05
+    });
+    
+    // Parede defletora esquerda no Foyer
+    const leftBaffle = new THREE.Mesh(baffleGeo, baffleWallMat);
+    leftBaffle.position.set(-9, 6, 14);
+    leftBaffle.receiveShadow = true;
+    leftBaffle.castShadow = true;
+    scene.add(leftBaffle);
+
+    // Parede defletora direita no Foyer
+    const rightBaffle = new THREE.Mesh(baffleGeo, baffleWallMat);
+    rightBaffle.position.set(9, 6, 14);
+    rightBaffle.receiveShadow = true;
+    rightBaffle.castShadow = true;
+    scene.add(rightBaffle);
 
     const visitorLight = new THREE.PointLight(
       isLight ? 0xfff3d8 : 0xe4c379,
@@ -605,12 +670,14 @@ export const GalleryScene3D: React.FC = () => {
 
     const lightShaftMeshes: { outer: THREE.Mesh; inner: THREE.Mesh; baseX: number; baseZ: number }[] = [];
 
-    // Apenas 3 claraboias estratégicas ao longo do salão recebem feixes de luz, evitando sobreposição e acúmulo ofuscante
-    const skylightIndices = new Set([
-      0,
-      Math.floor(layout.ceilingBeamsZ.length / 2),
-      Math.max(1, layout.ceilingBeamsZ.length - 1)
-    ]);
+    // Apenas claraboias estratégicas no salão principal recebem feixes de luz,
+    // garantindo que o Sanctuary of Penumbra no fundo permaneça escuro, misterioso e intimista
+    const availableBeams = layout.ceilingBeamsZ
+      .map((bz, idx) => ({ bz, idx }))
+      .filter((b) => b.bz > penumbraZ + 16);
+    const midBeamIdx = availableBeams.length > 1 ? availableBeams[Math.floor(availableBeams.length / 2)].idx : 0;
+    const lastBrightBeamIdx = availableBeams.length > 2 ? availableBeams[availableBeams.length - 1].idx : 0;
+    const skylightIndices = new Set([0, midBeamIdx, lastBrightBeamIdx]);
 
     layout.ceilingBeamsZ.forEach((bz, bIdx) => {
       const beam = new THREE.Mesh(beamGeo, beamMat);
@@ -1551,6 +1618,13 @@ export const GalleryScene3D: React.FC = () => {
       radius: 1.8
     }));
     playerController.obstacles.push({ x: 2.8, z: 18, radius: 1.3 });
+    // Obstáculos físicos das paredes defletoras do Foyer (evita atravessar a arquitetura)
+    playerController.obstacles.push({ x: -11.0, z: 14, radius: 2.2 });
+    playerController.obstacles.push({ x: -8.0, z: 14, radius: 2.2 });
+    playerController.obstacles.push({ x: -5.5, z: 14, radius: 1.5 });
+    playerController.obstacles.push({ x: 11.0, z: 14, radius: 2.2 });
+    playerController.obstacles.push({ x: 8.0, z: 14, radius: 2.2 });
+    playerController.obstacles.push({ x: 5.5, z: 14, radius: 1.5 });
 
     // Enquadramento cinematográfico inicial na entrada: CD em primeiro plano e galeria em perspectiva
     camera.position.set(0, 0.4, 23.5);

@@ -10,20 +10,22 @@
 O visitante flutua ("nada") no espaço tridimensional entre vitrines flutuantes de vidro acrílico que guardam impressões em papel mate de algodão, experimentando iluminação realista com sombras suaves, vigas estruturais com claraboias de onde emanam feixes de luz volumétrica (*god rays*), uma estação de áudio tátil na entrada e controles em primeira pessoa inspirados na era clássica de jogos PS1/PS2.
 
 ```
-       [ENTRADA Z: +20M] ── Estação do CD Jewel Case 3D (Álbum Autoral em POV)
-       [ÁTRIO CENTRAL   ] ── TOTEM INTERATIVO: ESPINHAÇO (Âncora Central em Penumbra Cênica)
-       [EXPOGRAFIA EM U ] ── Meia-lua concêntrica em torno do Espinhaço:
-                             ├── ASA ESQUERDA: VÍDEOS (Cinética & Motion Textures em Loop Real)
-                             └── ASA DIREITA:  STILL (Imagens & Esculturas em Papel Mate Suspenso)
-       [SETOR POSTERIOR ] ── MONUMENTO FINAL & ACERVO COMPLETO
+       [ENTRADA Z: +24M] ── FOYER ARQUITETURAL COM DEFLETORES & ESTAÇÃO DE CD 3D
+                            └── Obras ocultas pela arquitetura inicial para foco sonoro no CD
+       [CORREDOR ZIGZAG] ── PROGRESSIVE DISCLOSURE (Z: +14M → -60M):
+                            ├── VITRINES CINÉTICAS (Vídeos & Motion Textures em Loop Real)
+                            └── MONÓLITOS GICLÉE (Gravuras em Vidro & Papel Mate Suspenso)
+       [CLÍMAX FINAL   ] ── SANTUÁRIO DE PENUMBRA (Z ≈ -76M):
+                            └── TOTEM MONUMENTAL DO ESPINHAÇO (Sob Holofote & Plinto Escuro)
 ```
 
 ---
 
-## 🏛️ Expografia Orgânica & Expansão Cenográfica
+## 🏛️ Expografia Minimalista & Descoberta Progressiva
 
-- **Disposição Polar em "U" (Meia-Lua):** Abandonando corredores retos lineares, o acervo de vitrines agora se distribui em um semicírculo concêntrico em torno da obra interativa central *Espinhaço*. O visitante pode contemplar tanto as obras periféricas quanto a silhueta da escultura central de múltiplos ângulos.
-- **Iluminação em Penumbra & Contraste:** A zona do Espinhaço é mantida sob iluminação baixa e sombra cenográfica controlada (`penumbraBlocker`), permitindo que a luminescência orgânica e a nuvem de pontos da escultura se destaquem de forma intimista e imersiva.
+- **Foyer Arquitetural com Paredes Defletoras (Baffles):** Ao ingressar no pavilhão, o visitante depara-se imediatamente com a Estação de Áudio do CD Jewel Case. Duas imponentes paredes defletoras enquadram o portal de acesso ao salão principal, resguardando o suspense das obras seguintes e incentivando o contato inicial com a trilha autoral.
+- **Percurso em Ziguezague Escultural:** As vitrines de vídeos e gravuras distribuem-se alternadamente ao longo do corredor, garantindo que o visitante contemple uma criação por vez com amplo respiro visual, elegância e ritmo museológico.
+- **Santuário de Penumbra (Espinhaço Monumental):** A escultura 3D viva do *Espinhaço* repousa no ápice da galeria sobre um plinto negro de ardósia sob iluminação cenográfica pontual e oclusão de claraboias, criando um clímax teatral e intimista.
 
 ---
 
