@@ -9,18 +9,25 @@
 Nesta sessão foi realizada uma profunda reestruturação cenográfica e técnica no **Pavilhão Digital Gigantera**, elevando o nível de imersão artística e sanando atritos críticos de interação:
 
 ### 1. Cenografia do Santuário da Obra Interativa (`Espinhaço`, Z ≈ -76.5m)
-- **Piso e Paredes em Degradê Mineral Táctil Procedural**:
-  - `createSanctuaryFloorTexture(isLight)`: Gera via canvas procedural uma transição arquitetônica cobrindo de `Z = -52m` até `Z = -94m`. Possui textura de ardósia/basalto escovado, granulação mineral realista e suave fade longitudinal.
-  - `createSanctuaryWallTexture(isLight)`: Reveste as paredes laterais e de fundo com acabamento em gesso acústico cinza-grafite escuro com agregados minerais e ranhuras táteis de espátula, eliminando o "preto plano" e conferindo peso e reverberação visual.
-- **Redesenho da Iluminação Museológica**:
-  - **Spot Sculptural Zenital**: Luz de topo quente com penumbra suave (0.85) e `castShadow = false`, eliminando o overhead de projeção de sombra em 50.000 partículas que causava engasgos.
-  - **Backlight & Rim Light Cianita**: Ponto turquesa/ciano posicionado atrás da escultura para recortar seu contorno (rim lighting) contra a penumbra mineral.
-  - **Wall Washers**: Iluminação rasante que valoriza as texturas táteis das paredes.
+- **Degradê Arquitetural Mineral Táctil Procedural**:
+  - `createSanctuaryFloorTexture(isLight)`: Transição de piso suave do tom claro/original do microcimento da galeria na entrada ($Z = -52\text{m}$) até a ardósia/basalto mineral escuro no fundo ($Z = -94\text{m}$). O piso escuro possui textura tátil rica com microcristais de quartzo, fissuras e veios de pedra e juntas de dilatação sutis, nunca sendo preto puro chapado.
+  - `createSanctuaryWallTexture(isLight)`: Ambas as paredes laterais (esquerda e direita) foram orientadas via UVs para acompanhar o degradê do piso, iniciando no tom claro da galeria em $Z = -52\text{m}$ e aprofundando em gesso acústico mineral escuro até o fundo $Z = -94\text{m}$.
+- **Remoção de Obstáculos & Purismo Espacial**:
+  - O banco monolítico que aparecia no chão da zona do santuário foi filtrado (`bz > -50m` em `modularGallery.ts` e `GalleryScene3D.tsx`), deixando o chão do santuário totalmente desimpedido e monumental.
+- **Placa de Identificação no Umbral de Transição ($Z \approx -52.2\text{m}$)**:
+  - Ao invés de ficar debaixo da escultura a $Z = -76.5\text{m}$, a plaquinha física 3D do Espinhaço foi posicionada exatamente na linha de transição entre o piso claro e o piso escuro ($Z = -52.2\text{m}$, voltada de frente para o visitante). Ao chegar ao umbral, o visitante lê a ficha técnica e contempla a escultura colossal erguendo-se ao fundo.
 
-### 2. Desduplicação da Obra Interativa, Turntable 360° e Otimização Extrema
-- **Apenas Partículas no Totem**: Removido o loader que carregava a malha sólida `.glb` em duplicata na galeria. A obra agora é renderizada puramente em nuvem viva de 50.000 partículas (`espinhaco_points.bin`) com material customizado aditivo.
-- **Rotação Contínua 360°**: Animação contínua em modo turntable (`rotation.y += delta * 0.45`), aliada à respiração vertical senoidal e deformação áudio-reativa que ondula suavemente conforme o visitante se aproxima.
-- **Performance Garantida a 60 FPS**: Sem shadow pass pesado e com reutilização de buffers GPU `Float32Array` sem recriação de geometrias no garbage collector.
+### 2. Escala Monumental 3x da Obra Interativa no Pavilhão & Turntable Contínuo
+- **Escala 3x de Destaque Absoluto**:
+  - A nuvem viva de 50.000 partículas (`espinhaco_points.bin`) foi ampliada de `1.9` para `5.7` (3x a escala anterior), gerando uma colossal coluna vertebral escultural de aproximadamente 8,2 metros de altura vertical que se estende do piso até próximo às vigas de teto.
+  - Diâmetro das partículas ajustado para `0.038 - 0.044` para preservar a densidade volumétrica e o brilho aditivo.
+  - Luzes pontuais internas e de preenchimento ampliadas para 16m–18m de alcance, e volume de colisão de clique/hover ampliado para raio 2.8m e altura 8.8m.
+  - Rotação contínua turntable 360° fluida (`rotation.y += delta * 0.45`), levitação senoidal viva e ondulação áudio-reativa mantidas com 60 FPS garantidos.
+
+### 3. Reenquadramento Óptico em `EspinhacoInteractive.tsx` (Compensação do Menu)
+- **Centralização Óptica Precisa**:
+  - Quando o menu lateral esquerdo de controles está ativo (`tutorialState === 'minimized'`, ocupando ~360px), a câmera agora aplica `targetCamX = -0.72` em desktop.
+  - Esse deslocamento para a esquerda da câmera translada o modelo 3D para a direita, posicionando-o exatamente no centro geométrico do espaço livre restante da tela (entre a borda do menu e a margem direita da janela). Ao recolher o menu (`[H]`), a câmera interpola suavemente de volta para o centro global (`targetCamX = 0.0`).
 
 ### 3. Tela de Interação com o CD: Eliminação do Flash e Reestruturação Split-Screen
 - **Resolução de Conflitos e Flash Rápido**:

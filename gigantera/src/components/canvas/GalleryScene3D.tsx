@@ -129,52 +129,77 @@ function createSanctuaryFloorTexture(isLight: boolean): THREE.CanvasTexture {
   canvas.height = 1024;
   const ctx = canvas.getContext('2d')!;
 
-  // Gradiente longitudinal: do tom inicial de transição (topo y=0) ao carvão mineral no clímax (y=1024)
-  const grad = ctx.createLinearGradient(0, 0, 0, 1024);
+  // Gradiente longitudinal correto (Three.js V=0 no fundo y=1024 corresponde à entrada Z=-52m):
+  // y = 1024 (Entrada): tom original do piso da galeria
+  // y = 0    (Fundo): ardósia/basalto escuro mineral texturizado (nunca preto puro)
+  const grad = ctx.createLinearGradient(0, 1024, 0, 0);
   if (isLight) {
-    grad.addColorStop(0.0, '#eae7df'); // Cor de entrada idêntica ao microcimento
-    grad.addColorStop(0.35, '#787a76'); // Transição em degradê
-    grad.addColorStop(0.75, '#2c312e'); // Ardósia mineral profunda
-    grad.addColorStop(1.0, '#1c201e');  // Grafite aveludado minimalista
+    grad.addColorStop(0.0, '#eae7df');  // Entrada (Z = -52m): idêntico ao piso da galeria
+    grad.addColorStop(0.22, '#d6d2c8'); // Início suave da transição
+    grad.addColorStop(0.50, '#757a76'); // Meio-tom ardósia mineral
+    grad.addColorStop(0.80, '#353a37'); // Basalto cinza escuro
+    grad.addColorStop(1.0, '#242826');  // Fundo (Z = -94m): ardósia profunda (nunca preto chapado)
   } else {
-    grad.addColorStop(0.0, '#121514'); // Cor de entrada idêntica ao microcimento dark
-    grad.addColorStop(0.35, '#101312'); // Transição suave
-    grad.addColorStop(0.75, '#0b0d0c'); // Basalto profundo
-    grad.addColorStop(1.0, '#070908');  // Grafite abissal sofisticado (nunca 0x000000)
+    grad.addColorStop(0.0, '#121514');  // Entrada (Z = -52m): idêntico ao piso da galeria dark
+    grad.addColorStop(0.22, '#131615'); // Suave fade
+    grad.addColorStop(0.50, '#101312'); // Transição mineral sutil
+    grad.addColorStop(0.80, '#0d0f0e'); // Basalto grafite
+    grad.addColorStop(1.0, '#0a0c0b');  // Fundo (Z = -94m): mineral profundo elegante (nunca 0x000000)
   }
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, 1024, 1024);
 
+  // Textura mineral tátil realista no piso escuro:
+  // Granulação mineral microscópica, microcristais de quartzo e ruído tátil
   const imgData = ctx.getImageData(0, 0, 1024, 1024);
   const data = imgData.data;
   for (let i = 0; i < data.length; i += 4) {
-    // Granulação mineral tátil e micro-cristais de quartzo
-    const grain = (Math.random() - 0.5) * (isLight ? 12 : 7);
-    const fleck = Math.random() > 0.985 ? (isLight ? 28 : 22) : 0;
+    const yCoord = Math.floor((i / 4) / 1024);
+    // Mais granulação e detalhes táteis conforme se aproxima do fundo escuro (y < 700)
+    const darkZoneWeight = Math.min(1.0, Math.max(0.35, (1024 - yCoord) / 1024));
+    const grain = (Math.random() - 0.5) * (isLight ? 14 : 10) * darkZoneWeight;
+    const fleck = Math.random() > 0.982 ? (isLight ? 32 : 24) * darkZoneWeight : 0;
     data[i] = Math.min(255, Math.max(0, data[i] + grain + fleck));
     data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain + fleck));
     data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain + fleck));
   }
   ctx.putImageData(imgData, 0, 0);
 
-  // Manchas minerais orgânicas e esfumados sutis
-  for (let s = 0; s < 30; s++) {
+  // Manchas minerais orgânicas, veios de pedra e esfumados de abrasão
+  for (let s = 0; s < 45; s++) {
     const sx = Math.random() * 1024;
-    const sy = Math.random() * 1024;
-    const sSize = 30 + Math.random() * 100;
-    const sOpacity = Math.random() * 0.04;
+    const sy = Math.random() * 800;
+    const sSize = 40 + Math.random() * 140;
+    const sOpacity = Math.random() * (isLight ? 0.045 : 0.035);
     ctx.beginPath();
     ctx.arc(sx, sy, sSize, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${isLight ? '255,255,255' : '150,180,170'}, ${sOpacity})`;
+    ctx.fillStyle = isLight ? `rgba(255,255,255,${sOpacity})` : `rgba(160,200,190,${sOpacity})`;
     ctx.fill();
   }
 
-  // Juntas de dilatação arquiteturais de placas de ardósia (512x512)
-  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.05)';
+  // Veios e fissuras sutis de pedra de ardósia natural no trecho escuro
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.06)';
+  ctx.lineWidth = 1.0;
+  for (let v = 0; v < 8; v++) {
+    let vx = Math.random() * 1024;
+    let vy = Math.random() * 650;
+    ctx.beginPath();
+    ctx.moveTo(vx, vy);
+    for (let seg = 0; seg < 4; seg++) {
+      vx += (Math.random() - 0.5) * 80;
+      vy += (Math.random() - 0.3) * 60;
+      ctx.lineTo(vx, vy);
+    }
+    ctx.stroke();
+  }
+
+  // Juntas de dilatação arquiteturais de placas de ardósia (seccionadas)
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.04)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(512, 0); ctx.lineTo(512, 1024);
-  ctx.moveTo(0, 512); ctx.lineTo(1024, 512);
+  ctx.moveTo(340, 0); ctx.lineTo(340, 750);
+  ctx.moveTo(680, 0); ctx.lineTo(680, 750);
+  ctx.moveTo(0, 360); ctx.lineTo(1024, 360);
   ctx.stroke();
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -672,7 +697,16 @@ export const GalleryScene3D: React.FC = () => {
       leftSanctuaryWall.receiveShadow = true;
       scene.add(leftSanctuaryWall);
 
-      const rightSanctuaryWall = new THREE.Mesh(sanctuaryWallGeo, sanctuaryWallMat);
+      // Clona a geometria da parede direita e inverte o eixo U para que ambos os lados
+      // transitem do tom claro da galeria (Z = -52m) para o gesso acústico escuro no fundo (Z = -94m)
+      const rightSanctuaryWallGeo = sanctuaryWallGeo.clone();
+      const uvAttr = rightSanctuaryWallGeo.attributes.uv;
+      for (let i = 0; i < uvAttr.count; i++) {
+        uvAttr.setX(i, 1.0 - uvAttr.getX(i));
+      }
+      rightSanctuaryWallGeo.attributes.uv.needsUpdate = true;
+
+      const rightSanctuaryWall = new THREE.Mesh(rightSanctuaryWallGeo, sanctuaryWallMat);
       rightSanctuaryWall.position.set(layout.halfWidth + 0.98, 6, sanctuaryCenterZ);
       rightSanctuaryWall.rotation.y = -Math.PI / 2;
       rightSanctuaryWall.receiveShadow = true;
@@ -795,7 +829,7 @@ export const GalleryScene3D: React.FC = () => {
       roughness: 0.86,
       metalness: 0.04
     });
-    layout.benchesZ.forEach((bz) => {
+    layout.benchesZ.filter((bz) => bz > -50).forEach((bz) => {
       const bench = new THREE.Mesh(benchGeo, benchMat);
       bench.position.set(0, -2.94, bz);
       bench.castShadow = true;
@@ -1244,23 +1278,23 @@ export const GalleryScene3D: React.FC = () => {
       let glassMesh: THREE.Mesh;
       
       if (isEspinhaco) {
-        // Pedestal circular monumental sem vidro
-        const pedGeo = new THREE.CylinderGeometry(0.9, 0.9, 0.2, 32);
+        // Base discreta e elegante integrada ao piso mineral escuro (sem caixa de vidro)
+        const pedGeo = new THREE.CylinderGeometry(2.4, 2.6, 0.08, 32);
         const pedMat = new THREE.MeshStandardMaterial({
-          color: isLight ? 0x333333 : 0x111111,
-          roughness: 0.8,
-          metalness: 0.2
+          color: isLight ? 0x242826 : 0x0d0f0e,
+          roughness: 0.88,
+          metalness: 0.1
         });
         glassMesh = new THREE.Mesh(pedGeo, pedMat);
-        glassMesh.position.y = -1.4; // Fica no piso
-        glassMesh.castShadow = true;
+        glassMesh.position.y = -3.15; // Rente ao piso mineral
         glassMesh.receiveShadow = true;
         group.add(glassMesh);
         
-        // Área de colisão invisível para o raycaster (cobre toda a escultura)
-        const hitGeo = new THREE.CylinderGeometry(1.2, 1.2, 3.0, 16);
+        // Área de colisão invisível ampliada para a escultura de escala monumental 3x
+        const hitGeo = new THREE.CylinderGeometry(2.8, 2.8, 8.8, 16);
         const hitMat = new THREE.MeshBasicMaterial({ visible: false });
         const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+        hitMesh.position.y = 1.0;
         group.add(hitMesh);
         (hitMesh as any).artworkData = art;
       } else {
@@ -1437,12 +1471,12 @@ export const GalleryScene3D: React.FC = () => {
         const spineHolder = new THREE.Group();
         espinhacoTotemGroup.add(spineHolder);
 
-        // 3. Nuvem de Pontos Pura & Otimizada (50k pontos, zero malha sólida duplicada)
+        // 3. Nuvem de Pontos Pura & Otimizada (50k pontos, escala monumental 3x)
         const pCloudMat = new THREE.PointsMaterial({
           color: isLight ? 0x009bb5 : 0x4deeea,
-          size: 0.020,
+          size: isLight ? 0.038 : 0.044, // Diâmetro balanceado para manter alta densidade na escala 3x
           transparent: true,
-          opacity: 0.92,
+          opacity: 0.94,
           blending: THREE.AdditiveBlending,
           depthWrite: false
         });
@@ -1454,8 +1488,9 @@ export const GalleryScene3D: React.FC = () => {
             const pGeo = new THREE.BufferGeometry();
             pGeo.setAttribute('position', new THREE.BufferAttribute(rawArr, 3));
             const pCloud = new THREE.Points(pGeo, pCloudMat);
-            // espinhaco_points.bin já é orientado na vertical e centralizado (altura 1.45m)
-            pCloud.scale.set(1.9, 1.9, 1.9); // Escala monumental
+            // Escala monumental 3x (5.7x): coluna vertebral imponente de ~8.2 metros de altura
+            pCloud.scale.set(5.7, 5.7, 5.7);
+            pCloud.position.y = 0.5;
             spineHolder.add(pCloud);
             if (espinhacoTotem) {
               espinhacoTotem.pointsCloud = pCloud;
@@ -1463,14 +1498,14 @@ export const GalleryScene3D: React.FC = () => {
           })
           .catch((err) => console.warn('[Totem pointsCloud] Load error:', err));
 
-        // 4. Luz Interna Focal da Escultura
-        const totemLight = new THREE.PointLight(0x70d8ff, 1.8, 6.0, 1.2);
-        totemLight.position.set(0, 1.6, 0.55);
+        // 4. Luz Interna Focal da Escultura Monumental
+        const totemLight = new THREE.PointLight(0x70d8ff, 2.5, 18.0, 1.2);
+        totemLight.position.set(0, 3.2, 1.2);
         espinhacoTotemGroup.add(totemLight);
 
         // Luz suave de preenchimento inferior
-        const fillLight = new THREE.PointLight(0x4fc3f7, 0.9, 5.0, 1.4);
-        fillLight.position.set(0, -1.6, 0.35);
+        const fillLight = new THREE.PointLight(0x4fc3f7, 1.5, 16.0, 1.3);
+        fillLight.position.set(0, -2.5, 0.8);
         espinhacoTotemGroup.add(fillLight);
 
         group.add(espinhacoTotemGroup);
@@ -1501,8 +1536,14 @@ export const GalleryScene3D: React.FC = () => {
       const plaqueMesh = new THREE.Mesh(plaqueGeo, plaqueMat);
       // Y fixo: quasi-chão sem encostar (-3.2 é o chão; placa fica em -2.85 = 35cm acima)
       const plaqueWorldY = -2.85;
-      plaqueMesh.position.set(coords.x, plaqueWorldY, coords.z);
-      if (coords.rotY) plaqueMesh.rotation.y = coords.rotY;
+      if (isEspinhaco) {
+        // Placa da obra Espinhaço posicionada logo na transição de um piso para o outro (Z ≈ -52m)
+        plaqueMesh.position.set(0, plaqueWorldY, -52.2);
+        plaqueMesh.rotation.y = 0; // Voltada de frente para o visitante no corredor
+      } else {
+        plaqueMesh.position.set(coords.x, plaqueWorldY, coords.z);
+        if (coords.rotY) plaqueMesh.rotation.y = coords.rotY;
+      }
       plaqueMesh.castShadow = true;
       plaqueMesh.receiveShadow = true;
       (plaqueMesh as any).artworkData = art;

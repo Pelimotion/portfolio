@@ -656,9 +656,11 @@ export const EspinhacoInteractive: React.FC = () => {
       const pulseScale = 1.0 + Math.sin(t * 1.5) * 0.012 + bass * 0.035;
       group.scale.set(pulseScale, pulseScale, pulseScale);
 
-      // Câmera & Zoom (Offset lateral compensa a HUD na esquerda)
+      // Câmera & Zoom (Offset lateral compensa o menu HUD na esquerda)
       camera.position.z += (targetZoomRef.current - camera.position.z) * 0.08;
-      const targetCamX = tutorialStateRef.current === 'minimized' ? 0.45 : 0.0;
+      // Ao abrir o menu na esquerda (~360px), a câmera se desloca para -X (esquerda),
+      // o que projeta a escultura para +X (direita), centralizando-a com precisão óptica no espaço livre da tela
+      const targetCamX = tutorialStateRef.current === 'minimized' ? (window.innerWidth > 768 ? -0.72 : 0.0) : 0.0;
       camera.position.x += (targetCamX - camera.position.x) * 0.08;
 
       // Rim light pulsa com os agudos e a cor do bioma

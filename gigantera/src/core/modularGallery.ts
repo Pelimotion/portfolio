@@ -160,10 +160,10 @@ export function computeModularGalleryLayout(artworks: Artwork[]): ModularGallery
     ceilingBeamsZ.push(z);
   }
 
-  // 4. Distribuição de Bancos Monolíticos no Corredor Central
+  // 4. Distribuição de Bancos Monolíticos no Corredor Central (termina antes do santuário do Espinhaço Z ≈ -52m)
   const benchesZ: number[] = [];
   const benchSpacing = 22.0;
-  for (let z = 8.0; z >= zEnd + 10.0; z -= benchSpacing) {
+  for (let z = 8.0; z >= -48.0; z -= benchSpacing) {
     benchesZ.push(z);
   }
 
