@@ -16,41 +16,49 @@
       "source": "/curriculum/private",
       "destination": "/curriculum/private/",
       "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/gigantera/ar",
-      "destination": "/gigantera/ar/index.html"
     },
     {
-      "source": "/gigantera/ar/",
-      "destination": "/gigantera/ar/index.html"
+      "source": "/gigantera/ar/:path*",
+      "destination": "https://gigantera.xyz/ar/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/gigantera/ar",
+      "destination": "https://gigantera.xyz/ar",
+      "permanent": true
+    },
+    {
+      "source": "/espinhaco-ar/:path*",
+      "destination": "https://gigantera.xyz/ar/:path*",
+      "permanent": true
     },
     {
       "source": "/espinhaco-ar",
-      "destination": "/gigantera/ar/index.html"
+      "destination": "https://gigantera.xyz/ar",
+      "permanent": true
     },
     {
-      "source": "/espinhaco-ar/",
-      "destination": "/gigantera/ar/index.html"
+      "source": "/gigantera/admin/:path*",
+      "destination": "https://gigantera.xyz/admin/:path*",
+      "permanent": true
     },
     {
       "source": "/gigantera/admin",
-      "destination": "/gigantera/admin/index.html"
+      "destination": "https://gigantera.xyz/admin",
+      "permanent": true
     },
     {
-      "source": "/gigantera/admin/",
-      "destination": "/gigantera/admin/index.html"
+      "source": "/gigantera/:path*",
+      "destination": "https://gigantera.xyz/:path*",
+      "permanent": true
     },
     {
       "source": "/gigantera",
-      "destination": "/gigantera/index.html"
-    },
-    {
-      "source": "/gigantera/",
-      "destination": "/gigantera/index.html"
-    },
+      "destination": "https://gigantera.xyz/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
     {
       "source": "/pelispace",
       "destination": "https://pelispace.vercel.app/pelispace"
