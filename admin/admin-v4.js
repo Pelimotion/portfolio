@@ -227,6 +227,8 @@ function buildSidebarV4(context = 'main') {
             <div class="dot green"></div>Deploy Hub</div>`;
         html += `<div class="sb-item ${currentSection==='gifConverter'?'active':''}" onclick="showGifConverter()">
             <div class="dot" style="background:var(--blue)"></div>Conversor de GIF</div>`;
+        html += `<a href="/ads" target="_blank" class="sb-item" style="text-decoration:none;">
+            <div class="dot green" style="background:#00f090; box-shadow:0 0 6px #00f090;"></div>Meta Ads Autopilot ↗</a>`;
             
         html += `<div class="sb-section" style="margin-top:10px">Clients &amp; Projects</div>`;
         

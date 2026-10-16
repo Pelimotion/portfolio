@@ -60,6 +60,22 @@
   ],
   "rewrites": [
     {
+      "source": "/ads",
+      "destination": "/ads/index.html"
+    },
+    {
+      "source": "/ads/:path*",
+      "destination": "/ads/:path*"
+    },
+    {
+      "source": "/autopilot",
+      "destination": "/ads/index.html"
+    },
+    {
+      "source": "/admin/campanha",
+      "destination": "/ads/index.html"
+    },
+    {
       "source": "/pelispace",
       "destination": "https://pelispace.vercel.app/pelispace"
     },

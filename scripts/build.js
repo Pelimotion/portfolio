@@ -19,6 +19,7 @@ const itemsToCopy = [
   'logo.ico',
   'briefing',
   'admin',
+  'ads',
   'login',
   'blog',
   'Curriculum',

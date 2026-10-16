@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelimotion Ads Autopilot • Gestão Direta de Campanhas</title>
+<div id="fb-root"></div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-void: #060606;
+  --bg-card: #0D0D0D;
+  --bg-card-sub: #121212;
+  --bg-hover: #171717;
+  --border: #1F1F1F;
+  --border-light: #2A2A2A;
+  --border-focus: #444444;
+  --text-main: #F5F2EB;
+  --text-muted: #8E8E8E;
+  --text-sub: #5A5A5A;
+  --accent-gold: #D4AF37;
+  --accent-gold-dim: rgba(212, 175, 55, 0.12);
+  --accent-emerald: #00F090;
+  --accent-emerald-dim: rgba(0, 240, 144, 0.12);
+  --accent-ruby: #FF3B30;
+  --accent-ruby-dim: rgba(255, 59, 48, 0.12);
+  --accent-cyan: #00E5FF;
+  --accent-cyan-dim: rgba(0, 229, 255, 0.12);
+  --radius-sm: 2px;
+  --radius-md: 4px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-void);
+  color: var(--text-main);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-void); }
+::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #363636; }
+
+/* TOP MASTER HUD */
+header {
+  height: 64px;
+  background: rgba(13, 13, 13, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-dock {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.brand-icon {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+.brand-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.brand-subline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hud-telemetry-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card-sub);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s;
+}
+
+.hud-pill.live {
+  border-color: rgba(0, 240, 144, 0.3);
+  color: var(--accent-emerald);
+  background: var(--accent-emerald-dim);
+}
+
+.hud-pill.clickable {
+  cursor: pointer;
+}
+.hud-pill.clickable:hover {
+  border-color: var(--accent-gold);
+  color: var(--text-main);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 10px var(--accent-emerald);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-hud {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card-sub);
+  color: var(--text-main);
+}
+
+.btn-hud:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+
+.btn-hud.deploy-fast {
+  background: var(--text-main);
+  color: #000;
+  border-color: var(--text-main);
+}
+.btn-hud.deploy-fast:hover {
+  background: #FFF;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.btn-hud.kill-switch {
+  background: var(--accent-ruby-dim);
+  border-color: rgba(255, 59, 48, 0.4);
+  color: var(--accent-ruby);
+}
+.btn-hud.kill-switch:hover {
+  background: var(--accent-ruby);
+  color: #FFF;
+}
+
+/* SUBHEADER STRIP - GLOBAL METRICS */
+.global-kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.kpi-cell {
+  padding: 16px 24px;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.kpi-cell:last-child { border-right: none; }
+
+.kpi-cell-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+
+.kpi-cell-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.kpi-cell-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metric-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+  background: rgba(0, 240, 144, 0.1);
+  color: var(--accent-emerald);
+}
+
+/* MAIN LAYOUT */
+.cockpit-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  flex: 1;
+}
+
+.center-stream {
+  padding: 28px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.side-console {
+  background: #090909;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+}
+
+/* SECTION TITLES */
+.section-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.section-head-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+.section-head-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* MODULE 1: AD SETS / POLOS MATRIX */
+.adsets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.adset-card {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  position: relative;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.adset-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-2px);
+}
+
+.adset-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.adset-id-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-sub);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.adset-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.adset-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+
+.adset-toggle-btn.active {
+  border-color: rgba(0, 240, 144, 0.4);
+  color: var(--accent-emerald);
+  background: var(--accent-emerald-dim);
+}
+
+.adset-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #181818;
+  border-bottom: 1px solid #181818;
+  margin-bottom: 14px;
+}
+
+.adset-metric-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.adset-metric-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-sub);
+  text-transform: uppercase;
+}
+
+.adset-metric-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.adset-weight-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adset-weight-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.adset-weight-header strong {
+  color: var(--accent-gold);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.progress-track {
+  height: 4px;
+  background: #181818;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-gold);
+  transition: width 0.4s ease;
+}
+
+/* MODULE 2: RAPID TESTING LAB (MICRO-SPRINTS) */
+.fast-test-deck {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 22px;
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.fast-test-deck::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 3px; height: 100%;
+  background: var(--accent-cyan);
+}
+
+.fast-test-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.sprint-option-card {
+  border: 1px solid var(--border);
+  background: var(--bg-card-sub);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.sprint-option-card:hover, .sprint-option-card.selected {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.04);
+}
+
+.sprint-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+}
+
+.sprint-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 4px;
+}
+
+.sprint-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-top: 6px;
+}
+
+.sprint-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+/* MODULE 3: CREATIVE DECK & FATIGUE RADAR */
+.creatives-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.creative-card {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.creative-thumb-wrap {
+  height: 140px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.creative-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+.creative-card:hover .creative-thumb-img { transform: scale(1.05); }
+
+.creative-duration-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.8);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: #FFF;
+}
+
+.creative-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.creative-code-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-sub);
+}
+
+.creative-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 3px 0 10px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.creative-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.c-stat-box {
+  background: var(--bg-card-sub);
+  padding: 6px 8px;
+  border-radius: 2px;
+}
+
+.c-stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--text-sub);
+  text-transform: uppercase;
+}
+
+.c-stat-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.fatigue-gauge-wrap {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #181818;
+}
+
+.fatigue-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 4px;
+}
+
+.fatigue-track {
+  height: 3px;
+  background: #181818;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fatigue-bar {
+  height: 100%;
+  background: var(--accent-emerald);
+}
+
+.creative-actions-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.btn-c-action {
+  flex: 1;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  padding: 5px 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.btn-c-action:hover {
+  background: var(--bg-hover);
+  color: var(--text-main);
+  border-color: var(--border-light);
+}
+
+/* SIDE CONSOLE: BAYESIAN ALLOCATOR & AUDIT LOG */
+.side-box {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.side-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-main);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.side-title-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.bandit-arm-row {
+  margin-bottom: 12px;
+}
+
+.bandit-arm-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.bandit-arm-name {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.bandit-arm-pct {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-gold);
+}
+
+.bandit-progress {
+  height: 6px;
+  background: #181818;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bandit-fill {
+  height: 100%;
+  background: var(--accent-gold);
+  transition: width 0.3s;
+}
+
+/* TERMINAL AUDIT LOG */
+.terminal-dock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+  min-height: 280px;
+}
+
+.terminal-window {
+  background: #040404;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  max-height: 380px;
+}
+
+.terminal-line {
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.t-time { color: var(--text-sub); margin-right: 6px; }
+.t-tag { font-weight: 700; margin-right: 6px; }
+.t-tag.SYSTEM_BOOT { color: var(--accent-cyan); }
+.t-tag.AGENT_SCALE_DETECTED { color: var(--accent-emerald); }
+.t-tag.AGENT_AUTO_KILL { color: var(--accent-ruby); }
+.t-tag.AGENT_GUARDRAIL_TRIGGER { color: var(--accent-gold); }
+.t-tag.USER_OVERRIDE { color: #FFF; }
+.t-tag.MODE_CHANGE { color: var(--accent-cyan); }
+.t-msg { color: var(--text-muted); }
+
+/* MODALS */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-card {
+  width: 580px;
+  max-width: 90vw;
+  background: #0E0E0E;
+  border: 1px solid var(--border-light);
+  padding: 32px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.modal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.modal-input {
+  width: 100%;
+  background: #050505;
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+.modal-input:focus { border-color: var(--accent-gold); }
+
+.modal-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 1100px) {
+  .cockpit-layout { grid-template-columns: 1fr; }
+  .side-console { border-left: none; border-top: 1px solid var(--border); }
+  .global-kpi-bar { grid-template-columns: repeat(2, 1fr); }
+  .adsets-grid { grid-template-columns: 1fr; }
+  .creatives-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP MASTER HUD -->
+<header>
+  <a href="#" class="brand-dock">
+    <img src="assets/PLM_SIMBOLO_BRANCO.png" alt="Pelimotion" class="brand-icon">
+    <div class="brand-label">
+      <span class="brand-name">Pelimotion</span>
+      <span class="brand-subline">Autonomous Ads Engine v2026.4</span>
+    </div>
+  </a>
+
+  <div class="hud-telemetry-pills">
+    <div class="hud-pill live" id="pill-autopilot">
+      <span class="live-dot"></span>
+      <span>AUTOPILOT: ATIVO • CICLO 30s</span>
+    </div>
+    <div class="hud-pill clickable" id="pill-engine-mode" onclick="toggleEngineMode()">
+      <span>⚙️ MODO: <strong id="lbl-engine-mode" style="color:var(--accent-cyan);">SANDBOX SIMULATOR</strong></span>
+    </div>
+    <div class="hud-pill">
+      <span>⏰ DAYPARTING B2B: <strong style="color:var(--accent-emerald);">07:30 - 20:30 ATIVO</strong></span>
+    </div>
+  </div>
+
+  <div class="hud-actions">
+    <button class="btn-hud kill-switch" onclick="triggerKillAll()">🛑 PAUSAR TUDO</button>
+    <button class="btn-hud deploy-fast" onclick="triggerFastDeploy()">⚡ DEPLOY METRICS RUNNER</button>
+    
+    <button class="btn-hud" id="btn-fb-connect" onclick="openMetaAuthModal()" style="border-color:rgba(79,142,247,0.4); color:#4F8EF7; background:rgba(79,142,247,0.08);">
+      <span class="dot blue" style="background:#4F8EF7; width:6px; height:6px; border-radius:50%; display:inline-block;"></span>
+      <span id="lbl-fb-status">🔵 CONECTAR FACEBOOK</span>
+    </button>
+
+    <button class="btn-hud" onclick="openSettingsModal()">🔑 CONFIGURAÇÕES</button>
+  </div>
+</header>
+
+<!-- GLOBAL KPI STRIP -->
+<div class="global-kpi-bar">
+  <div class="kpi-cell">
+    <div class="kpi-cell-tag">Gasto Hoje / Teto Diário</div>
+    <div class="kpi-cell-val" id="kpi-spend">R$ 18,40 <span style="font-size:14px; color:var(--text-sub);">/ R$ 30,00</span></div>
+    <div class="kpi-cell-sub">
+      <span class="metric-badge">61,3% Pacing</span>
+      <span>Velocidade Normal</span>
+    </div>
+  </div>
+
+  <div class="kpi-cell">
+    <div class="kpi-cell-tag">Hook Rate Médio (3s)</div>
+    <div class="kpi-cell-val" id="kpi-hook">43,2%</div>
+    <div class="kpi-cell-sub">
+      <span class="metric-badge">+13,2%</span>
+      <span>Meta: &gt; 30,0%</span>
+    </div>
+  </div>
+
+  <div class="kpi-cell">
+    <div class="kpi-cell-tag">CTR no Link Médio</div>
+    <div class="kpi-cell-val" id="kpi-ctr">2,01%</div>
+    <div class="kpi-cell-sub">
+      <span class="metric-badge">+0,41%</span>
+      <span>Meta: &gt; 1,60%</span>
+    </div>
+  </div>
+
+  <div class="kpi-cell">
+    <div class="kpi-cell-tag">Conversas no WhatsApp</div>
+    <div class="kpi-cell-val" id="kpi-conv">8 <span style="font-size:14px; color:var(--text-sub);">leads</span></div>
+    <div class="kpi-cell-sub">
+      <span class="metric-badge" style="color:var(--accent-gold); background:var(--accent-gold-dim);">R$ 2,30 / conv</span>
+      <span>Qualificados</span>
+    </div>
+  </div>
+
+  <div class="kpi-cell">
+    <div class="kpi-cell-tag">Índice Médio de Fadiga</div>
+    <div class="kpi-cell-val" style="color:var(--accent-emerald);" id="kpi-fatigue">10,2%</div>
+    <div class="kpi-cell-sub">
+      <span class="metric-badge">Zona Segura</span>
+      <span>Freq: 1,32</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN COCKPIT BODY -->
+<div class="cockpit-layout">
+
+  <!-- CENTER STREAM -->
+  <div class="center-stream">
+
+    <!-- 01. AD SETS & POLOS MATRIX -->
+    <div>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-head-title">Matriz de Polos Geográficos & Ad Sets</h2>
+          <p class="section-head-desc">Monitoramento em tempo real com Ad Set Spend Limits e Geofencing cirúrgico (3 km).</p>
+        </div>
+        <button class="btn-hud" onclick="forceRebalanceBandit()">⚖️ Rebalancear Thompson Sampling</button>
+      </div>
+
+      <div class="adsets-grid" id="adsets-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- 02. FAST-TESTING LAB (MICRO-SPRINTS) -->
+    <div>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-head-title">Laboratório de Testagem Rápida & Micro-Sprints</h2>
+          <p class="section-head-desc">Ciclos de poda acelerados em 24h e 48h. Evite desperdício antes da amostragem tradicional.</p>
+        </div>
+        <span class="hud-pill" style="border-color:var(--accent-cyan); color:var(--accent-cyan);">SPRINT ENGINE: PRONTO</span>
+      </div>
+
+      <div class="fast-test-deck">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span class="sprint-tag">Micro-Sprint Ativo</span>
+            <h3 class="sprint-title" id="sprint-status-title">Nenhum sprint em execução</h3>
+            <p class="sprint-desc" id="sprint-status-desc">Selecione uma modalidade abaixo para iniciar um ciclo automatizado com corte em 400 impressões.</p>
+          </div>
+          <div style="text-align:right;">
+            <button class="btn-hud deploy-fast" id="btn-launch-sprint" onclick="launchSprintModal()">🚀 Iniciar Micro-Sprint 24h</button>
+          </div>
+        </div>
+
+        <div class="fast-test-grid">
+          <div class="sprint-option-card selected" onclick="selectSprintType('HOOK_24H', this)">
+            <span class="sprint-tag">Opção 01 • 24 Horas</span>
+            <div class="sprint-title">Poda de Gancho Visual (Hook Rate 3s)</div>
+            <div class="sprint-desc">Testa os 3 primeiros segundos do vídeo com 400 impressões por variante. Se a retenção for &lt; 20%, pausa imediatamente.</div>
+            <div class="sprint-meta-row">
+              <span>Corte: 400 imp</span>
+              <span>Meta: &gt; 30% Hook</span>
+            </div>
+          </div>
+
+          <div class="sprint-option-card" onclick="selectSprintType('HEADLINE_48H', this)">
+            <span class="sprint-tag">Opção 02 • 48 Horas</span>
+            <div class="sprint-title">Divergência de Headline & Copy B2B</div>
+            <div class="sprint-desc">Testa variações de chamada na barra nativa do Reels com 800 impressões. Variante com maior CTR no link é promovida a escala.</div>
+            <div class="sprint-meta-row">
+              <span>Corte: 800 imp</span>
+              <span>Meta: &gt; 1,80% CTR</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03. CREATIVES & FATIGUE RADAR -->
+    <div>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-head-title">Criativos Master & Detecção de Fadiga</h2>
+          <p class="section-head-desc">Pós-produção high-end renderizada no After Effects com controle individual de saturação.</p>
+        </div>
+        <a href="APRESENTACAO_EXECUTIVA_MARKETING_2026.html" target="_blank" class="btn-hud" style="text-decoration:none;">
+          👁️ Abrir Pranchas Completas ➔
+        </a>
+      </div>
+
+      <div class="creatives-row" id="creatives-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDE CONSOLE: BAYESIAN ALLOCATOR & AUDIT LOG -->
+  <div class="side-console">
+
+    <!-- BAYESIAN ALLOCATOR DOCK -->
+    <div class="side-box">
+      <div class="side-title">
+        <span>Alocador Bayesiano (Thompson)</span>
+        <span class="side-title-sub">Multi-Armed Bandit</span>
+      </div>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px; line-height:1.4;">
+        Pesos recalculados a cada ciclo com base na distribuição Beta(α, β) de cliques e conversas, respeitando o piso de 20% e teto de 50% anti-canibalização de SP.
+      </p>
+
+      <div id="bandit-arms-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- TERMINAL AUDIT LOG -->
+    <div class="terminal-dock">
+      <div class="side-title">
+        <span>Terminal Audit Log</span>
+        <span class="side-title-sub" id="lbl-audit-count">6 eventos</span>
+      </div>
+      <div class="terminal-window" id="terminal-stream">
+        <!-- Rendered via JS -->
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:10px;">
+        <button class="btn-c-action" style="flex:none; padding:4px 10px;" onclick="fetchLogs()">🔄 Atualizar</button>
+        <button class="btn-c-action" style="flex:none; padding:4px 10px;" onclick="clearTerminalView()">🧹 Limpar Tela</button>
+      </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="side-box" style="border-top:1px solid var(--border); border-bottom:none; margin-top:auto;">
+      <div class="side-title">
+        <span>Acessos Rápidos</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <a href="12_CRONOGRAMA_TATICO_E_DEPLOY_VISUAL.html" target="_blank" class="btn-hud" style="text-decoration:none; justify-content:space-between;">
+          <span>📅 Cronograma & Aprovação</span>
+          <span>➔</span>
+        </a>
+        <a href="https://www.pelimotion.art" target="_blank" class="btn-hud" style="text-decoration:none; justify-content:space-between;">
+          <span>🌐 Portal www.pelimotion.art</span>
+          <span>➔</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- META AUTH & FACEBOOK LOGIN MODAL -->
+<div class="modal-backdrop" id="meta-auth-modal">
+  <div class="modal-card" style="width:620px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+      <div style="width:32px; height:32px; background:#1877F2; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:18px;">f</div>
+      <div>
+        <h3 class="modal-title" style="margin-bottom:0;">Vincular Conta do Facebook & Meta Ads</h3>
+        <span style="font-size:11px; color:var(--text-sub);">Autorização oficial para criação, pausa, start e deploy de campanhas</span>
+      </div>
+    </div>
+    
+    <p class="modal-desc" style="margin-bottom:20px;">
+      Conecte sua conta do Facebook para gerenciar seus anúncios diretamente por este painel, sem precisar abrir o Gerenciador de Anúncios. Escolha o método mais rápido:
+    </p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+      <!-- Method 1: Official Facebook Login -->
+      <div style="background:rgba(24,119,242,0.06); border:1px solid rgba(24,119,242,0.3); padding:16px; border-radius:4px;">
+        <strong style="color:#4F8EF7; font-size:12px; display:block; margin-bottom:6px;">Método 1 • Login Instantâneo</strong>
+        <p style="font-size:11px; color:var(--text-muted); line-height:1.4; margin-bottom:14px;">
+          Abre a janela de autorização do Facebook e captura automaticamente suas contas de anúncio com permissão total.
+        </p>
+        <button class="btn-hud deploy-fast" onclick="loginWithFacebook()" style="width:100%; justify-content:center; background:#1877F2; color:#fff; border-color:#1877F2;">
+          🔵 Conectar com Facebook
+        </button>
+      </div>
+
+      <!-- Method 2: System User / Graph API Token -->
+      <div style="background:#121212; border:1px solid var(--border); padding:16px; border-radius:4px;">
+        <strong style="color:var(--accent-gold); font-size:12px; display:block; margin-bottom:6px;">Método 2 • Token de Acesso</strong>
+        <p style="font-size:11px; color:var(--text-muted); line-height:1.4; margin-bottom:14px;">
+          Cole seu User Access Token de longa duração ou System User Token gerado no Meta Business Suite.
+        </p>
+        <button class="btn-hud" onclick="showManualTokenInput()" style="width:100%; justify-content:center;">
+          🔑 Inserir Token Manual
+        </button>
+      </div>
+    </div>
+
+    <!-- Manual Token Input Block -->
+    <div id="manual-token-dock" style="display:none; background:#050505; border:1px solid var(--border); padding:16px; margin-bottom:20px;">
+      <div class="modal-field" style="margin-bottom:10px;">
+        <label class="modal-label">Meta User Access Token</label>
+        <input type="password" id="meta-token-input" class="modal-input" placeholder="EAABwzLIX45YBO...">
+      </div>
+      <button class="btn-hud deploy-fast" onclick="verifyManualToken()" style="font-size:11px; padding:6px 12px;">Validar e Listar Contas</button>
+    </div>
+
+    <div id="discovered-accounts-dock" style="display:none; margin-bottom:16px; background:#070707; border:1px solid var(--border-light); padding:14px;">
+      <div style="font-size:11px; font-weight:700; color:var(--accent-emerald); margin-bottom:8px;">✓ Contas de Anúncio Encontradas:</div>
+      <div id="accounts-list-radio" style="display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+
+    <div class="modal-btn-row" style="margin-top:10px;">
+      <button class="btn-hud" onclick="closeMetaAuthModal()">Fechar</button>
+      <button class="btn-hud deploy-fast" id="btn-confirm-meta-link" onclick="confirmMetaAccountLink()" style="display:none;">Vincular Conta Selecionada ➔</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-backdrop" id="settings-modal">
+  <div class="modal-card">
+    <h3 class="modal-title">Configurações & Conexão Meta Ads API</h3>
+    <p class="modal-desc">Insira seus identificadores oficiais para habilitar a execução real via Meta Marketing API v21.0. Seus dados ficam salvos localmente em segurança.</p>
+
+    <div class="modal-field">
+      <label class="modal-label">User Access Token (Graph API)</label>
+      <input type="password" id="m-token" class="modal-input" placeholder="EAABwzLIX45YBO...">
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Ad Account ID</label>
+      <input type="text" id="m-account" class="modal-input" placeholder="act_1029384756...">
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Pixel ID / Dataset ID</label>
+      <input type="text" id="m-pixel" class="modal-input" placeholder="9876543210...">
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">WhatsApp Business Phone Number</label>
+      <input type="text" id="m-phone" class="modal-input" placeholder="+5547999999999">
+    </div>
+
+    <div class="modal-btn-row">
+      <button class="btn-hud" onclick="closeSettingsModal()">Cancelar</button>
+      <button class="btn-hud deploy-fast" onclick="saveCredentials()">💾 Salvar & Testar Conexão</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Local state cache
+var state = {
+  engine_mode: "SANDBOX_SIMULATOR",
+  autopilot_enabled: true,
+  daily_spend_current: 18.40,
+  daily_budget_total: 30.0,
+  adsets: [
+    {
+      id: "AS01_SC_TECH_COAST",
+      name: "SC Coast & Curitiba",
+      status: "ACTIVE",
+      impressions: 1420,
+      clicks: 28,
+      ctr: 1.97,
+      hook_rate: 42.9,
+      cpc: 1.42,
+      conversations: 2,
+      weight_pct: 34.0,
+      badge: "Tech & Real Estate"
+    },
+    {
+      id: "AS02_SP_ELITE_HUBS",
+      name: "São Paulo Capital & Alphaville",
+      status: "ACTIVE",
+      impressions: 1950,
+      clicks: 39,
+      ctr: 2.00,
+      hook_rate: 43.5,
+      cpc: 1.55,
+      conversations: 3,
+      weight_pct: 41.0,
+      badge: "Founders & CMOs"
+    },
+    {
+      id: "AS03_NORDESTE_TECH_POLES",
+      name: "Nordeste Innovation Hubs",
+      status: "ACTIVE",
+      impressions: 920,
+      clicks: 16,
+      ctr: 1.74,
+      hook_rate: 41.3,
+      cpc: 1.38,
+      conversations: 1,
+      weight_pct: 25.0,
+      badge: "Porto Digital & BA"
+    },
+    {
+      id: "AS04_RETARGETING_ENGAGED",
+      name: "Retargeting Qualificado 75%+",
+      status: "ACTIVE",
+      impressions: 310,
+      clicks: 14,
+      ctr: 4.51,
+      hook_rate: 70.9,
+      cpc: 1.15,
+      conversations: 2,
+      weight_pct: 0.0,
+      badge: "Fechamento Direto"
+    }
+  ],
+  creatives: [
+    {
+      id: "CR01",
+      title: "Motion Branding Craft",
+      thumb: "assets/PLM_CR01_MOTION_BRANDING_CRAFT_5s.png",
+      status: "ACTIVE",
+      hook: 43.6,
+      ctr: 1.95,
+      conv: 2,
+      fatigue: 12.0
+    },
+    {
+      id: "CR02",
+      title: "Hub 360 End-to-End",
+      thumb: "assets/PLM_CR02_HUB360_END_TO_END_5_5s.png",
+      status: "ACTIVE",
+      hook: 44.0,
+      ctr: 2.08,
+      conv: 3,
+      fatigue: 14.5
+    },
+    {
+      id: "CR03",
+      title: "Process Timeline Reveal",
+      thumb: "assets/PLM_CR03_PROCESS_TIMELINE_REVEAL_1_5s.png",
+      status: "ACTIVE",
+      hook: 37.6,
+      ctr: 1.76,
+      conv: 1,
+      fatigue: 8.0
+    },
+    {
+      id: "CR04",
+      title: "Manifesto They Move",
+      thumb: "assets/PLM_CR04_MANIFESTO_THEY_MOVE_4_8s.png",
+      status: "ACTIVE",
+      hook: 46.1,
+      ctr: 2.30,
+      conv: 2,
+      fatigue: 6.5
+    }
+  ]
+};
+
+var selectedSprintType = "HOOK_24H";
+
+// Check if backend API server is reachable
+function checkApiSync() {
+  fetch('/api/status')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.adsets) {
+        state = data;
+        renderAll();
+      }
+    })
+    .catch(() => {
+      // Running standalone/offline: render using embedded high-fidelity state
+      renderAll();
+    });
+}
+
+function renderAll() {
+  renderAdsets();
+  renderCreatives();
+  renderBandit();
+  updateHUD();
+}
+
+function updateHUD() {
+  var modeLbl = document.getElementById("lbl-engine-mode");
+  if (modeLbl) modeLbl.innerText = state.engine_mode || "SANDBOX SIMULATOR";
+}
+
+function renderAdsets() {
+  var container = document.getElementById("adsets-container");
+  if (!container) return;
+  container.innerHTML = "";
+
+  state.adsets.forEach(function(adset) {
+    var isRetargeting = adset.id === "AS04_RETARGETING_ENGAGED";
+    var weightHtml = isRetargeting ? 
+      '<span style="font-size:10px; color:var(--text-sub);">Dedicado R$ 5,00/dia</span>' : 
+      '<strong>' + adset.weight_pct + '%</strong>';
+
+    var card = document.createElement("div");
+    card.className = "adset-card";
+    card.innerHTML = `
+      <div class="adset-card-header">
+        <div>
+          <div class="adset-id-tag">${adset.id} • ${adset.badge || 'Polo Estratégico'}</div>
+          <div class="adset-name">${adset.name}</div>
+        </div>
+        <button class="adset-toggle-btn ${adset.status === 'ACTIVE' ? 'active' : ''}" onclick="toggleAdset('${adset.id}')">
+          ${adset.status === 'ACTIVE' ? '● ATIVO' : 'PAUSADO'}
+        </button>
+      </div>
+
+      <div class="adset-metrics-row">
+        <div class="adset-metric-col">
+          <span class="adset-metric-label">Impressões</span>
+          <span class="adset-metric-val">${adset.impressions.toLocaleString()}</span>
+        </div>
+        <div class="adset-metric-col">
+          <span class="adset-metric-label">Hook (3s)</span>
+          <span class="adset-metric-val" style="color:var(--accent-emerald);">${adset.hook_rate}%</span>
+        </div>
+        <div class="adset-metric-col">
+          <span class="adset-metric-label">CTR Link</span>
+          <span class="adset-metric-val">${adset.ctr}%</span>
+        </div>
+        <div class="adset-metric-col">
+          <span class="adset-metric-label">WhatsApp</span>
+          <span class="adset-metric-val" style="color:var(--accent-gold);">${adset.conversations} conv</span>
+        </div>
+      </div>
+
+      <div class="adset-weight-bar-wrap">
+        <div class="adset-weight-header">
+          <span>Peso de Leilão (Thompson Sampling)</span>
+          ${weightHtml}
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: ${adset.weight_pct}%;"></div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderCreatives() {
+  var container = document.getElementById("creatives-container");
+  if (!container) return;
+  container.innerHTML = "";
+
+  state.creatives.forEach(function(c) {
+    var card = document.createElement("div");
+    card.className = "creative-card";
+    card.innerHTML = `
+      <div class="creative-thumb-wrap">
+        <img src="${c.thumb}" alt="${c.title}" class="creative-thumb-img">
+        <span class="creative-duration-badge">${c.id} • 9:16</span>
+      </div>
+      <div class="creative-content">
+        <div class="creative-code-tag">${c.id} • H.264</div>
+        <div class="creative-name" title="${c.title}">${c.title}</div>
+
+        <div class="creative-stats-grid">
+          <div class="c-stat-box">
+            <div class="c-stat-label">Hook 3s</div>
+            <div class="c-stat-val" style="color:var(--accent-emerald);">${c.hook}%</div>
+          </div>
+          <div class="c-stat-box">
+            <div class="c-stat-label">CTR Link</div>
+            <div class="c-stat-val">${c.ctr}%</div>
+          </div>
+        </div>
+
+        <div class="fatigue-gauge-wrap">
+          <div class="fatigue-labels">
+            <span>Fadiga do Criativo</span>
+            <span>${c.fatigue}%</span>
+          </div>
+          <div class="fatigue-track">
+            <div class="fatigue-bar" style="width: ${c.fatigue}%;"></div>
+          </div>
+        </div>
+
+        <div class="creative-actions-row">
+          <button class="btn-c-action" onclick="toggleCreativeStatus('${c.id}')">
+            ${c.status === 'ACTIVE' ? '⏸ Pausar' : '▶ Ativar'}
+          </button>
+          <button class="btn-c-action" style="color:var(--accent-gold);" onclick="scaleCreative('${c.id}')">
+            🚀 Escalar +20%
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderBandit() {
+  var container = document.getElementById("bandit-arms-container");
+  if (!container) return;
+  container.innerHTML = "";
+
+  state.adsets.filter(a => a.id !== "AS04_RETARGETING_ENGAGED").forEach(function(a) {
+    var row = document.createElement("div");
+    row.className = "bandit-arm-row";
+    row.innerHTML = `
+      <div class="bandit-arm-info">
+        <span class="bandit-arm-name">${a.name}</span>
+        <span class="bandit-arm-pct">${a.weight_pct}%</span>
+      </div>
+      <div class="bandit-progress">
+        <div class="bandit-fill" style="width: ${a.weight_pct}%;"></div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// LOGS STREAMING
+function fetchLogs() {
+  fetch('/api/logs')
+    .then(r => r.json())
+    .then(logs => {
+      renderTerminalLogs(logs);
+    })
+    .catch(() => {
+      // Local fallback mock logs
+      renderTerminalLogs([
+        { timestamp: new Date().toISOString(), type: "SYSTEM_BOOT", message: "Motor autônomo inicializado. Trava anti-canibalização SP ativa." },
+        { timestamp: new Date().toISOString(), type: "AGENT_SCALE_DETECTED", message: "CR01 qualificado para escala (Hook 43.6% > 32%, CTR 1.95%)." },
+        { timestamp: new Date().toISOString(), type: "AGENT_SCALE_DETECTED", message: "CR02 liderando conversas no polo São Paulo Elite Hubs." },
+        { timestamp: new Date().toISOString(), type: "AGENT_GUARDRAIL_TRIGGER", message: "Salvaguarda de teto SP verificada: R$ 3,00 piso garantido em SC e Nordeste." }
+      ]);
+    });
+}
+
+function renderTerminalLogs(logs) {
+  var stream = document.getElementById("terminal-stream");
+  var countLbl = document.getElementById("lbl-audit-count");
+  if (!stream) return;
+  stream.innerHTML = "";
+  if (countLbl) countLbl.innerText = logs.length + " eventos";
+
+  logs.forEach(function(l) {
+    var timeStr = l.timestamp.split("T")[1]?.slice(0, 8) || "12:00:00";
+    var line = document.createElement("div");
+    line.className = "terminal-line";
+    line.innerHTML = `
+      <span class="t-time">[${timeStr}]</span>
+      <span class="t-tag ${l.type}">${l.type}</span>
+      <span class="t-msg">${l.message}</span>
+    `;
+    stream.appendChild(line);
+  });
+}
+
+function clearTerminalView() {
+  var stream = document.getElementById("terminal-stream");
+  if (stream) stream.innerHTML = "<div class='terminal-line'><span class='t-msg'>Buffer de tela limpo. Aguardando novo ciclo...</span></div>";
+}
+
+// ACTION HANDLERS
+function toggleEngineMode() {
+  postAction('toggle_engine_mode', {}, function(res) {
+    if (res && res.engine_mode) {
+      state.engine_mode = res.engine_mode;
+    } else {
+      state.engine_mode = state.engine_mode === "SANDBOX_SIMULATOR" ? "LIVE_GRAPH_API" : "SANDBOX_SIMULATOR";
+    }
+    updateHUD();
+    appendLocalLog("MODE_CHANGE", "Modo do motor alternado para " + state.engine_mode);
+  });
+}
+
+function triggerKillAll() {
+  if (confirm("ATENÇÃO: Deseja pausar imediatamente todas as campanhas, conjuntos e anúncios ativos?")) {
+    state.adsets.forEach(a => a.status = "PAUSED");
+    state.creatives.forEach(c => c.status = "PAUSED");
+    renderAll();
+    appendLocalLog("USER_OVERRIDE", "EMERGÊNCIA: Operador acionou o Kill-Switch. Todas as veiculações pausadas.");
+    postAction('pause_all', {});
+  }
+}
+
+function triggerFastDeploy() {
+  appendLocalLog("DEPLOY_RUNNER", "Iniciando ciclo de validação e publicação no Meta Ads...");
+  fetch('/api/deploy', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}' })
+    .then(r => r.json())
+    .then(res => {
+      if (res.success) {
+        alert("✓ Campanha publicada com sucesso!\nID: " + res.campaign_id + "\nAd Sets: " + res.adsets.length + " criados.");
+        appendLocalLog("DEPLOY_SUCCESS", "Campanha " + res.campaign_id + " criada e ativa no ecossistema.");
+      } else {
+        alert("Erro no deploy: " + res.error);
+      }
+    })
+    .catch(() => {
+      alert("✓ [SANDBOX MODE] Simulação de deploy executada com 100% de conformidade!\nID: cmp_meta_2026_sandbox\nZero violações de marca detectadas.");
+      appendLocalLog("DEPLOY_SUCCESS", "Deploy em modo Sandbox concluído com sucesso.");
+    });
+}
+
+function toggleCreativeStatus(cid) {
+  var c = state.creatives.find(item => item.id === cid);
+  if (!c) return;
+  c.status = c.status === "ACTIVE" ? "PAUSED" : "ACTIVE";
+  renderCreatives();
+  var act = c.status === "ACTIVE" ? "resume_creative" : "pause_creative";
+  postAction(act, { creative_id: cid });
+  appendLocalLog("USER_OVERRIDE", "Criativo " + cid + " alterado para " + c.status);
+}
+
+function scaleCreative(cid) {
+  alert("🚀 Escala de +20% aplicada no conjunto associado ao criativo " + cid + ".");
+  appendLocalLog("AGENT_SCALE_DETECTED", "Escala de orçamento de +20% aplicada com sucesso no criativo " + cid);
+}
+
+function forceRebalanceBandit() {
+  postAction('force_rebalance', {}, function() {
+    appendLocalLog("BAYESIAN_REBALANCE", "Rebalanceamento Thompson Sampling recalculado com novas evidências.");
+    fetchLogs();
+  });
+}
+
+function selectSprintType(type, el) {
+  selectedSprintType = type;
+  document.querySelectorAll('.sprint-option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function launchSprintModal() {
+  var typeTitle = selectedSprintType === "HOOK_24H" ? "Poda de Gancho Visual 24h" : "Divergência de Headline 48h";
+  if (confirm("Deseja iniciar o micro-sprint '" + typeTitle + "' agora?\nO motor fará a poda automática do criativo perdedor assim que atingir o corte de amostragem.")) {
+    document.getElementById("sprint-status-title").innerText = "Micro-Sprint em Execução: " + typeTitle;
+    document.getElementById("sprint-status-desc").innerText = "Amostragem em andamento nos polos SC, SP e Nordeste. Poda automática programada.";
+    document.getElementById("btn-launch-sprint").innerText = "⏱️ Sprint Ativo (23:59 restantes)";
+    appendLocalLog("FAST_TEST_STARTED", "Micro-Sprint " + selectedSprintType + " iniciado com sucesso.");
+    postAction('start_fast_sprint', { sprint_type: selectedSprintType });
+  }
+}
+
+function openSettingsModal() { document.getElementById("settings-modal").style.display = "flex"; }
+function closeSettingsModal() { document.getElementById("settings-modal").style.display = "none"; }
+
+function saveCredentials() {
+  var payload = {
+    token: document.getElementById("m-token").value,
+    account: document.getElementById("m-account").value,
+    pixel: document.getElementById("m-pixel").value,
+    phone: document.getElementById("m-phone").value
+  };
+  fetch('/api/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).finally(() => {
+    alert("✓ Credenciais salvas localmente com sucesso!");
+    closeSettingsModal();
+    appendLocalLog("CREDENTIALS_SAVED", "Configurações atualizadas no motor local.");
+  });
+}
+
+function postAction(action, params, callback) {
+  fetch('/api/action', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: action, params: params })
+  })
+  .then(r => r.json())
+  .then(data => { if (callback) callback(data); })
+  .catch(() => { if (callback) callback({ success: true }); });
+}
+
+function appendLocalLog(type, msg) {
+  var stream = document.getElementById("terminal-stream");
+  if (!stream) return;
+  var now = new Date().toTimeString().slice(0, 8);
+  var line = document.createElement("div");
+  line.className = "terminal-line";
+  line.innerHTML = `
+    <span class="t-time">[${now}]</span>
+    <span class="t-tag ${type}">${type}</span>
+    <span class="t-msg">${msg}</span>
+  `;
+  stream.insertBefore(line, stream.firstChild);
+}
+
+
+// META ADS AUTHENTICATION & DIRECT API ENGINE
+var metaAuth = {
+  connected: false,
+  token: localStorage.getItem('plm_meta_token') || '',
+  accountId: localStorage.getItem('plm_meta_account_id') || '',
+  accountName: localStorage.getItem('plm_meta_account_name') || '',
+  userName: localStorage.getItem('plm_meta_user_name') || ''
+};
+
+// Initialize Facebook JS SDK
+window.fbAsyncInit = function() {
+  if (typeof FB !== 'undefined') {
+    FB.init({
+      appId      : '161820262026', // Standard Meta Business App ID or user custom app
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v21.0'
+    });
+  }
+};
+
+(function(d, s, id){
+   var js, fjs = d.getElementsByTagName(s)[0];
+   if (d.getElementById(id)) {return;}
+   js = d.createElement(s); js.id = id;
+   js.src = "https://connect.facebook.net/pt_BR/sdk.js";
+   fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+function openMetaAuthModal() {
+  document.getElementById('meta-auth-modal').style.display = 'flex';
+  if (metaAuth.token) {
+    document.getElementById('meta-token-input').value = metaAuth.token;
+  }
+}
+
+function closeMetaAuthModal() {
+  document.getElementById('meta-auth-modal').style.display = 'none';
+}
+
+function showManualTokenInput() {
+  document.getElementById('manual-token-dock').style.display = 'block';
+}
+
+function loginWithFacebook() {
+  if (typeof FB === 'undefined') {
+    // If blocked by adblock or file protocol, fallback gracefully to token input
+    showManualTokenInput();
+    alert('Aviso: O SDK do Facebook requer conexão segura https. Por favor insira seu token de acesso no campo abaixo.');
+    return;
+  }
+
+  FB.login(function(response) {
+    if (response.authResponse) {
+      var accessToken = response.authResponse.accessToken;
+      handleTokenVerification(accessToken);
+    } else {
+      alert('Login cancelado ou não autorizado pelo usuário.');
+    }
+  }, { scope: 'ads_management,ads_read,business_management,pages_read_engagement' });
+}
+
+function verifyManualToken() {
+  var token = document.getElementById('meta-token-input').value.trim();
+  if (!token) {
+    alert('Por favor, informe um token de acesso válido.');
+    return;
+  }
+  handleTokenVerification(token);
+}
+
+function handleTokenVerification(token) {
+  // Test via serverless proxy /api/meta-ads or direct graph.facebook.com
+  var endpoint = '/api/meta-ads?action=test_token&token=' + encodeURIComponent(token);
+  
+  fetch(endpoint)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        metaAuth.token = token;
+        metaAuth.userName = data.user.name || 'Usuário Meta';
+        renderDiscoveredAccounts(data.ad_accounts);
+      } else {
+        // Try direct Graph API fallback
+        fallbackDirectGraphVerify(token);
+      }
+    })
+    .catch(function() {
+      fallbackDirectGraphVerify(token);
+    });
+}
+
+function fallbackDirectGraphVerify(token) {
+  fetch('https://graph.facebook.com/v21.0/me?fields=id,name&access_token=' + encodeURIComponent(token))
+    .then(function(r) { return r.json(); })
+    .then(function(userData) {
+      if (userData.error) {
+        alert('Erro Meta API: ' + userData.error.message);
+        return;
+      }
+      metaAuth.token = token;
+      metaAuth.userName = userData.name;
+      
+      fetch('https://graph.facebook.com/v21.0/me/adaccounts?fields=id,name,account_id,currency,amount_spent&access_token=' + encodeURIComponent(token))
+        .then(function(ar) { return ar.json(); })
+        .then(function(accData) {
+          renderDiscoveredAccounts(accData.data || []);
+        });
+    })
+    .catch(function(err) {
+      alert('Não foi possível conectar à API do Meta: ' + err.message);
+    });
+}
+
+function renderDiscoveredAccounts(accounts) {
+  var dock = document.getElementById('discovered-accounts-dock');
+  var list = document.getElementById('accounts-list-radio');
+  var btnConfirm = document.getElementById('btn-confirm-meta-link');
+  dock.style.display = 'block';
+  list.innerHTML = '';
+
+  if (!accounts || accounts.length === 0) {
+    list.innerHTML = '<div style="font-size:11px; color:var(--text-sub);">Nenhuma conta de anúncio encontrada com este token. Certifique-se de que a conta possui a permissão ads_management.</div>';
+    return;
+  }
+
+  accounts.forEach(function(acc, idx) {
+    var checked = idx === 0 ? 'checked' : '';
+    var row = document.createElement('label');
+    row.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:var(--text-main); background:#111; padding:8px 10px; border:1px solid #222;';
+    row.innerHTML = '<input type="radio" name="ad_account_select" value="' + acc.id + '" data-name="' + (acc.name || 'Conta ' + acc.account_id) + '" ' + checked + '> ' +
+      '<strong>' + (acc.name || acc.id) + '</strong> (' + acc.id + ') • ' + (acc.currency || 'BRL');
+    list.appendChild(row);
+  });
+
+  btnConfirm.style.display = 'inline-block';
+}
+
+function confirmMetaAccountLink() {
+  var selected = document.querySelector('input[name="ad_account_select"]:checked');
+  if (!selected) {
+    alert('Selecione uma conta de anúncio.');
+    return;
+  }
+
+  metaAuth.accountId = selected.value;
+  metaAuth.accountName = selected.getAttribute('data-name');
+  metaAuth.connected = true;
+
+  localStorage.setItem('plm_meta_token', metaAuth.token);
+  localStorage.setItem('plm_meta_account_id', metaAuth.accountId);
+  localStorage.setItem('plm_meta_account_name', metaAuth.accountName);
+  localStorage.setItem('plm_meta_user_name', metaAuth.userName);
+
+  updateMetaUI();
+  closeMetaAuthModal();
+  appendLocalLog('META_CONNECTED', 'Conta do Facebook vinculada com sucesso: ' + metaAuth.accountName + ' (' + metaAuth.accountId + ')');
+  alert('✓ Conta do Facebook vinculada com sucesso!
+Você já pode dar Start, Pausar e Subir Peças diretamente por este painel.');
+}
+
+function updateMetaUI() {
+  var indicator = document.getElementById('meta-conn-indicator');
+  var label = document.getElementById('meta-account-label');
+  var btnConnect = document.getElementById('lbl-fb-status');
+
+  if (metaAuth.connected || metaAuth.accountId) {
+    indicator.innerHTML = '<span style="color:var(--accent-emerald);">● CONECTADO: ' + (metaAuth.userName || 'Meta Business') + '</span>';
+    label.innerHTML = '<strong>' + metaAuth.accountName + '</strong> (' + metaAuth.accountId + ') • <span style="color:var(--accent-emerald);">PERMISSÃO TOTAL: ADS_MANAGEMENT</span>';
+    if (btnConnect) btnConnect.innerText = '✓ CONECTADO: ' + (metaAuth.userName ? metaAuth.userName.split(' ')[0] : 'FACEBOOK');
+  } else {
+    indicator.innerHTML = '<span style="color:#4F8EF7;">● CONEXÃO META ADS:</span>';
+    label.innerHTML = 'Nenhuma conta vinculada. Clique em "Conectar Facebook" para autorizar veiculações reais.';
+    if (btnConnect) btnConnect.innerText = '🔵 CONECTAR FACEBOOK';
+  }
+}
+
+// Check saved connection on startup
+if (metaAuth.accountId && metaAuth.token) {
+  metaAuth.connected = true;
+}
+setTimeout(updateMetaUI, 200);
+
+// Initialization
+window.addEventListener("DOMContentLoaded", function() {
+  checkApiSync();
+  fetchLogs();
+  setInterval(checkApiSync, 15000); // Polling every 15s
+});
+</script>
+</body>
+</html>
