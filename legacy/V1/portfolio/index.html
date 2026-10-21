@@ -247,6 +247,254 @@
         .subproject-tab:hover { border-color: var(--fg); color: var(--fg); }
         .subproject-tab.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 
+        /* ─── SMART BUFFER HUD & TELEMETRY ─── */
+        .buffer-hud {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .35s ease;
+        }
+        .buffer-hud.is-buffering {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .buffer-hud-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.68);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .buffer-hud-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(12, 12, 12, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+            padding: 1.5rem 2rem;
+            min-width: 340px;
+            max-width: 90vw;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .buffer-hud-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
+        }
+        .buffer-live-beacon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .beacon-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
+            animation: beaconGlow 1.2s infinite ease-in-out alternate;
+        }
+        @keyframes beaconGlow {
+            from { opacity: 0.3; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1.15); }
+        }
+        .beacon-label {
+            font-family: var(--font-mono, monospace);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+        .buffer-stream-tag {
+            font-family: var(--font-mono, monospace);
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .15em;
+            color: var(--fg3);
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+        }
+        .buffer-meter-wrap {
+            position: relative;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.12);
+            overflow: hidden;
+        }
+        .buffer-meter-bar {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            transition: width .2s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        .buffer-metrics-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono, monospace);
+            font-size: 9px;
+            letter-spacing: .15em;
+            color: var(--fg2);
+        }
+        .buffer-pct {
+            font-weight: 800;
+            color: #fff;
+        }
+        .buffer-readout {
+            color: var(--fg3);
+            text-transform: uppercase;
+        }
+
+        /* Bottom mini buffer telemetry track */
+        .exp-bottom-buffer-track {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            z-index: 5;
+            pointer-events: none;
+        }
+        .exp-buffer-loaded-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.35);
+            transition: width .2s ease;
+        }
+        .exp-buffer-played-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            background: #fff;
+            box-shadow: 0 0 6px #fff;
+        }
+
+        /* ─── GALLERY CATEGORY GROUPS ─── */
+        .gallery-groups-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3.5rem;
+            width: 100%;
+        }
+        .gallery-category-group {
+            width: 100%;
+        }
+        .gallery-category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding-bottom: 0.85rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .cat-header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .cat-index {
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .2em;
+            color: var(--fg3);
+        }
+        .cat-title {
+            font-size: clamp(14px, 1.8vw, 18px);
+            font-weight: 900;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--fg);
+            margin: 0;
+        }
+        .cat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cat-count {
+            font-family: var(--font-mono, monospace);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .2em;
+            color: var(--fg2);
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+        }
+
+        /* ─── REFINED TECHNICAL MEDIA CARD LABELS ─── */
+        .media-card-info {
+            padding: 8px 12px;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .media-tech-header {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            min-width: 0;
+            flex: 1;
+        }
+        .media-code-badge {
+            font-family: var(--font-mono, monospace);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .15em;
+            color: var(--fg3);
+            flex-shrink: 0;
+        }
+        .media-title-label {
+            font-family: var(--font-mono, monospace);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--fg2);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color .2s ease;
+        }
+        .client-card:hover .media-title-label {
+            color: var(--fg);
+        }
+        .media-sub-meta {
+            flex-shrink: 0;
+        }
+        .media-aspect-tag {
+            font-family: var(--font-mono, monospace);
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            color: var(--fg3);
+            border: 1px solid var(--border);
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+
         /* ─── RESPONSIVE HERO BRUTALIST & MOSAIC ─── */
         @media(max-width: 1024px) {
             #hero-brutalist {
@@ -559,7 +807,32 @@
                     </div>
                 </div>
                 <div class="expanded-screen-frame">
-                    <video id="exp-video" controls autoplay playsinline></video>
+                    <video id="exp-video" controls autoplay playsinline preload="auto"></video>
+                    <!-- Intelligent Buffer HUD Overlay -->
+                    <div id="exp-buffer-hud" class="buffer-hud">
+                        <div class="buffer-hud-backdrop"></div>
+                        <div class="buffer-hud-card">
+                            <div class="buffer-hud-top">
+                                <div class="buffer-live-beacon">
+                                    <span class="beacon-dot"></span>
+                                    <span class="beacon-label" id="exp-beacon-status">BUFFERING STREAM</span>
+                                </div>
+                                <div class="buffer-stream-tag">1080P MASTER // HIGH BITRATE</div>
+                            </div>
+                            <div class="buffer-meter-wrap">
+                                <div class="buffer-meter-bar" id="exp-buffer-bar"></div>
+                            </div>
+                            <div class="buffer-metrics-row">
+                                <span class="buffer-pct" id="exp-buffer-pct">0% EM BUFFER</span>
+                                <span class="buffer-readout" id="exp-buffer-readout">CONECTANDO AO CDN PELIMOTION...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Live mini buffer track -->
+                    <div class="exp-bottom-buffer-track">
+                        <div class="exp-buffer-loaded-line" id="exp-mini-loaded"></div>
+                        <div class="exp-buffer-played-line" id="exp-mini-played"></div>
+                    </div>
                 </div>
             </div>
             </div>
@@ -578,7 +851,7 @@
             <p id="gallery-desc" class="gallery-desc">Description goes here.</p>
         </div>
         <div class="content-section">
-            <div class="grid-brutal" id="gallery-grid">
+            <div id="gallery-grid">
                 <!-- Populated by JS -->
             </div>
             <div style="margin-top:80px; text-align:center">
@@ -646,7 +919,7 @@
                 title: "UNIBRASIL // CIRCUITO DOOH & VESTIBULAR 2026",
                 desc: "Comprehensive 360° DOOH and digital admissions campaign adapted across 15 urban LED topologies, TV master film, and kinetic social media with Bad TV signal distortion.",
                 desc_pt: "Campanha 360° de vestibular e DOOH desdobrada em 15 topologias de mídia exterior urbana, filme master de TV e social media cinético com intervenções analógicas de Bad TV.",
-                video: "https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_vertical_stories.mp4"
+                video: "https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.mp4"
             },
             {
                 client: "BMW",
@@ -655,7 +928,7 @@
                 title: "BMW MOTORSPORT // VISUAL SYSTEMS & CGI",
                 desc: "Cinematography and interface systems for high-performance automotive vehicles, exploring light reflection and mathematical speed curves.",
                 desc_pt: "Cinematografia e sistemas de interface para veículos de alta performance, explorando reflexos físicos de luz e curvas matemáticas de velocidade.",
-                video: "https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4#t=26"
+                video: "https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.mp4"
             },
             {
                 client: "FUNKY ROOM",
@@ -682,7 +955,7 @@
                 title: "SUZANO // LETRAS QUE TRANSFORMAM",
                 desc: "Strategic typographic transformation and volumetric letter animations for global bio-industry leader.",
                 desc_pt: "Transformação tipográfica estratégica e animações volumétricas para líder global de bioindústria.",
-                video: "https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4"
+                video: "https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.mp4"
             }
         ];
 
@@ -696,6 +969,91 @@
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') closeExpandedPlayer();
             });
+
+            // Bind Smart Buffer Telemetry to Expanded Cinema Player Video
+            const video = document.getElementById('exp-video');
+            const hud = document.getElementById('exp-buffer-hud');
+            const beaconStatus = document.getElementById('exp-beacon-status');
+            const bar = document.getElementById('exp-buffer-bar');
+            const pctEl = document.getElementById('exp-buffer-pct');
+            const readout = document.getElementById('exp-buffer-readout');
+            const miniLoaded = document.getElementById('exp-mini-loaded');
+            const miniPlayed = document.getElementById('exp-mini-played');
+
+            if (video) {
+                const updateBufferUI = () => {
+                    const dur = video.duration;
+                    const buf = video.buffered;
+                    let loadedEnd = 0;
+                    if (buf && buf.length > 0) {
+                        for (let i = 0; i < buf.length; i++) {
+                            if (buf.start(i) <= video.currentTime && video.currentTime <= buf.end(i)) {
+                                loadedEnd = buf.end(i);
+                                break;
+                            }
+                        }
+                        if (loadedEnd === 0) loadedEnd = buf.end(buf.length - 1);
+                    }
+                    let pct = 0;
+                    if (dur > 0 && isFinite(dur)) {
+                        pct = Math.min(100, Math.round((loadedEnd / dur) * 100));
+                    } else if (loadedEnd > 0) {
+                        pct = Math.min(95, Math.round(loadedEnd * 12));
+                    }
+                    const ahead = Math.max(0, loadedEnd - video.currentTime);
+
+                    if (bar) bar.style.width = pct + '%';
+                    if (miniLoaded) miniLoaded.style.width = pct + '%';
+                    if (pctEl) pctEl.textContent = `${pct}% EM BUFFER`;
+                    if (readout) {
+                        if (ahead > 0) readout.textContent = `${ahead.toFixed(1)}s PRÉ-CARREGADOS // TAXA ESTÁVEL`;
+                        else readout.textContent = 'BUFFERING INICIAL MASTER 1080P...';
+                    }
+                };
+
+                video.addEventListener('loadstart', () => {
+                    if (bar) bar.style.width = '0%';
+                    if (miniLoaded) miniLoaded.style.width = '0%';
+                    if (miniPlayed) miniPlayed.style.width = '0%';
+                    if (pctEl) pctEl.textContent = '0% EM BUFFER';
+                    if (readout) readout.textContent = 'CONECTANDO AO CDN PELIMOTION...';
+                    if (beaconStatus) beaconStatus.textContent = 'BUFFERING STREAM';
+                    if (hud) hud.classList.add('is-buffering');
+                });
+
+                video.addEventListener('progress', updateBufferUI);
+
+                video.addEventListener('waiting', () => {
+                    if (hud) hud.classList.add('is-buffering');
+                    if (beaconStatus) beaconStatus.textContent = 'ESTABILIZANDO BUFFER...';
+                    if (readout) readout.textContent = 'SINCRONIZANDO TAXA DE BITRATE 1080P...';
+                });
+
+                video.addEventListener('stalled', () => {
+                    if (hud) hud.classList.add('is-buffering');
+                    if (beaconStatus) beaconStatus.textContent = 'AGUARDANDO PACOTES...';
+                });
+
+                video.addEventListener('canplay', () => {
+                    updateBufferUI();
+                    if (beaconStatus) beaconStatus.textContent = 'BUFFER ESTÁVEL // 1080P PRONTO';
+                    setTimeout(() => {
+                        if (hud && !video.paused) hud.classList.remove('is-buffering');
+                    }, 350);
+                });
+
+                video.addEventListener('playing', () => {
+                    updateBufferUI();
+                    if (hud) hud.classList.remove('is-buffering');
+                });
+
+                video.addEventListener('timeupdate', () => {
+                    if (miniPlayed && video.duration) {
+                        miniPlayed.style.width = ((video.currentTime / video.duration) * 100) + '%';
+                    }
+                    updateBufferUI();
+                });
+            }
         }
 
         function startMosaicBeacon() {
@@ -743,6 +1101,26 @@
             disc.textContent = data.discipline;
             title.textContent = data.title;
             desc.textContent = (window._PLM_LANG === 'pt' ? data.desc_pt : data.desc) || data.desc;
+
+            // Inherit crisp poster thumbnail from mosaic tile to eliminate black frame flicker
+            const tile = document.querySelector(`.m-tile-${index + 1}`);
+            if (tile) {
+                const img = tile.querySelector('img');
+                if (img && img.src) video.poster = img.src;
+            }
+
+            // Immediately activate Smart Buffer HUD with clean initial state
+            const hud = document.getElementById('exp-buffer-hud');
+            const bar = document.getElementById('exp-buffer-bar');
+            const pctEl = document.getElementById('exp-buffer-pct');
+            const readout = document.getElementById('exp-buffer-readout');
+            const beaconStatus = document.getElementById('exp-beacon-status');
+
+            if (bar) bar.style.width = '0%';
+            if (pctEl) pctEl.textContent = '0% EM BUFFER';
+            if (readout) readout.textContent = 'INICIANDO BUFFER MASTER 1080P...';
+            if (beaconStatus) beaconStatus.textContent = 'BUFFERING STREAM';
+            if (hud) hud.classList.add('is-buffering');
 
             video.src = data.video;
             video.currentTime = 0;
@@ -1142,18 +1520,19 @@
             if(!client) return;
             
             currentClientName = name;
-            currentPlaylist = [];
             
             const displayName = client.displayName || name;
             document.getElementById('gallery-title').textContent = displayName;
             document.getElementById('gallery-desc').textContent = (window._PLM_LANG === 'pt' ? client.description_pt : client.description) || '';
             
             const grid = document.getElementById('gallery-grid');
-            let html = '';
             
             const rootMedia = client.media?.root || [];
             const cats = client.media?.categories || {};
             const catNames = Object.keys(cats);
+
+            // Establish unified sequential playlist for modal navigation
+            currentPlaylist = rootMedia.map((m, idx) => ({ ...m, index: idx }));
 
             // Subproject filter tabs if categories exist
             let tabsHtml = '';
@@ -1169,25 +1548,76 @@
                 tabsHtml += '</div>';
             }
 
-            // Filter items based on activeCategory
-            let itemsToRender = [];
-            if (!activeCategory || activeCategory === 'ALL' || catNames.length === 0) {
-                itemsToRender = rootMedia;
-            } else {
-                const catEntries = cats[activeCategory] || [];
-                // catEntries might be indices or objects
-                itemsToRender = catEntries.map(entry => {
-                    if (typeof entry === 'number') return rootMedia[entry];
-                    return entry;
-                }).filter(Boolean);
-            }
+            let bodyHtml = '';
 
-            itemsToRender.forEach((m, idx) => {
-                currentPlaylist.push({...m, index: currentPlaylist.length});
-                html += renderMediaCard(m, currentPlaylist.length - 1);
-            });
+            // Grouped rendering when ALL categories are displayed
+            if (catNames.length > 0 && (!activeCategory || activeCategory === 'ALL')) {
+                bodyHtml += '<div class="gallery-groups-container">';
+                catNames.forEach((cName, catIdx) => {
+                    const cIndices = cats[cName] || [];
+                    if (cIndices.length === 0) return;
+
+                    const cleanTitle = cName.replace(/^\d+\s*\/\/\s*/, '');
+                    bodyHtml += `
+                        <div class="gallery-category-group" id="cat-group-${catIdx}">
+                            <div class="gallery-category-header">
+                                <div class="cat-header-left">
+                                    <span class="cat-index">0${catIdx + 1} //</span>
+                                    <h3 class="cat-title">${cleanTitle}</h3>
+                                </div>
+                                <div class="cat-header-right">
+                                    <span class="cat-count">${cIndices.length} ${cIndices.length === 1 ? 'PEÇA' : 'PEÇAS'}</span>
+                                </div>
+                            </div>
+                            <div class="grid-brutal gallery-subgrid">
+                    `;
+                    cIndices.forEach(entry => {
+                        const m = typeof entry === 'number' ? rootMedia[entry] : entry;
+                        const originalIdx = typeof entry === 'number' ? entry : rootMedia.indexOf(m);
+                        if (m) bodyHtml += renderMediaCard(m, originalIdx >= 0 ? originalIdx : 0);
+                    });
+                    bodyHtml += `
+                            </div>
+                        </div>
+                    `;
+                });
+                bodyHtml += '</div>';
+            } else if (catNames.length > 0 && activeCategory && activeCategory !== 'ALL') {
+                // Filtered to one specific category
+                const cIndices = cats[activeCategory] || [];
+                const cleanFilteredTitle = activeCategory.replace(/^\d+\s*\/\/\s*/, '');
+                bodyHtml += `
+                    <div class="gallery-category-group">
+                        <div class="gallery-category-header">
+                            <div class="cat-header-left">
+                                <span class="cat-index">FILTRO //</span>
+                                <h3 class="cat-title">${cleanFilteredTitle}</h3>
+                            </div>
+                            <div class="cat-header-right">
+                                <span class="cat-count">${cIndices.length} ${cIndices.length === 1 ? 'PEÇA' : 'PEÇAS'}</span>
+                            </div>
+                        </div>
+                        <div class="grid-brutal gallery-subgrid">
+                `;
+                cIndices.forEach(entry => {
+                    const m = typeof entry === 'number' ? rootMedia[entry] : entry;
+                    const originalIdx = typeof entry === 'number' ? entry : rootMedia.indexOf(m);
+                    if (m) bodyHtml += renderMediaCard(m, originalIdx >= 0 ? originalIdx : 0);
+                });
+                bodyHtml += `
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Standard flat grid for projects without multiple categories
+                bodyHtml += '<div class="grid-brutal gallery-subgrid">';
+                rootMedia.forEach((m, idx) => {
+                    bodyHtml += renderMediaCard(m, idx);
+                });
+                bodyHtml += '</div>';
+            }
             
-            grid.innerHTML = tabsHtml + html;
+            grid.innerHTML = tabsHtml + bodyHtml;
             
             document.getElementById('view-home').style.display = 'none';
             const gallery = document.getElementById('view-gallery');
@@ -1231,8 +1661,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="client-card-info">
-                        <div class="client-name" style="font-size:16px">${title}</div>
+                    <div class="client-card-info media-card-info">
+                        <div class="media-tech-header">
+                            <span class="media-code-badge">${String(playlistIndex + 1).padStart(2, '0')} //</span>
+                            <span class="media-title-label">${title}</span>
+                        </div>
+                        <div class="media-sub-meta">
+                            <span class="media-aspect-tag">${m.aspect || '16:9'}</span>
+                        </div>
                     </div>
                 </div>
             `;
