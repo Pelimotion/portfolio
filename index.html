@@ -201,20 +201,22 @@ section { width: 100%; border-top: 1px solid var(--border); }
 .portrait-bio { font-size: 11px; line-height: 1.6; color: var(--fg2); margin: .5rem 0 .5rem; }
 
 .about-cv-access { 
-  display: flex; 
+  display: inline-flex; 
   align-items: center; 
-  justify-content: space-between; 
-  margin-top: 1rem; 
-  padding: 11px 14px; 
+  gap: 8px; 
+  margin-top: 0.85rem; 
+  padding: 6px 14px; 
   border: 1px solid var(--border); 
-  background: rgba(240,237,232,0.03); 
-  font-size: 10px; 
-  font-weight: 800; 
-  letter-spacing: .2em; 
+  background: transparent; 
+  font-size: 9px; 
+  font-weight: 700; 
+  letter-spacing: .18em; 
   text-transform: uppercase; 
-  color: var(--fg); 
+  color: var(--fg2); 
   text-decoration: none; 
-  transition: all .25s ease; 
+  white-space: nowrap; 
+  transition: all .2s ease; 
+  border-radius: 2px;
 }
 .about-cv-access:hover { 
   background: var(--fg); 
@@ -222,11 +224,11 @@ section { width: 100%; border-top: 1px solid var(--border); }
   border-color: var(--fg); 
 }
 .about-cv-access .cv-arrow { 
-  font-size: 12px; 
-  transition: transform .25s ease; 
+  font-size: 11px; 
+  transition: transform .2s ease; 
 }
 .about-cv-access:hover .cv-arrow { 
-  transform: translate(3px, -3px); 
+  transform: translate(2px, -2px); 
 }
 
 /* ── CAPABILITIES MATRIX ── */
@@ -469,10 +471,17 @@ html[data-theme="light"] .port-card-overlay {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.section-header-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; }
+.section-header-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
 .section-label { font-size: 9px; font-weight: 700; letter-spacing: .4em; text-transform: uppercase; color: var(--fg3); }
+.section-main-title { font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 0.35rem; color: var(--fg); text-transform: uppercase; }
 .section-link { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: border-color .2s; }
 .section-link:hover { border-color: var(--fg); }
+
+.contact-hero-cta { margin: 1.5rem 0 2rem; }
+.btn-bora-hero { display: inline-flex; align-items: center; gap: 12px; background: var(--fg); color: var(--bg); padding: 14px 28px; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; text-decoration: none; border-radius: 3px; border: 1px solid var(--fg); transition: all .25s cubic-bezier(0.16, 1, 0.3, 1); }
+.btn-bora-hero:hover { background: transparent; color: var(--fg); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(240,237,232,0.12); }
+.btn-bora-hero .btn-arrow { font-size: 14px; transition: transform .25s ease; }
+.btn-bora-hero:hover .btn-arrow { transform: translateX(4px); }
 
 /* ── CONTACT / FOOTER ── */
 #contact { padding: 6rem 0; }
@@ -581,9 +590,9 @@ html[data-theme="light"] .port-card-overlay {
 
     <!-- Main Title -->
     <h2 class="about-hero-title reveal" id="about-title"
-        data-en="Artistic rigor from <em>Rio de Janeiro</em>.<br>Visual systems engineered for culture and industry."
-        data-pt="Rigor artístico a partir do <em>Rio de Janeiro</em>.<br>Sistemas visuais criados para cultura e indústria.">
-      Rigor artístico a partir do <em>Rio de Janeiro</em>.<br>Sistemas visuais criados para cultura e indústria.
+        data-en="Motion as a <em>strategic</em> language.<br>Visual systems engineered for brands that set the pace."
+        data-pt="Motion como <em>linguagem</em> estratégica.<br>Sistemas visuais para marcas que ditam o ritmo.">
+      Motion como <em>linguagem</em> estratégica.<br>Sistemas visuais para marcas que ditam o ritmo.
     </h2>
 
     <!-- 3-Column Editorial Grid: Manifesto / Portrait & CV / Capabilities & Impact -->
@@ -592,9 +601,9 @@ html[data-theme="light"] .port-card-overlay {
       <div class="about-col reveal">
         <span class="about-sublabel" data-en="Manifesto • Creative Territory" data-pt="Manifesto • Território Criativo">Manifesto • Território Criativo</span>
         <p class="about-text-lead" id="about-p1"
-           data-en="Physically based in Rio de Janeiro, we combine the tactile rhythmic pulse and spatial intensity of the city with the surgical rigor of high-end international art direction. We operate as an elite motion atelier for visionary brands — designing how visual identities move, collide, and resonate across physical, digital, and stage spaces."
-           data-pt="Sediados fisicamente no Rio de Janeiro, unimos a pulsação rítmica e a intensidade sensorial carioca ao rigor cirúrgico da direção de arte internacional. Operamos como um ateliê de motion e CGI de alta precisão para marcas que recusam o genérico — projetando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.">
-          Sediados fisicamente no Rio de Janeiro, unimos a pulsação rítmica e a intensidade sensorial carioca ao rigor cirúrgico da direção de arte internacional. Operamos como um ateliê de motion e CGI de alta precisão para marcas que recusam o genérico — projetando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.
+           data-en="We work where strategy meets motion. Over eight years, we have engineered high-precision visual systems and CGI films for brands that refuse the generic — designing how identities move, collide, and resonate across physical, digital, and stage spaces."
+           data-pt="Trabalhamos onde estratégia encontra movimento. Em oito anos, projetamos sistemas visuais e filmes CGI de alta precisão para marcas que recusam o genérico — desenhando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.">
+          Trabalhamos onde estratégia encontra movimento. Em oito anos, projetamos sistemas visuais e filmes CGI de alta precisão para marcas que recusam o genérico — desenhando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.
         </p>
         <p class="about-text-body" id="about-p2"
            data-en="Our musical roots govern every motion curve: millimetric pacing, weight, brutalist contrast, and deliberate silence. Pelimotion directs global brand systems, live spatial projections, CGI product films, and AI-integrated generative video pipelines for the automotive, financial, fashion, and cultural sectors."
@@ -604,7 +613,7 @@ html[data-theme="light"] .port-card-overlay {
         
         <div class="about-location-pill">
           <span class="radar-dot"></span>
-          <span data-en="Rio de Janeiro — Creative Atelier &amp; Global Direction" data-pt="Rio de Janeiro — Ateliê Criativo &amp; Direção Global">Rio de Janeiro — Ateliê Criativo &amp; Direção Global</span>
+          <span data-en="Rio de Janeiro — Creative Atelier · Global Direction" data-pt="Rio de Janeiro — Ateliê Criativo · Direção Global">Rio de Janeiro — Ateliê Criativo · Direção Global</span>
         </div>
       </div>
 
@@ -622,9 +631,8 @@ html[data-theme="light"] .port-card-overlay {
               Direção de CGI high-end, sistemas de motion de marca e instalações cinéticas. 8+ anos liderando projetos para grandes agências e marcas globais.
             </div>
             
-            <a href="Curriculum/index.html" class="about-cv-access" data-en="Trajetória &amp; Full Curriculum Vitae ↗" data-pt="Trajetória &amp; Currículo Completo ↗">
-              <span data-en="Trajetória &amp; Currículo Completo" data-pt="Trajetória &amp; Currículo Completo">Trajetória &amp; Currículo Completo</span>
-              <span class="cv-arrow">↗</span>
+            <a href="Curriculum/index.html" class="about-cv-access" data-en="Curriculum <span class='cv-arrow'>↗</span>" data-pt="Currículo <span class='cv-arrow'>↗</span>">
+              <span>Currículo</span><span class="cv-arrow">↗</span>
             </a>
           </div>
         </div>
@@ -680,8 +688,8 @@ html[data-theme="light"] .port-card-overlay {
             <div class="impact-label" data-en="Global Markets" data-pt="Países">Países</div>
           </div>
           <div class="impact-cell">
-            <div class="impact-num">RIO</div>
-            <div class="impact-label" data-en="Creative Atelier" data-pt="Ateliê Sede">Ateliê Sede</div>
+            <div class="impact-num">∞</div>
+            <div class="impact-label" data-en="Frames Per Second" data-pt="Frames Por Segundo">Frames Por Segundo</div>
           </div>
         </div>
       </div>
@@ -713,8 +721,11 @@ html[data-theme="light"] .port-card-overlay {
 <section id="portfolio-link">
   <div class="container" style="padding-top:5rem;padding-bottom:5rem">
     <div class="section-header-row reveal">
-      <div class="section-label" data-en="02 — Selected Work" data-pt="02 — Trabalhos Selecionados">02 — Selected Work</div>
-      <a href="/portfolio" class="section-link" data-en="View More Projects" data-pt="Ver Mais Projetos">View More Projects <span>→</span></a>
+      <div>
+        <div class="section-label" data-en="02 — Portfolio" data-pt="02 — Portfólio">02 — Portfolio</div>
+        <h2 class="section-main-title" data-en="Selected Projects" data-pt="Projetos Selecionados">Projetos Selecionados</h2>
+      </div>
+      <a href="/portfolio" class="section-link" data-en="View More Projects" data-pt="Ver Mais Projetos">Ver Mais Projetos <span>→</span></a>
     </div>
     <div class="port-inner">
       <!-- 01 // ROW 1 (SOLO): FLAGSHIP MONUMENTAL (GIGANTERA) -->
@@ -864,12 +875,20 @@ html[data-theme="light"] .port-card-overlay {
   <div class="container">
     <div class="contact-grid">
       <div class="reveal">
-        <div class="about-label" data-en="03 — Contact" data-pt="03 — Contato">03 — Contact</div>
-        <h2 class="contact-title" id="contact-title" data-en="Open to direction, <em>collaborations</em> and long-form briefs." data-pt="Aberto a direção, <em>colaborações</em> e projetos de longo prazo.">Open to direction, <em>collaborations</em> and long-form briefs.</h2>
-        <p class="contact-sub" id="contact-sub" data-en="Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish." data-pt="Baseado no Rio de Janeiro. Atuação global. Fluente em Inglês, Português e Espanhol.">Based in Rio de Janeiro. Working globally. Fluent in English, Portuguese, and Spanish.</p>
+        <div class="about-label" data-en="03 — Contact &amp; Briefing" data-pt="03 — Contato &amp; Briefing">03 — Contact &amp; Briefing</div>
+        <h2 class="contact-title" id="contact-title" data-en="Bora conversar.<br><em>Move your brand.</em>" data-pt="Bora conversar.<br><em>Mova sua marca.</em>">Bora conversar.<br><em>Mova sua marca.</em></h2>
+        <p class="contact-sub" id="contact-sub" data-en="Open to creative direction, high-level collaborations, and strategic briefs. Working globally from Rio de Janeiro." data-pt="Aberto a direção criativa, colaborações de alto nível e projetos de escala. Atuação global a partir do Rio de Janeiro.">Aberto a direção criativa, colaborações de alto nível e projetos de escala. Atuação global a partir do Rio de Janeiro.</p>
+        
+        <div class="contact-hero-cta">
+          <a href="/bora" class="btn-bora-hero" data-en="Bora Conversar <span>→</span>" data-pt="Bora Conversar <span>→</span>">
+            <span>Bora Conversar</span>
+            <span class="btn-arrow">→</span>
+          </a>
+        </div>
+
         <a href="mailto:conceicao.felipe@gmail.com" class="contact-email" id="contact-email">conceicao.felipe@gmail.com</a>
         <div class="contact-links">
-          <a href="/bora" class="contact-link" style="color:var(--fg); background:rgba(240,237,232,0.06); font-weight:800;" data-en="Bora conversar &amp; Briefing →" data-pt="Bora conversar &amp; Briefing →">Bora conversar &amp; Briefing <span>→</span></a>
+          <a href="/bora" class="contact-link" style="color:var(--fg); background:rgba(240,237,232,0.06); font-weight:800;" data-en="Bora: Canal &amp; Briefing Direto →" data-pt="Bora: Canal &amp; Briefing Direto →">Bora: Canal &amp; Briefing Direto <span>→</span></a>
           <a href="https://wa.me/5547999664274" target="_blank" class="contact-link" data-en="WhatsApp Direct ↗" data-pt="WhatsApp Direto ↗">WhatsApp Direto <span>↗</span></a>
           <a href="https://linkedin.com/in/pelife" target="_blank" class="contact-link">LinkedIn <span>↗</span></a>
           <a href="https://instagram.com/pelimotion" target="_blank" class="contact-link">Instagram <span>↗</span></a>
@@ -884,17 +903,17 @@ html[data-theme="light"] .port-card-overlay {
         </div>
         <div class="contact-info-item">
           <div class="contact-info-label" data-en="Location" data-pt="Localização">Location</div>
-          <div class="contact-info-val" id="contact-location">Rio de Janeiro, Brasil</div>
+          <div class="contact-info-val" id="contact-location" data-en="Rio de Janeiro, Brazil (Global Direction)" data-pt="Rio de Janeiro, Brasil (Atendimento Global)">Rio de Janeiro, Brasil (Atendimento Global)</div>
         </div>
         <div class="contact-info-item">
           <div class="contact-info-label" data-en="Disciplines" data-pt="Disciplinas">Disciplines</div>
-          <div class="contact-info-val" data-en="Motion Design · Creative Direction · CGI · Brand Systems · AI Integration" data-pt="Motion Design · Direção Criativa · CGI · Sistemas de Marca · Integração com IA">Motion Design · Creative Direction · CGI · Brand Systems · AI Integration</div>
+          <div class="contact-info-val" data-en="Motion Design · Creative Direction · CGI · Brand Systems · AI Workflows" data-pt="Motion Design · Direção Criativa · CGI · Sistemas de Marca · Workflows de IA">Motion Design · Creative Direction · CGI · Sistemas de Marca · Workflows de IA</div>
         </div>
         <div class="contact-info-item" style="border-bottom:none">
           <div class="contact-info-label" data-en="Status" data-pt="Status">Status</div>
           <div class="contact-info-val" style="display:flex;align-items:center;gap:8px">
             <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
-            <span data-en="Available for projects" data-pt="Disponível para projetos">Available for projects</span>
+            <span data-en="Available for projects (Q3/Q4)" data-pt="Disponível para projetos (Q3/Q4)">Disponível para projetos (Q3/Q4)</span>
           </div>
         </div>
       </div>
