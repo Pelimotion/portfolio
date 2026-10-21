@@ -49,6 +49,155 @@
         .nav-link.cta { border: 1.5px solid var(--fg); padding: 6px 12px; color: var(--fg); }
         .nav-link.cta:hover { background: var(--fg); color: var(--bg); }
         
+        
+        /* ─── BRUTALIST VIDEO MOSAIC & EXPANDED CINEMA SYSTEM ─── */
+        #hero-mosaic-container {
+            position: relative; width: 100%; min-height: 90vh;
+            padding: 88px 2.5rem 3rem; background: var(--bg);
+            border-bottom: 1.5px solid var(--border);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .mosaic-telemetry-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+            font-size: 9px; font-weight: 700; letter-spacing: .35em;
+            text-transform: uppercase; color: var(--fg3);
+        }
+        .mosaic-tele-left { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); }
+        .beacon-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg); display: inline-block; animation: beaconPulse 1.8s infinite; }
+        @keyframes beaconPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.2; transform: scale(0.7); } }
+        .mosaic-tele-hint { font-size: 8px; font-family: monospace; color: var(--fg2); letter-spacing: .15em; }
+
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(170px, 1fr);
+            gap: 1.25rem;
+            width: 100%; flex: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .mosaic-tile {
+            position: relative; overflow: hidden;
+            border: 1px solid var(--border); background: #000;
+            cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end;
+            transition: border-color .3s, transform .5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .5s;
+        }
+        .mosaic-tile video, .mosaic-tile img {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(0.85) brightness(0.4);
+            opacity: 0.6;
+            transition: filter 0.6s ease, opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Interleaving ambient beacon state */
+        .mosaic-tile.is-beacon video, .mosaic-tile.is-beacon img {
+            filter: grayscale(0.2) brightness(0.95);
+            opacity: 0.95;
+            transform: scale(1.02);
+        }
+        .mosaic-tile.is-beacon {
+            border-color: rgba(240,237,232,0.5);
+        }
+
+        /* Hover active state respecting the mosaic tile */
+        .mosaic-tile:hover, .mosaic-tile.is-focused {
+            border-color: var(--fg);
+            z-index: 5;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.85);
+        }
+        .mosaic-tile:hover video, .mosaic-tile:hover img,
+        .mosaic-tile.is-focused video, .mosaic-tile.is-focused img {
+            filter: grayscale(0) brightness(1.1);
+            opacity: 1;
+            transform: scale(1.04);
+        }
+
+        /* Tile overlays and metadata */
+        .tile-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.1) 60%, transparent 100%);
+            z-index: 2; display: flex; align-items: flex-end; padding: 1.25rem;
+            pointer-events: none;
+        }
+        .tile-content { width: 100%; z-index: 3; }
+        .tile-pill-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+        .tile-format-pill { font-size: 7.5px; font-weight: 900; letter-spacing: .25em; text-transform: uppercase; background: var(--fg); color: var(--bg); padding: 2px 6px; }
+        .tile-tag { font-size: 8px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: var(--fg3); }
+        .tile-name { font-size: 1.15rem; font-weight: 900; letter-spacing: -.02em; color: var(--fg); display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; }
+        .tile-expand-icon { font-size: 14px; opacity: 0.6; transition: transform .3s, opacity .3s; }
+        .mosaic-tile:hover .tile-expand-icon { transform: translate(3px, -3px); opacity: 1; }
+
+        /* Asymmetric tile spans */
+        .m-tile-1 { grid-column: span 7; grid-row: span 2; } /* Widescreen Monumental */
+        .m-tile-2 { grid-column: span 5; grid-row: span 3; } /* Vertical DOOH Totem */
+        .m-tile-3 { grid-column: span 7; grid-row: span 2; } /* Master Film 16:9 */
+        .m-tile-4 { grid-column: span 4; grid-row: span 2; } /* Festival Stage Square */
+        .m-tile-5 { grid-column: span 4; grid-row: span 2; } /* Summer Video 4:5 */
+        .m-tile-6 { grid-column: span 4; grid-row: span 1; } /* Digital Outdoor 2:1 */
+
+        @media (max-width: 960px) {
+            .mosaic-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
+            .m-tile-1, .m-tile-2, .m-tile-3, .m-tile-4, .m-tile-5, .m-tile-6 { grid-column: span 1 !important; grid-row: span 1 !important; aspect-ratio: 16/9; }
+            .m-tile-2 { aspect-ratio: 9/16; }
+        }
+
+        /* ─── IN-CONTAINER EXPANDED CINEMA PLAYER ─── */
+        #mosaic-expanded-player {
+            position: absolute; inset: 0; z-index: 100;
+            background: var(--bg); display: none; flex-direction: column;
+            padding: 88px 2.5rem 2.5rem;
+            opacity: 0; transform: scale(0.97);
+            transition: opacity .4s ease, transform .4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #mosaic-expanded-player.active {
+            display: flex; opacity: 1; transform: scale(1);
+        }
+        .expanded-top-bar {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 2rem; margin-bottom: 1.5rem; padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .expanded-meta { display: flex; flex-direction: column; gap: 6px; }
+        .expanded-pill-row { display: flex; align-items: center; gap: 10px; }
+        .expanded-pill { font-size: 8px; font-weight: 900; letter-spacing: .3em; text-transform: uppercase; background: var(--fg); color: var(--bg); padding: 3px 8px; }
+        .expanded-discipline { font-size: 9px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); }
+        .expanded-title { font-size: clamp(1.5rem, 3.5vw, 2.8rem); font-weight: 900; letter-spacing: -.03em; text-transform: uppercase; }
+        .expanded-desc { font-size: 13px; color: var(--fg2); max-width: 700px; line-height: 1.6; }
+        
+        .expanded-actions { display: flex; align-items: center; gap: 12px; }
+        .btn-view-project {
+            font-size: 10px; font-weight: 900; letter-spacing: .25em; text-transform: uppercase;
+            padding: 12px 20px; background: var(--fg); color: var(--bg); border: 1.5px solid var(--fg);
+            cursor: pointer; transition: all .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-view-project:hover { background: transparent; color: var(--fg); }
+        .btn-close-expanded {
+            font-size: 10px; font-weight: 900; letter-spacing: .25em; text-transform: uppercase;
+            padding: 12px 20px; background: transparent; color: var(--fg); border: 1.5px solid var(--border);
+            cursor: pointer; transition: all .2s;
+        }
+        .btn-close-expanded:hover { border-color: var(--fg); }
+
+        .expanded-screen-frame {
+            position: relative; width: 100%; flex: 1; background: #000;
+            border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        #exp-video { width: 100%; height: 100%; max-height: 72vh; object-fit: contain; }
+
+        /* ─── GALLERY SUBPROJECT TABS ─── */
+        .subproject-tabs {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;
+        }
+        .subproject-tab {
+            font-size: 9px; font-weight: 800; letter-spacing: .25em; text-transform: uppercase;
+            padding: 8px 16px; border: 1px solid var(--border); background: transparent; color: var(--fg2);
+            cursor: pointer; transition: all .2s;
+        }
+        .subproject-tab:hover { border-color: var(--fg); color: var(--fg); }
+        .subproject-tab.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
         /* ─── HERO BRUTALIST ─── */
         #hero-brutalist {
             display: grid; grid-template-columns: 1fr 1fr;
@@ -138,10 +287,7 @@
         body.plm-cursor-enabled #plm-cursor { display: block; }
         #plm-cursor.hover { width: 40px; height: 40px; background: transparent; border: 1.5px solid var(--fg); }
 
-        /* ─── STRIPS ─── */
-        .ca-stripe{position:fixed;top:0;height:100vh;width:24px;pointer-events:none;z-index:800;overflow:hidden;background:var(--bg);border-right:1px solid var(--border);opacity:0.4}
-        .ca-stripe-right{left:auto;right:0;border-right:none;border-left:1px solid var(--border)}
-        @media(max-width:1100px){.ca-stripe{display:none}}
+        /* ─── STRIPS REMOVED ─── */
 
         /* ─── GALLERY ELEMENTS ─── */
         .btn-brutal {
@@ -210,8 +356,7 @@
 </head>
 <body>
     <div id="plm-cursor"></div>
-    <div class="ca-stripe ca-stripe-left"><canvas id="canvas-l"></canvas></div>
-    <div class="ca-stripe ca-stripe-right"><canvas id="canvas-r"></canvas></div>
+    
 
     <nav id="site-nav">
         <a href="/" class="nav-logo" aria-label="PELIMOTION">
@@ -231,20 +376,134 @@
     </nav>
 
     <div id="view-home">
-        <section id="hero-brutalist">
-            <div class="hero-left">
-                <div class="hero-label entrance-mask" data-pt="DIRETOR CRIATIVO & MOTION" data-en="CREATIVE DIRECTOR & MOTION">CREATIVE DIRECTOR & MOTION</div>
-                <h1 class="hero-title entrance-mask">
-                    Selected<br>
-                    <em>works</em><br>
-                    2024—26
-                </h1>
+        <section id="hero-mosaic-container">
+            <div class="mosaic-telemetry-bar">
+                <div class="mosaic-tele-left">
+                    <span class="beacon-dot"></span>
+                    <span data-pt="00 // MOSAICO VIVO • MATRIZ INTERATIVA DE MÍDIA" data-en="00 // LIVE MOSAIC • INTERACTIVE MEDIA MATRIX">00 // LIVE MOSAIC • INTERACTIVE MEDIA MATRIX</span>
+                </div>
+                <div class="mosaic-tele-hint" data-pt="PASSE O MOUSE PARA ACENDER • CLIQUE PARA EXPANDIR" data-en="HOVER TO FOCUS • CLICK TO EXPAND">PASSE O MOUSE PARA ACENDER • CLIQUE PARA EXPANDIR</div>
             </div>
-            <div class="hero-right" onclick="toggleHeroVideo(this)">
-                <canvas id="hero-generative-art"></canvas>
-                <video id="hero-main-vid" class="hero-video" autoplay muted loop playsinline poster="https://pelimotion.b-cdn.net/Medias%20Portfolio/Pelimotion/Institutional/Institutional_CARTAO_10_1920_1080_1.jpg">
-                    <source src="https://pelimotion.b-cdn.net/Medias%20Portfolio/PELIMOTION_WHAT_WE_DO.mp4" type="video/mp4">
-                </video>
+
+            <div class="mosaic-grid" id="hero-mosaic-grid">
+                <!-- Tile 1: GIGANTERA (Widescreen Monumental) -->
+                <div class="mosaic-tile m-tile-1" onclick="openExpandedMosaic(0)" onmouseenter="focusMosaicTile(0)" onmouseleave="unfocusMosaicTile()">
+                    <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg">
+                        <source src="https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4" type="video/mp4">
+                    </video>
+                    <div class="tile-overlay">
+                        <div class="tile-content">
+                            <div class="tile-pill-row">
+                                <span class="tile-format-pill">FLAGSHIP</span>
+                                <span class="tile-tag">21:9 • 50K GPU PARTICLES</span>
+                            </div>
+                            <div class="tile-name">Gigantera <span class="tile-expand-icon">↗</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 2: UNIBRASIL DOOH (Vertical Totem) -->
+                <div class="mosaic-tile m-tile-2" onclick="openExpandedMosaic(1)" onmouseenter="focusMosaicTile(1)" onmouseleave="unfocusMosaicTile()">
+                    <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_vertical_stories.jpg">
+                        <source src="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_vertical_stories.mp4" type="video/mp4">
+                    </video>
+                    <div class="tile-overlay">
+                        <div class="tile-content">
+                            <div class="tile-pill-row">
+                                <span class="tile-format-pill">DOOH</span>
+                                <span class="tile-tag">9:16 VERTICAL TOTEM</span>
+                            </div>
+                            <div class="tile-name">UniBrasil // DOOH <span class="tile-expand-icon">↗</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 3: BMW MOTORSPORT (Cinematic 16:9) -->
+                <div class="mosaic-tile m-tile-3" onclick="openExpandedMosaic(2)" onmouseenter="focusMosaicTile(2)" onmouseleave="unfocusMosaicTile()">
+                    <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.jpg">
+                        <source src="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4#t=26" type="video/mp4">
+                    </video>
+                    <div class="tile-overlay">
+                        <div class="tile-content">
+                            <div class="tile-pill-row">
+                                <span class="tile-format-pill">CGI 3D</span>
+                                <span class="tile-tag">16:9 AUTOMOTIVE</span>
+                            </div>
+                            <div class="tile-name">BMW Motorsport <span class="tile-expand-icon">↗</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 4: FUNKY ROOM (Stage LED 1:1) -->
+                <div class="mosaic-tile m-tile-4" onclick="openExpandedMosaic(3)" onmouseenter="focusMosaicTile(3)" onmouseleave="unfocusMosaicTile()">
+                    <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.jpg">
+                        <source src="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4" type="video/mp4">
+                    </video>
+                    <div class="tile-overlay">
+                        <div class="tile-content">
+                            <div class="tile-pill-row">
+                                <span class="tile-format-pill">STAGE</span>
+                                <span class="tile-tag">1:1 FESTIVAL LED</span>
+                            </div>
+                            <div class="tile-name">Funky Room <span class="tile-expand-icon">↗</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 5: ISLA & PLAYA (Summer Video 4:5) -->
+                <div class="mosaic-tile m-tile-5" onclick="openExpandedMosaic(4)" onmouseenter="focusMosaicTile(4)" onmouseleave="unfocusMosaicTile()">
+                    <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.jpg">
+                        <source src="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4" type="video/mp4">
+                    </video>
+                    <div class="tile-overlay">
+                        <div class="tile-content">
+                            <div class="tile-pill-row">
+                                <span class="tile-format-pill">FESTIVAL</span>
+                                <span class="tile-tag">4:5 AI CINEMA</span>
+                            </div>
+                            <div class="tile-name">Isla &amp; Playa <span class="tile-expand-icon">↗</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 6: SUZANO (Panoramic 2:1) -->
+                <div class="mosaic-tile m-tile-6" onclick="openExpandedMosaic(5)" onmouseenter="focusMosaicTile(5)" onmouseleave="unfocusMosaicTile()">
+                    <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg">
+                        <source src="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4" type="video/mp4">
+                    </video>
+                    <div class="tile-overlay">
+                        <div class="tile-content">
+                            <div class="tile-pill-row">
+                                <span class="tile-format-pill">BRANDING</span>
+                                <span class="tile-tag">2:1 PANORAMIC</span>
+                            </div>
+                            <div class="tile-name">Suzano <span class="tile-expand-icon">↗</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- In-Container Expanded Cinema Player -->
+            <div id="mosaic-expanded-player">
+                <div class="expanded-top-bar">
+                    <div class="expanded-meta">
+                        <div class="expanded-pill-row">
+                            <span class="expanded-pill" id="exp-pill">FLAGSHIP</span>
+                            <span class="expanded-discipline" id="exp-disc">BIOMECHANICAL 3D • SPATIAL AUDIO</span>
+                        </div>
+                        <h2 class="expanded-title" id="exp-title">GIGANTERA // ESPINHAÇO</h2>
+                        <p class="expanded-desc" id="exp-desc">Descrição do projeto expandido.</p>
+                    </div>
+                    <div class="expanded-actions">
+                        <button class="btn-view-project" id="exp-view-btn" onclick="goToProjectFromExpanded()">
+                            <span data-pt="VER PROJETO COMPLETO →" data-en="VIEW FULL PROJECT →">VER PROJETO COMPLETO →</span>
+                        </button>
+                        <button class="btn-close-expanded" onclick="closeExpandedPlayer()">✕ FECHAR</button>
+                    </div>
+                </div>
+                <div class="expanded-screen-frame">
+                    <video id="exp-video" controls autoplay playsinline></video>
+                </div>
             </div>
         </section>
 
@@ -310,6 +569,148 @@
                 .replace(/-+$/, '');
         }
 
+        
+        // ─── HERO MOSAIC CONTROLLER (Interleaving Beacons & In-Place Expansion) ───
+        const MOSAIC_DATA = [
+            {
+                client: "GIGANTERA",
+                pill: "FLAGSHIP • ARTISTIC DIRECTION",
+                discipline: "VIRTUAL PAVILION • BIOMECHANICAL 3D • SPATIAL SOUND",
+                title: "GIGANTERA // ESCULTURA BIOMECÂNICA ESPINHAÇO",
+                desc: "Monumental digital pavilion featuring the real-time hydrodynamic spine 'Espinhaço' (50k GPU points WebGL) and an autoral 17-track modular synthesis electronic album.",
+                desc_pt: "Pavilhão digital colossal apresentando a escultura hidrodinâmica 'Espinhaço' (50k pontos GPU WebGL em tempo real) e álbum autoral com 17 faixas de música eletrônica modular.",
+                video: "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4"
+            },
+            {
+                client: "UNIBRASIL",
+                pill: "DOOH • CAMPUS BRANDING",
+                discipline: "DOOH MULTI-FORMATO • KINETIC TYPE • FILME MASTER",
+                title: "UNIBRASIL // CIRCUITO DOOH & VESTIBULAR 2026",
+                desc: "Comprehensive 360° DOOH and digital admissions campaign adapted across 15 urban LED topologies, TV master film, and kinetic social media with Bad TV signal distortion.",
+                desc_pt: "Campanha 360° de vestibular e DOOH desdobrada em 15 topologias de mídia exterior urbana, filme master de TV e social media cinético com intervenções analógicas de Bad TV.",
+                video: "https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_vertical_stories.mp4"
+            },
+            {
+                client: "BMW",
+                pill: "AUTOMOTIVE CGI",
+                discipline: "HIGH-PRECISION 3D • LIGHTING PHYSICS • INTERFACES",
+                title: "BMW MOTORSPORT // VISUAL SYSTEMS & CGI",
+                desc: "Cinematography and interface systems for high-performance automotive vehicles, exploring light reflection and mathematical speed curves.",
+                desc_pt: "Cinematografia e sistemas de interface para veículos de alta performance, explorando reflexos físicos de luz e curvas matemáticas de velocidade.",
+                video: "https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4#t=26"
+            },
+            {
+                client: "FUNKY ROOM",
+                pill: "STAGE LED • DJ VISUALIZERS",
+                discipline: "FESTIVAL VISUAL IDENTITY • LIVE SCENOGRAPHY",
+                title: "FUNKY ROOM // STAGE SCENOGRAPHY & FNKD UP",
+                desc: "High-energy nightlife visual identity, 3D DJ visualizers, modular LED stage screens, and viral teaser campaigns.",
+                desc_pt: "Identidade visual para festivais de música eletrônica, visualizers 3D para DJs, telões de LED modulares de palco e campanhas de teaser.",
+                video: "https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4"
+            },
+            {
+                client: "ISLA & PLAYA",
+                pill: "SUMMER FESTIVALS & BEACH CLUB",
+                discipline: "EXPERIENTIAL MOTION • AI CINEMATOGRAPHY",
+                title: "ISLA & PLAYA // SUMMER EXPERIENCES",
+                desc: "Coastal summer festival identity, beach club manifesto, and generative drinks cinematography.",
+                desc_pt: "Branding integrado para festivais de verão e beach club, manifesto praiano e cinematografia generativa.",
+                video: "https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4"
+            },
+            {
+                client: "SUZANO",
+                pill: "MOTION BRANDING",
+                discipline: "KINETIC TYPOGRAPHY • 3D CORPORATE SYSTEMS",
+                title: "SUZANO // LETRAS QUE TRANSFORMAM",
+                desc: "Strategic typographic transformation and volumetric letter animations for global bio-industry leader.",
+                desc_pt: "Transformação tipográfica estratégica e animações volumétricas para líder global de bioindústria.",
+                video: "https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4"
+            }
+        ];
+
+        let mosaicBeaconIndex = 0;
+        let mosaicBeaconTimer = null;
+        let isMosaicHovered = false;
+        let currentExpandedClient = null;
+
+        function initHeroMosaic() {
+            startMosaicBeacon();
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeExpandedPlayer();
+            });
+        }
+
+        function startMosaicBeacon() {
+            if (mosaicBeaconTimer) clearInterval(mosaicBeaconTimer);
+            const tiles = document.querySelectorAll('.mosaic-tile');
+            if (!tiles.length) return;
+
+            mosaicBeaconTimer = setInterval(() => {
+                if (isMosaicHovered) return;
+                tiles.forEach((t, i) => {
+                    t.classList.toggle('is-beacon', i === mosaicBeaconIndex);
+                });
+                mosaicBeaconIndex = (mosaicBeaconIndex + 1) % tiles.length;
+            }, 2400);
+        }
+
+        function focusMosaicTile(index) {
+            isMosaicHovered = true;
+            const tiles = document.querySelectorAll('.mosaic-tile');
+            tiles.forEach((t, i) => {
+                t.classList.remove('is-beacon');
+                t.classList.toggle('is-focused', i === index);
+            });
+        }
+
+        function unfocusMosaicTile() {
+            isMosaicHovered = false;
+            const tiles = document.querySelectorAll('.mosaic-tile');
+            tiles.forEach(t => t.classList.remove('is-focused'));
+        }
+
+        function openExpandedMosaic(index) {
+            const data = MOSAIC_DATA[index];
+            if (!data) return;
+            currentExpandedClient = data.client;
+
+            const player = document.getElementById('mosaic-expanded-player');
+            const video = document.getElementById('exp-video');
+            const pill = document.getElementById('exp-pill');
+            const disc = document.getElementById('exp-disc');
+            const title = document.getElementById('exp-title');
+            const desc = document.getElementById('exp-desc');
+
+            pill.textContent = data.pill;
+            disc.textContent = data.discipline;
+            title.textContent = data.title;
+            desc.textContent = (window._PLM_LANG === 'pt' ? data.desc_pt : data.desc) || data.desc;
+
+            video.src = data.video;
+            video.currentTime = 0;
+            video.play().catch(() => {});
+
+            player.classList.add('active');
+        }
+
+        function closeExpandedPlayer() {
+            const player = document.getElementById('mosaic-expanded-player');
+            const video = document.getElementById('exp-video');
+            if (player) player.classList.remove('active');
+            if (video) video.pause();
+        }
+
+        function goToProjectFromExpanded() {
+            closeExpandedPlayer();
+            if (currentExpandedClient) {
+                if (currentExpandedClient === 'GIGANTERA') {
+                    window.open('https://gigantera.xyz/', '_blank');
+                } else {
+                    openGallery(currentExpandedClient);
+                }
+            }
+        }
+
         function handleRouting() {
             const path = window.location.pathname;
             const parts = path.split('/').filter(p => p);
@@ -339,8 +740,7 @@
                 renderHome();
                 initCursor();
                 initScroll();
-                initAutomata('canvas-l');
-                initAutomata('canvas-r');
+                initHeroMosaic();
                 initGenerativeArt();
                 updateUI();
                 handleRouting();
@@ -386,38 +786,7 @@
             });
         }
 
-        function initAutomata(id) {
-            const canvas = document.getElementById(id);
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let w, h, rows, cols, grid;
-            const resize = () => {
-                w = canvas.width = canvas.offsetWidth;
-                h = canvas.height = canvas.offsetHeight;
-                cols = 10; rows = Math.ceil(h / (w/cols));
-                grid = Array.from({length:rows*cols}, () => Math.random() > 0.8 ? 1 : 0);
-            };
-            const draw = () => {
-                ctx.clearRect(0,0,w,h);
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--fg');
-                const cw = w/cols;
-                for(let i=0; i<rows; i++) {
-                    for(let j=0; j<cols; j++) {
-                        if(grid[i*cols+j]) ctx.fillRect(j*cw, i*cw, cw-1, cw-1);
-                    }
-                }
-                let next = [...grid];
-                for(let i=1; i<rows; i++) {
-                    for(let j=0; j<cols; j++) {
-                        const p = (i-1)*cols;
-                        next[i*cols+j] = (grid[p+(j-1+cols)%cols] ^ grid[p+(j+1)%cols]);
-                    }
-                }
-                grid = [...next.slice(cols), ...Array.from({length:cols}, () => Math.random() > 0.95 ? 1 : 0)];
-            };
-            resize(); window.addEventListener('resize', resize);
-            setInterval(draw, 150);
-        }
+        /* initAutomata removed */
 
         /* ─── GENERATIVE ART LOADER ─── */
         function initGenerativeArt() {
@@ -697,7 +1066,7 @@
             observeMasks();
         }
 
-        function openGallery(name) {
+        function openGallery(name, isInitialRoute, activeCategory) {
             const client = plmContent.clients[name];
             if(!client) return;
             
@@ -711,23 +1080,43 @@
             const grid = document.getElementById('gallery-grid');
             let html = '';
             
-            // Collect all media for the playlist
             const rootMedia = client.media?.root || [];
-            rootMedia.forEach((m, idx) => {
+            const cats = client.media?.categories || {};
+            const catNames = Object.keys(cats);
+
+            // Subproject filter tabs if categories exist
+            let tabsHtml = '';
+            if (catNames.length > 0) {
+                tabsHtml += '<div class="subproject-tabs">';
+                const isAllActive = !activeCategory || activeCategory === 'ALL';
+                tabsHtml += `<button class="subproject-tab ${isAllActive ? 'active' : ''}" onclick="openGallery('${name}', true, 'ALL')">TODOS / ALL (${rootMedia.length})</button>`;
+                catNames.forEach(cName => {
+                    const isActive = activeCategory === cName;
+                    const cItems = cats[cName] || [];
+                    tabsHtml += `<button class="subproject-tab ${isActive ? 'active' : ''}" onclick="openGallery('${name}', true, '${cName}')">${cName} (${cItems.length})</button>`;
+                });
+                tabsHtml += '</div>';
+            }
+
+            // Filter items based on activeCategory
+            let itemsToRender = [];
+            if (!activeCategory || activeCategory === 'ALL' || catNames.length === 0) {
+                itemsToRender = rootMedia;
+            } else {
+                const catEntries = cats[activeCategory] || [];
+                // catEntries might be indices or objects
+                itemsToRender = catEntries.map(entry => {
+                    if (typeof entry === 'number') return rootMedia[entry];
+                    return entry;
+                }).filter(Boolean);
+            }
+
+            itemsToRender.forEach((m, idx) => {
                 currentPlaylist.push({...m, index: currentPlaylist.length});
                 html += renderMediaCard(m, currentPlaylist.length - 1);
             });
             
-            const cats = client.media?.categories || {};
-            Object.entries(cats).forEach(([catName, items]) => {
-                html += `<div class="grid-span-all" style="grid-column:1/-1; margin-top:40px; border-bottom:1.5px solid var(--border); padding-bottom:10px; font-size:12px; font-weight:900; color:var(--fg3)">${catName}</div>`;
-                items.forEach(m => {
-                    currentPlaylist.push({...m, index: currentPlaylist.length});
-                    html += renderMediaCard(m, currentPlaylist.length - 1);
-                });
-            });
-            
-            grid.innerHTML = html;
+            grid.innerHTML = tabsHtml + html;
             
             document.getElementById('view-home').style.display = 'none';
             const gallery = document.getElementById('view-gallery');
@@ -738,6 +1127,8 @@
             if (!arguments[1]) {
                 const newPath = '/portfolio/' + slugify(name);
                 history.pushState({view: 'gallery', client: name}, '', newPath);
+            }
+        }, '', newPath);
             }
         }
 

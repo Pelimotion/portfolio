@@ -175,23 +175,117 @@ section { width: 100%; border-top: 1px solid var(--border); }
 .brand-tag { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; border: 1px solid var(--border); padding: 6px 12px; color: var(--fg2); transition: all .2s; }
 .brand-tag:hover { border-color: var(--fg); color: var(--fg); }
 
-/* ── PORTFOLIO SECTION & FLAGSHIP ── */
+/* ── PORTFOLIO SECTION & EDITORIAL BRUTALIST ASYMMETRIC GRID ── */
 #portfolio-link { padding: 6rem 0; }
-.port-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-.port-card { position: relative; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16/9; cursor: pointer; text-decoration: none; display: block; background: #000; }
-.port-card video, .port-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
-.port-card:hover video, .port-card:hover img { transform: scale(1.04); }
-.port-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--overlay-bg) 0%, transparent 60%); z-index: 1; display: flex; align-items: flex-end; padding: 2rem; transition: background .3s; }
-.port-card:hover .port-card-overlay { background: linear-gradient(to top, var(--overlay-bg) 0%, rgba(10,10,10,0.1) 60%); }
-.port-card-content { z-index: 2; position: relative; width: 100%; }
-.port-tag { font-size: 8px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); margin-bottom: .5rem; }
-.port-name { font-size: 1.4rem; font-weight: 900; letter-spacing: -.02em; color: var(--fg); display: flex; align-items: center; gap: .75rem; }
+.port-inner { 
+    display: grid; 
+    grid-template-columns: repeat(12, 1fr); 
+    gap: 1.75rem; 
+}
+.port-card { 
+    position: relative; 
+    overflow: hidden; 
+    border: 1px solid var(--border); 
+    cursor: pointer; 
+    text-decoration: none; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: flex-end; 
+    background: #000; 
+    /* Matte entrance clip-path animation */
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.8s ease, 
+                transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color .3s;
+}
+.port-card.revealed {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: translateY(0);
+}
+.port-card:hover {
+    border-color: var(--fg);
+}
+
+/* Aspect ratios & column spans */
+.port-span-12 { grid-column: span 12; aspect-ratio: 21/9; }
+.port-span-7 { grid-column: span 7; aspect-ratio: 16/9; }
+.port-span-5 { grid-column: span 5; }
+.port-span-6 { grid-column: span 6; aspect-ratio: 16/9; }
+.port-aspect-vertical { aspect-ratio: 9/16; }
+.port-aspect-fashion { aspect-ratio: 4/5; }
+.port-aspect-cinematic { aspect-ratio: 16/9; }
+
+@media (max-width: 960px) {
+    .port-inner { grid-template-columns: 1fr; }
+    .port-span-12, .port-span-7, .port-span-5, .port-span-6 { grid-column: span 1 !important; }
+    .port-aspect-vertical { aspect-ratio: 16/9 !important; }
+}
+
+.port-card video, .port-card img { 
+    position: absolute; 
+    inset: 0; 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    filter: grayscale(0.5) contrast(1.05); 
+    transition: transform .7s cubic-bezier(0.16, 1, 0.3, 1), filter .6s ease; 
+}
+.port-card:hover video, .port-card:hover img { 
+    transform: scale(1.03); 
+    filter: grayscale(0) contrast(1.1); 
+}
+
+/* Vector Trim-Path Stroke */
+.port-trimpath-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.15;
+    transition: opacity .4s ease;
+}
+.port-trimpath-svg rect {
+    stroke: var(--fg);
+    stroke-width: 2px;
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.port-card:hover .port-trimpath-svg {
+    opacity: 0.9;
+}
+.port-card:hover .port-trimpath-svg rect {
+    stroke-dashoffset: var(--trim-offset, 0);
+}
+
+.port-card-overlay { 
+    position: absolute; 
+    inset: 0; 
+    background: linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.2) 50%, transparent 80%); 
+    z-index: 2; 
+    display: flex; 
+    align-items: flex-end; 
+    padding: 2rem; 
+    transition: background .3s; 
+}
+html[data-theme="light"] .port-card-overlay {
+    background: linear-gradient(to top, rgba(245,244,240,0.95) 0%, rgba(245,244,240,0.3) 50%, transparent 80%);
+}
+.port-card-content { z-index: 3; position: relative; width: 100%; }
+.port-pill-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: .6rem; }
+.port-flagship-pill { font-size: 8px; font-weight: 900; letter-spacing: .3em; text-transform: uppercase; background: var(--fg); color: var(--bg); padding: 3px 8px; display: inline-block; }
+.port-format-badge { font-size: 8px; font-weight: 800; letter-spacing: .25em; text-transform: uppercase; border: 1px solid var(--border); padding: 2px 7px; color: var(--fg2); background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); }
+.port-tag { font-size: 8px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); margin-bottom: .4rem; }
+.port-name { font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 900; letter-spacing: -.02em; color: var(--fg); display: flex; align-items: center; gap: .75rem; text-transform: uppercase; }
 .port-arrow { transition: transform .3s; }
 .port-card:hover .port-arrow { transform: translateX(6px); }
-.port-full { grid-column: 1/-1; aspect-ratio: 21/7; }
-.port-flagship-pill { font-size: 8px; font-weight: 900; letter-spacing: .3em; text-transform: uppercase; background: var(--fg); color: var(--bg); padding: 3px 8px; display: inline-block; }
-.port-pill-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: .5rem; }
-.port-desc { font-size: 12px; color: var(--fg2); line-height: 1.6; max-width: 650px; margin-top: .4rem; }
+.port-desc { font-size: 11px; color: var(--fg2); line-height: 1.6; max-width: 600px; margin-top: .4rem; }
 .section-header-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; }
 .section-label { font-size: 9px; font-weight: 700; letter-spacing: .4em; text-transform: uppercase; color: var(--fg3); }
 .section-link { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: border-color .2s; }
@@ -439,8 +533,9 @@ section { width: 100%; border-top: 1px solid var(--border); }
       <a href="/portfolio" class="section-link" data-en="View More Projects →" data-pt="Ver Mais Projetos →">View More Projects →</a>
     </div>
     <div class="port-inner">
-      <!-- FLAGSHIP PROJECT: GIGANTERA -->
-      <a href="https://gigantera.xyz/" target="_blank" class="port-card port-full reveal" style="transition-delay:.05s">
+      <!-- 01 // FLAGSHIP PROJECT: GIGANTERA (Full Width 12-col Panoramic) -->
+      <a href="https://gigantera.xyz/" target="_blank" class="port-card port-span-12 port-matte-item" style="transition-delay:.05s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
         <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg">
           <source src="https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4" type="video/mp4">
         </video>
@@ -448,6 +543,7 @@ section { width: 100%; border-top: 1px solid var(--border); }
           <div class="port-card-content">
             <div class="port-pill-row">
               <span class="port-flagship-pill" data-en="FLAGSHIP • ARTISTIC DIRECTION" data-pt="FLAGSHIP • DIREÇÃO ARTÍSTICA">FLAGSHIP • DIREÇÃO ARTÍSTICA</span>
+              <span class="port-format-badge">21:9 CINEMATIC • 50K GPU PARTICLES</span>
               <span class="port-tag">Virtual Pavilion • Biomechanical 3D • Spatial Sound</span>
             </div>
             <div class="port-name">Gigantera <span class="port-arrow">↗</span></div>
@@ -458,36 +554,125 @@ section { width: 100%; border-top: 1px solid var(--border); }
         </div>
       </a>
 
-      <a href="/portfolio/funky-room" class="port-card port-full reveal" style="transition-delay:.05s">
-        <video autoplay loop muted playsinline>
-          <source src="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4" type="video/mp4">
+      <!-- 02 // UNIBRASIL ASYMMETRIC DUO: Vertical Totem (5-col) + Master Film (7-col) -->
+      <a href="/portfolio/unibrasil" class="port-card port-span-5 port-aspect-vertical port-matte-item" style="transition-delay:.1s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
+        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_vertical_stories.jpg">
+          <source src="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_vertical_stories.mp4" type="video/mp4">
         </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
-            <div class="port-tag">Visual Systems · Stage Direction</div>
-            <div class="port-name">Funky Room <span class="port-arrow">→</span></div>
+            <div class="port-pill-row">
+              <span class="port-format-badge">9:16 VERTICAL TOTEM</span>
+              <span class="port-tag">DOOH &amp; Social</span>
+            </div>
+            <div class="port-name">UniBrasil // DOOH <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="Vertical urban circuit &amp; admissions teasers with kinetic typography." data-pt="Circuito de totens urbanos verticais e teasers com tipografia cinética.">Circuito de totens urbanos verticais e teasers com tipografia cinética.</p>
           </div>
         </div>
       </a>
-      <a href="/portfolio/suzano" class="port-card reveal" style="transition-delay:.1s">
-        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg">
-          <source src="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4" type="video/mp4">
+
+      <a href="/portfolio/unibrasil" class="port-card port-span-7 port-aspect-cinematic port-matte-item" style="transition-delay:.15s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
+        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.jpg">
+          <source src="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.mp4" type="video/mp4">
         </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
-            <div class="port-tag">Motion Branding</div>
-            <div class="port-name">Suzano <span class="port-arrow">→</span></div>
+            <div class="port-pill-row">
+              <span class="port-format-badge">16:9 MASTER VT</span>
+              <span class="port-tag">Campus Branding • TV &amp; Digital</span>
+            </div>
+            <div class="port-name">UniBrasil // Master 2026 <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="Complete 360° motion branding campaign adapted across 15 urban media formats." data-pt="Campanha 360° de motion branding desdobrada em 15 formatos de mídia exterior e TV.">Campanha 360° de motion branding desdobrada em 15 formatos de mídia exterior e TV.</p>
           </div>
         </div>
       </a>
-      <a href="/portfolio/bmw" class="port-card reveal" style="transition-delay:.15s">
+
+      <!-- 03 // BMW MOTORSPORT (7-col) + COLCCI FASHION CGI (5-col) -->
+      <a href="/portfolio/bmw" class="port-card port-span-7 port-aspect-cinematic port-matte-item" style="transition-delay:.2s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
         <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.jpg">
           <source src="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4#t=26" type="video/mp4">
         </video>
         <div class="port-card-overlay">
           <div class="port-card-content">
-            <div class="port-tag">Brand Systems · Motion</div>
-            <div class="port-name">BMW <span class="port-arrow">→</span></div>
+            <div class="port-pill-row">
+              <span class="port-format-badge">16:9 CGI CINEMATOGRAPHY</span>
+              <span class="port-tag">Automotive • 3D Systems</span>
+            </div>
+            <div class="port-name">BMW Motorsport <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="High-precision automotive CGI, lighting physics, and interface systems." data-pt="CGI automotivo de alta precisão, física de luz e sistemas cinéticos de interface.">CGI automotivo de alta precisão, física de luz e sistemas cinéticos de interface.</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="/portfolio/colcci" class="port-card port-span-5 port-aspect-fashion port-matte-item" style="transition-delay:.25s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
+        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Colcci/Colcci_ALTA_1080x1920_CENA%2002%20-%20PREVIEW.jpg">
+          <source src="https://pelimotion-portfolio.b-cdn.net/Colcci/Colcci_ALTA_1080x1920_CENA%2002.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-pill-row">
+              <span class="port-format-badge">4:5 FASHION EDITORIAL</span>
+              <span class="port-tag">Fashion • Runway Motion</span>
+            </div>
+            <div class="port-name">Colcci <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="High-fashion kinetic typography and luxury visual pacing." data-pt="Tipografia cinética de alta moda e ritmo visual de luxo.">Tipografia cinética de alta moda e ritmo visual de luxo.</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- 04 // FUNKY ROOM (6-col) + ISLA & PLAYA (6-col) -->
+      <a href="/portfolio/funky-room" class="port-card port-span-6 port-aspect-cinematic port-matte-item" style="transition-delay:.3s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
+        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.jpg">
+          <source src="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-pill-row">
+              <span class="port-format-badge">STAGE LED • 3D DJ SYSTEM</span>
+              <span class="port-tag">Electronic Music • Live Scenography</span>
+            </div>
+            <div class="port-name">Funky Room <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="Complete event visual identity, modular LED screens, and teaser campaigns." data-pt="Identidade visual para festival, telas de LED modulares e campanhas de teaser.">Identidade visual para festival, telas de LED modulares e campanhas de teaser.</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="/portfolio/isla-playa" class="port-card port-span-6 port-aspect-cinematic port-matte-item" style="transition-delay:.35s">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
+        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.jpg">
+          <source src="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-pill-row">
+              <span class="port-format-badge">SUMMER FESTIVALS &amp; CLUB</span>
+              <span class="port-tag">Experiential • AI Cinema</span>
+            </div>
+            <div class="port-name">Isla &amp; Playa <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="Coastal summer festival branding, beach club manifesto, and generative drinks cinematography." data-pt="Branding para festivais de verão, manifesto praiano e cinematografia generativa.">Branding para festivais de verão, manifesto praiano e cinematografia generativa.</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- 05 // SUZANO (12-col Full Panorama) -->
+      <a href="/portfolio/suzano" class="port-card port-span-12 port-matte-item" style="transition-delay:.4s; aspect-ratio: 21/7;">
+        <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
+        <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg">
+          <source src="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4" type="video/mp4">
+        </video>
+        <div class="port-card-overlay">
+          <div class="port-card-content">
+            <div class="port-pill-row">
+              <span class="port-format-badge">21:7 PANORAMIC • BRAND SYSTEM</span>
+              <span class="port-tag">Corporate • 3D Motion</span>
+            </div>
+            <div class="port-name">Suzano // Letras que Transformam <span class="port-arrow">→</span></div>
+            <p class="port-desc" data-en="Strategic typographic transformation and volumetric letter animations for global bio-industry leader." data-pt="Transformação tipográfica estratégica e animações volumétricas para líder global do setor.">Transformação tipográfica estratégica e animações volumétricas para líder global do setor.</p>
           </div>
         </div>
       </a>
@@ -665,6 +850,30 @@ function toggleLanguage() {
 
 document.addEventListener('DOMContentLoaded', () => {
   applyLang(window._PLM_LANG);
+
+  // ── PORTFOLIO MATTE REVEAL & REACTIVE VECTOR TRIM-PATH ──
+  const portObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        portObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.port-matte-item').forEach(el => portObserver.observe(el));
+
+  document.querySelectorAll('.port-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      const angle = Math.atan2(y - 0.5, x - 0.5);
+      const normalized = (angle + Math.PI) / (Math.PI * 2);
+      const offset = Math.round(normalized * 800);
+      card.style.setProperty('--trim-offset', `${offset}px`);
+    }, { passive: true });
+  });
 });
 
 // ── HERO REACTIVE LYSÈRGIC BRUTALIST CANVAS (80/80 ACCENTED KINETIC CURVES) ──
