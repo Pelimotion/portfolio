@@ -60,6 +60,34 @@
   ],
   "rewrites": [
     {
+      "source": "/bora",
+      "destination": "/bora/index.html"
+    },
+    {
+      "source": "/bora/",
+      "destination": "/bora/index.html"
+    },
+    {
+      "source": "/bora/:path*",
+      "destination": "/bora/:path*"
+    },
+    {
+      "source": "/talk",
+      "destination": "/bora/index.html"
+    },
+    {
+      "source": "/talk/",
+      "destination": "/bora/index.html"
+    },
+    {
+      "source": "/talk/:path*",
+      "destination": "/bora/:path*"
+    },
+    {
+      "source": "/LOGO.ico",
+      "destination": "/logo.ico"
+    },
+    {
       "source": "/ads",
       "destination": "/ads/index.html"
     },

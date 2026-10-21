@@ -19,9 +19,10 @@ O ecossistema **Pelimotion** opera como uma arquitetura de múltiplos subprojeto
         ▼                 ▼                             ▼                 ▼
  [ Vercel Edge ]   [ Serverless API ]            [ Bunny Edge BR/DE/NY ] [ Storage Zone ]
   - index.html      - /api/config                 - .mp4 streaming        - High-res Stills
-  - gigantera/      - /api/bunny/scan             - .mp3 range 206        - 17 Full Audio Tracks
-  - admin/          - /api/send-briefing          - ffmpeg-core.wasm      - 17 Audio Previews
-  - blog/           - /api/upload-frame           - 3D textures           - Video Loops
+  - /bora (Intake)  - /api/bunny/scan             - .mp3 range 206        - 17 Full Audio Tracks
+  - gigantera/      - /api/send-briefing          - ffmpeg-core.wasm      - 17 Audio Previews
+  - admin/          - /api/upload-frame           - 3D textures           - Video Loops
+  - blog/
         │
         ▼
  [ Supabase PostgreSQL ]
@@ -31,15 +32,38 @@ O ecossistema **Pelimotion** opera como uma arquitetura de múltiplos subprojeto
 
 ---
 
-## 2. Gigantera: Arquitetura do Pavilhão 3D & Motor WebGL
+## 2. Módulo `/bora`: Intake de Briefing, Black Neumorphism & Desacoplamento de Preço
+
+O módulo `/bora` (`pelimotion.art/bora`) foi construído para atuar como o canal de entrada primário de novos clientes e comissões do estúdio, substituindo páginas de contato estáticas convencionais por um **motor conversacional e de escopo estruturado**.
+
+### 2.1 Princípios de Design & Engenharia do `/bora`
+1. **Desacoplamento de Preço Público:**
+   - A ferramenta **não exibe preços finais nem simulações monetárias públicas**, evitando ancoragens indevidas e permitindo que o Felipe formule orçamentos sob medida a partir da análise técnica de cada demanda.
+2. **Geração Criptográfica de Protocolo (`BORA-26-XXXX`):**
+   - Ao iniciar a sessão, o motor gera um identificador único de protocolo.
+   - Esse protocolo é gravado no assunto do e-mail disparado para `conceicao.felipe@gmail.com` e anexado automaticamente na mensagem do WhatsApp.
+3. **Fluxo de Saída Dupla (Dual Exit Strategy):**
+   - **Opção 1 (WhatsApp Imediato):** Transfere o usuário para o chat com o protocolo já preenchido. O diretor de criação busca o protocolo no e-mail e localiza o formulário completo em menos de 1 segundo.
+   - **Opção 2 (Aguardar E-mail):** Confirmação instantânea com cópia do código e garantia de resposta em até 2 horas úteis.
+4. **Black Neumorphism & Zero Color Noise:**
+   - Paleta monocromática em obsidiana (`#08080a`, `#0e0e12`, `#131318`).
+   - Sombras esculpidas suaves (`box-shadow: 8px 8px 24px rgba(0,0,0,0.75), -6px -6px 20px rgba(255,255,255,0.025)`).
+   - Entradas cavadas em relevo baixo (`box-shadow: inset 4px 4px 10px rgba(0,0,0,0.85)`).
+   - Texturas de marca oficiais (`assets/patterns/pattern01_web.jpg`) em marca d'água a 4% de opacidade com `mix-blend-mode: screen`.
+5. **Web Audio API Haptics:**
+   - Sintetizador harmônico senoidal nativo (osciladores a 380Hz, 440Hz, 520Hz) que fornece resposta tátil sonora a cliques e trocas de abas, sem bibliotecas pesadas de áudio.
+
+---
+
+## 3. Gigantera: Arquitetura do Pavilhão 3D & Motor WebGL
 
 O subprojeto `/gigantera` é uma Single Page Application construída com **React 19 + TypeScript + Vite + Three.js**.
 
-### 2.1 Pipeline de Renderização 3D (`GalleryScene3D.tsx`)
+### 3.1 Pipeline de Renderização 3D (`GalleryScene3D.tsx`)
 1. **WebGLRenderer:**
    - Modo `antialias: true` e `alpha: false` para performance ideal.
    - Gerenciamento dinâmico de DPI com base no perfil de qualidade gráfica:
-     - `high` (RTX Full): Pixel ratio até 1.6x, sombras suaves tipo `PCFSoftShadowMap` (tipo 2), névoa volumétrica e feixes de luz ativos.
+     - `high`: Pixel ratio até 1.6x, sombras suaves tipo `PCFSoftShadowMap` (tipo 2), névoa volumétrica e feixes de luz ativos.
      - `med`: Pixel ratio até 1.25x, sombras básicas (`PCFShadowMap`), névoa atenuada.
      - `light`: Pixel ratio 1.0x, sombras desabilitadas para dispositivos de baixo consumo.
 2. **Sistema de Câmera & Projeção:**
@@ -49,24 +73,24 @@ O subprojeto `/gigantera` é uma Single Page Application construída com **React
    - Materiais físicos (`MeshPhysicalMaterial`) com transmissão óptica de 92%, aspereza superficial (`roughness: 0.08`) e índice de refração realista (`ior: 1.48`).
    - Pôsteres internos texturizados mapeando impressões de arte giclée em proporções dinâmicas (9:16 vertical e 16:9 widescreen).
 
-### 2.2 Viewmodel 3D em Primeira Pessoa (`CDViewmodel3D.ts`)
+### 3.2 Viewmodel 3D em Primeira Pessoa (`CDViewmodel3D.ts`)
 Para garantir que a mão do jogador e o estojo de CD em acrílico nunca entrem em conflito geométrico (*clipping*) com as paredes e pilares de concreto da galeria:
 - O estojo é renderizado em um grupo filho acoplado diretamente à matriz da câmera (`camera.add(this.rootGroup)`).
-- **Mão Poligonal Procedural:** Geometria de mão estilizada low-poly facetada (`flatShading: true`), conferindo identidade autoral que remete à era clássica dos consoles de 32/128-bits (PS1/PS2).
+- **Mão Poligonal Procedural:** Geometria de mão estilizada low-poly facetada (`flatShading: true`), conferindo identidade autoral.
 - **Contracapa Renderizada em Canvas 2D Dinâmico:** Um canvas 1024x1024 gera proceduralmente o layout gráfico do verso do encarte com tipografia monoespelhada, tempos de faixa, BPMs e código de barras, atualizado como textura `THREE.CanvasTexture`.
 - **Física de Balanço (Bobbing & Inertia):** Interpolação esférica (SLERP) suaviza as guinadas do mouse com amortecimento inercial.
 
-### 2.3 Motor de Física e Movimento (`playerController.ts`)
+### 3.3 Motor de Física e Movimento (`playerController.ts`)
 - **Cinemática FPS:** Vetores de velocidade com aceleração (`lerp`), velocidade máxima para caminhada (4.2 m/s) e corrida com Shift (7.0 m/s), desaceleração por atrito e colisores no perímetro do salão (`playerBounds`).
-- **Suporte Mobile e Giroscópio:** Detecção automática de dispositivos touch. Integração com `DeviceOrientationEvent` (iOS e Android) para controle por movimento de inclinação do aparelho, além de navegação táctil via *Stepper Glide* que calcula vetores suaves até os pontos de observação (*viewing spots*).
+- **Suporte Mobile e Giroscópio:** Detecção automática de dispositivos touch. Integração com `DeviceOrientationEvent` (iOS e Android) para controle por inclinação, além de navegação táctil via *Stepper Glide*.
 
 ---
 
-## 3. Web Audio API & Sound Engine (`soundEngine.ts`)
+## 4. Web Audio API & Sound Engine (`soundEngine.ts`)
 
-A experiência sonora de Gigantera é um componente curatorial de primeira classe que opera em paralelo ao canvas WebGL.
+A experiência sonora de Gigantera e do Pelimotion Studio é um componente curatorial de primeira classe que opera em paralelo ao canvas WebGL.
 
-### 3.1 Grafo de Áudio (Audio Graph Topology)
+### 4.1 Grafo de Áudio (Audio Graph Topology)
 ```
 [ HTMLAudioElement (Bunny CDN .mp3) ]
                  │
@@ -86,7 +110,7 @@ A experiência sonora de Gigantera é um componente curatorial de primeira class
        [ AudioContext Destination ]
 ```
 
-### 3.2 Características Cruciais da Implementação:
+### 4.2 Características Cruciais da Implementação:
 1. **Streaming com Byte-Range (HTTP 206):**
    - O elemento de áudio utiliza `crossOrigin = 'anonymous'`, permitindo conexão direta com o analisador de frequência da Web Audio API sem restrições de CORS.
    - Requisições com cabeçalho `Range: bytes=0-` baixam apenas blocos necessários, eliminando atrasos de buffering.
@@ -96,16 +120,14 @@ A experiência sonora de Gigantera é um componente curatorial de primeira class
 3. **Acoustic Heat Haze (Partículas de Distorção de Ar):**
    - O `analyserNode` extrai energia em tempo real nas faixas de graves e sub-graves.
    - O valor de energia modula a escala e pulsação dos cones das caixas acústicas e a opacidade dos anéis de névoa de calor, criando a ilusão física de pressão sonora no ambiente 3D.
-4. **Curva de Atenuação Exponencial:**
-   - Conforme o jogador se afasta da estação de áudio (Z = +20m) em direção aos setores de vídeo (Z = -22m), o volume diminui suavemente até silenciar, permitindo que os áudios das obras cinéticas assumam o primeiro plano sem cacofonia.
 
 ---
 
-## 4. Arquitetura de Mídia & Bunny.net CDN
+## 5. Arquitetura de Mídia & Bunny.net CDN
 
 Para contornar o limite de **10 GB de Fast Origin Transfer** da Vercel Hobby, 100% dos arquivos de mídia pesada e binários WebAssembly foram desacoplados da hospedagem estática.
 
-### 4.1 Mapeamento de Zonas e Endpoints
+### 5.1 Mapeamento de Zonas e Endpoints
 - **Storage Zone:** `pelimotion-portfolio` (Região: Nova York / Frankfurt com replicação global)
 - **Pull Zone CDN:** `https://pelimotion-portfolio.b-cdn.net/`
 - **Tabela de Ativos Hospedados:**
@@ -118,14 +140,16 @@ Para contornar o limite de **10 GB de Fast Origin Transfer** da Vercel Hobby, 10
 | **Vídeos Cinéticos em Loop** | `/gigantera/videos/*.mp4` | `public, max-age=2592000` + HTTP 206 |
 | **Motor FFmpeg WebAssembly** | `/ffmpeg/ffmpeg-core.wasm` (32 MB) | `public, max-age=2592000` + CORS liberado |
 
-### 4.2 Blindagem do Build & Deploy Vercel
+### 5.2 Blindagem do Build & Deploy Vercel
 O arquivo `.vercelignore` impede rigorosamente que diretórios e arquivos pesados sejam transferidos no momento do deploy:
 ```gitignore
+_BACKUP_PARA_REMOVER/
+_BACKUP*/
+Site Antigo/
+Medias Portfolio/
 assets/ffmpeg/
 ffmpeg_assets/
 gigantera/works/audio/
-gigantera/public/works/audio/
-gigantera/dist/works/audio/
 *.wasm
 *.mp3
 *.mp4
@@ -135,20 +159,7 @@ Resultado: **Redução do payload de deploy de 149 MB para ~17 MB**, com build e
 
 ---
 
-## 5. Gestão de Estado Global (`store.ts`)
-
-A aplicação utiliza **Zustand** para gerenciamento de estado previsível e desacoplado do ciclo de vida dos componentes React.
-
-### 5.1 Principais Slices de Estado:
-- **Navegação Espacial:** `cameraTargetZ`, `cameraCurrentZ`, `activeSectorId` (`entrance-audio`, `still`, `video`), `currentArtworkIndex`.
-- **Inspeção & Cinema:** `cinemaArtwork`, `inspectionZoom` (0.5x a 3.5x), `isLoupeMode` (zoom de ampliação a 2.8x com coordenadas de cursor), `stillArtworksList`, `currentStillSheetIndex`.
-- **Acoustic POV:** `isHoldingCD`, `isCDPOVOpen`, `cdFlipped`, `currentAudioTrack`, `isAudioPlaying`, `soundVolume`.
-- **Ajustes de Renderização:** `graphicsQuality` (`light`, `med`, `high`), `theme` (`dark`, `light`).
-- **Mobile & Telemetria:** `isMobile`, `isGyroscopeActive`, `targetGlideSpot`.
-
----
-
-## 6. Procedimento para Novos Desenvolvedores Assumirem o Projeto
+## 6. Procedimento para Novos Desenvolvedores
 
 ### Passo 1: Clonar e Instalar
 ```bash
@@ -159,13 +170,18 @@ cd gigantera && npm install && cd ..
 
 ### Passo 2: Executar em Modo Dev
 ```bash
-cd gigantera
-npm run dev
-# Abra http://localhost:5173/gigantera/
+# Executar subprojeto Gigantera 3D
+cd gigantera && npm run dev
+
+# Ou executar servidor estático na raiz
+npx serve .
 ```
 
-### Passo 3: Adicionar Nova Obra ao Catálogo
-1. Suba a imagem/vídeo em alta resolução para o Storage da Bunny.net (`gigantera/stills/` ou `gigantera/videos/`).
-2. Adicione o objeto correspondente no array `ARTWORKS_CATALOG` em `gigantera/src/data/artworks.ts`.
-3. Defina as coordenadas espaciais `spatialCoords: { x, y, z, rotY }` onde a vitrine deve flutuar no salão 3D.
-4. Rode `npm run build` dentro de `gigantera/` e faça o commit. O deploy entrará no ar em menos de 1 minuto.
+### Passo 3: Build de Produção
+```bash
+npm run build
+# Compila e empacota todos os subprojetos para dist/
+```
+
+---
+*Pelimotion — Creative Engineering & Spatial Art Direction.*

@@ -17,6 +17,14 @@ const itemsToCopy = [
   'logo.png',
   'logo.svg',
   'logo.ico',
+  'LOGO.ico',
+  'PLM_SIMBOLO_BRANCO.png',
+  'PLM_SIMBOLO_PRETO.png',
+  'PLM_SIMBOLO_REDUZIDO_BRANCO.png',
+  'PLM_SIMBOLO_REDUZIDO_PRETO.png',
+  'talk',
+  'bora',
+  'projetos',
   'briefing',
   'admin',
   'ads',
@@ -28,7 +36,7 @@ const itemsToCopy = [
   'shared',
   'en',
   'legacy',
-  'gigantera'
+  'site-content.json'
 ];
 
 function deleteFolderRecursive(dirPath) {

@@ -53,20 +53,20 @@
         "href": "Curriculum/index.html"
       }
     ],
-    "footerText": "© 2026 Pelimotion",
-    "aboutTitle": "Motion as a <em>strategic</em> language.",
+    "footerText": "© 2026 Pelimotion Hub — Rio de Janeiro",
+    "aboutTitle": "Headquartered in <em>Rio de Janeiro</em>.<br>Visual systems built for those who set the pace.",
     "contactTitle": "Open to direction, <em>collaborations</em> and long-form briefs.",
-    "contactSub": "Based in Rio de Janeiro. Working globally.",
-    "brandName_pt": "HUB",
+    "contactSub": "Physically based in Rio de Janeiro. Operating globally.",
+    "brandName_pt": "Peli<em>motion</em>",
     "brandSub_pt": "Motion Branding & Direção Criativa",
-    "aboutTitle_pt": "Motion como <em>linguagem</em> estratégica.",
+    "aboutTitle_pt": "Sediados no <em>Rio de Janeiro</em>.<br>Sistemas visuais para quem dita o ritmo.",
     "contactTitle_pt": "Aberto a direção, <em>colaborações</em> e projetos de longo prazo.",
-    "contactSub_pt": "Baseado no Rio. Atuação global.",
-    "footerText_pt": "Motion Branding & Direção Criativa",
-    "aboutParagraph1": "",
-    "aboutParagraph1_pt": "",
-    "aboutParagraph2": "",
-    "aboutParagraph2_pt": ""
+    "contactSub_pt": "Sediados fisicamente no Rio de Janeiro. Atuação global.",
+    "footerText_pt": "© 2026 Pelimotion Hub — Rio de Janeiro",
+    "aboutParagraph1": "Today physically based in Rio de Janeiro, we combine the tactile rhythmic pulse and spatial intensity of the city with the surgical rigor of high-end international art direction. We operate as an elite motion atelier for visionary brands — designing how visual identities move, collide, and resonate across physical, digital, and stage spaces.",
+    "aboutParagraph1_pt": "Hoje sediados fisicamente no Rio de Janeiro, unimos a pulsação rítmica e a intensidade sensorial carioca ao rigor cirúrgico da direção de arte internacional. Operamos como um ateliê de motion e CGI de alta precisão para marcas que recusam o genérico — projetando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.",
+    "aboutParagraph2": "Our musical roots govern every motion curve: millimetric pacing, weight, brutalist contrast, and deliberate silence. Pelimotion directs global brand systems, live spatial projections, CGI product films, and AI-integrated generative video pipelines for the automotive, financial, fashion, and cultural sectors.",
+    "aboutParagraph2_pt": "Nossa formação na música clássica e experimental molda cada curva de movimento: cadência milimétrica, peso, contraste brutalista e silêncios calculados. A Pelimotion dirige sistemas globais de marca, projeções espaciais ao vivo, filmes CGI de produto e pipelines generativos integrados a IA para os setores automotivo, financeiro, moda e alta cultura."
   },
   "portfolio": {
     "heroName": "PELIMOTION",
@@ -86,6 +86,102 @@
     "footerQuote2_pt": "Sistematize o movimento. Eleve o branding."
   },
   "clients": {
+    "GIGANTERA": {
+      "slug": "gigantera",
+      "displayName": "GIGANTERA",
+      "description": "Monumental virtual pavilion bridging biomechanical sculpture, hydrodynamics, and fine art. Real-time GPU particle simulation and 17-track modular synthesis album.",
+      "description_pt": "Pavilhão virtual monumental unindo escultura biomecânica, hidrodinâmica e arte contemporânea. Simulação de partículas GPU em tempo real e álbum modular com 17 faixas.",
+      "tags": ["ART_DIRECTION", "SPATIAL_3D", "WEBGL", "SOUND_DESIGN"],
+      "services": ["Artistic Direction", "Spatial Architecture", "CGI Simulation", "Modular Sound"],
+      "since": "2025",
+      "externalUrl": "https://gigantera.xyz/",
+      "status": "public",
+      "order": 0,
+      "mosaicAssets": [],
+      "seo": {
+        "title": "GIGANTERA — Digital Pavilion & Spatial 3D",
+        "description": "Virtual pavilion, real-time hydrodynamic spine simulation and autoral electronic album by Felipe Conceição.",
+        "ogImage": "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg"
+      },
+      "createdAt": "2026-10-21T00:00:00Z",
+      "updatedAt": "2026-10-21T00:00:00Z",
+      "coverImage": "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg",
+      "syncedAt": "2026-10-21T00:00:00Z",
+      "media": {
+        "root": [
+          {
+            "id": "gig-0",
+            "order": 0,
+            "title": "TRAÇÃO — CINÉTICA",
+            "video_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4",
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4",
+            "poster_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg",
+            "mosaic": [
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-cinetica-prata.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-registro-abissal.jpg"
+            ],
+            "format": "vertical",
+            "aspect": "9/16",
+            "project_folder": "Gigantera Videos",
+            "title_pt": "TRAÇÃO — CINÉTICA",
+            "description": "Biomechanical steel spine undulation in dense medium with fluid hydrodynamic physics.",
+            "description_pt": "Movimento ondular da coluna de aço em meio denso com física de viscosidade computacional.",
+            "tags": ["VIDEO", "KINETIC"],
+            "status": "public",
+            "manualFrames": [],
+            "updatedAt": "2026-10-21T00:00:00Z"
+          },
+          {
+            "id": "gig-1",
+            "order": 1,
+            "title": "SUMUD — STIPPLING",
+            "video_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-02-stipples-simulation.mp4",
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-02-stipples-simulation.mp4",
+            "poster_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/zimbro-rastreamento-vetorial.jpg",
+            "mosaic": [
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/zimbro-estudo-espectral.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/zimbro-rastreamento-vetorial.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/sedimento-litificacao-final.jpg"
+            ],
+            "format": "vertical",
+            "aspect": "9/16",
+            "project_folder": "Gigantera Videos",
+            "title_pt": "SUMUD — ESTOCÁSTICA",
+            "description": "Thousands of graphic corpuscles colliding and reforming under invisible force fields.",
+            "description_pt": "Milhares de corpúsculos gráficos reagindo a campos de força invisíveis.",
+            "tags": ["PARTICLES", "STIPPLING"],
+            "status": "public",
+            "manualFrames": [],
+            "updatedAt": "2026-10-21T00:00:00Z"
+          },
+          {
+            "id": "gig-2",
+            "order": 2,
+            "title": "ENCALHE — 3D METÁLICO",
+            "video_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-03-metallic-spine.mp4",
+            "preview_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-03-metallic-spine.mp4",
+            "poster_url": "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-relevo-neotribal.jpg",
+            "mosaic": [
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-relevo-neotribal.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-vitrine-aquario.jpg",
+              "https://pelimotion-portfolio.b-cdn.net/gigantera/stills/notalgia-monolito-costeiro.jpg"
+            ],
+            "format": "vertical",
+            "aspect": "9/16",
+            "project_folder": "Gigantera Videos",
+            "title_pt": "ENCALHE — 3D METÁLICO",
+            "description": "Anisotropic reflections and metallic curve sequences under virtual glass.",
+            "description_pt": "Reflexões anisotrópicas e sequências de curvas metálicas sob vidro virtual.",
+            "tags": ["3D", "METALLIC"],
+            "status": "public",
+            "manualFrames": [],
+            "updatedAt": "2026-10-21T00:00:00Z"
+          }
+        ],
+        "total": 3
+      }
+    },
     "BC MAPPING FESTIVAL": {
       "slug": "bc-mapping-festival",
       "displayName": "BC MAPPING FESTIVAL",
@@ -4537,6 +4633,40 @@
     ],
     "experience": [
       {
+        "period": "2025 — 2026",
+        "period_pt": "2025 — 2026",
+        "role": "Artistic Director & Creative Technologist",
+        "role_pt": "Diretor Artístico & Tecnólogo Criativo",
+        "company": "Gigantera — Digital Pavilion & Spatial 3D",
+        "company_pt": "Gigantera — Pavilhão Digital & 3D Espacial",
+        "items": [
+          "Conceived and directed a monumental virtual pavilion bridging fine art, biomechanics, and interactive GPU computing (gigantera.xyz).",
+          "Engineered real-time hydrodynamic particle spine simulation ('Espinhaço', 50k points WebGL) reactive to spectator physics and cursor inertia.",
+          "Composed and produced an autoral 17-track modular synthesis electronic album with spatial web audio and interactive CD visualizer.",
+          "Curated physical and kinetic digital artworks across Espinhaço, Zimbro, Sedimento, and Notalgia series."
+        ],
+        "items_pt": [
+          "Concepção e arquitetura espacial de pavilhão virtual monumental unindo arte contemporânea, biomecânica e computação GPU interativa (gigantera.xyz).",
+          "Desenvolvimento de simulação hidrodinâmica de partículas de coluna vertebral ('Espinhaço', 50k pontos WebGL em tempo real) reativa à proximidade e inércia do cursor.",
+          "Composição, sound design modular e motor de áudio espacial interativo para álbum autoral com 17 faixas de música eletrônica e visualizador de CD.",
+          "Curadoria de obras físicas e vitrines cinéticas em loop contínuo nas séries Espinhaço, Zimbro, Sedimento e Notalgia."
+        ],
+        "tags": [
+          "ART_DIRECTION",
+          "SPATIAL_3D",
+          "WEBGL",
+          "MODULAR_AUDIO",
+          "KINETIC_ART"
+        ],
+        "tags_pt": [
+          "DIREÇÃO_ARTÍSTICA",
+          "3D_ESPACIAL",
+          "WEBGL",
+          "ÁUDIO_MODULAR",
+          "ARTE_CINÉTICA"
+        ]
+      },
+      {
         "period": "2018 — Now",
         "period_pt": "2018 — Presente",
         "role": "Creative Director & Motion Designer",
@@ -5030,6 +5160,7 @@
   ],
   "lastSync": "2026-05-15T04:54:26Z",
   "clientOrder": [
+    "GIGANTERA",
     "BMW",
     "BEIRAMAR SHOPPING",
     "BELEZA NA WEB",

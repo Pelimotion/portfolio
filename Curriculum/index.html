@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Felipe Conceição — Creative Director & Motion Branding</title>
+    <link rel="icon" type="image/x-icon" href="/LOGO.ico">
     <meta name="description" content="Portfolio of Felipe Conceição — Creative Director, Motion Branding and Artistic Director based in Rio de Janeiro.">
 
     <!-- Fonts -->
@@ -53,7 +54,9 @@
                 </nav>
                 <div class="nav-label flex-1 flex justify-end items-center gap-4 font-mono">
                         <button class="lang-toggle" onclick="toggleTheme()" title="Toggle Theme" style="margin-right:8px;">◐</button>
-                        <button id="lang-btn" class="lang-toggle" onclick="toggleLanguage()">PT</button>
+                        <button id="lang-btn" class="lang-toggle inline-flex items-center gap-1 font-mono text-[10px]" onclick="toggleLanguage()" title="Switch Language / Alternar Idioma">
+                            <span id="cv-lang-pt" class="text-white/40">PT</span><span class="text-white/20">/</span><span id="cv-lang-en" class="text-white font-bold">EN</span>
+                        </button>
                     <div id="section-indicator"
                         class="text-white/30 text-[9px] uppercase tracking-widest hidden sm:block">STATUS_IDLE</div>
                     <div class="flex items-center gap-2">
@@ -222,6 +225,33 @@
 
             <div class="container-custom-flush" id="dyn-exp">
 <div class="container-custom-flush">
+                <!-- Exp Item: Gigantera -->
+                <article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 border-b border-white/10 group transition-all hover:bg-white/[0.02]">
+                    <div class="col-span-12 sm:col-span-3 px-5 sm:px-8">
+                        <div class="font-mono text-[10px] text-white/30">ART_PROJECT</div>
+                        <div class="mono-label mt-1">2025 — 2026</div>
+                    </div>
+                    <div class="col-span-12 mt-6 sm:col-span-6 sm:mt-0 px-5 sm:px-8 border-l border-white/5 sm:border-l-0 lg:sm:border-l">
+                        <h3 class="exp-title font-mono uppercase tracking-tight">Artistic Director <span class="text-white/20">&amp;</span> Creator <span class="text-white/20">—</span> <a href="https://gigantera.xyz/" target="_blank" class="hover:underline text-white">Gigantera ↗</a></h3>
+                        <div class="serif text-white/40 text-sm italic mt-1" data-en="Virtual Pavilion · Biomechanical 3D · Spatial Sound" data-pt="Pavilhão Virtual · 3D Biomecânico · Áudio Espacial">Virtual Pavilion · Biomechanical 3D · Spatial Sound</div>
+                        <ul class="exp-list mt-8">
+                            <li><span data-en="Conception and spatial architecture of a monumental virtual pavilion bridging fine art, biomechanics and interactive GPU computing (gigantera.xyz)." data-pt="Concepção e arquitetura espacial de pavilhão virtual monumental unindo arte contemporânea, biomecânica e computação GPU interativa (gigantera.xyz).">Conception and spatial architecture of a monumental virtual pavilion bridging fine art, biomechanics and interactive GPU computing (gigantera.xyz).</span></li>
+                            <li><span data-en="Real-time hydrodynamic particle spine simulation ('Espinhaço', 50k points WebGL) reactive to spectator physics and cursor inertia." data-pt="Desenvolvimento de simulação hidrodinâmica de partículas de coluna vertebral ('Espinhaço', 50k pontos WebGL em tempo real) reativa à proximidade e inércia do cursor.">Real-time hydrodynamic particle spine simulation ('Espinhaço', 50k points WebGL) reactive to spectator physics and cursor inertia.</span></li>
+                            <li><span data-en="Composition, modular sound design and interactive web audio engine for an autoral 17-track electronic album (CD Sound Chamber)." data-pt="Composição, sound design modular e motor de áudio espacial interativo para álbum autoral com 17 faixas de música eletrônica e visualizador de CD.">Composition, modular sound design and interactive web audio engine for an autoral 17-track electronic album (CD Sound Chamber).</span></li>
+                            <li><span data-en="Curated series: Espinhaço, Zimbro, Sedimento, and kinetic continuous-loop vitrines." data-pt="Curadoria de obras físicas e vitrines cinéticas em loop contínuo nas séries Espinhaço, Zimbro, Sedimento e Notalgia.">Curated series: Espinhaço, Zimbro, Sedimento, and kinetic continuous-loop vitrines.</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-span-12 mt-6 sm:col-span-3 sm:mt-0 px-5 sm:px-8 border-l border-white/5 sm:border-l-0 lg:sm:border-l">
+                        <div class="tag-cloud">
+                            <span>[ART_DIRECTION]</span>
+                            <span>[SPATIAL_3D]</span>
+                            <span>[WEBGL]</span>
+                            <span>[MODULAR_AUDIO]</span>
+                            <span>[KINETIC_ART]</span>
+                        </div>
+                    </div>
+                </article>
+
                 <!-- Exp Item 1 -->
                 <article class="exp-item reveal-mech grid grid-cols-12 py-8 sm:py-10 border-b border-white/10 group transition-all hover:bg-white/[0.02]">
                     <div class="col-span-12 sm:col-span-3 px-5 sm:px-8">
@@ -859,8 +889,17 @@ function applyLang(lang) {
   // Dynamic elements might need re-injection or we just reload dynamic content
   if(window.loadDynamicContent) window.loadDynamicContent(lang);
 
-  const btn = document.getElementById('lang-btn') || document.getElementById('custom-lang-toggle');
-  if(btn) btn.textContent = lang === 'pt' ? 'EN' : 'PT';
+  const ptOpt = document.getElementById('cv-lang-pt');
+  const enOpt = document.getElementById('cv-lang-en');
+  if(ptOpt && enOpt) {
+    if(lang === 'pt') {
+      ptOpt.className = 'text-white font-bold underline underline-offset-4';
+      enOpt.className = 'text-white/40';
+    } else {
+      ptOpt.className = 'text-white/40';
+      enOpt.className = 'text-white font-bold underline underline-offset-4';
+    }
+  }
   document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
 }
 function toggleLanguage() { applyLang(window._PLM_LANG === 'en' ? 'pt' : 'en'); }

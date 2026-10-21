@@ -1,12 +1,12 @@
 # PELIMOTION — Digital Studio, Creative Direction & Spatial Experiences
 > **Repositório Mestre do Ecossistema Pelimotion & Pavilhão Tridimensional Gigantera**  
-> Produção: **[pelimotion.art](https://pelimotion.art)** | Pavilhão 3D: **[pelimotion.art/gigantera](https://pelimotion.art/gigantera)**
+> Produção: **[pelimotion.art](https://pelimotion.art)** | Intake & Scoping Hub: **[pelimotion.art/bora](https://pelimotion.art/bora)** | Pavilhão 3D: **[pelimotion.art/gigantera](https://pelimotion.art/gigantera)**
 
 ---
 
 ## 🧭 Sumário Executivo para Líderes Técnicos & Diretores Criativos
 
-Bem-vindo ao repositório oficial da **Pelimotion**. Este ecossistema reúne portfólio comercial de alta performance, painel administrativo de gestão de mídia, hub editorial e uma das mais avançadas galerias tridimensionais brutalistas da web contemporânea (**Gigantera**).
+Bem-vindo ao repositório oficial da **Pelimotion**. Este ecossistema reúne portfólio comercial de alto impacto, central de orçamentação e intake de briefing em Black Neumorphism (`/bora`), painel administrativo de gestão de mídia (`/admin`), motor de automação de campanhas (`/ads`), hub editorial (`/blog`) e uma das mais avançadas galerias tridimensionais brutalistas da web contemporânea (**Gigantera**).
 
 Este documento é o guia definitivo para **Engenheiros de Software Sênior**, **Programadores de WebGL/Frontend** e **Diretores de Criação/Design** assumirem, desenvolverem e operarem o projeto com excelência e autonomia total.
 
@@ -20,14 +20,15 @@ O projeto adota uma arquitetura híbrida de **Zero-Bandwidth Origin + Global Med
 graph TD
     subgraph CLIENT["Navegador do Usuário (Desktop / Mobile / Tablet)"]
         UI["Interface Gráfica & Three.js 60 FPS Canvas"]
-        WEBAUDIO["Web Audio API Engine (FFT, Spatial, Haze)"]
+        WEBAUDIO["Web Audio API Engine (Haptics, FFT, Spatial)"]
+        INTAKE["Intake Engine Black Neumorphic (/bora)"]
         ADMIN_WASM["FFmpeg.wasm (Conversão de Mídia Client-side)"]
     end
 
-    subgraph VERCEL["Vercel Edge Platform (Plano Hobby / Pro)"]
+    subgraph VERCEL["Vercel Edge Platform (Zero-Bandwidth Origin)"]
         V_STATIC["Static Hosting (HTML, CSS, JS Minificado)"]
+        V_ROUTING["vercel.json Routing Hub (/bora, /admin, /ads, /gigantera)"]
         V_SERVERLESS["Serverless Functions (/api/config, /api/bunny/scan)"]
-        V_REWRITE["vercel.json Routing Hub (/gigantera, /admin, /blog)"]
     end
 
     subgraph BUNNY["Bunny.net Global CDN & Storage (Edge Replicada NY/DE/BR)"]
@@ -43,7 +44,8 @@ graph TD
     end
 
     UI -->|Puxa HTML/CSS/JS ~17MB| V_STATIC
-    V_REWRITE -->|Roteia /gigantera| V_STATIC
+    V_ROUTING -->|Roteia /bora, /admin, /gigantera| V_STATIC
+    INTAKE -->|Gera Protocolo BORA-26-XXXX e Dispara E-mail / WhatsApp| CLIENT
     UI -->|Streaming Direto com Byte-Range 206| B_AUDIO
     UI -->|Texturas e Vídeos em Cache Edge| B_VIDEOS
     UI -->|Stills e Capas do CD| B_STILLS
@@ -55,123 +57,78 @@ graph TD
 
 ## 🗺️ Matriz de Subprojetos e Módulos
 
-| Subprojeto / Rota | Stack Tecnológica | Responsabilidade | Documentação Detalhada |
+| Rota / Módulo | Stack Tecnológica | Responsabilidade / Funcionalidade | Documentação |
 | :--- | :--- | :--- | :--- |
-| **`/` (Raiz)** | HTML5, CSS3 Vanilla, JavaScript Moderno | Landing page principal, portfólio comercial e reel | [`README.md`](./README.md) & [`CLAUDE.md`](./CLAUDE.md) |
+| **`/` (Raiz)** | HTML5, CSS3 Vanilla, JavaScript Moderno | Landing page principal, portfólio comercial e reel cinético | [`index.html`](./index.html) & [`README.md`](./README.md) |
+| **`/bora`** | HTML5, CSS Neumorphic, Web Audio API | Mote *"Bora crescer juntos. Movimente-se com a gente."*, Questionário de escopo técnico, gerador de protocolo (`BORA-26-XXXX`) e saída dupla WhatsApp / E-mail | [`bora/index.html`](./bora/index.html) |
 | **`/gigantera`** | React 19, TypeScript, Vite, Three.js, Web Audio API, GSAP | Pavilhão brutalista 3D, CD Jewel Case em POV, Modo Loupe e Mobile | [`gigantera/README.md`](./gigantera/README.md) |
-| **`/admin`** | HTML5, CSS3, JavaScript Vanilla, Bunny API | Painel de controle de mídia, Deploy Hub, gerador de GIFs via WASM | [`admin/SPEC_01_ADMIN_PANEL_ARCHITECTURE.md`](./admin/SPEC_01_ADMIN_PANEL_ARCHITECTURE.md) |
-| **`/blog`** | HTML5 estático gerado proceduralmente | Hub editorial e artigos de motion/design com SEO e RSS | [`blog/`](./blog/) |
+| **`/admin`** | HTML5, CSS3, JavaScript Vanilla, Bunny API | Painel de controle de mídia, Deploy Hub, gerador de GIFs via WASM | [`admin/index.html`](./admin/index.html) |
+| **`/ads`** | HTML5, Space Grotesk, Autopilot Engine | Painel de controle de campanhas e inteligência de tráfego | [`ads/index.html`](./ads/index.html) |
+| **`/briefing`** | HTML5, Supabase Client, Canvas Sequence | Formulário de briefing imersivo com canvas animado de fundo | [`briefing/index.html`](./briefing/index.html) |
+| **`/blog`** | HTML5 procedural, RSS XML | Hub editorial e artigos de motion/design com SEO e RSS | [`blog/`](./blog/) |
 | **`/curriculum`** | HTML5 semântico, CSS print-ready | Currículo interativo e exportação de PDF de alta fidelidade | [`Curriculum/`](./Curriculum/) |
-| **`/projetos-app`** | React, Tailwind CSS, dnd-kit, Supabase | Gestão de tarefas Kanban, cenas e daily log | [`AGENTS.md`](./AGENTS.md) |
+| **`/login`** | HTML5, DM Mono, Supabase Auth | Portal de acesso ao studio com autenticação Google / Email | [`login/index.html`](./login/index.html) |
+| **`/penumbra`** | TouchDesigner Web Bridge, NDI Telemetry | Cockpit do sistema de engine áudio-reativa VJ | [`penumbra/index.html`](./penumbra/index.html) |
+| **`/legacy` (`/v1`)** | HTML5, Canvas Espectrais | Versão original do portfólio com navegação clássica | [`legacy/V1/portfolio/`](./legacy/V1/portfolio/) |
 
 ---
 
-## 🎨 Diretrizes para Diretores Criativos & Designers
+## 🖤 Identidade Visual & Design System Oficial
 
-### 1. Filosofia Visual: Brutalismo Escultural & Espaço Liminar
-Gigantera e Pelimotion não são meras vitrines de arquivos, mas uma **instalação espacial imersiva**. O design visual opera na fronteira entre arquitetura bruta de concreto, fósseis tecnológicos e o som tátil analógico:
-- **Tipografia Heráldica e Técnica:**
-  - `Syne` (800 / Ultra-Bold): Usada para títulos monumentais, declarações curatoriais e números romanos de setor.
-  - `Fraunces`: Usada para títulos de obras em itálico de alto contraste, conferindo organicidade arqueológica.
-  - `Space Mono` & `Space Grotesk`: Usada para índices de estrato (`[STRATUM // 01]`), coordenadas barométricas, telemetria de FPS e ficha técnica de museu.
-- **Dualidade de Ambientes (Obsidiana vs. Alabastro):**
-  - **Obsidiana (Dark Noir):** Salão brutalista em concreto escuro, pisos de basalto com reflexos anisotrópicos e luzes douradas emanando de claraboias.
-  - **Alabastro (White Cube):** Salão brutalista contemporâneo em gesso, mármore mate e giz, com sombras suaves e claridade etérea.
-- **Linguagem Cinematográfica em 3D:**
-  - Vitrines translúcidas em vidro óptico suspensas no vazio sem bases pesadas.
-  - Molduras com iluminação volumétrica focada que se acendem quando o observador se aproxima.
-  - Efeito de distorção de ar (*acoustic heat haze*) emanando das caixas acústicas quando o som está ativo, em vez de vetores wireframe genéricos.
+### 1. Família Oficial de Símbolos (`PLM_SIMBOLO`)
+O branding da Pelimotion é padronizado estritamente nos seguintes arquivos na raiz do repositório:
+- **`PLM_SIMBOLO_BRANCO.png`**: Símbolo oficial horizontal para fundo escuro (Dark Mode).
+- **`PLM_SIMBOLO_PRETO.png`**: Símbolo oficial horizontal para fundo claro (Light Mode).
+- **`PLM_SIMBOLO_REDUZIDO_BRANCO.png`**: Monograma compacto para avatares e badges em modo escuro.
+- **`PLM_SIMBOLO_REDUZIDO_PRETO.png`**: Monograma compacto para avatares e badges em modo claro.
 
-### 2. CD Jewel Case em POV (Acoustic POV Station)
-Uma recriação tátil e física de um estojo de acrílico padrão de CD dos anos 90/2000:
-- **Mão 3D Facetada em Primeira Pessoa:** Mão angular em cerâmica/gesso (*flat-shaded*) segurando a quina do estojo.
-- **Contracapa Dinâmica (Canvas 1024x1024):** Exibe 17 faixas autorais numeradas com título, BPM e código de barras autêntico.
-- **Giro Físico de 180° (`[F]`):** Rotação 3D suave entre a contracapa e a arte frontal de Pelimotion.
-- **Áudio Adaptativo:** Previews rápidos ao folhear as músicas e upgrade imperceptível para a faixa completa de alta fidelidade após permanência.
+### 2. Favicon Oficial (`LOGO.ico`)
+- **`LOGO.ico`** (e fallback `logo.ico`): Ícone multi-resolução oficial da marca.
+- Substituiu em definitivo o antigo arquivo vetorial `logo.svg` em todas as páginas do site.
+- Regra de rewrite mapeada no [`vercel.json`](./vercel.json) para garantir compatibilidade multiplataforma.
+
+### 3. Padrões Visuais da Marca (`assets/patterns/`)
+- **`assets/patterns/pattern01_web.jpg`**, **`pattern02_web.jpg`**, **`pattern03_web.jpg`**: Texturas de alta resolução da marca 2026, otimizadas para carregamento web rápido e aplicadas com blending sutil em marca d'água (`mix-blend-mode: screen`, opacidade 3% a 5%).
+
+### 4. Estética Black Neumorphic Minimalist (`/bora`)
+- **Zero Ruído de Cores:** Paleta monocromática estrita em obsidiana mate (`#08080a`, `#0e0e12`, `#131318`), titânio e prata lunar (`#EDEDF0`, `#9A9AA6`, `#52525E`).
+- **Superfícies Táteis Esculpidas:**
+  - *Extrusão suave:* `box-shadow: 8px 8px 24px rgba(0,0,0,0.75), -6px -6px 20px rgba(255,255,255,0.025)`.
+  - *Cavidades Debossed:* `box-shadow: inset 4px 4px 10px rgba(0,0,0,0.85), inset -3px -3px 8px rgba(255,255,255,0.035)`.
+  - *Bordas Hairline Sheen:* 1px de borda com reflexo rasante superior `rgba(255,255,255,0.12)`.
+- **Audio Haptics Harmônico:** Micro-sintetizador Web Audio API embutido que dispara tons senoidais suaves em cada interação, com controle de silenciamento no topo.
 
 ---
 
-## 💻 Guia Técnico para Desenvolvedores Sênior
+## ⚙️ Estrutura de Diretórios Limpa & Pasta de Backup
 
-### 1. Instalação & Pré-requisitos
-- **Node.js:** Versão 24.x LTS (recomendado via NVM: `nvm use 24`)
-- **Python:** 3.10+ (ou gerenciado via `uv`) para automações de deploy e ferramentas de auditoria
-- **Gerenciador de Pacotes:** `npm` padrão
-
-```bash
-# 1. Clonar repositório
-git clone https://github.com/Pelimotion/portfolio.git
-cd portfolio
-
-# 2. Instalar dependências do Gigantera
-cd gigantera
-npm install
-cd ..
-
-# 3. Configurar variáveis de ambiente
-cp .env.example .env # preencher BUNNY_API_KEY, SUPABASE_URL, etc.
+O repositório foi higienizado e reorganizado. Todo o material bruto, pesado e histórico que **não é necessário no deploy** foi isolado na pasta:
+```
+/_BACKUP_PARA_REMOVER/
+  ├── Medias_Portfolio/      (~14 GB de vídeos brutos já servidos pelo Bunny CDN)
+  ├── Site_Antigo_2025/      (~762 MB do site antigo de 2025)
+  ├── venv_cropper/          (~69 MB de virtualenv local)
+  ├── technical_audit/       (Snapshots temporários de auditoria)
+  ├── scratch/               (Scripts descartáveis de teste)
+  ├── ai_memory/             (Memórias e logs de sessões passadas)
+  ├── logos_antigas_duplicadas/ (Arquivos de logo redundantes)
+  └── README_BKP.md          (Instruções completas para remoção segura)
 ```
 
-### 2. Scripts de Execução e Build
-- **Desenvolvimento do Gigantera (HMR Local):**
+> [!TIP]
+> A pasta `_BACKUP_PARA_REMOVER` está listada em `.gitignore` e `.vercelignore`. Você pode arrastá-la para um HD/SSD externo ou deletá-la a qualquer momento sem afetar o funcionamento do site em produção.
+
+---
+
+## 🚀 Pipeline de Build & Deploy Contínuo
+
+- **Build de Distribuição:**
   ```bash
-  cd gigantera
-  npm run dev
-  # Acesse em http://localhost:5173/gigantera/
-  ```
-- **Build de Produção do Gigantera:**
-  ```bash
-  cd gigantera
   npm run build
-  # Compila TypeScript, executa Vite build e copia index.source.html e assets para a raiz do subprojeto
+  # Executa scripts/build.js, limpando e gerando a pasta /dist com todos os módulos e símbolos
   ```
-- **Servidor Estático Local da Raiz:**
-  ```bash
-  npx serve .
-  ```
+- **Deploy:** Vercel via Git Push na branch `main`.
+- **Roteamento SPA:** Definido centralizadamente em [`vercel.json`](./vercel.json).
 
 ---
-
-## 📦 Estratégia de Mídia & Bunny.net CDN (Regra Anti-Cota Vercel)
-
-> [!IMPORTANT]
-> **NUNCA comite arquivos de áudio (.mp3, .wav), vídeos (.mp4) ou binários WebAssembly (.wasm) no repositório Git.**
-> A Vercel possui um teto mensal estrito de **10 GB para Fast Origin Transfer** no plano Hobby. Mídias pesadas servidas diretamente da Vercel esgotam a cota e causam suspensão da conta.
-
-### Como Funciona o Pipeline de Mídia:
-1. **Vídeos, Stills e Áudios:** São enviados para o Storage Zone da Bunny.net (`pelimotion-portfolio`).
-2. **Distribuição Global (Pull Zone):** São servidos via CDN com URL base:
-   - `https://pelimotion-portfolio.b-cdn.net/gigantera/audio/full/` (Áudios Integrais)
-   - `https://pelimotion-portfolio.b-cdn.net/gigantera/audio/previews/` (Previews 10s)
-   - `https://pelimotion-portfolio.b-cdn.net/gigantera/stills/` (Imagens Alta Resolução)
-   - `https://pelimotion-portfolio.b-cdn.net/gigantera/videos/` (Vídeos em Loop)
-   - `https://pelimotion-portfolio.b-cdn.net/ffmpeg/` (Motor FFmpeg.wasm)
-3. **Suporte a Byte-Range Requests (HTTP 206):** A Bunny.net permite que os arquivos de áudio de 8 MB iniciem a reprodução em menos de 50ms, baixando apenas os primeiros blocos e permitindo que o usuário avance a música sem travar o navegador.
-4. **Proteção de Deploy:** O arquivo [`.vercelignore`](./.vercelignore) e o [`.gitignore`](./.gitignore) contêm regras estritas que impedem qualquer arquivo pesado de ser enviado para a Vercel. O bundle final de deploy do site completo pesa apenas **~17 MB**.
-
----
-
-## 🕹️ Arquitetura dos Módulos do Gigantera (`/gigantera/src`)
-
-- **`core/store.ts` (Zustand):**
-  - Gerenciamento atômico de estado: coordenadas da câmera, setor ativo (`entrance-audio`, `still`, `video`), tema visual, modo cinema, estado da mão/CD, qualidade gráfica (`light`, `med`, `high`), e controles mobile.
-- **`core/playerController.ts`:**
-  - Controlador de física em primeira pessoa com aceleração, atrito, limites de colisão do pavilhão, balanço de cabeça (*head bob*), suporte a giroscópio de smartphone e *smooth glide navigation* para dispositivos móveis.
-- **`core/soundEngine.ts`:**
-  - Web Audio API customizada com `AudioContext`, analisador de frequências FFT de 128 bandas (`analyserNode`), atenuação acústica estéreo proporcional à distância das caixas no salão e curva suave de *crossfade* ao abrir obras em vídeo.
-- **`components/canvas/GalleryScene3D.tsx`:**
-  - Renderizador principal Three.js com iluminação em tempo real, sombras dinâmicas, partículas volumétricas de poeira e distorção de ar quente nos cones dos alto-falantes.
-- **`components/canvas/CDViewmodel3D.ts`:**
-  - Viewmodel da mão poligonal com sombreamento facetado e estojo acrílico em primeira pessoa. Renderizado sobreposto à câmera para não sofrer cortes com as paredes do cenário.
-
----
-
-## 🚀 Deploy & Infraestrutura
-
-- **Deploy Automático:** Todo push na branch `main` no GitHub (`https://github.com/Pelimotion/portfolio.git`) aciona automaticamente a Vercel, que executa o roteamento estático definido em [`vercel.json`](./vercel.json).
-- **Roteamento SPA e Subcaminhos:** O `vercel.json` garante que rotas como `/gigantera`, `/admin`, `/blog` e `/curriculum` resolvam diretamente para seus respectivos pontos de entrada estáticos sem loops de redirecionamento.
-- **Knowledge Graph Integrado:** O projeto mantém documentação rastreável e grafo de conhecimento vivo em [`graphify-out/`](./graphify-out/), permitindo consultas semânticas sobre todo o código e decisões arquiteturais.
-
----
-
-*Pelimotion — Creative Engineering & Spatial Art Direction. Documentação mantida e atualizada continuamente.*
+*Pelimotion — Creative Direction, Spatial Art Direction & Motion Branding. 2026.*

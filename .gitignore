@@ -1,6 +1,9 @@
 .DS_Store
 index_backup_*.html
 Medias Portfolio/
+_BACKUP_PARA_REMOVER/
+_BACKUP*/
+Site Antigo/
 __pycache__/
 *.pyc
 .venv/
@@ -10,6 +13,7 @@ node_modules/
 .vscode/
 .idea/
 *.log
+package-lock.json
 
 # Strict Binary Exclusions
 *.mp4
@@ -51,6 +55,13 @@ node_modules/
 !gigantera/public/ar/*.jpg
 !gigantera/models/
 !gigantera/public/models/
+
+# Branding patterns and symbols
+!assets/patterns/*
+!assets/avatar*
+!PLM_SIMBOLO*.png
+!LOGO.ico
+!logo.ico
 
 
 # Patch scripts and temp files

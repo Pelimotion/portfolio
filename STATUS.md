@@ -5,11 +5,11 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-09-16 (tarde)
-**Projeto:** Pelimotion (Landing page + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, BLINDADO & ONLINE — Intro Tutorial Simplificado com Morphing Docking + Ficha Curatorial em Flanco Lateral (Centro 100% Desobstruído) + Atalho I Universal + Deploy Vercel em Produção
-**Próxima Ação:** Testes de experiência com usuário e curadoria transmídia
-**Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção sem erros)
+**Data:** 2026-10-21 (madrugada)
+**Projeto:** Pelimotion (Landing page + /bora + Admin + Ecossistema Gigantera)
+**Status:** ESTÁVEL, ULTRA-LIMPO & PRODUÇÃO-READY — Novo Hub /bora Black Neumorphic Ativo + Favicon LOGO.ico Padronizado + Branding PLM_SIMBOLO + Isolamento de 14GB de Backups em `_BACKUP_PARA_REMOVER/` + Documentação Master Sênior
+**Próxima Ação:** Remoção/arquivamento externo da pasta `_BACKUP_PARA_REMOVER/` pelo usuário e deploy contínuo via Vercel.
+**Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção executado com sucesso)
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
 ---
@@ -18,15 +18,42 @@
 
 | Componente | Status | Última Sessão |
 |-----------|--------|--------------|
-| Landing page (`index.html`) | ✅ Estável | 2026-09-12 |
+| **Novo Intake Hub (`/bora`)** | ✅ Black Neumorphism + Protocolo `BORA-26-XXXX` + Saída Dupla WhatsApp/Email | 2026-10-21 |
+| Landing page (`index.html`) | ✅ Link /bora no Nav + Símbolos PLM_SIMBOLO + Favicon LOGO.ico | 2026-10-21 |
+| Favicon & Branding | ✅ `LOGO.ico` Oficial + Família `PLM_SIMBOLO` + Padrões em `assets/patterns/` | 2026-10-21 |
+| Limpeza & Organização | ✅ 14+ GB de legados isolados em `_BACKUP_PARA_REMOVER/` (gitignored) | 2026-10-21 |
 | Painel admin (`/admin/`) | ✅ Auth Supabase + FFmpeg Bunny CDN | 2026-09-12 |
-| Login unificado (`/login/`) | ✅ Funcional | 2026-05-16 |
-| Shared auth (`/shared/auth.js`) | ✅ Funcional | 2026-05-16 |
-| Shared roles (`/shared/roles.js`) | ✅ Funcional | 2026-05-16 |
-| `vercel.json` | ✅ Roteamento otimizado sem loops | 2026-09-12 |
-| `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth ativa | 2026-09-12 |
-| **Gigantera** (`/gigantera/`) | ✅ Intro Clean & Docking + Ficha Lateral Desobstruída + Atalho I Universal | 2026-09-16 |
-| **Documentação Master** (`README.md` & `ARCHITECTURE.md`) | ✅ Atualizada para Líderes Técnicos & Diretores | 2026-09-13 |
+| Login unificado (`/login/`) | ✅ Funcional + Novo branding PLM_SIMBOLO | 2026-10-21 |
+| `vercel.json` | ✅ Rewrites `/bora`, `/talk`, `/LOGO.ico` e rotas estáticas | 2026-10-21 |
+| `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth e exclusão de backups ativa | 2026-10-21 |
+| **Gigantera** (`/gigantera/`) | ✅ Estável + Favicon LOGO.ico atualizado | 2026-10-21 |
+| **Documentação Master** | ✅ `README.md`, `ARCHITECTURE.md`, `STANDARDS.md`, `STATUS.md` atualizados | 2026-10-21 |
+
+---
+
+## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-10-21 (madrugada) — Criação do Hub /bora em Black Neumorphism, Atualização de Branding e Higienização do Repositório (14GB Isolados)
+**O que foi feito:**
+- [x] **Substituição Oficial do Favicon:** O antigo `logo.svg` foi descontinuado do favicon em todos os arquivos HTML do repositório (`index.html`, `bora/`, `Curriculum/`, `briefing/`, `login/`, `ads/`, `admin/`, `legacy/`, `gigantera/`) e substituído por `<link rel="icon" type="image/x-icon" href="/LOGO.ico">` com rewrite de compatibilidade no `vercel.json`.
+- [x] **Substituição de todas as Logos para `PLM_SIMBOLO`:** Barra de navegação e componentes visuais migrados para `PLM_SIMBOLO_BRANCO.png` e `PLM_SIMBOLO_PRETO.png` com alternância automática entre dark/light mode.
+- [x] **Criação da Página `/bora` (Black Neumorphic Minimalist):**
+  - Mote oficial: `<h1>Bora</h1>` e subtítulo `crescer juntos. Movimente-se com a gente.`.
+  - Direção de arte monocromática em obsidiana mate, sem ruído de cores, com sombras extrudadas suaves e relevos cavados (debossed).
+  - Padrões oficiais de marca otimizados (`assets/patterns/pattern01_web.jpg`) aplicados em marca d'água sutil (4%).
+  - Audio haptics com síntese harmônica senoidal nativa (Web Audio API) com controle de áudio.
+- [x] **Questionário de Escopo com Desacoplamento de Preço & Protocolo Único:**
+  - O questionário não expõe preços públicos ao cliente.
+  - Gera automaticamente um protocolo de atendimento `BORA-26-XXXX`.
+  - Dispara os dados para o e-mail do estúdio com o protocolo no assunto.
+  - Tela de conclusão com saída dupla: **"Conversar no WhatsApp com meu Protocolo"** (o WhatsApp abre com o código inserido para você localizar o e-mail em 1 segundo) ou **"Aguardar retorno por e-mail"**.
+- [x] **Substituição do Link de Contato no Menu:** O menu principal agora direciona para `/bora` sob o rótulo **Contato**.
+- [x] **Higienização do Repositório & Pasta de Backup (`_BACKUP_PARA_REMOVER/`):**
+  - Isolados mais de **14 GB** de arquivos pesados que não eram mais necessários na raiz (`Medias Portfolio/` com 14GB de vídeos já na CDN, `Site Antigo` com 762MB, `.venv_cropper` com 69MB, audits e arquivos de teste).
+  - Criado `_BACKUP_PARA_REMOVER/README_BKP.md` detalhando cada item e garantindo que o usuário pode retirar a pasta para um drive externo ou excluí-la com segurança total.
+  - Proteção ativada em `.gitignore` e `.vercelignore` contra envio indevido de backups.
+- [x] **Documentação Sênior:** `README.md`, `ARCHITECTURE.md`, `STANDARDS.md` e `STATUS.md` completamente alinhados com o estado da arte do projeto.
+- [x] **Build & Teste:** `npm run build` executado e validado com sucesso.
 
 ---
 
