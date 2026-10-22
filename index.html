@@ -522,15 +522,6 @@ html[data-theme="light"] .port-card-overlay {
   animation: studioZoneBreath 4.2s ease-in-out infinite;
 }
 
-@keyframes studioDotPulse {
-  0%, 100% { opacity: 0.9; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-.studio-point-dot {
-  transform-origin: 226px 118px;
-  animation: studioDotPulse 2.6s ease-in-out infinite;
-}
-
 /* Micro-animated Hover Reveal: "Vem conhecer nossa casa" */
 .map-hover-curtain { position: absolute; inset: 0; background: rgba(5, 5, 8, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(6px); }
 .contact-map-card:hover .map-hover-curtain { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -581,7 +572,7 @@ html[data-theme="light"] .port-card-overlay {
   <div class="nav-links" id="nav-links">
     <a href="#about" class="nav-link" data-en="US" data-pt="NÓS">NÓS</a>
     <a href="#portfolio-link" class="nav-link" data-en="Work" data-pt="Trabalhos">Work</a>
-    <a href="/bora" class="nav-link" data-en="Contact" data-pt="Contato">Contact</a>
+    <a href="#contact" class="nav-link" data-en="Contact" data-pt="Contato">Contact</a>
     <a href="/portfolio" class="nav-link cta" data-en="View Portfolio →" data-pt="Ver Portfólio →">View Portfolio →</a>
     <button class="nav-link" onclick="toggleTheme()" title="Toggle Theme" style="cursor:pointer; background:none; border:none; font-size:16px;">◐</button>
     <button id="lang-btn" class="nav-link lang-pill" onclick="toggleLanguage()" title="Alternar idioma / Switch language">
@@ -1069,10 +1060,6 @@ html[data-theme="light"] .port-card-overlay {
 
                 <!-- Regional Studio Zone (Centro do Rio de Janeiro Demarcation) -->
                 <circle cx="226" cy="118" r="38" fill="url(#studio-zone-grad)" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1" stroke-dasharray="3 3" class="studio-zone-pulse" />
-                
-                <!-- Studio Location Point & Subtle Glow -->
-                <circle cx="226" cy="118" r="8" fill="url(#studio-glow)" opacity="0.3" />
-                <circle cx="226" cy="118" r="2.8" fill="#FFFFFF" class="studio-point-dot" />
               </svg>
 
               <!-- Micro-animated Hover Reveal Curtain -->

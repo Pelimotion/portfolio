@@ -1,53 +1,51 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Bora Conversar // Pelimotion — Contato &amp; Briefing</title>
-  <meta name="description" content="Bora conversar. Canal oficial de contato, briefing direto e diálogo estratégico com Felipe Conceição (Pelimotion) — Ateliê de Motion Branding e CGI.">
+  <title>Talk // Pelimotion — Custom Proposal &amp; Briefing</title>
+  <meta name="description" content="Direct channel for custom proposals, strategic briefs, and creative dialogue with Felipe Conceição (Pelimotion) — Motion Branding and CGI Atelier in Downtown Rio de Janeiro.">
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/LOGO.ico">
   <link rel="shortcut icon" type="image/x-icon" href="/logo.ico">
 
   <!-- OpenGraph -->
-  <meta property="og:title" content="Bora conversar // Pelimotion">
-  <meta property="og:description" content="Canal oficial de contato, briefing e diálogo direto com o ateliê Pelimotion.">
+  <meta property="og:title" content="Talk // Pelimotion">
+  <meta property="og:description" content="Custom proposals, briefs, and direct dialogue with Pelimotion creative atelier.">
   <meta property="og:image" content="/hero_first_frame.png">
   <meta property="og:type" content="website">
 
-  <!-- Fonts: Syne, Space Grotesk, Inter, JetBrains Mono -->
+  <!-- Fonts: Instrument Serif, Space Grotesk, Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ═══════════════════════════════════════════════════════════════════
-       PELIMOTION / BORA — BRUTALIST MINIMALISM & TACTILE LUXURY DESIGN SYSTEM
+       PELIMOTION / TALK — EDITORIAL BRUTALIST & BESPOKE LUXURY ATELIER
        ═══════════════════════════════════════════════════════════════════ */
     :root {
       --bg: #070709;
-      --bg-surface: #0E0E13;
-      --bg-card: #13131A;
+      --bg-surface: #0E0E14;
+      --bg-card: #13131B;
       --bg-inset: #09090D;
       --border: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(255, 255, 255, 0.22);
       --border-active: rgba(255, 255, 255, 0.45);
       
-      --fg: #F0EDE8;
+      --fg: #F3EFEA;
       --fg-muted: #8E8E9B;
-      --fg-subtle: #4A4A56;
-      --accent-green: #22C55E;
+      --fg-subtle: #565662;
       
-      --font-display: 'Syne', sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
       --font-grotesk: 'Space Grotesk', -apple-system, sans-serif;
       --font-sans: 'Inter', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
 
-      --ease-tactile: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
       --radius-sm: 4px;
-      --radius-md: 10px;
-      --radius-lg: 18px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
     }
 
     *, *::before, *::after {
@@ -66,6 +64,8 @@
       overflow-x: hidden;
       position: relative;
       line-height: 1.5;
+      background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.035) 0%, transparent 60%);
+      background-attachment: fixed;
     }
 
     ::selection {
@@ -73,16 +73,14 @@
       color: var(--bg);
     }
 
-    /* Ambient Interactive Canvas */
-    #ambient-canvas {
+    /* Ambient Subtle Glow following cursor */
+    .ambient-glow-layer {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      inset: 0;
       pointer-events: none;
       z-index: 1;
-      opacity: 0.4;
+      background: radial-gradient(700px circle at var(--mouse-x, 50%) var(--mouse-y, 30%), rgba(255, 255, 255, 0.025), transparent 50%);
+      transition: opacity 0.5s ease;
     }
 
     /* ═══════════════════════════════════════════════════════════════════
@@ -92,16 +90,16 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 7, 9, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(7, 7, 9, 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
     }
 
     .header-inner {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 16px 24px;
+      padding: 16px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -120,10 +118,10 @@
       height: 22px;
       width: auto;
       object-fit: contain;
-      transition: transform 0.3s var(--ease-tactile);
+      transition: transform 0.3s var(--ease-luxury);
     }
     .brand-link:hover .brand-logo-img {
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
 
     .brand-title-wrap {
@@ -135,17 +133,15 @@
       font-family: var(--font-grotesk);
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--fg);
     }
 
     .brand-tagline {
-      font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: 11px;
       color: var(--fg-muted);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .header-actions {
@@ -154,49 +150,37 @@
       gap: 12px;
     }
 
-    .status-pill {
+    .city-indicator {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      padding: 6px 14px;
-      border-radius: 9999px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
+      gap: 6px;
+      background: transparent;
+      padding: 6px 12px;
+      font-family: var(--font-grotesk);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
       color: var(--fg-muted);
-    }
-
-    .radar-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-green);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
-      animation: pulse-radar 2.4s infinite ease-in-out;
-    }
-
-    @keyframes pulse-radar {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(0.7); opacity: 0.4; }
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
     }
 
     .btn-header-action {
-      background: var(--bg-surface);
+      background: transparent;
       border: 1px solid var(--border);
       color: var(--fg-muted);
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 11px;
-      letter-spacing: 0.08em;
+      font-weight: 600;
+      letter-spacing: 0.06em;
       text-decoration: none;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s var(--ease-tactile);
+      transition: all 0.25s var(--ease-luxury);
     }
     .btn-header-action:hover {
       color: var(--fg);
@@ -212,65 +196,74 @@
       z-index: 10;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 64px 24px 120px;
+      padding: 72px 28px 120px;
     }
 
     /* Hero Monolith */
     .hero-monolith {
-      margin-bottom: 56px;
+      margin-bottom: 64px;
     }
 
     .hero-eyebrow {
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.35em;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
       color: var(--fg-muted);
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .hero-eyebrow::before {
       content: "";
       display: inline-block;
-      width: 20px;
+      width: 24px;
       height: 1px;
       background: var(--fg-muted);
     }
 
     .hero-title-h1 {
-      font-family: var(--font-display);
-      font-size: clamp(3.5rem, 9vw, 7.5rem);
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      line-height: 0.95;
-      text-transform: uppercase;
+      font-family: var(--font-grotesk);
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 0.98;
       color: var(--fg);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero-title-h1 em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--fg);
+      padding-left: 0.15em;
     }
 
     .hero-mote {
       font-family: var(--font-grotesk);
-      font-size: clamp(1.25rem, 2.8vw, 2.2rem);
-      font-weight: 600;
-      line-height: 1.25;
-      color: var(--fg-muted);
+      font-size: clamp(1.2rem, 2.4vw, 1.85rem);
+      font-weight: 500;
+      line-height: 1.35;
+      color: var(--fg);
       margin-bottom: 20px;
     }
 
-    .hero-mote strong {
+    .hero-mote em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
       color: var(--fg);
-      font-weight: 700;
     }
 
     .hero-sub-subordinated {
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--fg-subtle);
-      max-width: 640px;
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--fg-muted);
+      max-width: 680px;
     }
 
     /* ═══════════════════════════════════════════════════════════════════
@@ -278,8 +271,8 @@
        ═══════════════════════════════════════════════════════════════════ */
     .dispatch-grid {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 32px;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
       margin-bottom: 64px;
     }
 
@@ -287,13 +280,14 @@
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 36px;
+      padding: 40px;
       position: relative;
       overflow: hidden;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s var(--ease-luxury);
     }
     .card-monolith:hover {
       border-color: var(--border-hover);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
     }
 
     .card-header-bar {
@@ -306,58 +300,66 @@
     }
 
     .card-tag {
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--fg-muted);
+    }
+
+    .card-status-label {
+      font-size: 11px;
+      color: var(--fg-muted);
+      letter-spacing: 0.04em;
     }
 
     .card-title {
       font-family: var(--font-grotesk);
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: -0.02em;
       color: var(--fg);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .card-desc {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--fg-muted);
-      line-height: 1.6;
-      margin-bottom: 28px;
+      line-height: 1.65;
+      margin-bottom: 30px;
     }
 
     /* ── TRACK 01: WHATSAPP INTERACTIVE TOPIC CHIPS ── */
     .wa-intent-label {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.15em;
+      font-family: var(--font-grotesk);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--fg-muted);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       display: block;
     }
 
     .wa-pills-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
+      gap: 9px;
+      margin-bottom: 28px;
     }
 
     .wa-pill {
       background: var(--bg-card);
       border: 1px solid var(--border);
       color: var(--fg-muted);
-      padding: 8px 16px;
+      padding: 9px 18px;
       border-radius: 9999px;
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-family: var(--font-grotesk);
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s var(--ease-tactile);
+      transition: all 0.25s var(--ease-luxury);
       user-select: none;
     }
     .wa-pill:hover {
@@ -372,33 +374,37 @@
       font-weight: 700;
     }
 
+    /* Refined Bespoke Atelier Message Preview */
     .wa-bubble-box {
       background: var(--bg-inset);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin-bottom: 28px;
+      border-left: 2px solid var(--fg);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 22px 24px;
+      margin-bottom: 32px;
       position: relative;
+      transition: border-color 0.3s ease;
     }
 
-    .wa-bubble-author {
-      font-family: var(--font-mono);
+    .wa-bubble-header {
+      font-family: var(--font-grotesk);
       font-size: 10px;
-      letter-spacing: 0.15em;
+      font-weight: 700;
+      letter-spacing: 0.2em;
       color: var(--fg-subtle);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
     }
 
     .wa-bubble-text {
       font-family: var(--font-sans);
-      font-size: 14px;
+      font-size: 14.5px;
       line-height: 1.6;
       color: var(--fg);
-      min-height: 44px;
+      min-height: 48px;
     }
 
     .btn-wa-hero {
@@ -415,17 +421,17 @@
       font-family: var(--font-grotesk);
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       text-decoration: none;
       cursor: pointer;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-      transition: all 0.25s var(--ease-tactile);
+      transition: all 0.25s var(--ease-luxury);
     }
     .btn-wa-hero:hover {
       background: #FFFFFF;
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(240, 237, 232, 0.15);
+      box-shadow: 0 10px 32px rgba(240, 237, 232, 0.18);
     }
     .btn-wa-hero .arrow {
       font-size: 16px;
@@ -439,18 +445,18 @@
     .email-monolith-box {
       background: var(--bg-inset);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       padding: 24px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .email-val-display {
-      font-family: var(--font-mono);
-      font-size: 15px;
-      font-weight: 600;
+      font-family: var(--font-grotesk);
+      font-size: 16px;
+      font-weight: 700;
       color: var(--fg);
       word-break: break-all;
     }
@@ -467,7 +473,7 @@
       color: var(--fg);
       padding: 10px 18px;
       border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.08em;
@@ -476,16 +482,16 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.2s var(--ease-tactile);
+      transition: all 0.2s var(--ease-luxury);
     }
     .btn-copy-email:hover {
       border-color: var(--border-hover);
       transform: translateY(-1px);
     }
     .btn-copy-email.copied {
-      background: var(--accent-green);
-      color: #000;
-      border-color: var(--accent-green);
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
     }
 
     .btn-open-mailer {
@@ -494,45 +500,44 @@
       color: var(--fg-muted);
       padding: 10px 18px;
       border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 11px;
+      font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.2s var(--ease-tactile);
+      transition: all 0.2s var(--ease-luxury);
     }
     .btn-open-mailer:hover {
       border-color: var(--border-hover);
       color: var(--fg);
     }
 
-    /* ── TRACK 03: BRIEFRÁPIDO (MINIMALIST 3 FIELDS) ── */
+    /* ── TRACK 03: BRIEFING ÁGIL ── */
     .brief-section {
-      margin-top: 32px;
+      margin-top: 36px;
       border-top: 1px solid var(--border);
       padding-top: 28px;
     }
 
     .brief-title {
       font-family: var(--font-grotesk);
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
       margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      color: var(--fg);
     }
 
     .brief-field-group {
       display: flex;
       flex-direction: column;
       gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .brief-input, .brief-textarea {
@@ -540,19 +545,20 @@
       background: var(--bg-inset);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 12px 16px;
+      padding: 13px 16px;
       color: var(--fg);
       font-family: var(--font-sans);
       font-size: 13px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.25s ease, background 0.25s ease;
     }
     .brief-input:focus, .brief-textarea:focus {
       border-color: var(--border-active);
+      background: #0E0E14;
     }
     .brief-textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 84px;
     }
 
     .brief-dispatch-row {
@@ -564,7 +570,7 @@
     .btn-brief-send {
       padding: 12px 16px;
       border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -577,7 +583,7 @@
       border: 1px solid var(--border);
       background: var(--bg-card);
       color: var(--fg);
-      transition: all 0.2s var(--ease-tactile);
+      transition: all 0.2s var(--ease-luxury);
     }
     .btn-brief-send:hover {
       border-color: var(--fg);
@@ -586,7 +592,7 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════
-       MERGED STUDIO DOSSIER & TELEMETRY (FROM #CONTACT)
+       STUDIO DOSSIER (FROM #CONTACT)
        ═══════════════════════════════════════════════════════════════════ */
     .studio-dossier-grid {
       border: 1px solid var(--border);
@@ -606,16 +612,16 @@
     }
 
     .dossier-label {
-      font-family: var(--font-mono);
-      font-size: 9px;
+      font-family: var(--font-grotesk);
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--fg-muted);
     }
 
     .dossier-value {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--fg);
       line-height: 1.5;
     }
@@ -632,10 +638,10 @@
     }
 
     .channels-label {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-grotesk);
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--fg-muted);
     }
@@ -647,17 +653,17 @@
     }
 
     .channel-anchor {
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--fg-muted);
       text-decoration: none;
-      padding: 8px 16px;
+      padding: 8px 18px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      transition: all 0.2s var(--ease-tactile);
+      transition: all 0.2s var(--ease-luxury);
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -668,9 +674,9 @@
       transform: translateY(-1px);
     }
     .channel-anchor.cv-highlight {
-      border-color: rgba(240, 237, 232, 0.3);
+      border-color: rgba(243, 239, 234, 0.35);
       color: var(--fg);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
     }
 
     /* Toast Notification */
@@ -681,18 +687,18 @@
       z-index: 1000;
       background: var(--fg);
       color: var(--bg);
-      font-family: var(--font-mono);
+      font-family: var(--font-grotesk);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 12px 20px;
+      padding: 13px 22px;
       border-radius: var(--radius-sm);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       transform: translateY(100px);
       opacity: 0;
       pointer-events: none;
-      transition: all 0.3s var(--ease-tactile);
+      transition: all 0.3s var(--ease-luxury);
     }
     .tactile-toast.show {
       transform: translateY(0);
@@ -716,15 +722,15 @@
         grid-template-columns: 1fr;
       }
       .header-inner {
-        padding: 14px 16px;
+        padding: 14px 18px;
       }
       .stage-wrapper {
-        padding: 40px 16px 80px;
+        padding: 44px 18px 80px;
       }
       .card-monolith {
-        padding: 24px;
+        padding: 26px;
       }
-      .status-pill {
+      .city-indicator {
         display: none;
       }
     }
@@ -732,8 +738,8 @@
 </head>
 <body>
 
-  <!-- Ambient Dynamic Interactive Canvas -->
-  <canvas id="ambient-canvas"></canvas>
+  <!-- Ambient Luxury Spotlight -->
+  <div class="ambient-glow-layer" id="ambient-glow"></div>
 
   <!-- Header Bar -->
   <header class="site-header">
@@ -742,26 +748,20 @@
         <img src="/PLM_SIMBOLO_BRANCO.png" class="brand-logo-img" alt="Pelimotion">
         <div class="brand-title-wrap">
           <span class="brand-title">Pelimotion</span>
-          <span class="brand-tagline" data-en="Contact &amp; Briefing" data-pt="Contato &amp; Briefing">Contato &amp; Briefing</span>
+          <span class="brand-tagline" data-en="Proposal &amp; Briefing" data-pt="Orçamento &amp; Briefing">Proposal &amp; Briefing</span>
         </div>
       </a>
 
       <div class="header-actions">
-        <div class="status-pill">
-          <span class="radar-dot"></span>
-          <span id="rio-live-clock">RIO 00:00 [UTC-3]</span>
+        <div class="city-indicator">
+          <span id="rio-live-clock">Rio de Janeiro · 00:00 BRT</span>
         </div>
 
-        <button class="btn-header-action" id="audio-toggle-btn" title="Alternar som tátil / Toggle audio">
-          <span id="audio-icon">♫</span>
-          <span id="audio-state-text" data-en="AUDIO" data-pt="ÁUDIO">ÁUDIO</span>
-        </button>
-
         <button class="btn-header-action" id="lang-btn" onclick="toggleLanguage()" title="Alternar idioma / Switch language">
-          <span id="lang-badge">PT</span>
+          <span id="lang-badge">EN</span>
         </button>
 
-        <a href="/" class="btn-header-action" data-en="← HOME" data-pt="← INÍCIO">← INÍCIO</a>
+        <a href="/" class="btn-header-action" data-en="← Home" data-pt="← Início">← Home</a>
       </div>
     </div>
   </header>
@@ -769,98 +769,96 @@
   <!-- Main Stage -->
   <main class="stage-wrapper">
 
-    <!-- Hero Monolith (Exact requested copy & hierarchy) -->
+    <!-- Hero Monolith (Editorial High-end Typography) -->
     <section class="hero-monolith">
-      <div class="hero-eyebrow" data-en="OFFICIAL CONTACT HUB · CREATIVE DIRECTION" data-pt="HUB OFICIAL DE CONTATO · DIREÇÃO CRIATIVA">HUB OFICIAL DE CONTATO · DIREÇÃO CRIATIVA</div>
-      <h1 class="hero-title-h1">Bora.</h1>
+      <div class="hero-eyebrow" data-en="PROPOSALS &amp; STRATEGIC DIALOGUE" data-pt="ORÇAMENTO &amp; DIÁLOGO ESTRATÉGICO">PROPOSALS &amp; STRATEGIC DIALOGUE</div>
+      <h1 class="hero-title-h1">Let's <em>talk.</em></h1>
       <p class="hero-mote">
-        <strong data-en="crescer juntos." data-pt="crescer juntos.">crescer juntos.</strong> <span data-en="Movimente-se com a gente." data-pt="Movimente-se com a gente.">Movimente-se com a gente.</span>
+        <span data-en="Transform your brand with pace, radical precision, and cinematic elegance." data-pt="Transforme sua marca com ritmo, precisão e elegância cinematográfica.">Transform your brand with pace, radical precision, and cinematic elegance.</span>
       </p>
-      <p class="hero-sub-subordinated" data-en="Open to creative direction, high-profile brand systems, and strategic briefs. Operating globally from Rio de Janeiro." data-pt="Aberto a direção criativa, colaborações de alto nível e projetos de escala. Atendimento global a partir do Rio de Janeiro.">
-        Aberto a direção criativa, colaborações de alto nível e projetos de escala. Atendimento global a partir do Rio de Janeiro.
+      <p class="hero-sub-subordinated" data-en="Open for creative direction, commissioned CGI productions, and global brand systems. Dedicated practice operating from Downtown Rio de Janeiro." data-pt="Aberto para direção criativa, produções comissionadas de CGI e sistemas visuais de marca. Atendimento dedicado a partir do Centro do Rio de Janeiro.">
+        Open for creative direction, commissioned CGI productions, and global brand systems. Dedicated practice operating from Downtown Rio de Janeiro.
       </p>
     </section>
 
     <!-- Primary Interactive Dispatch Grid -->
     <div class="dispatch-grid">
 
-      <!-- Col 1: WhatsApp Interactive Intent Monolith -->
+      <!-- Col 1: WhatsApp Interactive Intent Card -->
       <div class="card-monolith">
         <div class="card-header-bar">
-          <span class="card-tag" data-en="[ 01 // INSTANT CHANNEL ]" data-pt="[ 01 // CANAL INSTANTÂNEO ]">[ 01 // CANAL INSTANTÂNEO ]</span>
-          <span class="status-pill" style="padding:3px 10px;font-size:9px;" data-en="● REAL-TIME" data-pt="● TEMPO REAL">● TEMPO REAL</span>
+          <span class="card-tag" data-en="01 — Direct Channel" data-pt="01 — Canal Direto">01 — Direct Channel</span>
+          <span class="card-status-label" data-en="Direct with Creative Director" data-pt="Direto com Diretor Criativo">Direct with Creative Director</span>
         </div>
 
-        <h2 class="card-title" data-en="Direct WhatsApp" data-pt="WhatsApp Direto">WhatsApp Direto</h2>
-        <p class="card-desc" data-en="Direct, fluid dialogue with Senior Creative Director Felipe Conceição for fast queries, timelines, and kickoffs." data-pt="Diálogo fluido com Felipe Conceição (Diretor Criativo) para alinhamento rápido, viabilidade e cronogramas.">
-          Diálogo fluido com Felipe Conceição (Diretor Criativo) para alinhamento rápido, viabilidade e cronogramas.
+        <h2 class="card-title" data-en="WhatsApp Dialogue" data-pt="Diálogo no WhatsApp">WhatsApp Dialogue</h2>
+        <p class="card-desc" data-en="Fluid, direct conversation with Senior Creative Director Felipe Conceição for project feasibility, timelines, and kickoffs." data-pt="Conversa direta com Felipe Conceição (Diretor Criativo) para alinhamento rápido de viabilidade, escopo e cronograma.">
+          Fluid, direct conversation with Senior Creative Director Felipe Conceição for project feasibility, timelines, and kickoffs.
         </p>
 
-        <span class="wa-intent-label" data-en="Select Project Intent:" data-pt="Selecione o tipo de demanda:">Selecione o tipo de demanda:</span>
+        <span class="wa-intent-label" data-en="Select Scope:" data-pt="Selecione o Escopo:">Select Scope:</span>
         <div class="wa-pills-row">
-          <button class="wa-pill active" data-topic="Novo Projeto" data-msg="Olá Felipe, gostaria de conversar sobre um Novo Projeto com a Pelimotion." data-msg-en="Hello Felipe, I would like to discuss a New Project with Pelimotion.">Novo Projeto</button>
-          <button class="wa-pill" data-topic="Filme CGI / 3D" data-msg="Olá Felipe, tenho interesse em um Filme CGI / Animação 3D de alta precisão." data-msg-en="Hello Felipe, I am interested in a High-End CGI / 3D film.">Filme CGI / 3D</button>
-          <button class="wa-pill" data-topic="Motion Branding" data-msg="Olá Felipe, buscamos desenvolver um Sistema de Motion Branding para nossa marca." data-msg-en="Hello Felipe, we want to develop a Motion Branding system.">Motion Branding</button>
-          <button class="wa-pill" data-topic="Cenografia / Ao Vivo" data-msg="Olá Felipe, temos um projeto de Cenografia Espacial e Projeção Mapeada." data-msg-en="Hello Felipe, we have a Stage Direction / Immersive visual project.">Cenografia / Ao Vivo</button>
-          <button class="wa-pill" data-topic="Dúvida Rápida" data-msg="Olá Felipe, gostaria de tirar uma dúvida rápida sobre disponibilidade." data-msg-en="Hello Felipe, I have a quick question regarding atelier availability.">Dúvida Rápida</button>
+          <button class="wa-pill active" data-topic="Custom Proposal" data-msg="Hello Felipe, I would like to request a Custom Proposal for a project with Pelimotion." data-msg-pt="Olá Felipe, gostaria de solicitar um Orçamento Personalizado para um projeto com a Pelimotion.">Custom Proposal</button>
+          <button class="wa-pill" data-topic="Motion Branding" data-msg="Hello Felipe, we want to develop a Motion Branding system for our brand." data-msg-pt="Olá Felipe, buscamos desenvolver um Sistema de Motion Branding para nossa marca.">Motion Branding</button>
+          <button class="wa-pill" data-topic="CGI / 3D Film" data-msg="Hello Felipe, we are interested in a High-End CGI / 3D Film." data-msg-pt="Olá Felipe, temos interesse em um Filme CGI / Animação 3D de alto nível.">CGI / 3D Film</button>
+          <button class="wa-pill" data-topic="Stage / Live" data-msg="Hello Felipe, we have a Stage Direction / Immersive Visual project." data-msg-pt="Olá Felipe, temos um projeto de Cenografia Espacial e Projeção Mapeada.">Stage / Live</button>
+          <button class="wa-pill" data-topic="AI Pipelines" data-msg="Hello Felipe, we want to explore AI-integrated generative video pipelines for our brand." data-msg-pt="Olá Felipe, queremos entender a aplicação de pipelines generativos de IA para nossa marca.">AI Pipelines</button>
+          <button class="wa-pill" data-topic="Quick Query" data-msg="Hello Felipe, I have a quick question regarding atelier availability." data-msg-pt="Olá Felipe, gostaria de tirar uma dúvida rápida sobre disponibilidade.">Quick Query</button>
         </div>
 
         <div class="wa-bubble-box">
-          <div class="wa-bubble-author">
-            <span class="radar-dot" style="width:4px;height:4px;"></span>
-            <span data-en="Live Preview Message" data-pt="Prévia da Mensagem">Prévia da Mensagem</span>
+          <div class="wa-bubble-header">
+            <span data-en="Draft Message" data-pt="Mensagem Pré-configurada">Draft Message</span>
+            <span style="opacity:0.5;">WhatsApp ↗</span>
           </div>
           <div class="wa-bubble-text" id="wa-preview-text">
-            Olá Felipe, gostaria de conversar sobre um Novo Projeto com a Pelimotion.
+            Hello Felipe, I would like to request a Custom Proposal for a project with Pelimotion.
           </div>
         </div>
 
-        <a href="https://wa.me/5547999664274?text=Ol%C3%A1%20Felipe%2C%20gostaria%20de%20conversar%20sobre%20um%20Novo%20Projeto%20com%20a%20Pelimotion." target="_blank" class="btn-wa-hero" id="wa-submit-link">
-          <span data-en="Start on WhatsApp" data-pt="Bora Conversar no WhatsApp">Bora Conversar no WhatsApp</span>
-          <span class="arrow">↗</span>
+        <a href="https://wa.me/5547999664274?text=Hello%20Felipe%2C%20I%20would%20like%20to%20request%20a%20Custom%20Proposal%20for%20a%20project%20with%20Pelimotion." target="_blank" class="btn-wa-hero" id="wa-submit-link">
+          <span data-en="Start on WhatsApp" data-pt="Bora Conversar no WhatsApp">Start on WhatsApp</span>
+          <span class="arrow">→</span>
         </a>
       </div>
 
-      <!-- Col 2: Email & Agile Briefing Monolith -->
+      <!-- Col 2: Email & Fast Briefing Card -->
       <div class="card-monolith">
         <div class="card-header-bar">
-          <span class="card-tag" data-en="[ 02 // EDITORIAL &amp; BRIEF ]" data-pt="[ 02 // EDITORIAL &amp; BRIEFING ]">[ 02 // EDITORIAL &amp; BRIEFING ]</span>
-          <span class="status-pill" style="padding:3px 10px;font-size:9px;" data-en="24H RESPONSE" data-pt="RETORNO 24H">RETORNO 24H</span>
+          <span class="card-tag" data-en="02 — Executive Desk" data-pt="02 — Mesa Executiva">02 — Executive Desk</span>
+          <span class="card-status-label" data-en="Response within 24h" data-pt="Retorno em até 24h">Response within 24h</span>
         </div>
 
-        <h2 class="card-title" data-en="Direct Email" data-pt="E-mail Executivo">E-mail Executivo</h2>
-        <p class="card-desc" data-en="For formal RFPs, agency decks, non-disclosure agreements, and contract scopes." data-pt="Para envio de RFPs, decks de agência, acordos de confidencialidade e escopos contratuais.">
-          Para envio de RFPs, decks de agência, acordos de confidencialidade e escopos contratuais.
+        <h2 class="card-title" data-en="Direct Email" data-pt="E-mail Executivo">Direct Email</h2>
+        <p class="card-desc" data-en="For formal RFPs, agency decks, non-disclosure agreements, and bespoke contract scopes." data-pt="Para envio de RFPs formais, decks de agência, acordos de confidencialidade e escopos contratuais.">
+          For formal RFPs, agency decks, non-disclosure agreements, and bespoke contract scopes.
         </p>
 
         <div class="email-monolith-box">
-          <span class="dossier-label" data-en="Primary Atelier Inbox" data-pt="Caixa Postal Oficial">Caixa Postal Oficial</span>
+          <span class="dossier-label" data-en="Official Atelier Inbox" data-pt="Caixa Postal Oficial">Official Atelier Inbox</span>
           <div class="email-val-display" id="official-email-text">hello@pelimotion.art</div>
           <div class="email-actions-row">
             <button class="btn-copy-email" id="copy-email-btn" onclick="copyStudioEmail()">
-              <span id="copy-btn-label" data-en="Copy Email" data-pt="Copiar E-mail">Copiar E-mail</span>
+              <span id="copy-btn-label" data-en="Copy Email" data-pt="Copiar E-mail">Copy Email</span>
             </button>
-            <a href="mailto:hello@pelimotion.art?subject=Briefing%20Pelimotion" class="btn-open-mailer" data-en="Open Client ↗" data-pt="Abrir no E-mail ↗">Abrir no E-mail ↗</a>
+            <a href="mailto:hello@pelimotion.art?subject=Briefing%20Pelimotion" class="btn-open-mailer" data-en="Open in Mailer ↗" data-pt="Abrir no E-mail ↗">Open in Mailer ↗</a>
           </div>
         </div>
 
-        <!-- Agile Briefing Sub-module -->
+        <!-- Fast Briefing Sub-module -->
         <div class="brief-section">
-          <h3 class="brief-title">
-            <span class="card-tag" style="color:var(--fg);">[ 03 ]</span>
-            <span data-en="Quick Briefing Dispatch" data-pt="Briefing Ágil &amp; Mapeamento">Briefing Ágil &amp; Mapeamento</span>
-          </h3>
+          <h3 class="brief-title" data-en="03 — Quick Briefing" data-pt="03 — Briefing Rápido">03 — Quick Briefing</h3>
           <div class="brief-field-group">
-            <input type="text" class="brief-input" id="brief-name" placeholder="Seu Nome / Empresa" data-ph-pt="Seu Nome / Empresa" data-ph-en="Your Name / Company">
-            <input type="text" class="brief-input" id="brief-scope" placeholder="Tipo de Projeto (ex: 3D, Branding, VT)" data-ph-pt="Tipo de Projeto (ex: 3D, Branding, VT)" data-ph-en="Project Scope (e.g. 3D, Branding, Stage)">
-            <textarea class="brief-textarea" id="brief-details" placeholder="Objetivo essencial ou link de referência..." data-ph-pt="Objetivo essencial ou link de referência..." data-ph-en="Key goals, timeline, or reference link..."></textarea>
+            <input type="text" class="brief-input" id="brief-name" placeholder="Your Name / Company or Agency" data-ph-pt="Seu Nome / Empresa ou Agência" data-ph-en="Your Name / Company or Agency">
+            <input type="text" class="brief-input" id="brief-scope" placeholder="Scope (e.g. Rebranding, 3D Film, Stage)" data-ph-pt="Tipo de Demanda (ex: Rebranding, Filme 3D, VT)" data-ph-en="Scope (e.g. Rebranding, 3D Film, Stage)">
+            <textarea class="brief-textarea" id="brief-details" placeholder="Key goals, timeline, or reference link..." data-ph-pt="Objetivo essencial, prazo estimado ou links de referência..." data-ph-en="Key goals, timeline, or reference link..."></textarea>
           </div>
           <div class="brief-dispatch-row">
             <button class="btn-brief-send" onclick="dispatchBrief('wa')">
-              <span data-en="Send via WhatsApp ↗" data-pt="Enviar no WhatsApp ↗">Enviar no WhatsApp ↗</span>
+              <span data-en="Send via WhatsApp →" data-pt="Enviar no WhatsApp →">Send via WhatsApp →</span>
             </button>
             <button class="btn-brief-send" onclick="dispatchBrief('email')">
-              <span data-en="Send via Email ↗" data-pt="Enviar por E-mail ↗">Enviar por E-mail ↗</span>
+              <span data-en="Send via Email →" data-pt="Enviar por E-mail →">Send via Email →</span>
             </button>
           </div>
         </div>
@@ -869,43 +867,43 @@
 
     </div>
 
-    <!-- Integrated Studio Dossier & Telemetry (Merged from #contact) -->
+    <!-- Integrated Studio Dossier -->
     <section class="studio-dossier-grid">
       <div class="dossier-item">
-        <span class="dossier-label" data-en="Studio" data-pt="Estúdio">Estúdio</span>
+        <span class="dossier-label" data-en="Studio" data-pt="Estúdio">Studio</span>
         <div class="dossier-value">Pelimotion Creative Atelier</div>
       </div>
       <div class="dossier-item">
-        <span class="dossier-label" data-en="Location" data-pt="Localização">Localização</span>
-        <div class="dossier-value" data-en="Centro · Rio de Janeiro, Brazil (Global Practice)" data-pt="Centro · Rio de Janeiro, Brasil (Atendimento Global)">Centro · Rio de Janeiro, Brasil (Atendimento Global)</div>
+        <span class="dossier-label" data-en="Location" data-pt="Localização">Location</span>
+        <div class="dossier-value" data-en="Centro · Rio de Janeiro, Brazil (Global Practice)" data-pt="Centro · Rio de Janeiro, Brasil (Atendimento Global)">Centro · Rio de Janeiro, Brazil (Global Practice)</div>
       </div>
       <div class="dossier-item">
-        <span class="dossier-label" data-en="Disciplines" data-pt="Disciplinas">Disciplinas</span>
-        <div class="dossier-value" data-en="Motion Branding · CGI · Spatial Live · AI" data-pt="Motion Branding · CGI · Cenografia · IA">Motion Branding · CGI · Cenografia · IA</div>
+        <span class="dossier-label" data-en="Disciplines" data-pt="Disciplinas">Disciplines</span>
+        <div class="dossier-value" data-en="Motion Branding · CGI · Spatial Live · AI" data-pt="Motion Branding · CGI · Cenografia · IA">Motion Branding · CGI · Spatial Live · AI</div>
       </div>
     </section>
 
     <!-- Verified Channels Row -->
     <div class="channels-links-block">
-      <span class="channels-label" data-en="Verified Studio Channels &amp; Archives:" data-pt="Canais &amp; Arquivos Oficiais do Estúdio:">Canais &amp; Arquivos Oficiais do Estúdio:</span>
+      <span class="channels-label" data-en="Verified Studio Channels &amp; Archives:" data-pt="Canais &amp; Arquivos Oficiais do Estúdio:">Verified Studio Channels &amp; Archives:</span>
       <div class="channels-pills">
         <a href="https://linkedin.com/in/pelife" target="_blank" class="channel-anchor">LinkedIn ↗</a>
-        <a href="https://instagram.com/pelimotion" target="_blank" class="channel-anchor">Instagram ↗</a>
         <a href="https://behance.net/pelimotion" target="_blank" class="channel-anchor">Behance ↗</a>
-        <a href="/Curriculum/index.html" class="channel-anchor cv-highlight" data-en="Curriculum Vitae ↗" data-pt="Currículo Vitae ↗">Currículo Vitae ↗</a>
+        <a href="https://instagram.com/pelimotion" target="_blank" class="channel-anchor">Instagram ↗</a>
+        <a href="/Curriculum/index.html" class="channel-anchor cv-highlight" data-en="Curriculum Vitae ↗" data-pt="Currículo Vitae ↗">Curriculum Vitae ↗</a>
       </div>
     </div>
 
   </main>
 
   <!-- Interactive Tactile Toast Notification -->
-  <div class="tactile-toast" id="tactile-toast">✓ E-MAIL COPIADO PARA A ÁREA DE TRANSFERÊNCIA!</div>
+  <div class="tactile-toast" id="tactile-toast">✓ EMAIL COPIED TO CLIPBOARD!</div>
 
   <script>
     // ═══════════════════════════════════════════════════════════════════
     // BILINGUAL ENGINE
     // ═══════════════════════════════════════════════════════════════════
-    let currentLang = localStorage.getItem('plm-lang') || 'pt';
+    let currentLang = localStorage.getItem('plm-lang') || 'en';
 
     function applyLang(lang) {
       currentLang = lang;
@@ -933,7 +931,6 @@
     }
 
     function toggleLanguage() {
-      playTactileAudio(800, 0.04);
       applyLang(currentLang === 'pt' ? 'en' : 'pt');
     }
 
@@ -945,71 +942,21 @@
       if (!el) return;
       try {
         const now = new Date();
-        const options = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const options = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', hour12: false };
         const timeStr = new Intl.DateTimeFormat([], options).format(now);
-        el.textContent = `RIO ${timeStr} [UTC-3]`;
+        el.textContent = `Rio de Janeiro · ${timeStr} BRT`;
       } catch (e) {
-        el.textContent = 'RIO [UTC-3]';
+        el.textContent = 'Rio de Janeiro · BRT';
       }
     }
     setInterval(updateRioClock, 1000);
     updateRioClock();
 
     // ═══════════════════════════════════════════════════════════════════
-    // WEB AUDIO API HAPTIC SYNTHESIZER
-    // ═══════════════════════════════════════════════════════════════════
-    let audioContext = null;
-    let audioEnabled = localStorage.getItem('plm-audio') !== 'false';
-
-    function initAudio() {
-      if (!audioContext && typeof AudioContext !== 'undefined') {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-    }
-
-    function playTactileAudio(freq = 600, duration = 0.03) {
-      if (!audioEnabled) return;
-      try {
-        initAudio();
-        if (audioContext && audioContext.state === 'suspended') {
-          audioContext.resume();
-        }
-        if (!audioContext) return;
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-        gain.gain.setValueAtTime(0.04, audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioContext.destination);
-        osc.start();
-        osc.stop(audioContext.currentTime + duration);
-      } catch (err) {}
-    }
-
-    const audioToggleBtn = document.getElementById('audio-toggle-btn');
-    if (audioToggleBtn) {
-      const updateAudioUI = () => {
-        const icon = document.getElementById('audio-icon');
-        const text = document.getElementById('audio-state-text');
-        if (icon) icon.textContent = audioEnabled ? '♫' : '✕';
-        if (text) text.textContent = audioEnabled ? (currentLang === 'pt' ? 'ÁUDIO: ON' : 'AUDIO: ON') : (currentLang === 'pt' ? 'ÁUDIO: OFF' : 'AUDIO: OFF');
-      };
-      updateAudioUI();
-      audioToggleBtn.addEventListener('click', () => {
-        audioEnabled = !audioEnabled;
-        localStorage.setItem('plm-audio', audioEnabled ? 'true' : 'false');
-        if (audioEnabled) playTactileAudio(1000, 0.05);
-        updateAudioUI();
-      });
-    }
-
-    // ═══════════════════════════════════════════════════════════════════
     // WHATSAPP INTERACTIVE PREVIEW & DISPATCH
     // ═══════════════════════════════════════════════════════════════════
     function updateWaPreview(pill) {
-      const msg = currentLang === 'en' ? (pill.getAttribute('data-msg-en') || pill.getAttribute('data-msg')) : pill.getAttribute('data-msg');
+      const msg = currentLang === 'en' ? (pill.getAttribute('data-msg') || pill.getAttribute('data-msg-pt')) : (pill.getAttribute('data-msg-pt') || pill.getAttribute('data-msg'));
       const previewEl = document.getElementById('wa-preview-text');
       const submitEl = document.getElementById('wa-submit-link');
       if (previewEl) previewEl.textContent = msg;
@@ -1020,7 +967,6 @@
 
     document.querySelectorAll('.wa-pill').forEach(pill => {
       pill.addEventListener('click', () => {
-        playTactileAudio(750, 0.03);
         document.querySelectorAll('.wa-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
         updateWaPreview(pill);
@@ -1041,7 +987,6 @@
     }
 
     function copyStudioEmail() {
-      playTactileAudio(950, 0.05);
       const email = 'hello@pelimotion.art';
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(email).then(() => {
@@ -1068,8 +1013,8 @@
       const btn = document.getElementById('copy-email-btn');
       const label = document.getElementById('copy-btn-label');
       if (btn) btn.classList.add('copied');
-      if (label) label.textContent = currentLang === 'pt' ? '✓ COPIADO!' : '✓ COPIED!';
-      showToast(currentLang === 'pt' ? '✓ E-MAIL COPIADO PARA A ÁREA DE TRANSFERÊNCIA!' : '✓ EMAIL COPIED TO CLIPBOARD!');
+      if (label) label.textContent = currentLang === 'pt' ? '✓ Copiado!' : '✓ Copied!';
+      showToast(currentLang === 'pt' ? '✓ E-mail copiado para a área de transferência!' : '✓ Email copied to clipboard!');
       setTimeout(() => {
         if (btn) btn.classList.remove('copied');
         if (label) label.textContent = currentLang === 'pt' ? 'Copiar E-mail' : 'Copy Email';
@@ -1080,7 +1025,6 @@
     // AGILE BRIEFING DISPATCH
     // ═══════════════════════════════════════════════════════════════════
     function dispatchBrief(channel) {
-      playTactileAudio(1100, 0.04);
       const name = (document.getElementById('brief-name').value || '').trim();
       const scope = (document.getElementById('brief-scope').value || '').trim();
       const details = (document.getElementById('brief-details').value || '').trim();
@@ -1090,95 +1034,22 @@
       const body = details ? `\n\nDetalhes: ${details}` : '';
 
       if (channel === 'wa') {
-        const fullMsg = `Olá Felipe!\nMeu nome/empresa é: ${sender}\nDemanda: ${demand}${body}\n\nGostaria de entender viabilidade e próximos passos com a Pelimotion.`;
+        const fullMsg = `Hello Felipe!\nMy name/company is: ${sender}\nDemand: ${demand}${body}\n\nI would like to explore feasibility and next steps with Pelimotion.`;
         window.open(`https://wa.me/5547999664274?text=${encodeURIComponent(fullMsg)}`, '_blank');
       } else if (channel === 'email') {
         const subject = `[Briefing Pelimotion] ${sender} — ${demand}`;
-        const emailBody = `Olá Felipe,\n\nNome / Marca: ${sender}\nTipo de Demanda: ${demand}\n${body}\n\nNo aguardo de seu retorno para alinharmos escopo e cronograma.`;
+        const emailBody = `Hello Felipe,\n\nName / Brand: ${sender}\nScope: ${demand}\n${body}\n\nLooking forward to aligning timeline and next steps.`;
         window.location.href = `mailto:hello@pelimotion.art?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
       }
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // AMBIENT INTERACTIVE CANVAS (TACTILE CONSTELLATION & CURSOR FLOW)
+    // AMBIENT MOUSE SPOTLIGHT (SUBTLE & VELVETY)
     // ═══════════════════════════════════════════════════════════════════
-    const canvas = document.getElementById('ambient-canvas');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      let width, height;
-      const points = [];
-      const numPoints = 28;
-      let mouseX = -1000, mouseY = -1000;
-
-      function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-      }
-      window.addEventListener('resize', resize, { passive: true });
-      resize();
-
-      for (let i = 0; i < numPoints; i++) {
-        points.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          size: Math.random() * 1.5 + 0.8
-        });
-      }
-
-      window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-      }, { passive: true });
-
-      function animate() {
-        ctx.clearRect(0, 0, width, height);
-
-        // Update & draw points
-        for (let i = 0; i < points.length; i++) {
-          const p = points[i];
-          p.x += p.vx;
-          p.y += p.vy;
-
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
-
-          // Reaction to mouse
-          const dx = mouseX - p.x;
-          const dy = mouseY - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 140) {
-            p.x -= (dx / dist) * 0.8;
-            p.y -= (dy / dist) * 0.8;
-          }
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(240, 237, 232, 0.25)';
-          ctx.fill();
-
-          // Interconnecting hairlines
-          for (let j = i + 1; j < points.length; j++) {
-            const p2 = points[j];
-            const d = Math.hypot(p.x - p2.x, p.y - p2.y);
-            if (d < 160) {
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = `rgba(240, 237, 232, ${0.12 * (1 - d / 160)})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
-            }
-          }
-        }
-
-        requestAnimationFrame(animate);
-      }
-      animate();
-    }
+    window.addEventListener('mousemove', (e) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    }, { passive: true });
 
     // Initialize bilingual state
     document.addEventListener('DOMContentLoaded', () => {
