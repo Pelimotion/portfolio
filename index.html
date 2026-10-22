@@ -477,11 +477,16 @@ html[data-theme="light"] .port-card-overlay {
 .section-link { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: border-color .2s; }
 .section-link:hover { border-color: var(--fg); }
 
-.contact-hero-cta { margin: 1.5rem 0 2rem; }
-.btn-bora-hero { display: inline-flex; align-items: center; gap: 12px; background: var(--fg); color: var(--bg); padding: 14px 28px; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; text-decoration: none; border-radius: 3px; border: 1px solid var(--fg); transition: all .25s cubic-bezier(0.16, 1, 0.3, 1); }
-.btn-bora-hero:hover { background: transparent; color: var(--fg); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(240,237,232,0.12); }
-.btn-bora-hero .btn-arrow { font-size: 14px; transition: transform .25s ease; }
-.btn-bora-hero:hover .btn-arrow { transform: translateX(4px); }
+.contact-actions-cluster { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0 2rem; flex-wrap: wrap; }
+.btn-budget-hero { display: inline-flex; align-items: center; gap: 12px; background: var(--fg); color: var(--bg); padding: 14px 26px; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; text-decoration: none; border-radius: 3px; border: 1px solid var(--fg); transition: all .25s cubic-bezier(0.16, 1, 0.3, 1); }
+.btn-budget-hero:hover { background: transparent; color: var(--fg); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(240,237,232,0.12); }
+.btn-budget-hero .btn-arrow { font-size: 14px; transition: transform .25s ease; }
+.btn-budget-hero:hover .btn-arrow { transform: translateX(4px); }
+
+.btn-wa-quick { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); color: var(--fg); padding: 13px 18px; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-radius: 3px; transition: all .25s cubic-bezier(0.16, 1, 0.3, 1); }
+.btn-wa-quick:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--fg); transform: translateY(-2px); color: #FFFFFF; }
+.btn-wa-quick .wa-white-icon { width: 15px; height: 15px; stroke: #FFFFFF; transition: transform .2s ease; }
+.btn-wa-quick:hover .wa-white-icon { transform: scale(1.12); }
 
 /* ── CONTACT / FOOTER ── */
 #contact { padding: 6rem 0; }
@@ -496,9 +501,48 @@ html[data-theme="light"] .port-card-overlay {
 .contact-link:last-child { border-bottom: none; }
 .contact-link:hover { background: var(--border); color: var(--fg); }
 .contact-right { padding-top: .5rem; }
-.contact-info-item { display: flex; flex-direction: column; gap: .3rem; padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+.contact-info-item { display: flex; flex-direction: column; gap: .3rem; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
 .contact-info-label { font-size: 9px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); }
 .contact-info-val { font-size: 13px; font-weight: 500; color: var(--fg2); }
+
+/* ── ULTRA-MINIMALIST BLACK & WHITE MAP (CENTRO DO RIO) ── */
+.contact-map-wrapper { margin-top: 2rem; position: relative; }
+.contact-map-card { display: block; position: relative; border: 1px solid var(--border); background: #060608; border-radius: 4px; overflow: hidden; text-decoration: none; color: var(--fg); cursor: pointer; transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease; }
+.contact-map-card:hover { border-color: var(--fg); box-shadow: 0 14px 40px rgba(0,0,0,0.85), 0 0 25px rgba(255,255,255,0.06); transform: translateY(-2px); }
+.map-visual-frame { position: relative; width: 100%; height: 210px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #07070A; }
+.map-svg-art { width: 100%; height: 100%; display: block; }
+
+/* Concentric Radar Pulsing Waves */
+@keyframes radarWaveAnimation {
+  0% { r: 16; opacity: 0.95; }
+  50% { opacity: 0.45; }
+  100% { r: 92; opacity: 0; }
+}
+.radar-wave.wave-1 { animation: radarWaveAnimation 3.6s infinite cubic-bezier(0.16, 1, 0.3, 1); transform-origin: 200px 105px; }
+.radar-wave.wave-2 { animation: radarWaveAnimation 3.6s infinite cubic-bezier(0.16, 1, 0.3, 1) 1.2s; transform-origin: 200px 105px; }
+.radar-wave.wave-3 { animation: radarWaveAnimation 3.6s infinite cubic-bezier(0.16, 1, 0.3, 1) 2.4s; transform-origin: 200px 105px; }
+
+@keyframes radarPingDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.35; }
+}
+.radar-center-ping { animation: radarPingDot 2.2s infinite ease-in-out; transform-origin: 200px 105px; }
+
+/* Map HUD Crosshairs */
+.map-hud-cross { position: absolute; font-family: monospace; font-size: 11px; color: rgba(255, 255, 255, 0.25); line-height: 1; pointer-events: none; user-select: none; }
+.map-hud-cross.top-left { top: 8px; left: 8px; }
+.map-hud-cross.top-right { top: 8px; right: 8px; }
+.map-hud-cross.bottom-left { bottom: 8px; left: 8px; }
+.map-hud-cross.bottom-right { bottom: 8px; right: 8px; }
+
+/* Micro-animated Hover Reveal: "Vem conhecer nossa casa" */
+.map-hover-curtain { position: absolute; inset: 0; background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(8px); }
+.contact-map-card:hover .map-hover-curtain { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.map-hover-tag { font-family: monospace; font-size: 9px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); margin-bottom: 8px; }
+.map-hover-title { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; color: #FFFFFF; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.4); padding-bottom: 3px; transition: border-color .2s; }
+.contact-map-card:hover .map-hover-title { border-color: #FFFFFF; }
+.map-hover-sub { font-size: 11px; color: var(--fg2); max-width: 270px; line-height: 1.45; }
+
 .site-footer { border-top: 1px solid var(--border); padding: 1.5rem 2.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg3); }
 
 /* ── CURSOR ── */
@@ -606,9 +650,9 @@ html[data-theme="light"] .port-card-overlay {
           Trabalhamos onde estratégia encontra movimento. Em oito anos, projetamos sistemas visuais e filmes CGI de alta precisão para marcas que recusam o genérico — desenhando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.
         </p>
         <p class="about-text-body" id="about-p2"
-           data-en="Our musical roots govern every motion curve: millimetric pacing, weight, brutalist contrast, and deliberate silence. Pelimotion directs global brand systems, live spatial projections, CGI product films, and AI-integrated generative video pipelines for the automotive, financial, fashion, and cultural sectors."
-           data-pt="Nossa formação na música clássica e experimental molda cada curva de movimento: cadência milimétrica, peso, contraste brutalista e silêncios calculados. A Pelimotion dirige sistemas globais de marca, projeções espaciais ao vivo, filmes CGI de produto e pipelines generativos integrados a IA para os setores automotivo, financeiro, moda e alta cultura.">
-          Nossa formação na música clássica e experimental molda cada curva de movimento: cadência milimétrica, peso, contraste brutalista e silêncios calculados. A Pelimotion dirige sistemas globais de marca, projeções espaciais ao vivo, filmes CGI de produto e pipelines generativos integrados a IA para os setores automotivo, financeiro, moda e alta cultura.
+           data-en="Founder Felipe Conceição's background as a professional musician dictates the pulse of everything we create: motion driven by Brazilian groove, organic cadence, and living rhythm, combined with technological subtlety and the refined elegance that high-end motion branding evokes. Pelimotion designs kinetic visual systems, CGI films, immersive stage visuals, and AI-integrated generative pipelines for brands that set the pace."
+           data-pt="A trajetória do nosso fundador Felipe Conceição como músico profissional dita o pulso de tudo o que criamos: movimento com sangue brasileiro, suingue e cadência orgânica, combinados à sutileza da tecnologia e à extrema elegância que o motion branding de alto nível evoca. A Pelimotion desenha sistemas visuais cinéticos, filmes CGI, cenografias imersivas e pipelines generativos integrados a IA para marcas que ditam o ritmo.">
+          A trajetória do nosso fundador Felipe Conceição como músico profissional dita o pulso de tudo o que criamos: movimento com sangue brasileiro, suingue e cadência orgânica, combinados à sutileza da tecnologia e à extrema elegância que o motion branding de alto nível evoca. A Pelimotion desenha sistemas visuais cinéticos, filmes CGI, cenografias imersivas e pipelines generativos integrados a IA para marcas que ditam o ritmo.
         </p>
         
         <div class="about-location-pill">
@@ -627,8 +671,8 @@ html[data-theme="light"] .port-card-overlay {
           <div class="portrait-caption">
             <div class="portrait-name">FELIPE CONCEIÇÃO</div>
             <div class="portrait-role" data-en="Founder • Senior Creative Director" data-pt="Fundador • Diretor Criativo Senior">Fundador • Diretor Criativo Senior</div>
-            <div class="portrait-bio" data-en="Directing high-end CGI, brand motion systems, and kinetic installations. 8+ years collaborating with international agencies and tier-1 brands." data-pt="Direção de CGI high-end, sistemas de motion de marca e instalações cinéticas. 8+ anos liderando projetos para grandes agências e marcas globais.">
-              Direção de CGI high-end, sistemas de motion de marca e instalações cinéticas. 8+ anos liderando projetos para grandes agências e marcas globais.
+            <div class="portrait-bio" data-en="Professional musician by background, creative director, and specialist in high-precision motion branding and CGI. 8+ years designing kinetic systems and films for global brands." data-pt="Músico profissional de formação, diretor criativo e especialista em motion branding e CGI de alta precisão. 8+ anos projetando sistemas cinéticos e filmes para marcas globais.">
+              Músico profissional de formação, diretor criativo e especialista em motion branding e CGI de alta precisão. 8+ anos projetando sistemas cinéticos e filmes para marcas globais.
             </div>
             
             <a href="Curriculum/index.html" class="about-cv-access" data-en="Curriculum <span class='cv-arrow'>↗</span>" data-pt="Currículo <span class='cv-arrow'>↗</span>">
@@ -875,46 +919,112 @@ html[data-theme="light"] .port-card-overlay {
   <div class="container">
     <div class="contact-grid">
       <div class="reveal">
-        <div class="about-label" data-en="03 — Contact &amp; Briefing" data-pt="03 — Contato &amp; Briefing">03 — Contact &amp; Briefing</div>
+        <div class="about-label" data-en="03 — Contact &amp; Proposals" data-pt="03 — Contato &amp; Propostas">03 — Contato &amp; Propostas</div>
         <h2 class="contact-title" id="contact-title" data-en="Bora conversar.<br><em>Move your brand.</em>" data-pt="Bora conversar.<br><em>Mova sua marca.</em>">Bora conversar.<br><em>Mova sua marca.</em></h2>
         <p class="contact-sub" id="contact-sub" data-en="Open to creative direction, high-level collaborations, and strategic briefs. Working globally from Rio de Janeiro." data-pt="Aberto a direção criativa, colaborações de alto nível e projetos de escala. Atuação global a partir do Rio de Janeiro.">Aberto a direção criativa, colaborações de alto nível e projetos de escala. Atuação global a partir do Rio de Janeiro.</p>
         
-        <div class="contact-hero-cta">
-          <a href="/bora" class="btn-bora-hero" data-en="Bora Conversar <span>→</span>" data-pt="Bora Conversar <span>→</span>">
-            <span>Bora Conversar</span>
+        <div class="contact-actions-cluster">
+          <a href="/bora" class="btn-budget-hero" data-en="Custom Proposal <span>→</span>" data-pt="Orçamento Personalizado <span>→</span>">
+            <span>Orçamento Personalizado</span>
             <span class="btn-arrow">→</span>
+          </a>
+          <a href="https://wa.me/5547999664274?text=Ol%C3%A1%20Felipe%2C%20gostaria%20de%20conversar%20sobre%20um%20projeto%20com%20a%20Pelimotion." target="_blank" class="btn-wa-quick" aria-label="WhatsApp Direto" title="WhatsApp Direto">
+            <svg class="wa-white-icon" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            <span>WhatsApp</span>
           </a>
         </div>
 
         <a href="mailto:conceicao.felipe@gmail.com" class="contact-email" id="contact-email">conceicao.felipe@gmail.com</a>
         <div class="contact-links">
-          <a href="/bora" class="contact-link" style="color:var(--fg); background:rgba(240,237,232,0.06); font-weight:800;" data-en="Bora: Canal &amp; Briefing Direto →" data-pt="Bora: Canal &amp; Briefing Direto →">Bora: Canal &amp; Briefing Direto <span>→</span></a>
-          <a href="https://wa.me/5547999664274" target="_blank" class="contact-link" data-en="WhatsApp Direct ↗" data-pt="WhatsApp Direto ↗">WhatsApp Direto <span>↗</span></a>
           <a href="https://linkedin.com/in/pelife" target="_blank" class="contact-link">LinkedIn <span>↗</span></a>
-          <a href="https://instagram.com/pelimotion" target="_blank" class="contact-link">Instagram <span>↗</span></a>
           <a href="https://behance.net/pelimotion" target="_blank" class="contact-link">Behance <span>↗</span></a>
-          <a href="Curriculum/index.html" class="contact-link" data-en="Curriculum Vitae →" data-pt="Currículo →">Curriculum Vitae <span>→</span></a>
+          <a href="https://instagram.com/pelimotion" target="_blank" class="contact-link">Instagram <span>↗</span></a>
         </div>
       </div>
       <div class="contact-right reveal" style="transition-delay:.15s">
         <div class="contact-info-item">
           <div class="contact-info-label" data-en="Studio" data-pt="Estúdio">Studio</div>
-          <div class="contact-info-val">Pelimotion Hub</div>
+          <div class="contact-info-val">Pelimotion Creative Atelier</div>
         </div>
         <div class="contact-info-item">
           <div class="contact-info-label" data-en="Location" data-pt="Localização">Location</div>
-          <div class="contact-info-val" id="contact-location" data-en="Rio de Janeiro, Brazil (Global Direction)" data-pt="Rio de Janeiro, Brasil (Atendimento Global)">Rio de Janeiro, Brasil (Atendimento Global)</div>
+          <div class="contact-info-val" id="contact-location" data-en="Centro · Rio de Janeiro, Brazil (Global Practice)" data-pt="Centro · Rio de Janeiro, Brasil (Atendimento Global)">Centro · Rio de Janeiro, Brasil (Atendimento Global)</div>
         </div>
-        <div class="contact-info-item">
+        <div class="contact-info-item" style="border-bottom:none">
           <div class="contact-info-label" data-en="Disciplines" data-pt="Disciplinas">Disciplines</div>
           <div class="contact-info-val" data-en="Motion Design · Creative Direction · CGI · Brand Systems · AI Workflows" data-pt="Motion Design · Direção Criativa · CGI · Sistemas de Marca · Workflows de IA">Motion Design · Creative Direction · CGI · Sistemas de Marca · Workflows de IA</div>
         </div>
-        <div class="contact-info-item" style="border-bottom:none">
-          <div class="contact-info-label" data-en="Status" data-pt="Status">Status</div>
-          <div class="contact-info-val" style="display:flex;align-items:center;gap:8px">
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
-            <span data-en="Available for projects (Q3/Q4)" data-pt="Disponível para projetos (Q3/Q4)">Disponível para projetos (Q3/Q4)</span>
-          </div>
+
+        <!-- Ultra-minimalist Black & White Map with Regional Circle & Hover Reveal -->
+        <div class="contact-map-wrapper">
+          <a href="https://wa.me/5547999664274?text=Ol%C3%A1%20Felipe%2C%20gostaria%20de%20marcar%20um%20hor%C3%A1rio%20para%20bater%20um%20papo%20e%20conhecer%20a%20casa%20da%20Pelimotion%20no%20Centro%20do%20Rio." 
+             target="_blank" 
+             class="contact-map-card"
+             id="studio-map-trigger"
+             data-msg-pt="Olá Felipe, gostaria de marcar um horário para bater um papo e conhecer a casa da Pelimotion no Centro do Rio."
+             data-msg-en="Hello Felipe, I would like to schedule a time to chat and visit Pelimotion's studio in Downtown Rio.">
+            <div class="map-visual-frame">
+              <svg class="map-svg-art" viewBox="0 0 400 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="map-grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255, 255, 255, 0.035)" stroke-width="0.75"/>
+                  </pattern>
+                  <radialGradient id="radar-glow-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(255, 255, 255, 0.16)" />
+                    <stop offset="60%" stop-color="rgba(255, 255, 255, 0.04)" />
+                    <stop offset="100%" stop-color="rgba(255, 255, 255, 0)" />
+                  </radialGradient>
+                </defs>
+                
+                <!-- Deep Dark Canvas Base -->
+                <rect width="400" height="210" fill="#07070A" />
+                <rect width="400" height="210" fill="url(#map-grid-pattern)" />
+                
+                <!-- Abstract Stylized Rio Maritime Coastline & Guanabara Bay contour -->
+                <path d="M 330 0 C 315 35, 295 70, 275 95 C 255 120, 240 155, 215 210" stroke="rgba(255, 255, 255, 0.14)" stroke-width="1.2" stroke-dasharray="2 3" />
+                <path d="M 275 95 C 235 105, 175 95, 125 120 C 85 140, 45 145, 0 155" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
+                <path d="M 350 40 C 370 70, 390 90, 400 110" stroke="rgba(255, 255, 255, 0.1)" stroke-width="0.8" stroke-dasharray="1 3" />
+                
+                <!-- Minimalist Urban Gridlines -->
+                <line x1="80" y1="0" x2="80" y2="210" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                <line x1="160" y1="0" x2="160" y2="210" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                <line x1="240" y1="0" x2="240" y2="210" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                <line x1="0" y1="105" x2="400" y2="105" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                
+                <!-- Micro-animated Concentric Radar Waves -->
+                <circle class="radar-wave wave-1" cx="200" cy="105" r="24" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1" fill="none" />
+                <circle class="radar-wave wave-2" cx="200" cy="105" r="48" stroke="rgba(255, 255, 255, 0.22)" stroke-width="0.75" stroke-dasharray="3 3" fill="none" />
+                <circle class="radar-wave wave-3" cx="200" cy="105" r="74" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.75" stroke-dasharray="1 4" fill="none" />
+                
+                <!-- Regional Zone Circle (Centro do Rio - Discreet area demarcation) -->
+                <circle cx="200" cy="105" r="42" fill="url(#radar-glow-grad)" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1.2" stroke-dasharray="4 2" />
+                
+                <!-- Central Atelier Dot & Micro-Ping -->
+                <circle cx="200" cy="105" r="3.5" fill="#FFFFFF" />
+                <circle cx="200" cy="105" r="8" stroke="rgba(255, 255, 255, 0.65)" stroke-width="1" fill="none" class="radar-center-ping" />
+                
+                <!-- High-precision Coordinates & Legend -->
+                <text x="16" y="24" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.4)" letter-spacing="1.5">LAT 22° 54' 10" S · LON 43° 10' 28" W</text>
+                <text x="16" y="38" font-family="monospace" font-size="8.5" font-weight="700" fill="rgba(255,255,255,0.75)" letter-spacing="2">ZONA // CENTRO · RIO DE JANEIRO</text>
+                <text x="384" y="196" text-anchor="end" font-family="monospace" font-size="7.5" fill="rgba(255,255,255,0.3)" letter-spacing="1">ÁREA PRIVADA · ATELIÊ CENTRAL</text>
+              </svg>
+              
+              <!-- Minimal HUD crosses -->
+              <div class="map-hud-cross top-left">+</div>
+              <div class="map-hud-cross top-right">+</div>
+              <div class="map-hud-cross bottom-left">+</div>
+              <div class="map-hud-cross bottom-right">+</div>
+
+              <!-- Micro-animated Hover Reveal Curtain -->
+              <div class="map-hover-curtain">
+                <span class="map-hover-tag" data-en="DIRECT WHATSAPP INVITATION" data-pt="CONVITE DIRETO WHATSAPP">CONVITE DIRETO WHATSAPP</span>
+                <div class="map-hover-title" data-en="Come visit our studio ↗" data-pt="Vem conhecer nossa casa ↗">Vem conhecer nossa casa ↗</div>
+                <p class="map-hover-sub" data-en="Click to schedule a coffee and chat in Downtown Rio" data-pt="Clique para marcar um café e bater um papo no Centro do Rio">Clique para marcar um café e bater um papo no Centro do Rio</p>
+              </div>
+            </div>
+          </a>
         </div>
       </div>
     </div>
@@ -1041,6 +1151,12 @@ function applyLang(lang) {
   if (ptOpt && enOpt) {
     ptOpt.classList.toggle('active', lang === 'pt');
     enOpt.classList.toggle('active', lang === 'en');
+  }
+
+  const mapTrigger = document.getElementById('studio-map-trigger');
+  if (mapTrigger) {
+    const msg = lang === 'pt' ? mapTrigger.getAttribute('data-msg-pt') : mapTrigger.getAttribute('data-msg-en');
+    if (msg) mapTrigger.href = `https://wa.me/5547999664274?text=${encodeURIComponent(msg)}`;
   }
 
   document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
