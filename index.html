@@ -505,43 +505,38 @@ html[data-theme="light"] .port-card-overlay {
 .contact-info-label { font-size: 9px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--fg3); }
 .contact-info-val { font-size: 13px; font-weight: 500; color: var(--fg2); }
 
-/* ── ULTRA-MINIMALIST BLACK & WHITE MAP (CENTRO DO RIO) ── */
+/* ── MINIMALIST REALISTIC MONOCHROME MAP (CENTRO DO RIO) ── */
 .contact-map-wrapper { margin-top: 2rem; position: relative; }
-.contact-map-card { display: block; position: relative; border: 1px solid var(--border); background: #060608; border-radius: 4px; overflow: hidden; text-decoration: none; color: var(--fg); cursor: pointer; transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease; }
+.contact-map-card { display: block; position: relative; border: 1px solid var(--border); background: #07070A; border-radius: 4px; overflow: hidden; text-decoration: none; color: var(--fg); cursor: pointer; transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease; }
 .contact-map-card:hover { border-color: var(--fg); box-shadow: 0 14px 40px rgba(0,0,0,0.85), 0 0 25px rgba(255,255,255,0.06); transform: translateY(-2px); }
-.map-visual-frame { position: relative; width: 100%; height: 210px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #07070A; }
+.map-visual-frame { position: relative; width: 100%; height: 210px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #050508; }
 .map-svg-art { width: 100%; height: 100%; display: block; }
 
-/* Concentric Radar Pulsing Waves */
-@keyframes radarWaveAnimation {
-  0% { r: 16; opacity: 0.95; }
-  50% { opacity: 0.45; }
-  100% { r: 92; opacity: 0; }
+/* Subtle Regional Studio Zone Breathing Pulse */
+@keyframes studioZoneBreath {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(1.05); opacity: 0.9; }
 }
-.radar-wave.wave-1 { animation: radarWaveAnimation 3.6s infinite cubic-bezier(0.16, 1, 0.3, 1); transform-origin: 200px 105px; }
-.radar-wave.wave-2 { animation: radarWaveAnimation 3.6s infinite cubic-bezier(0.16, 1, 0.3, 1) 1.2s; transform-origin: 200px 105px; }
-.radar-wave.wave-3 { animation: radarWaveAnimation 3.6s infinite cubic-bezier(0.16, 1, 0.3, 1) 2.4s; transform-origin: 200px 105px; }
-
-@keyframes radarPingDot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.6); opacity: 0.35; }
+.studio-zone-pulse {
+  transform-origin: 226px 118px;
+  animation: studioZoneBreath 4.2s ease-in-out infinite;
 }
-.radar-center-ping { animation: radarPingDot 2.2s infinite ease-in-out; transform-origin: 200px 105px; }
 
-/* Map HUD Crosshairs */
-.map-hud-cross { position: absolute; font-family: monospace; font-size: 11px; color: rgba(255, 255, 255, 0.25); line-height: 1; pointer-events: none; user-select: none; }
-.map-hud-cross.top-left { top: 8px; left: 8px; }
-.map-hud-cross.top-right { top: 8px; right: 8px; }
-.map-hud-cross.bottom-left { bottom: 8px; left: 8px; }
-.map-hud-cross.bottom-right { bottom: 8px; right: 8px; }
+@keyframes studioDotPulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.studio-point-dot {
+  transform-origin: 226px 118px;
+  animation: studioDotPulse 2.6s ease-in-out infinite;
+}
 
 /* Micro-animated Hover Reveal: "Vem conhecer nossa casa" */
-.map-hover-curtain { position: absolute; inset: 0; background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(8px); }
+.map-hover-curtain { position: absolute; inset: 0; background: rgba(5, 5, 8, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(6px); }
 .contact-map-card:hover .map-hover-curtain { opacity: 1; pointer-events: auto; transform: translateY(0); }
-.map-hover-tag { font-family: monospace; font-size: 9px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); margin-bottom: 8px; }
 .map-hover-title { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; color: #FFFFFF; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.4); padding-bottom: 3px; transition: border-color .2s; }
 .contact-map-card:hover .map-hover-title { border-color: #FFFFFF; }
-.map-hover-sub { font-size: 11px; color: var(--fg2); max-width: 270px; line-height: 1.45; }
+.map-hover-sub { font-size: 12px; color: var(--fg2); max-width: 280px; line-height: 1.45; }
 
 .site-footer { border-top: 1px solid var(--border); padding: 1.5rem 2.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg3); }
 
@@ -936,7 +931,7 @@ html[data-theme="light"] .port-card-overlay {
           </a>
         </div>
 
-        <a href="mailto:conceicao.felipe@gmail.com" class="contact-email" id="contact-email">conceicao.felipe@gmail.com</a>
+        <a href="mailto:hello@pelimotion.art" class="contact-email" id="contact-email">hello@pelimotion.art</a>
         <div class="contact-links">
           <a href="https://linkedin.com/in/pelife" target="_blank" class="contact-link">LinkedIn <span>↗</span></a>
           <a href="https://behance.net/pelimotion" target="_blank" class="contact-link">Behance <span>↗</span></a>
@@ -957,7 +952,7 @@ html[data-theme="light"] .port-card-overlay {
           <div class="contact-info-val" data-en="Motion Design · Creative Direction · CGI · Brand Systems · AI Workflows" data-pt="Motion Design · Direção Criativa · CGI · Sistemas de Marca · Workflows de IA">Motion Design · Creative Direction · CGI · Sistemas de Marca · Workflows de IA</div>
         </div>
 
-        <!-- Ultra-minimalist Black & White Map with Regional Circle & Hover Reveal -->
+        <!-- Minimalist Realistic Monochrome Map (Centro do Rio) & Hover Reveal -->
         <div class="contact-map-wrapper">
           <a href="https://wa.me/5547999664274?text=Ol%C3%A1%20Felipe%2C%20gostaria%20de%20marcar%20um%20hor%C3%A1rio%20para%20bater%20um%20papo%20e%20conhecer%20a%20casa%20da%20Pelimotion%20no%20Centro%20do%20Rio." 
              target="_blank" 
@@ -966,62 +961,124 @@ html[data-theme="light"] .port-card-overlay {
              data-msg-pt="Olá Felipe, gostaria de marcar um horário para bater um papo e conhecer a casa da Pelimotion no Centro do Rio."
              data-msg-en="Hello Felipe, I would like to schedule a time to chat and visit Pelimotion's studio in Downtown Rio.">
             <div class="map-visual-frame">
-              <svg class="map-svg-art" viewBox="0 0 400 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="map-svg-art" viewBox="0 0 460 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
                 <defs>
-                  <pattern id="map-grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255, 255, 255, 0.035)" stroke-width="0.75"/>
-                  </pattern>
-                  <radialGradient id="radar-glow-grad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="rgba(255, 255, 255, 0.16)" />
-                    <stop offset="60%" stop-color="rgba(255, 255, 255, 0.04)" />
+                  <radialGradient id="studio-zone-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(255, 255, 255, 0.12)" />
+                    <stop offset="70%" stop-color="rgba(255, 255, 255, 0.03)" />
                     <stop offset="100%" stop-color="rgba(255, 255, 255, 0)" />
+                  </radialGradient>
+                  <radialGradient id="studio-glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
                   </radialGradient>
                 </defs>
                 
-                <!-- Deep Dark Canvas Base -->
-                <rect width="400" height="210" fill="#07070A" />
-                <rect width="400" height="210" fill="url(#map-grid-pattern)" />
+                <!-- Baía de Guanabara (Water Base) -->
+                <rect width="460" height="210" fill="#050508" />
                 
-                <!-- Abstract Stylized Rio Maritime Coastline & Guanabara Bay contour -->
-                <path d="M 330 0 C 315 35, 295 70, 275 95 C 255 120, 240 155, 215 210" stroke="rgba(255, 255, 255, 0.14)" stroke-width="1.2" stroke-dasharray="2 3" />
-                <path d="M 275 95 C 235 105, 175 95, 125 120 C 85 140, 45 145, 0 155" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
-                <path d="M 350 40 C 370 70, 390 90, 400 110" stroke="rgba(255, 255, 255, 0.1)" stroke-width="0.8" stroke-dasharray="1 3" />
+                <!-- Water ripple lines in Guanabara Bay -->
+                <path d="M 280 15 C 320 18, 380 12, 440 20" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                <path d="M 340 70 C 370 75, 410 68, 455 75" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                <path d="M 370 125 C 395 130, 425 125, 455 132" stroke="rgba(255, 255, 255, 0.035)" stroke-width="0.75" />
+                <path d="M 330 195 C 365 200, 410 196, 455 202" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+
+                <!-- Mainland Base (Centro do Rio de Janeiro Real Coastline & Landmass) -->
+                <path d="M 0 0 L 222 0 L 225 22 L 236 22 L 240 42 L 248 54 L 254 74 L 258 92 L 272 88 L 272 94 L 258 96 L 260 116 L 324 116 L 354 166 L 330 182 L 268 165 L 252 176 L 236 196 L 224 210 L 0 210 Z" fill="#0C0C12" stroke="rgba(255, 255, 255, 0.22)" stroke-width="1.2" />
+
+                <!-- Ilha das Cobras (Arsenal de Marinha) -->
+                <polygon points="266,26 324,34 318,48 262,40" fill="#12121A" stroke="rgba(255, 255, 255, 0.2)" stroke-width="0.8" />
+                <line x1="246" y1="44" x2="262" y2="40" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1" />
+
+                <!-- Ilha Fiscal -->
+                <polygon points="344,50 356,48 358,58 346,60" fill="#14141E" stroke="rgba(255, 255, 255, 0.2)" stroke-width="0.8" />
+
+                <!-- Santos Dumont Airport (SDU) Runway Strips & Markings -->
+                <line x1="282" y1="122" x2="340" y2="168" stroke="rgba(255, 255, 255, 0.4)" stroke-width="3" />
+                <line x1="288" y1="125" x2="346" y2="171" stroke="rgba(255, 255, 255, 0.3)" stroke-width="2" />
+                <line x1="280" y1="120" x2="284" y2="124" stroke="#FFFFFF" stroke-width="1.2" />
+                <line x1="338" y1="166" x2="342" y2="170" stroke="#FFFFFF" stroke-width="1.2" />
+
+                <!-- Realistic Downtown Urban Blocks (Quarteirões do Centro) -->
+                <!-- Saúde / Gamboa / Porto Maravilha armazéns -->
+                <rect x="18" y="6" width="34" height="12" rx="1" fill="#14141C" />
+                <rect x="58" y="6" width="36" height="12" rx="1" fill="#14141C" />
+                <rect x="100" y="6" width="36" height="12" rx="1" fill="#14141C" />
+                <rect x="142" y="6" width="34" height="12" rx="1" fill="#14141C" />
+                <rect x="182" y="6" width="30" height="12" rx="1" fill="#14141C" />
+
+                <!-- Morro da Conceição / São Bento foothills -->
+                <rect x="135" y="26" width="38" height="22" rx="1" fill="#161622" />
+                <rect x="180" y="26" width="36" height="22" rx="1" fill="#161622" />
+                <polygon points="222,26 238,26 235,46 220,46" fill="#191926" />
+
+                <!-- Presidente Vargas North Corridor Blocks -->
+                <rect x="14" y="52" width="24" height="18" rx="1" fill="#14141E" />
+                <rect x="44" y="52" width="36" height="18" rx="1" fill="#161622" />
+                <rect x="86" y="52" width="44" height="18" rx="1" fill="#14141E" />
+                <rect x="136" y="52" width="40" height="18" rx="1" fill="#161624" />
+                <rect x="182" y="52" width="34" height="18" rx="1" fill="#181826" />
+                <polygon points="222,52 242,52 246,70 222,70" fill="#1B1B2A" />
+
+                <!-- Campo de Santana (Parque Histórico da República) -->
+                <rect x="42" y="86" width="42" height="34" rx="2" fill="#080C0A" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.8" />
+
+                <!-- Centro Histórico Core Blocks (between Pres. Vargas & Carioca/Tiradentes) -->
+                <rect x="90" y="86" width="40" height="14" rx="1" fill="#161622" />
+                <rect x="90" y="104" width="40" height="16" rx="1" fill="#14141E" />
                 
-                <!-- Minimalist Urban Gridlines -->
-                <line x1="80" y1="0" x2="80" y2="210" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
-                <line x1="160" y1="0" x2="160" y2="210" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
-                <line x1="240" y1="0" x2="240" y2="210" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
-                <line x1="0" y1="105" x2="400" y2="105" stroke="rgba(255, 255, 255, 0.04)" stroke-width="0.75" />
+                <!-- Praça Tiradentes -->
+                <rect x="136" y="114" width="14" height="14" rx="1" fill="#080C0A" stroke="rgba(255, 255, 255, 0.15)" stroke-width="0.75" />
                 
-                <!-- Micro-animated Concentric Radar Waves -->
-                <circle class="radar-wave wave-1" cx="200" cy="105" r="24" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1" fill="none" />
-                <circle class="radar-wave wave-2" cx="200" cy="105" r="48" stroke="rgba(255, 255, 255, 0.22)" stroke-width="0.75" stroke-dasharray="3 3" fill="none" />
-                <circle class="radar-wave wave-3" cx="200" cy="105" r="74" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.75" stroke-dasharray="1 4" fill="none" />
+                <rect x="156" y="86" width="30" height="14" rx="1" fill="#171725" />
+                <rect x="156" y="104" width="30" height="16" rx="1" fill="#151520" />
+                <rect x="192" y="86" width="28" height="14" rx="1" fill="#1A1A28" />
+                <rect x="192" y="104" width="28" height="16" rx="1" fill="#181826" />
+
+                <!-- Castelo / Praça XV waterfront blocks -->
+                <polygon points="226,86 248,86 252,102 226,102" fill="#1B1B2B" />
+                <polygon points="226,106 252,106 256,126 226,126" fill="#1B1B2B" />
+                <polygon points="226,130 258,130 262,152 226,152" fill="#181827" />
+
+                <!-- Cinelândia / Passeio Público / Lapa area -->
+                <rect x="90" y="128" width="40" height="22" rx="1" fill="#13131D" />
+                <rect x="136" y="134" width="38" height="22" rx="1" fill="#151520" />
+                <rect x="180" y="128" width="38" height="22" rx="1" fill="#171725" />
                 
-                <!-- Regional Zone Circle (Centro do Rio - Discreet area demarcation) -->
-                <circle cx="200" cy="105" r="42" fill="url(#radar-glow-grad)" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1.2" stroke-dasharray="4 2" />
+                <!-- Passeio Público (Parque Triangular) -->
+                <polygon points="186,162 208,158 198,182" fill="#080C0A" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.75" />
+
+                <!-- Arcos da Lapa (Aqueduto da Carioca) -->
+                <path d="M 152 168 C 164 170, 172 174, 180 180" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.5" />
+                <rect x="90" y="160" width="54" height="24" rx="1" fill="#12121A" />
+                <rect x="150" y="184" width="32" height="20" rx="1" fill="#12121A" />
+                <rect x="188" y="188" width="30" height="18" rx="1" fill="#14141E" />
+
+                <!-- Major Thoroughfares / Arteries (Clean dark road channels) -->
+                <!-- Av. Presidente Vargas (Iconic East-West Axis) -->
+                <line x1="0" y1="78" x2="238" y2="78" stroke="#050508" stroke-width="6" />
+                <line x1="0" y1="78" x2="238" y2="78" stroke="rgba(255, 255, 255, 0.15)" stroke-width="0.75" />
+
+                <!-- Av. Rio Branco (Iconic North-South Axis) -->
+                <path d="M 234 36 L 234 78 L 224 120 L 214 156 L 198 210" stroke="#050508" stroke-width="5" />
+                <path d="M 234 36 L 234 78 L 224 120 L 214 156 L 198 210" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.75" />
+
+                <!-- Av. Presidente Antônio Carlos / Rua 1º de Março -->
+                <path d="M 246 78 L 252 105 L 248 150 L 238 185" stroke="#050508" stroke-width="3.5" />
+                <path d="M 246 78 L 252 105 L 248 150 L 238 185" stroke="rgba(255, 255, 255, 0.08)" stroke-width="0.6" />
+
+                <!-- Regional Studio Zone (Centro do Rio de Janeiro Demarcation) -->
+                <circle cx="226" cy="118" r="38" fill="url(#studio-zone-grad)" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1" stroke-dasharray="3 3" class="studio-zone-pulse" />
                 
-                <!-- Central Atelier Dot & Micro-Ping -->
-                <circle cx="200" cy="105" r="3.5" fill="#FFFFFF" />
-                <circle cx="200" cy="105" r="8" stroke="rgba(255, 255, 255, 0.65)" stroke-width="1" fill="none" class="radar-center-ping" />
-                
-                <!-- High-precision Coordinates & Legend -->
-                <text x="16" y="24" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.4)" letter-spacing="1.5">LAT 22° 54' 10" S · LON 43° 10' 28" W</text>
-                <text x="16" y="38" font-family="monospace" font-size="8.5" font-weight="700" fill="rgba(255,255,255,0.75)" letter-spacing="2">ZONA // CENTRO · RIO DE JANEIRO</text>
-                <text x="384" y="196" text-anchor="end" font-family="monospace" font-size="7.5" fill="rgba(255,255,255,0.3)" letter-spacing="1">ÁREA PRIVADA · ATELIÊ CENTRAL</text>
+                <!-- Studio Location Point & Subtle Glow -->
+                <circle cx="226" cy="118" r="8" fill="url(#studio-glow)" opacity="0.3" />
+                <circle cx="226" cy="118" r="2.8" fill="#FFFFFF" class="studio-point-dot" />
               </svg>
-              
-              <!-- Minimal HUD crosses -->
-              <div class="map-hud-cross top-left">+</div>
-              <div class="map-hud-cross top-right">+</div>
-              <div class="map-hud-cross bottom-left">+</div>
-              <div class="map-hud-cross bottom-right">+</div>
 
               <!-- Micro-animated Hover Reveal Curtain -->
               <div class="map-hover-curtain">
-                <span class="map-hover-tag" data-en="DIRECT WHATSAPP INVITATION" data-pt="CONVITE DIRETO WHATSAPP">CONVITE DIRETO WHATSAPP</span>
                 <div class="map-hover-title" data-en="Come visit our studio ↗" data-pt="Vem conhecer nossa casa ↗">Vem conhecer nossa casa ↗</div>
-                <p class="map-hover-sub" data-en="Click to schedule a coffee and chat in Downtown Rio" data-pt="Clique para marcar um café e bater um papo no Centro do Rio">Clique para marcar um café e bater um papo no Centro do Rio</p>
+                <p class="map-hover-sub" data-en="Schedule a coffee and chat in Downtown Rio" data-pt="Marcar um café e bater um papo no Centro do Rio">Marcar um café e bater um papo no Centro do Rio</p>
               </div>
             </div>
           </a>

@@ -41,7 +41,7 @@ O módulo `/bora` (`pelimotion.art/bora`) foi construído para atuar como o cana
    - A ferramenta **não exibe preços finais nem simulações monetárias públicas**, evitando ancoragens indevidas e permitindo que o Felipe formule orçamentos sob medida a partir da análise técnica de cada demanda.
 2. **Geração Criptográfica de Protocolo (`BORA-26-XXXX`):**
    - Ao iniciar a sessão, o motor gera um identificador único de protocolo.
-   - Esse protocolo é gravado no assunto do e-mail disparado para `conceicao.felipe@gmail.com` e anexado automaticamente na mensagem do WhatsApp.
+   - Esse protocolo é gravado no assunto do e-mail disparado para `hello@pelimotion.art` e anexado automaticamente na mensagem do WhatsApp.
 3. **Fluxo de Saída Dupla (Dual Exit Strategy):**
    - **Opção 1 (WhatsApp Imediato):** Transfere o usuário para o chat com o protocolo já preenchido. O diretor de criação busca o protocolo no e-mail e localiza o formulário completo em menos de 1 segundo.
    - **Opção 2 (Aguardar E-mail):** Confirmação instantânea com cópia do código e garantia de resposta em até 2 horas úteis.

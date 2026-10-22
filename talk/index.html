@@ -835,12 +835,12 @@
 
         <div class="email-monolith-box">
           <span class="dossier-label" data-en="Primary Atelier Inbox" data-pt="Caixa Postal Oficial">Caixa Postal Oficial</span>
-          <div class="email-val-display" id="official-email-text">conceicao.felipe@gmail.com</div>
+          <div class="email-val-display" id="official-email-text">hello@pelimotion.art</div>
           <div class="email-actions-row">
             <button class="btn-copy-email" id="copy-email-btn" onclick="copyStudioEmail()">
               <span id="copy-btn-label" data-en="Copy Email" data-pt="Copiar E-mail">Copiar E-mail</span>
             </button>
-            <a href="mailto:conceicao.felipe@gmail.com?subject=Briefing%20Pelimotion" class="btn-open-mailer" data-en="Open Client ↗" data-pt="Abrir no E-mail ↗">Abrir no E-mail ↗</a>
+            <a href="mailto:hello@pelimotion.art?subject=Briefing%20Pelimotion" class="btn-open-mailer" data-en="Open Client ↗" data-pt="Abrir no E-mail ↗">Abrir no E-mail ↗</a>
           </div>
         </div>
 
@@ -1042,7 +1042,7 @@
 
     function copyStudioEmail() {
       playTactileAudio(950, 0.05);
-      const email = 'conceicao.felipe@gmail.com';
+      const email = 'hello@pelimotion.art';
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(email).then(() => {
           triggerCopySuccess();
@@ -1095,7 +1095,7 @@
       } else if (channel === 'email') {
         const subject = `[Briefing Pelimotion] ${sender} — ${demand}`;
         const emailBody = `Olá Felipe,\n\nNome / Marca: ${sender}\nTipo de Demanda: ${demand}\n${body}\n\nNo aguardo de seu retorno para alinharmos escopo e cronograma.`;
-        window.location.href = `mailto:conceicao.felipe@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        window.location.href = `mailto:hello@pelimotion.art?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
       }
     }
 
