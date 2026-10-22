@@ -188,10 +188,8 @@ section { width: 100%; border-top: 1px solid var(--border); }
 
 /* ── NÓS (ABOUT) SECTION ── */
 #about { padding: 7rem 0 6rem; background: var(--bg); }
-.about-telemetry { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; font-size: 9px; font-weight: 700; letter-spacing: .35em; text-transform: uppercase; color: var(--fg3); }
+.about-telemetry { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; font-size: 9px; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: var(--fg3); }
 .about-tele-tag { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); }
-.radar-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg); display: inline-block; animation: radarBlink 1.8s infinite; }
-@keyframes radarBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.25; transform: scale(0.7); } }
 .about-hero-title { font-size: clamp(2.2rem, 4.5vw, 3.8rem); font-weight: 900; letter-spacing: -.035em; line-height: 1.05; margin-bottom: 3.5rem; text-transform: uppercase; max-width: 1150px; }
 .about-hero-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: lowercase; font-size: 1.05em; }
 
@@ -202,7 +200,7 @@ section { width: 100%; border-top: 1px solid var(--border); }
 .about-text-lead { font-size: 15px; line-height: 1.75; color: var(--fg); font-weight: 500; margin-bottom: 1.5rem; letter-spacing: -0.01em; }
 .about-text-body { font-size: 13px; line-height: 1.85; color: var(--fg2); font-weight: 400; margin-bottom: 2rem; }
 
-.about-location-pill { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--border); padding: 10px 16px; font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg); background: rgba(240,237,232,0.02); margin-top: auto; }
+.about-location-pill { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--border); padding: 8px 14px; font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--fg2); background: rgba(240,237,232,0.02); margin-top: auto; }
 
 /* ── DISCREET B&W AVATAR CARD & NATURAL CV ACCESS ── */
 .portrait-card { border: 1px solid var(--border); background: rgba(240,237,232,0.015); transition: border-color .3s; }
@@ -214,25 +212,27 @@ section { width: 100%; border-top: 1px solid var(--border); }
 .portrait-caption { padding: 1.5rem; display: flex; flex-direction: column; gap: .5rem; }
 .portrait-name { font-size: 14px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; color: var(--fg); }
 .portrait-role { font-size: 9px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: var(--fg3); }
-.portrait-bio { font-size: 11px; line-height: 1.6; color: var(--fg2); margin: .5rem 0 .5rem; }
+.portrait-bio { font-size: 11px; line-height: 1.6; color: var(--fg2); margin: .4rem 0 .4rem; }
 
+/* Ultra-discreet SPECS button */
 .about-cv-access { 
   display: inline-flex; 
   align-items: center; 
-  gap: 8px; 
-  margin-top: 0.85rem; 
-  padding: 6px 14px; 
-  border: 1px solid var(--border); 
+  gap: 5px; 
+  margin-top: 0.5rem; 
+  padding: 3px 8px; 
+  border: 1px solid rgba(255, 255, 255, 0.14); 
   background: transparent; 
-  font-size: 9px; 
+  font-size: 8px; 
   font-weight: 700; 
-  letter-spacing: .18em; 
+  letter-spacing: .22em; 
   text-transform: uppercase; 
-  color: var(--fg2); 
+  color: var(--fg3); 
   text-decoration: none; 
   white-space: nowrap; 
   transition: all .2s ease; 
   border-radius: 2px;
+  align-self: flex-start;
 }
 .about-cv-access:hover { 
   background: var(--fg); 
@@ -240,7 +240,7 @@ section { width: 100%; border-top: 1px solid var(--border); }
   border-color: var(--fg); 
 }
 .about-cv-access .cv-arrow { 
-  font-size: 11px; 
+  font-size: 9px; 
   transition: transform .2s ease; 
 }
 .about-cv-access:hover .cv-arrow { 
@@ -428,8 +428,34 @@ section { width: 100%; border-top: 1px solid var(--border); }
     transform: scale(1.03); 
     filter: grayscale(0) contrast(1.1); 
 }
+.port-video-hq {
+    z-index: 1;
+}
+.port-video-lq {
+    z-index: 0;
+}
+.port-quality-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--fg2);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    margin-left: auto;
+}
+.port-card[data-quality-state="hq"] .port-quality-chip {
+    opacity: 0.85;
+}
 
-/* Vector Trim-Path Stroke */
+/* Vector Trim-Path Stroke (Subtle framing) */
 .port-trimpath-svg {
     position: absolute;
     inset: 0;
@@ -437,18 +463,18 @@ section { width: 100%; border-top: 1px solid var(--border); }
     height: 100%;
     pointer-events: none;
     z-index: 5;
-    opacity: 0.15;
+    opacity: 0;
     transition: opacity .4s ease;
 }
 .port-trimpath-svg rect {
     stroke: var(--fg);
-    stroke-width: 2px;
+    stroke-width: 1px;
     stroke-dasharray: 800;
     stroke-dashoffset: 800;
     transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .port-card:hover .port-trimpath-svg {
-    opacity: 0.9;
+    opacity: 0.35;
 }
 .port-card:hover .port-trimpath-svg rect {
     stroke-dashoffset: var(--trim-offset, 0);
@@ -617,7 +643,7 @@ html[data-theme="light"] .port-card-overlay {
       <div class="hero-eyebrow" id="hero-eyebrow" data-en="Motion Branding &amp; Creative Direction" data-pt="Motion Branding &amp; Direção Criativa">Motion Branding &amp; Creative Direction</div>
     </div>
     <div class="hero-sub">
-      <p class="hero-desc" id="hero-desc" data-en="Visual systems built for brands that set the pace, not just follow it." data-pt="Sistemas visuais para marcas que ditam o ritmo, não apenas o seguem.">Visual systems built for brands that set the pace, not just follow it.</p>
+      <p class="hero-desc" id="hero-desc" data-en="Visual systems for brands with their own pulse — setting the rhythm, never just moving to whatever's playing." data-pt="Sistemas visuais para marcas com pulso próprio — que regem seu ritmo e não seguem só o que toca.">Visual systems for brands with their own pulse — setting the rhythm, never just moving to whatever's playing.</p>
       <a href="/portfolio" class="hero-cta" data-en="View Full Portfolio →" data-pt="Ver Portfólio Completo →">View Full Portfolio <span>→</span></a>
     </div>
   </div>
@@ -628,17 +654,17 @@ html[data-theme="light"] .port-card-overlay {
 <!-- NÓS (ABOUT) -->
 <section id="about">
   <div class="container" style="padding-top:6rem;padding-bottom:6rem">
-    <!-- Top Telemetry Strip -->
+    <!-- Top Studio Strip -->
     <div class="about-telemetry reveal">
-      <div class="about-tele-tag"><span class="radar-dot"></span> <span data-en="01 // US • CREATIVE DIRECTION &amp; MOTION ATELIER" data-pt="01 // NÓS • DIREÇÃO CRIATIVA &amp; ATELIÊ MOTION">01 // NÓS • DIREÇÃO CRIATIVA &amp; ATELIÊ MOTION</span></div>
+      <div class="about-tele-tag"><span data-en="01 // US — CREATIVE ATELIER &amp; MOTION BRANDING" data-pt="01 // NÓS — ATELIÊ DE MOTION BRANDING &amp; DIREÇÃO CRIATIVA">01 // NÓS — ATELIÊ DE MOTION BRANDING &amp; DIREÇÃO CRIATIVA</span></div>
       <div class="about-tele-status" data-en="CGI · BRAND MOTION · LIVE EXPERIENCES" data-pt="CGI · BRAND MOTION · EXPERIÊNCIAS AO VIVO">CGI · BRAND MOTION · EXPERIÊNCIAS AO VIVO</div>
     </div>
 
     <!-- Main Title -->
     <h2 class="about-hero-title reveal" id="about-title"
-        data-en="Motion as a <em>strategic</em> language.<br>Visual systems engineered for brands that set the pace."
-        data-pt="Motion como <em>linguagem</em> estratégica.<br>Sistemas visuais para marcas que ditam o ritmo.">
-      Motion como <em>linguagem</em> estratégica.<br>Sistemas visuais para marcas que ditam o ritmo.
+        data-en="Motion as a <em>strategic</em> language.<br>Visual systems for brands with their own groove, refusing to just follow the beat."
+        data-pt="Motion como <em>linguagem</em> estratégica.<br>Sistemas visuais para marcas que têm ritmo próprio e não seguem só o que toca.">
+      Motion como <em>linguagem</em> estratégica.<br>Sistemas visuais para marcas que têm ritmo próprio e não seguem só o que toca.
     </h2>
 
     <!-- 3-Column Editorial Grid: Manifesto / Portrait & CV / Capabilities & Impact -->
@@ -647,18 +673,17 @@ html[data-theme="light"] .port-card-overlay {
       <div class="about-col reveal">
         <span class="about-sublabel" data-en="Manifesto • Creative Territory" data-pt="Manifesto • Território Criativo">Manifesto • Território Criativo</span>
         <p class="about-text-lead" id="about-p1"
-           data-en="We work where strategy meets motion. Over eight years, we have engineered high-precision visual systems and CGI films for brands that refuse the generic — designing how identities move, collide, and resonate across physical, digital, and stage spaces."
-           data-pt="Trabalhamos onde estratégia encontra movimento. Em oito anos, projetamos sistemas visuais e filmes CGI de alta precisão para marcas que recusam o genérico — desenhando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.">
-          Trabalhamos onde estratégia encontra movimento. Em oito anos, projetamos sistemas visuais e filmes CGI de alta precisão para marcas que recusam o genérico — desenhando como identidades se movem, colidem e ecoam no espaço físico, digital e cenográfico.
+           data-en="Pelimotion operates as a hybrid creative atelier, motion branding studio, and high-precision CGI laboratory based in Downtown Rio de Janeiro. We exist at the friction point where identity design, cinematic art, and kinetic engineering meet — designing how contemporary brands breathe, collide, and resonate across digital interfaces, CGI films, large-scale spatial scenography, and immersive live stages."
+           data-pt="A Pelimotion opera como um ateliê híbrido de direção criativa, motion branding e computação gráfica de alta precisão sediado no Centro do Rio de Janeiro. Existimos no ponto de fricção entre design de identidade, arte cinematográfica e engenharia de movimento — projetando como marcas contemporâneas respiram, colidem e ecoam através de interfaces digitais, filmes CGI, cenografia espacial de grande porte e experiências imersivas.">
+          A Pelimotion opera como um ateliê híbrido de direção criativa, motion branding e computação gráfica de alta precisão sediado no Centro do Rio de Janeiro. Existimos no ponto de fricção entre design de identidade, arte cinematográfica e engenharia de movimento — projetando como marcas contemporâneas respiram, colidem e ecoam através de interfaces digitais, filmes CGI, cenografia espacial de grande porte e experiências imersivas.
         </p>
         <p class="about-text-body" id="about-p2"
-           data-en="With a degree in Audiovisual Production and a musical intuition that brought rhythm, pulse, and kinetic movement to his creations from early on, founder Felipe Conceição dictates the pulse of everything we create: motion driven by Brazilian groove, organic cadence, and living rhythm, combined with technological subtlety and the refined elegance that high-end motion branding evokes. Pelimotion designs kinetic visual systems, CGI films, immersive stage visuals, and AI-integrated generative pipelines for brands that set the pace."
-           data-pt="Com formação em Produção Audiovisual e uma vivência musical que desde cedo trouxe ritmo, pulso e movimento para suas criações, o fundador Felipe Conceição dita a assinatura de tudo o que criamos: movimento com sangue brasileiro, suingue e cadência orgânica, combinados à sutileza da tecnologia e à extrema elegância que o motion branding de alto nível evoca. A Pelimotion desenha sistemas visuais cinéticos, filmes CGI, cenografias imersivas e pipelines generativos integrados a IA para marcas que ditam o ritmo.">
-          Com formação em Produção Audiovisual e uma vivência musical que desde cedo trouxe ritmo, pulso e movimento para suas criações, o fundador Felipe Conceição dita a assinatura de tudo o que criamos: movimento com sangue brasileiro, suingue e cadência orgânica, combinados à sutileza da tecnologia e à extrema elegância que o motion branding de alto nível evoca. A Pelimotion desenha sistemas visuais cinéticos, filmes CGI, cenografias imersivas e pipelines generativos integrados a IA para marcas que ditam o ritmo.
+           data-en="Founded by Felipe Conceição, the hub coordinates specialized units across 3D direction, procedural physics simulations, and AI generative pipelines. Our signature carries an authentic Brazilian pulse — groove, living cadence, and organic rhythm — balanced with technological subtlety and world-class brutalist elegance. We engineer proprietary visual systems for brands that hold their own groove and refuse to just dance to whatever's playing."
+           data-pt="Fundado por Felipe Conceição, o hub orquestra núcleos especializados em direção 3D, simulação física procedural e pipelines generativos com IA. Nossa assinatura carrega a pulsação do sangue brasileiro — suingue, cadência viva e ritmo orgânico — articulada à sobriedade da tecnologia e à elegância brutalista de escala global. Desenvolvemos sistemas visuais proprietários para marcas que têm ritmo próprio e não se limitam a dançar conforme a música toca.">
+          Fundado por Felipe Conceição, o hub orquestra núcleos especializados em direção 3D, simulação física procedural e pipelines generativos com IA. Nossa assinatura carrega a pulsação do sangue brasileiro — suingue, cadência viva e ritmo orgânico — articulada à sobriedade da tecnologia e à elegância brutalista de escala global. Desenvolvemos sistemas visuais proprietários para marcas que têm ritmo próprio e não se limitam a dançar conforme a música toca.
         </p>
         
         <div class="about-location-pill">
-          <span class="radar-dot"></span>
           <span data-en="Rio de Janeiro — Creative Atelier · Global Direction" data-pt="Rio de Janeiro — Ateliê Criativo · Direção Global">Rio de Janeiro — Ateliê Criativo · Direção Global</span>
         </div>
       </div>
@@ -673,12 +698,12 @@ html[data-theme="light"] .port-card-overlay {
           <div class="portrait-caption">
             <div class="portrait-name">FELIPE CONCEIÇÃO</div>
             <div class="portrait-role" data-en="Founder • Senior Creative Director" data-pt="Fundador • Diretor Criativo Senior">Fundador • Diretor Criativo Senior</div>
-            <div class="portrait-bio" data-en="Formed in Audiovisual Production, creative director, and specialist in high-precision motion branding and CGI. Rhythm and motion driving visual systems and films for global brands for 8+ years." data-pt="Formado em Produção Audiovisual, diretor criativo e especialista em motion branding e CGI de alta precisão. Ritmo e movimento guiando sistemas visuais e filmes para marcas globais há 8+ anos.">
-              Formado em Produção Audiovisual, diretor criativo e especialista em motion branding e CGI de alta precisão. Ritmo e movimento guiando sistemas visuais e filmes para marcas globais há 8+ anos.
+            <div class="portrait-bio" data-en="Formed in Audiovisual Production, with musical roots that shaped his perception of time and movement. Leading Pelimotion's creative direction across CGI cinematography, design, and innovation for 8+ years." data-pt="Formado em Produção Audiovisual e com raiz musical que lapidou sua percepção de tempo e movimento. Lidera a direção criativa da Pelimotion unindo cinematografia CGI, design e inovação há 8+ anos.">
+              Formado em Produção Audiovisual e com raiz musical que lapidou sua percepção de tempo e movimento. Lidera a direção criativa da Pelimotion unindo cinematografia CGI, design e inovação há 8+ anos.
             </div>
             
-            <a href="Curriculum/index.html" class="about-cv-access" data-en="Curriculum <span class='cv-arrow'>↗</span>" data-pt="Currículo <span class='cv-arrow'>↗</span>">
-              <span>Currículo</span><span class="cv-arrow">↗</span>
+            <a href="Curriculum/index.html" class="about-cv-access" data-en="SPECS <span class='cv-arrow'>↗</span>" data-pt="SPECS <span class='cv-arrow'>↗</span>">
+              <span>SPECS</span><span class="cv-arrow">↗</span>
             </a>
           </div>
         </div>
@@ -779,9 +804,12 @@ html[data-theme="light"] .port-card-overlay {
     <div class="port-inner">
       <!-- 01 // ROW 1 (SOLO): FLAGSHIP MONUMENTAL (GIGANTERA) -->
       <div class="port-mosaic-row port-row-solo">
-        <a href="https://gigantera.xyz/" target="_blank" class="port-card port-matte-item" style="transition-delay:.05s">
+        <a href="https://gigantera.xyz/" target="_blank" class="port-card port-matte-item" style="transition-delay:.05s"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4"
+           data-res="4K">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/gigantera/stills/espinhaco-descida-crepuscular.jpg">
             <source src="https://pelimotion-portfolio.b-cdn.net/gigantera/videos/video-01-kinetic-spine.mp4" type="video/mp4">
           </video>
           <div class="port-card-overlay">
@@ -790,6 +818,7 @@ html[data-theme="light"] .port-card-overlay {
                 <span class="port-flagship-pill" data-en="FLAGSHIP • ARTISTIC DIRECTION" data-pt="FLAGSHIP • DIREÇÃO ARTÍSTICA">FLAGSHIP • DIREÇÃO ARTÍSTICA</span>
                 <span class="port-format-badge">21:9 CINEMATIC • 50K GPU PARTICLES</span>
                 <span class="port-tag">Virtual Pavilion • Biomechanical 3D • Spatial Sound</span>
+                <span class="port-quality-chip">4K</span>
               </div>
               <div class="port-name">Gigantera <span class="port-arrow">↗</span></div>
               <p class="port-desc" data-en="Monumental digital pavilion featuring the real-time hydrodynamic spine 'Espinhaço' (50k GPU points WebGL) and an autoral 17-track modular synthesis electronic album." data-pt="Pavilhão digital colossal apresentando a escultura hidrodinâmica 'Espinhaço' (50k pontos GPU WebGL em tempo real) e álbum autoral com 17 faixas de música eletrônica modular.">
@@ -803,9 +832,12 @@ html[data-theme="light"] .port-card-overlay {
       <!-- 02 // ROW 2 (DUO EXPANDING MOSAIC): UNIBRASIL 360° (UNIFIED) + COLCCI -->
       <div class="port-mosaic-row port-row-duo">
         <!-- UNIBRASIL (Unified: 360° DOOH & Master Film) -->
-        <a href="/portfolio/unibrasil" class="port-card port-matte-item" style="transition-delay:.1s">
+        <a href="/portfolio/unibrasil" class="port-card port-matte-item" style="transition-delay:.1s"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.mp4"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.mp4"
+           data-res="1080P">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.jpg">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.jpg">
             <source src="https://pelimotion-portfolio.b-cdn.net/UniBrasil/unibrasil_master_1080p.mp4" type="video/mp4">
           </video>
           <div class="port-card-overlay">
@@ -813,6 +845,7 @@ html[data-theme="light"] .port-card-overlay {
               <div class="port-pill-row">
                 <span class="port-format-badge">360° MOTION SYSTEM • DOOH</span>
                 <span class="port-tag">Campus Branding • 15 Urban Formats • Master VT</span>
+                <span class="port-quality-chip">1080P</span>
               </div>
               <div class="port-name">UniBrasil // 360° Campaign <span class="port-arrow">→</span></div>
               <p class="port-desc" data-en="Complete 360° motion branding campaign adapted across 15 urban media formats, vertical LED totems, and TV master film." data-pt="Campanha 360° de motion branding desdobrada em 15 formatos de mídia exterior urbana, totens verticais e filme master de TV.">Campanha 360° de motion branding desdobrada em 15 formatos de mídia exterior urbana, totens verticais e filme master de TV.</p>
@@ -821,16 +854,20 @@ html[data-theme="light"] .port-card-overlay {
         </a>
 
         <!-- COLCCI -->
-        <a href="/portfolio/colcci" class="port-card port-matte-item" style="transition-delay:.15s">
+        <a href="/portfolio/colcci" class="port-card port-matte-item" style="transition-delay:.15s"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02_preview.mp4"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02.mp4"
+           data-res="4K MASTER">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02_50.jpg">
-            <source src="https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02.mp4" type="video/mp4">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02_50.jpg">
+            <source src="https://pelimotion-portfolio.b-cdn.net/Colcci/AMC_TEXTIL_V02_preview.mp4" type="video/mp4">
           </video>
           <div class="port-card-overlay">
             <div class="port-card-content">
               <div class="port-pill-row">
                 <span class="port-format-badge">4:5 FASHION EDITORIAL</span>
                 <span class="port-tag">Fashion • Runway Motion</span>
+                <span class="port-quality-chip">4K MASTER</span>
               </div>
               <div class="port-name">Colcci <span class="port-arrow">→</span></div>
               <p class="port-desc" data-en="High-fashion kinetic typography and luxury visual pacing." data-pt="Tipografia cinética de alta moda e ritmo visual de luxo.">Tipografia cinética de alta moda e ritmo visual de luxo.</p>
@@ -842,9 +879,12 @@ html[data-theme="light"] .port-card-overlay {
       <!-- 03 // ROW 3 (TRIO EXPANDING MOSAIC): BMW MOTORSPORT + FUNKY ROOM + ISLA & PLAYA -->
       <div class="port-mosaic-row port-row-trio">
         <!-- BMW MOTORSPORT -->
-        <a href="/portfolio/bmw" class="port-card port-matte-item" style="transition-delay:.2s">
+        <a href="/portfolio/bmw" class="port-card port-matte-item" style="transition-delay:.2s"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4#t=26"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.mp4"
+           data-res="4K MASTER">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.jpg">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP.jpg">
             <source src="https://pelimotion-portfolio.b-cdn.net/BMW/BMW_MY%20APP_preview.mp4#t=26" type="video/mp4">
           </video>
           <div class="port-card-overlay">
@@ -852,6 +892,7 @@ html[data-theme="light"] .port-card-overlay {
               <div class="port-pill-row">
                 <span class="port-format-badge">16:9 CGI CINEMATOGRAPHY</span>
                 <span class="port-tag">Automotive • 3D Systems</span>
+                <span class="port-quality-chip">4K MASTER</span>
               </div>
               <div class="port-name">BMW Motorsport <span class="port-arrow">→</span></div>
               <p class="port-desc" data-en="High-precision automotive CGI, lighting physics, and interface systems." data-pt="CGI automotivo de alta precisão, física de luz e sistemas cinéticos de interface.">CGI automotivo de alta precisão, física de luz e sistemas cinéticos de interface.</p>
@@ -860,16 +901,20 @@ html[data-theme="light"] .port-card-overlay {
         </a>
 
         <!-- FUNKY ROOM -->
-        <a href="/portfolio/funky-room" class="port-card port-matte-item" style="transition-delay:.25s">
+        <a href="/portfolio/funky-room" class="port-card port-matte-item" style="transition-delay:.25s"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.mp4"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4"
+           data-res="1080P MASTER">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.jpg">
-            <source src="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%20ROOM%203%20-%20OVERVIEW.mp4" type="video/mp4">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.jpg">
+            <source src="https://pelimotion-portfolio.b-cdn.net/Funky%20Room/FUNKY%206%20-%20FUNKED%20UP/Funked%20UP%20%20-%20logo.mp4" type="video/mp4">
           </video>
           <div class="port-card-overlay">
             <div class="port-card-content">
               <div class="port-pill-row">
                 <span class="port-format-badge">STAGE LED • 3D DJ SYSTEM</span>
                 <span class="port-tag">Electronic Music • Live Scenography</span>
+                <span class="port-quality-chip">1080P MASTER</span>
               </div>
               <div class="port-name">Funky Room <span class="port-arrow">→</span></div>
               <p class="port-desc" data-en="Complete event visual identity, modular LED screens, and teaser campaigns." data-pt="Identidade visual para festival, telas de LED modulares e campanhas de teaser.">Identidade visual para festival, telas de LED modulares e campanhas de teaser.</p>
@@ -878,9 +923,12 @@ html[data-theme="light"] .port-card-overlay {
         </a>
 
         <!-- ISLA & PLAYA -->
-        <a href="/portfolio/isla-playa" class="port-card port-matte-item" style="transition-delay:.3s">
+        <a href="/portfolio/isla-playa" class="port-card port-matte-item" style="transition-delay:.3s"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/lsla/MANIFESTO/ISLA%20-%20AFTERMOVIE%20FINAL.mp4"
+           data-res="1080P MASTER">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.jpg">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.jpg">
             <source src="https://pelimotion-portfolio.b-cdn.net/Playa/MANIFESTO/PLAYA_CONCEITO_BOIAS%20AO%20MAR.mp4" type="video/mp4">
           </video>
           <div class="port-card-overlay">
@@ -888,6 +936,7 @@ html[data-theme="light"] .port-card-overlay {
               <div class="port-pill-row">
                 <span class="port-format-badge">SUMMER FESTIVALS &amp; CLUB</span>
                 <span class="port-tag">Experiential • AI Cinema</span>
+                <span class="port-quality-chip">1080P MASTER</span>
               </div>
               <div class="port-name">Isla &amp; Playa <span class="port-arrow">→</span></div>
               <p class="port-desc" data-en="Coastal summer festival branding, beach club manifesto, and generative drinks cinematography." data-pt="Branding para festivais de verão, manifesto praiano e cinematografia generativa.">Branding para festivais de verão, manifesto praiano e cinematografia generativa.</p>
@@ -898,9 +947,12 @@ html[data-theme="light"] .port-card-overlay {
 
       <!-- 04 // ROW 4 (SOLO PANORAMA): SUZANO -->
       <div class="port-mosaic-row port-row-solo">
-        <a href="/portfolio/suzano" class="port-card port-matte-item port-card-suzano" style="transition-delay:.35s;">
+        <a href="/portfolio/suzano" class="port-card port-matte-item port-card-suzano" style="transition-delay:.35s;"
+           data-lq="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4"
+           data-hq="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.mp4"
+           data-res="4K MASTER">
           <svg class="port-trimpath-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0.5" y="0.5" width="99" height="99" fill="none" vector-effect="non-scaling-stroke"></rect></svg>
-          <video autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg">
+          <video class="port-video port-video-lq" autoplay loop muted playsinline poster="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2.jpg">
             <source src="https://pelimotion-portfolio.b-cdn.net/Suzano/SUZANO_LETRAS_QUE_TRANSFORMAM_ALTA2_preview.mp4" type="video/mp4">
           </video>
           <div class="port-card-overlay">
@@ -908,6 +960,7 @@ html[data-theme="light"] .port-card-overlay {
               <div class="port-pill-row">
                 <span class="port-format-badge">21:7 PANORAMIC • BRAND SYSTEM</span>
                 <span class="port-tag">Corporate • 3D Motion</span>
+                <span class="port-quality-chip">4K MASTER</span>
               </div>
               <div class="port-name">Suzano // Letras que Transformam <span class="port-arrow">→</span></div>
               <p class="port-desc" data-en="Strategic typographic transformation and volumetric letter animations for global bio-industry leader." data-pt="Transformação tipográfica estratégica e animações volumétricas para líder global do setor.">Transformação tipográfica estratégica e animações volumétricas para líder global do setor.</p>
@@ -1459,17 +1512,176 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fill();
     }
 
-    // Minimalist Brutalist Telemetry at bottom
-    ctx.font = '8px "Space Grotesk", sans-serif';
-    ctx.textAlign = 'center';
-    const textAlpha = 0.35 + Math.sin(time * 3) * 0.15;
-    ctx.fillStyle = `rgba(${fgRgb}, ${textAlpha})`;
-    ctx.fillText('INITIALIZING REEL // 80/80 KINETIC ENGINE', cx, height - 36);
-
     animId = requestAnimationFrame(draw);
   }
 
   animId = requestAnimationFrame(draw);
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADAPTIVE SMART VIDEO QUALITY BUFFER ENGINE
+     Instant LQ Playback -> Intelligent Dwell Pre-buffer -> 4K/Master Seamless Crossfade
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function initAdaptiveVideoBuffer() {
+  const cards = document.querySelectorAll('.port-card[data-hq]');
+  if (!cards.length) return;
+
+  const MAX_CONCURRENT_UPGRADES = 2;
+  let activeUpgrades = 0;
+  const upgradeQueue = [];
+
+  function processQueue() {
+    if (activeUpgrades >= MAX_CONCURRENT_UPGRADES || !upgradeQueue.length) return;
+    const nextCard = upgradeQueue.shift();
+    upgradeToHQ(nextCard);
+  }
+
+  function upgradeToHQ(card) {
+    if (!card || card.dataset.qualityState === 'upgrading' || card.dataset.qualityState === 'hq') {
+      processQueue();
+      return;
+    }
+
+    const hqSrc = card.dataset.hq;
+    const lqSrc = card.dataset.lq;
+
+    // If no distinct HQ exists or already matching, mark as HQ directly
+    if (!hqSrc || hqSrc === lqSrc) {
+      card.dataset.qualityState = 'hq';
+      processQueue();
+      return;
+    }
+
+    // Check Data Saver or slow connection
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g')) {
+      processQueue();
+      return;
+    }
+
+    card.dataset.qualityState = 'upgrading';
+    activeUpgrades++;
+
+    const lqVideo = card.querySelector('.port-video-lq');
+    const overlay = card.querySelector('.port-card-overlay');
+
+    const hqVideo = document.createElement('video');
+    hqVideo.className = 'port-video port-video-hq';
+    hqVideo.autoplay = true;
+    hqVideo.loop = true;
+    hqVideo.muted = true;
+    hqVideo.playsInline = true;
+    hqVideo.preload = 'auto';
+    hqVideo.style.opacity = '0';
+    hqVideo.src = hqSrc;
+
+    let hasSwapped = false;
+    const performSwap = () => {
+      if (hasSwapped) return;
+      hasSwapped = true;
+
+      try {
+        if (lqVideo && !isNaN(lqVideo.currentTime) && lqVideo.currentTime > 0) {
+          const duration = hqVideo.duration || lqVideo.duration || 10;
+          hqVideo.currentTime = lqVideo.currentTime % duration;
+        }
+
+        const playPromise = hqVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            requestAnimationFrame(() => {
+              hqVideo.style.opacity = '1';
+              card.dataset.qualityState = 'hq';
+              activeUpgrades = Math.max(0, activeUpgrades - 1);
+              processQueue();
+
+              setTimeout(() => {
+                if (lqVideo) {
+                  lqVideo.pause();
+                  lqVideo.style.opacity = '0';
+                }
+              }, 600);
+            });
+          }).catch(() => {
+            activeUpgrades = Math.max(0, activeUpgrades - 1);
+            processQueue();
+          });
+        }
+      } catch (err) {
+        console.warn('Smart Video Buffer notice:', err);
+        activeUpgrades = Math.max(0, activeUpgrades - 1);
+        processQueue();
+      }
+    };
+
+    hqVideo.addEventListener('canplaythrough', performSwap, { once: true });
+    // Fallback: If canplay fired and buffer is progressing
+    hqVideo.addEventListener('canplay', () => {
+      setTimeout(() => { if (!hasSwapped) performSwap(); }, 800);
+    }, { once: true });
+
+    // Error recovery: keep LQ running seamlessly
+    hqVideo.addEventListener('error', () => {
+      card.dataset.qualityState = 'failed';
+      activeUpgrades = Math.max(0, activeUpgrades - 1);
+      processQueue();
+    }, { once: true });
+
+    // Insert hqVideo directly behind overlay
+    if (overlay && overlay.parentNode === card) {
+      card.insertBefore(hqVideo, overlay);
+    } else {
+      card.appendChild(hqVideo);
+    }
+  }
+
+  function enqueueUpgrade(card) {
+    if (!card || card.dataset.qualityState) return;
+    if (!upgradeQueue.includes(card)) {
+      upgradeQueue.push(card);
+      processQueue();
+    }
+  }
+
+  // Dwell Observer: 1.2s in viewport triggers upgrade
+  const dwellTimers = new WeakMap();
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const card = entry.target;
+        if (entry.isIntersecting) {
+          if (!card.dataset.qualityState && !dwellTimers.has(card)) {
+            const timer = setTimeout(() => {
+              enqueueUpgrade(card);
+              dwellTimers.delete(card);
+            }, 1200);
+            dwellTimers.set(card, timer);
+          }
+        } else {
+          if (dwellTimers.has(card)) {
+            clearTimeout(dwellTimers.get(card));
+            dwellTimers.delete(card);
+          }
+        }
+      });
+    }, { threshold: 0.25, rootMargin: '60px 0px' });
+
+    cards.forEach(card => observer.observe(card));
+  }
+
+  // Hover triggers immediate upgrade (0ms dwell)
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      if (dwellTimers.has(card)) {
+        clearTimeout(dwellTimers.get(card));
+        dwellTimers.delete(card);
+      }
+      enqueueUpgrade(card);
+    }, { passive: true });
+  });
 })();
 </script>
 </body>
