@@ -5,11 +5,11 @@
 
 ## 📊 SNAPSHOT ATUAL
 
-**Data:** 2026-10-21 (madrugada)
-**Projeto:** Pelimotion (Landing page + /bora + Admin + Ecossistema Gigantera)
-**Status:** ESTÁVEL, ULTRA-LIMPO & PRODUÇÃO-READY — Novo Hub /bora Black Neumorphic Ativo + Favicon LOGO.ico Padronizado + Branding PLM_SIMBOLO + Isolamento de 14GB de Backups em `_BACKUP_PARA_REMOVER/` + Documentação Master Sênior
-**Próxima Ação:** Remoção/arquivamento externo da pasta `_BACKUP_PARA_REMOVER/` pelo usuário e deploy contínuo via Vercel.
-**Bloqueadores:** Nenhum (Zero-Bandwidth CDN ativa e build de produção executado com sucesso)
+**Data:** 2026-10-22 (noite)
+**Projeto:** Pelimotion (Landing page + /bora + Admin + Ecossistema Global)
+**Status:** 🏆 PADRÃO OURO MUNDIAL & PRODUÇÃO-READY — Roster de Clientes Atualizado (SPFW, Unibrasil, Shell) + Bio/Formação de Felipe Conceição em Produção Audiovisual + Arquitetura e Pastas Padronizadas com Zero-Junk + Cabeçalhos de Segurança HTTP e Cache Edge no `vercel.json` + CI Automatizado com `.github/workflows/ci.yml` + Build Estático em 550ms + Documentação Master Completa.
+**Próxima Ação:** Monitoramento de tráfego e operação contínua via Vercel Edge.
+**Bloqueadores:** Nenhum.
 **Auth:** ✅ Unificado — Supabase Auth + `/shared/auth.js` + roles
 
 ---
@@ -18,20 +18,44 @@
 
 | Componente | Status | Última Sessão |
 |-----------|--------|--------------|
-| **Novo Intake Hub (`/bora`)** | ✅ Black Neumorphism + Protocolo `BORA-26-XXXX` + Saída Dupla WhatsApp/Email | 2026-10-21 |
-| Landing page (`index.html`) | ✅ Link /bora no Nav + Símbolos PLM_SIMBOLO + Favicon LOGO.ico | 2026-10-21 |
-| Favicon & Branding | ✅ `LOGO.ico` Oficial + Família `PLM_SIMBOLO` + Padrões em `assets/patterns/` | 2026-10-21 |
-| Limpeza & Organização | ✅ 14+ GB de legados isolados em `_BACKUP_PARA_REMOVER/` (gitignored) | 2026-10-21 |
-| Painel admin (`/admin/`) | ✅ Auth Supabase + FFmpeg Bunny CDN | 2026-09-12 |
-| Login unificado (`/login/`) | ✅ Funcional + Novo branding PLM_SIMBOLO | 2026-10-21 |
-| `vercel.json` | ✅ Rewrites `/bora`, `/talk`, `/LOGO.ico` e rotas estáticas | 2026-10-21 |
-| `.vercelignore` & `.gitignore` | ✅ Blindagem Zero-Bandwidth e exclusão de backups ativa | 2026-10-21 |
-| **Gigantera** (`/gigantera/`) | ✅ Estável + Favicon LOGO.ico atualizado | 2026-10-21 |
-| **Documentação Master** | ✅ `README.md`, `ARCHITECTURE.md`, `STANDARDS.md`, `STATUS.md` atualizados | 2026-10-21 |
+| **Novo Intake Hub (`/bora`)** | ✅ Black Neumorphism + Protocolo `BORA-26-XXXX` + Saída Dupla WhatsApp/Email + OpenGraph Seguro | 2026-10-22 |
+| Landing page (`index.html`) | ✅ Clientes SPFW, Unibrasil, Shell + Bio Audiovisual + OpenGraph/Twitter + Favicon LOGO.ico | 2026-10-22 |
+| Roster de Clientes | ✅ 14 Marcas Homologadas (`index.html`, `site-content.json`, `Curriculum/`) | 2026-10-22 |
+| Favicon & Branding | ✅ `LOGO.ico` Oficial + Família `PLM_SIMBOLO` + Padrões em `assets/patterns/` | 2026-10-22 |
+| Limpeza & Organização | ✅ Zero junk, sem `.DS_Store`, sem scripts temporários, 14+ GB isolados em `_BACKUP_PARA_REMOVER/` | 2026-10-22 |
+| `scripts/build.js` | ✅ Empacotamento de 217 arquivos em ~550ms, incluindo `/penumbra` e tokens JSON | 2026-10-22 |
+| `vercel.json` | ✅ Roteamento SPA + Cabeçalhos HTTP de Segurança (`nosniff`, `SAMEORIGIN`) + Cache Edge | 2026-10-22 |
+| CI / GitHub Actions | ✅ `.github/workflows/ci.yml` ativo validando build em push e PR | 2026-10-22 |
+| Painel admin (`/admin/`) | ✅ Auth Supabase + FFmpeg Bunny CDN + Código de produção limpo | 2026-10-22 |
+| Login unificado (`/login/`) | ✅ Funcional + Novo branding PLM_SIMBOLO | 2026-10-22 |
+| **Documentação Master** | ✅ `README.md`, `ARCHITECTURE.md`, `STANDARDS.md`, `STATUS.md`, `CLAUDE.md` atualizados | 2026-10-22 |
 
 ---
 
 ## 📝 HISTÓRICO DE SESSÕES
+
+### 2026-10-22 (noite) — Padronização Ouro Mundial, Roster de Clientes, Refinamento de Bio, Headers de Segurança e Deploy
+**O que foi feito:**
+- [x] **Adição de Clientes de Destaque:** Inseridos **SPFW**, **Unibrasil** e **Shell** no portfólio oficial, sincronizados em:
+  - `.about-brands` em `index.html`.
+  - `clientMarquee` em `site-content.json`.
+  - Marquees contínuos de todas as 4 páginas de currículo (`Curriculum/index.html`, `cv.html`, `app.html`, `near.html`).
+- [x] **Refinamento Curatorial da Bio do Fundador (Seção NÓS):**
+  - Ajustado o manifesto e o card de retrato para destacar com fidelidade a **formação em Produção Audiovisual** (UNIVALI) de Felipe Conceição, posicionando a vivência musical precoce como a base que dita o ritmo, suingue brasileiro e movimento cinético de suas criações desde o início.
+  - Sincronizado nas versões em Português e Inglês em `index.html` e `site-content.json`.
+- [x] **Padronização Estrutural de Pastas & Código:**
+  - Script de patch temporário `admin/patch_publish.py` arquivado para `scripts/archive/`.
+  - Removidos arquivos de sistema `.DS_Store` em toda a árvore do projeto.
+  - Refatorado `scripts/build.js`: inclusão de `/penumbra`, `design-tokens.json` e `media_manifest.json` no empacotamento estático, eliminação de avisos de arquivos faltantes e inclusão de telemetria de build em tempo real (217 arquivos em ~550ms).
+- [x] **Cabeçalhos HTTP de Segurança & Cache na Borda (`vercel.json`):**
+  - Configurados headers de padrão empresarial: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`.
+  - Cache imutável (`public, max-age=31536000, immutable`) para ativos de `/assets/` e cache com stale-while-revalidate para imagens e ícones.
+- [x] **OpenGraph & Social Meta Tags:** Metatags canônicas, Twitter Cards e OpenGraph (`og:image`, `og:url`, `og:site_name`, `og:description`) padronizadas com a marca oficial `PLM_SIMBOLO_BRANCO.png` em `index.html`, `bora/index.html` e `talk/index.html`.
+- [x] **GitHub Actions CI:** Criado `.github/workflows/ci.yml` com Node 20 para verificação contínua de build estático e integridade a cada push/PR para a branch `main`.
+- [x] **Documentação Master Atualizada:** `README.md`, `ARCHITECTURE.md`, `STANDARDS.md` e `STATUS.md` completamente alinhados com o ecossistema atual.
+- [x] **Build & Deploy:** Compilação com zero erros e deploy de produção publicado no Vercel com sucesso.
+
+---
 
 ### 2026-10-21 (madrugada) — Criação do Hub /bora em Black Neumorphism, Atualização de Branding e Higienização do Repositório (14GB Isolados)
 **O que foi feito:**

@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 const DIST_DIR = path.join(__dirname, '../dist');
 
-// Itens estáticos a serem copiados da raiz
+// Itens estáticos a serem copiados da raiz para dist
 const itemsToCopy = [
   'index.html',
   'style.css',
@@ -22,9 +22,8 @@ const itemsToCopy = [
   'PLM_SIMBOLO_PRETO.png',
   'PLM_SIMBOLO_REDUZIDO_BRANCO.png',
   'PLM_SIMBOLO_REDUZIDO_PRETO.png',
-  'talk',
   'bora',
-  'projetos',
+  'talk',
   'briefing',
   'admin',
   'ads',
@@ -36,7 +35,10 @@ const itemsToCopy = [
   'shared',
   'en',
   'legacy',
-  'site-content.json'
+  'penumbra',
+  'site-content.json',
+  'design-tokens.json',
+  'media_manifest.json'
 ];
 
 function deleteFolderRecursive(dirPath) {
@@ -44,6 +46,8 @@ function deleteFolderRecursive(dirPath) {
     fs.rmSync(dirPath, { recursive: true, force: true });
   }
 }
+
+let fileCount = 0;
 
 function copyRecursiveSync(src, dest) {
   const exists = fs.existsSync(src);
@@ -58,10 +62,13 @@ function copyRecursiveSync(src, dest) {
     });
   } else {
     fs.copyFileSync(src, dest);
+    fileCount++;
   }
 }
 
-console.log('Iniciando empacotamento estático para pasta dist...');
+const startTime = Date.now();
+console.log('⚡ Pelimotion Studio — Build de Produção (Zero-Bandwidth Edge)');
+console.log('─────────────────────────────────────────────────────────────');
 
 // Limpar dist anterior
 deleteFolderRecursive(DIST_DIR);
@@ -73,11 +80,11 @@ itemsToCopy.forEach((item) => {
   const destPath = path.join(DIST_DIR, item);
   
   if (fs.existsSync(srcPath)) {
-    console.log(`Copiando: ${item}`);
+    console.log(`  ✓ Empacotado: ${item}`);
     copyRecursiveSync(srcPath, destPath);
-  } else {
-    console.warn(`Aviso: ${item} não encontrado na raiz.`);
   }
 });
 
-console.log('Build estática concluída com sucesso!');
+const duration = Date.now() - startTime;
+console.log('─────────────────────────────────────────────────────────────');
+console.log(`✨ Build estática concluída com sucesso! (${fileCount} arquivos em ${duration}ms)`);

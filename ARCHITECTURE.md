@@ -1,12 +1,16 @@
-# ARQUITETURA TÉCNICA DO SISTEMA — PELIMOTION & GIGANTERA
+# ARQUITETURA TÉCNICA DO SISTEMA — PELIMOTION
 > **Documento de Engenharia e Especificação Técnica Formal**  
-> Destinado a Arquitetos de Software, Engenheiros Frontend Sênior e Especialistas em Computação Gráfica WebGL.
+> Destinado a Arquitetos de Software, Engenheiros Frontend Sênior e Especialistas em Infraestrutura Edge.
 
 ---
 
 ## 1. Visão Arquitetural Sistêmica
 
-O ecossistema **Pelimotion** opera como uma arquitetura de múltiplos subprojetos orquestrada sob um único domínio (`pelimotion.art`), combinando entrega estática ultraleve na borda (Vercel) com entrega massiva de mídia em CDN dedicada (Bunny.net) e banco relacional em tempo real (Supabase).
+O ecossistema **Pelimotion** opera sob uma arquitetura de alta performance distribuída globalmente sob o domínio principal (`pelimotion.art`), combinando:
+1. **Entrega Estática na Borda (Vercel Global Edge):** Payload HTML/CSS/JS ultraleve (~17 MB total), com tempo de resposta sub-segundo e cabeçalhos de segurança padrão empresarial.
+2. **Entrega de Mídia Massiva (Bunny.net CDN Replicada):** Pull Zone dedicada com suporte nativo a streaming de vídeo em loop, áudio master e previews com HTTP 206 (Byte-Range), sem consumir cotas de transferência da origem.
+3. **Persistência Relacional em Tempo Real (Supabase Cloud):** Autenticação unificada (Google OAuth + Email/Senha) e banco PostgreSQL com Row Level Security (RLS) e controle de permissões por roles.
+4. **Pavilhão 3D Autoral Desacoplado (gigantera.xyz):** Pavilhão tridimensional em WebGL operando sob infraestrutura dedicada com redirecionamento 301 a partir de `pelimotion.art/gigantera`.
 
 ```
                               [ INTERNET / CLIENTES ]
@@ -19,169 +23,87 @@ O ecossistema **Pelimotion** opera como uma arquitetura de múltiplos subprojeto
         ▼                 ▼                             ▼                 ▼
  [ Vercel Edge ]   [ Serverless API ]            [ Bunny Edge BR/DE/NY ] [ Storage Zone ]
   - index.html      - /api/config                 - .mp4 streaming        - High-res Stills
-  - /bora (Intake)  - /api/bunny/scan             - .mp3 range 206        - 17 Full Audio Tracks
-  - gigantera/      - /api/send-briefing          - ffmpeg-core.wasm      - 17 Audio Previews
-  - admin/          - /api/upload-frame           - 3D textures           - Video Loops
-  - blog/
+  - /bora (Intake)  - /api/meta-ads               - .mp3 range 206        - Audio Masters
+  - /portfolio      - /api/send-briefing          - ffmpeg-core.wasm      - Audio Previews
+  - /curriculum     - /api/upload-frame           - 3D textures           - Video Loops
+  - /penumbra       - /api/invite-member
         │
         ▼
  [ Supabase PostgreSQL ]
   - Auth (OAuth / JWT)
-  - RLS (Projects / Scenes / Logs)
+  - RLS (Projects / Scenes / Logs / Roles)
 ```
 
 ---
 
-## 2. Módulo `/bora`: Intake de Briefing, Black Neumorphism & Desacoplamento de Preço
+## 2. Módulo `/bora`: Intake de Briefing, Black Neumorphism & Escopo Estruturado
 
-O módulo `/bora` (`pelimotion.art/bora`) foi construído para atuar como o canal de entrada primário de novos clientes e comissões do estúdio, substituindo páginas de contato estáticas convencionais por um **motor conversacional e de escopo estruturado**.
+O módulo `/bora` (`pelimotion.art/bora`) atua como o ponto de intake qualificado e orçamentação técnica do estúdio, substituindo formulários genéricos por uma experiência tátil imersiva.
 
-### 2.1 Princípios de Design & Engenharia do `/bora`
+### 2.1 Princípios de Design & Engenharia
 1. **Desacoplamento de Preço Público:**
-   - A ferramenta **não exibe preços finais nem simulações monetárias públicas**, evitando ancoragens indevidas e permitindo que o Felipe formule orçamentos sob medida a partir da análise técnica de cada demanda.
-2. **Geração Criptográfica de Protocolo (`BORA-26-XXXX`):**
-   - Ao iniciar a sessão, o motor gera um identificador único de protocolo.
-   - Esse protocolo é gravado no assunto do e-mail disparado para `hello@pelimotion.art` e anexado automaticamente na mensagem do WhatsApp.
-3. **Fluxo de Saída Dupla (Dual Exit Strategy):**
-   - **Opção 1 (WhatsApp Imediato):** Transfere o usuário para o chat com o protocolo já preenchido. O diretor de criação busca o protocolo no e-mail e localiza o formulário completo em menos de 1 segundo.
-   - **Opção 2 (Aguardar E-mail):** Confirmação instantânea com cópia do código e garantia de resposta em até 2 horas úteis.
+   - Evita ancoragens artificiais; o orçamento é formulado pelo diretor criativo após análise técnica do briefing.
+2. **Protocolo Criptográfico Único (`BORA-26-XXXX`):**
+   - Identificador gerado no início da sessão e embutido no assunto do e-mail do ateliê (`hello@pelimotion.art`) e na mensagem direta do WhatsApp.
+3. **Estratégia de Saída Dupla (Dual Exit):**
+   - **WhatsApp Instantâneo:** Direciona para conversa direta com Felipe Conceição com o código de protocolo pré-preenchido.
+   - **Retorno por E-mail:** Confirmação em tela com cópia do código e garantia de resposta formal.
 4. **Black Neumorphism & Zero Color Noise:**
    - Paleta monocromática em obsidiana (`#08080a`, `#0e0e12`, `#131318`).
-   - Sombras esculpidas suaves (`box-shadow: 8px 8px 24px rgba(0,0,0,0.75), -6px -6px 20px rgba(255,255,255,0.025)`).
-   - Entradas cavadas em relevo baixo (`box-shadow: inset 4px 4px 10px rgba(0,0,0,0.85)`).
-   - Texturas de marca oficiais (`assets/patterns/pattern01_web.jpg`) em marca d'água a 4% de opacidade com `mix-blend-mode: screen`.
-5. **Web Audio API Haptics:**
-   - Sintetizador harmônico senoidal nativo (osciladores a 380Hz, 440Hz, 520Hz) que fornece resposta tátil sonora a cliques e trocas de abas, sem bibliotecas pesadas de áudio.
+   - Sombras extrudadas: `box-shadow: 8px 8px 24px rgba(0,0,0,0.75), -6px -6px 20px rgba(255,255,255,0.025)`.
+   - Entradas cavadas (debossed): `box-shadow: inset 4px 4px 10px rgba(0,0,0,0.85)`.
+   - Padrão de textura da marca em marca d'água (`assets/patterns/pattern01_web.jpg`) a 4% de opacidade com `mix-blend-mode: screen`.
+5. **Audio Haptics Nativo:**
+   - Síntese harmônica via Web Audio API com osciladores senoidais (380Hz, 440Hz, 520Hz) disparados sutilmente em interações e trocas de aba, com controle mute no cabeçalho.
 
 ---
 
-## 3. Gigantera: Arquitetura do Pavilhão 3D & Motor WebGL
+## 3. Módulo `/penumbra`: Web Bridge & Cockpit de Telemetria
 
-O subprojeto `/gigantera` é uma Single Page Application construída com **React 19 + TypeScript + Vite + Three.js**.
-
-### 3.1 Pipeline de Renderização 3D (`GalleryScene3D.tsx`)
-1. **WebGLRenderer:**
-   - Modo `antialias: true` e `alpha: false` para performance ideal.
-   - Gerenciamento dinâmico de DPI com base no perfil de qualidade gráfica:
-     - `high`: Pixel ratio até 1.6x, sombras suaves tipo `PCFSoftShadowMap` (tipo 2), névoa volumétrica e feixes de luz ativos.
-     - `med`: Pixel ratio até 1.25x, sombras básicas (`PCFShadowMap`), névoa atenuada.
-     - `light`: Pixel ratio 1.0x, sombras desabilitadas para dispositivos de baixo consumo.
-2. **Sistema de Câmera & Projeção:**
-   - Câmera em perspectiva (`PerspectiveCamera`) com FOV de 60 graus, *near plane* de 0.1 e *far plane* de 150m.
-   - Matriz de frustum calculada a cada quadro para realizar *frustum culling* preciso nos vídeos e vitrines, pausando elementos fora do campo de visão.
-3. **Vitrines de Vidro Acrílico Suspensa:**
-   - Materiais físicos (`MeshPhysicalMaterial`) com transmissão óptica de 92%, aspereza superficial (`roughness: 0.08`) e índice de refração realista (`ior: 1.48`).
-   - Pôsteres internos texturizados mapeando impressões de arte giclée em proporções dinâmicas (9:16 vertical e 16:9 widescreen).
-
-### 3.2 Viewmodel 3D em Primeira Pessoa (`CDViewmodel3D.ts`)
-Para garantir que a mão do jogador e o estojo de CD em acrílico nunca entrem em conflito geométrico (*clipping*) com as paredes e pilares de concreto da galeria:
-- O estojo é renderizado em um grupo filho acoplado diretamente à matriz da câmera (`camera.add(this.rootGroup)`).
-- **Mão Poligonal Procedural:** Geometria de mão estilizada low-poly facetada (`flatShading: true`), conferindo identidade autoral.
-- **Contracapa Renderizada em Canvas 2D Dinâmico:** Um canvas 1024x1024 gera proceduralmente o layout gráfico do verso do encarte com tipografia monoespelhada, tempos de faixa, BPMs e código de barras, atualizado como textura `THREE.CanvasTexture`.
-- **Física de Balanço (Bobbing & Inertia):** Interpolação esférica (SLERP) suaviza as guinadas do mouse com amortecimento inercial.
-
-### 3.3 Motor de Física e Movimento (`playerController.ts`)
-- **Cinemática FPS:** Vetores de velocidade com aceleração (`lerp`), velocidade máxima para caminhada (4.2 m/s) e corrida com Shift (7.0 m/s), desaceleração por atrito e colisores no perímetro do salão (`playerBounds`).
-- **Suporte Mobile e Giroscópio:** Detecção automática de dispositivos touch. Integração com `DeviceOrientationEvent` (iOS e Android) para controle por inclinação, além de navegação táctil via *Stepper Glide*.
+O subdiretório `/penumbra` fornece a interface web de monitoramento e controle para a engine áudio-reativa do estúdio (TouchDesigner + NDI Telemetry), permitindo controle em tempo real de:
+- Crossfader linear e corte de pulso A/B.
+- Opacidade por canal e camadas de composição.
+- Ajuste de parâmetros tonais analógicos de pós-processamento.
+- Janela flutuante (`popout.html`) desacoplável para operação em segundo monitor durante performances ao vivo.
 
 ---
 
-## 4. Web Audio API & Sound Engine (`soundEngine.ts`)
+## 4. Política de Segurança & Cabeçalhos HTTP na Borda
 
-A experiência sonora de Gigantera e do Pelimotion Studio é um componente curatorial de primeira classe que opera em paralelo ao canvas WebGL.
-
-### 4.1 Grafo de Áudio (Audio Graph Topology)
-```
-[ HTMLAudioElement (Bunny CDN .mp3) ]
-                 │
-                 ▼
-    [ MediaElementSourceNode ]
-                 │
-                 ▼
-       [ AnalyserNode (128 FFT) ]
-                 │
-                 ▼
-       [ StereoPannerNode ] ──── Balanceamento dinâmico baseado na posição X do jogador
-                 │
-                 ▼
-          [ GainNode ] ──────── Curva de atenuação de distância e fade suave
-                 │
-                 ▼
-       [ AudioContext Destination ]
-```
-
-### 4.2 Características Cruciais da Implementação:
-1. **Streaming com Byte-Range (HTTP 206):**
-   - O elemento de áudio utiliza `crossOrigin = 'anonymous'`, permitindo conexão direta com o analisador de frequência da Web Audio API sem restrições de CORS.
-   - Requisições com cabeçalho `Range: bytes=0-` baixam apenas blocos necessários, eliminando atrasos de buffering.
-2. **Upgrade Inteligente (Preview 10s → Faixa Completa 48kHz):**
-   - Ao folhear o CD Jewel Case, dispara-se imediatamente o preview de 160 KB.
-   - Se o usuário permanecer na faixa por mais de 4 segundos, o motor executa upgrade transparente para a versão master completa sem interrupção perceptível.
-3. **Acoustic Heat Haze (Partículas de Distorção de Ar):**
-   - O `analyserNode` extrai energia em tempo real nas faixas de graves e sub-graves.
-   - O valor de energia modula a escala e pulsação dos cones das caixas acústicas e a opacidade dos anéis de névoa de calor, criando a ilusão física de pressão sonora no ambiente 3D.
+O arquivo [`vercel.json`](./vercel.json) injeta cabeçalhos de segurança estritos em todas as rotas do domínio:
+- `X-Content-Type-Options: nosniff`: Previne sniffing de MIME types.
+- `X-Frame-Options: SAMEORIGIN`: Impede clickjacking externo enquanto permite o popout do `/penumbra`.
+- `Referrer-Policy: strict-origin-when-cross-origin`: Protege dados de telemetria e navegação.
+- `Cache-Control: public, max-age=31536000, immutable` para ativos versionados em `/assets/`.
+- `Cache-Control: public, max-age=2592000, stale-while-revalidate=86400` para favicons e imagens estáticas.
 
 ---
 
 ## 5. Arquitetura de Mídia & Bunny.net CDN
 
-Para contornar o limite de **10 GB de Fast Origin Transfer** da Vercel Hobby, 100% dos arquivos de mídia pesada e binários WebAssembly foram desacoplados da hospedagem estática.
-
-### 5.1 Mapeamento de Zonas e Endpoints
-- **Storage Zone:** `pelimotion-portfolio` (Região: Nova York / Frankfurt com replicação global)
-- **Pull Zone CDN:** `https://pelimotion-portfolio.b-cdn.net/`
-- **Tabela de Ativos Hospedados:**
-
-| Tipo de Ativo | Caminho no CDN | Políticas de Cache |
-| :--- | :--- | :--- |
-| **Áudio Completo (17 tracks)** | `/gigantera/audio/full/full-XX.mp3` | `public, max-age=2592000` (30 dias) + Byte-Range |
-| **Previews de Áudio (17 tracks)**| `/gigantera/audio/previews/preview-XX.mp3` | `public, max-age=2592000` (30 dias) + Byte-Range |
-| **Stills / Impressões de Arte** | `/gigantera/stills/*.jpg` | `public, max-age=2592000` + Edge Storage |
-| **Vídeos Cinéticos em Loop** | `/gigantera/videos/*.mp4` | `public, max-age=2592000` + HTTP 206 |
-| **Motor FFmpeg WebAssembly** | `/ffmpeg/ffmpeg-core.wasm` (32 MB) | `public, max-age=2592000` + CORS liberado |
-
-### 5.2 Blindagem do Build & Deploy Vercel
-O arquivo `.vercelignore` impede rigorosamente que diretórios e arquivos pesados sejam transferidos no momento do deploy:
-```gitignore
-_BACKUP_PARA_REMOVER/
-_BACKUP*/
-Site Antigo/
-Medias Portfolio/
-assets/ffmpeg/
-ffmpeg_assets/
-gigantera/works/audio/
-*.wasm
-*.mp3
-*.mp4
-*.wav
-```
-Resultado: **Redução do payload de deploy de 149 MB para ~17 MB**, com build estático executado em menos de 1 segundo e **zero consumo de transferência de origem** para conteúdo multimídia.
+Para assegurar **Zero Bandwidth Transfer** na origem estática, todas as mídias pesadas operam na CDN:
+- **Storage Zone:** `pelimotion-portfolio` (replicação em Nova York, Frankfurt e São Paulo).
+- **Pull Zone CDN:** `https://pelimotion-portfolio.b-cdn.net/`.
+- **Streaming Byte-Range (HTTP 206):** Suporte nativo para vídeos em loop e áudios master, permitindo busca instantânea (*seeking*) e economia de dados.
+- **Isolamento de Backups:** Diretório `_BACKUP_PARA_REMOVER/` listado em `.gitignore` e `.vercelignore`, garantindo deploy limpo de apenas arquivos de produção.
 
 ---
 
-## 6. Procedimento para Novos Desenvolvedores
+## 6. Procedimento de Build & Validação
 
-### Passo 1: Clonar e Instalar
-```bash
-git clone https://github.com/Pelimotion/portfolio.git
-cd portfolio
-cd gigantera && npm install && cd ..
-```
-
-### Passo 2: Executar em Modo Dev
-```bash
-# Executar subprojeto Gigantera 3D
-cd gigantera && npm run dev
-
-# Ou executar servidor estático na raiz
-npx serve .
-```
-
-### Passo 3: Build de Produção
+### Passo 1: Executar Build Local
 ```bash
 npm run build
-# Compila e empacota todos os subprojetos para dist/
+# scripts/build.js limpa dist/ e copia os 20+ módulos ativos reportando métricas de arquivo e duração
 ```
 
+### Passo 2: Executar Teste Local
+```bash
+npx serve dist
+```
+
+### Passo 3: CI/CD
+Qualquer push na branch `main` ativa o workflow `.github/workflows/ci.yml`, validando a compilação estática antes do deploy de produção no Vercel.
+
 ---
-*Pelimotion — Creative Engineering & Spatial Art Direction.*
+*Pelimotion Studio — Creative Direction & Motion Branding. 2026.*

@@ -109,4 +109,18 @@ chore:    tarefas de manutenção
 
 ---
 
+## 8. Roster Oficial de Marcas & Clientes
+Ao adicionar ou exibir clientes atendidos no portfólio, utilizar estritamente a grafia e capitalização oficial:
+- **Automotivo & Performance:** `BMW`, `Subaru`, `Hyundai`, `CAOA Tiggo`, `Motul`
+- **Corporativo, Finanças & Bioindústria:** `Shell`, `EQI`, `Suzano`, `Unibrasil`, `Rockset`, `Movida`
+- **Moda, Luxo & Cultura:** `SPFW` (São Paulo Fashion Week), `Colcci`, `O Boticário`
+
+## 9. Perfil Curatorial & Bio Institucional do Fundador
+- **Formação Principal:** Formado em Produção Audiovisual (UNIVALI).
+- **Herança & Intuição Cinética:** Vivência musical precoce no contrabaixo e síntese sonora que dita o pulso, suingue brasileiro e cadência orgânica de cada sistema visual e filme CGI.
+- **Terminologia Recomendada:** "Formado em Produção Audiovisual, diretor criativo e especialista em motion branding e CGI de alta precisão. Ritmo e movimento guiando sistemas visuais e filmes para marcas globais."
+
+---
+
 *Pelimotion — Documentação mantida com padrões sênior de engenharia de software e direção criativa.*
+
