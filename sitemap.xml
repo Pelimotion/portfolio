@@ -1,37 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://pelimotion.art/blog</loc>
+        <loc>https://pelimotion.art/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://pelimotion.art/bora</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://pelimotion.art/curriculum</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://pelimotion.art/privacidade</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://pelimotion.art/termos</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://pelimotion.art/exclusao-de-dados</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://pelimotion.art/blog</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://pelimotion.art/blog/vagas</loc>
+        <loc>https://pelimotion.art/blog/vagas</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://pelimotion.art/blog/eventos</loc>
+        <loc>https://pelimotion.art/blog/eventos</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://pelimotion.art/blog/recursos</loc>
+        <loc>https://pelimotion.art/blog/recursos</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://pelimotion.art/en/blog</loc>
+        <loc>https://pelimotion.art/en/blog</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://pelimotion.art/blog/diferenca-motion-design-branding</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>http://pelimotion.art/blog/undefined</loc>
+        <loc>https://pelimotion.art/blog/diferenca-motion-design-branding</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>

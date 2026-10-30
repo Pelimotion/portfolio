@@ -96,6 +96,42 @@
       "destination": "/ads/:path*"
     },
     {
+      "source": "/signal",
+      "destination": "/ads/index.html"
+    },
+    {
+      "source": "/signal/:path*",
+      "destination": "/ads/:path*"
+    },
+    {
+      "source": "/admin/signal",
+      "destination": "/ads/index.html"
+    },
+    {
+      "source": "/privacidade",
+      "destination": "/privacidade/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacidade/index.html"
+    },
+    {
+      "source": "/termos",
+      "destination": "/termos/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/termos/index.html"
+    },
+    {
+      "source": "/exclusao-de-dados",
+      "destination": "/exclusao-de-dados/index.html"
+    },
+    {
+      "source": "/data-deletion",
+      "destination": "/exclusao-de-dados/index.html"
+    },
+    {
       "source": "/autopilot",
       "destination": "/ads/index.html"
     },
@@ -222,7 +258,9 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
       ]
     },
     {

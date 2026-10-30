@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade &amp; LGPD | Pelimotion</title>
+<link rel="icon" type="image/x-icon" href="/LOGO.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/logo.ico">
+<meta name="description" content="Política de Privacidade e Conformidade LGPD da Pelimotion (pelimotion.art). Tratamento de dados em conformidade com a Lei Geral de Proteção de Dados e políticas da plataforma Meta (Instagram Graph API, Marketing API e WhatsApp Business).">
+<link rel="canonical" href="https://pelimotion.art/privacidade">
+
+<!-- OpenGraph / Meta Scraper Compliance -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pelimotion.art/privacidade">
+<meta property="og:site_name" content="Pelimotion">
+<meta property="og:title" content="Política de Privacidade &amp; LGPD | Pelimotion">
+<meta property="og:description" content="Diretrizes oficiais de privacidade, segurança da informação, conformidade LGPD (Lei nº 13.709/2018) e governança de dados da plataforma Meta e Instagram para o ecossistema Pelimotion.">
+<meta property="og:image" content="https://pelimotion.art/PLM_SIMBOLO_BRANCO.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Política de Privacidade &amp; LGPD | Pelimotion">
+<meta name="twitter:description" content="Diretrizes oficiais de privacidade, segurança da informação, conformidade LGPD e governança de dados da Pelimotion.">
+<meta name="twitter:image" content="https://pelimotion.art/PLM_SIMBOLO_BRANCO.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root {
+  --bg: #08080a;
+  --fg: #f0ede8;
+  --fg2: rgba(240,237,232,.72);
+  --fg3: rgba(240,237,232,.42);
+  --border: rgba(240,237,232,.12);
+  --card-bg: rgba(255,255,255,.025);
+}
+html { background: var(--bg); color: var(--fg); scroll-behavior: smooth; font-size: 16px; }
+body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.65; }
+a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; transition: opacity .2s; }
+a:hover { opacity: 0.75; }
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8, 8, 10, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand-logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand-logo img { height: 22px; width: auto; }
+.brand-logo span { font-size: 11px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: var(--fg); }
+.header-nav { display: flex; align-items: center; gap: 1.5rem; }
+.header-nav a { font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; color: var(--fg2); }
+.header-nav a.btn-back { border: 1px solid var(--border); padding: 7px 14px; color: var(--fg); }
+
+.legal-container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 5rem 2rem 6rem;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 1rem;
+  display: block;
+}
+h1 {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+.bilingual-summary {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 1.75rem 2rem;
+  margin: 2rem 0 3.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.bilingual-col h2 {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 0.65rem;
+}
+.bilingual-col p {
+  font-size: 13px;
+  color: var(--fg2);
+  line-height: 1.6;
+}
+.meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--fg3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.legal-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.legal-section:last-of-type { border-bottom: none; }
+.legal-section h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+  color: var(--fg);
+  text-transform: uppercase;
+}
+.legal-section p, .legal-section li {
+  font-size: 14.5px;
+  color: var(--fg2);
+  margin-bottom: 0.9rem;
+}
+.legal-section ul {
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+.spec-box {
+  border-left: 2px solid var(--fg);
+  background: var(--card-bg);
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  font-size: 13.5px;
+}
+.legal-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--fg3);
+}
+.legal-footer-links { display: flex; gap: 1.5rem; }
+.legal-footer-links a { text-decoration: none; color: var(--fg2); }
+@media (max-width: 768px) {
+  .bilingual-summary { grid-template-columns: 1fr; gap: 1.25rem; }
+  .site-header { padding: 0 1.25rem; }
+  .legal-container { padding: 3rem 1.25rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="https://pelimotion.art" class="brand-logo" aria-label="Pelimotion">
+    <img src="/PLM_SIMBOLO_BRANCO.png" alt="Pelimotion">
+    <span>Pelimotion</span>
+  </a>
+  <nav class="header-nav">
+    <a href="/termos">Termos</a>
+    <a href="/exclusao-de-dados">Exclusão de Dados</a>
+    <a href="https://pelimotion.art" class="btn-back">← Voltar ao Site</a>
+  </nav>
+</header>
+
+<main class="legal-container">
+  <span class="eyebrow">01 // Governança Digital, Privacidade &amp; Conformidade LGPD</span>
+  <h1>Política de Privacidade<br>&amp; Proteção de Dados</h1>
+
+  <div class="bilingual-summary">
+    <div class="bilingual-col">
+      <h2>Resumo Executivo (PT-BR)</h2>
+      <p>A Pelimotion respeita a sua privacidade e protege os seus dados pessoais em estrita conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD) e com os Termos da Plataforma Meta (Instagram Graph API, Marketing API e WhatsApp Business). Não comercializamos dados pessoais com terceiros.</p>
+    </div>
+    <div class="bilingual-col">
+      <h2>Executive Summary (EN)</h2>
+      <p>Pelimotion respects your privacy and processes personal data in strict compliance with the Brazilian General Data Protection Law (LGPD — Law No. 13.709/2018) and Meta Platform Terms (Instagram Graph API, Marketing API, and WhatsApp Business). We never sell personal data to third parties.</p>
+    </div>
+  </div>
+
+  <div class="meta-strip">
+    <span>Última Atualização: Outubro de 2026</span>
+    <span>Controladora: Pelimotion Creative Atelier</span>
+    <span>Domínio Oficial: pelimotion.art</span>
+    <span>Meta App ID: 1460009702939992 (pelimotion-agent)</span>
+  </div>
+
+  <section class="legal-section">
+    <h2>1. Identificação do Controlador e Encarregado de Dados (DPO)</h2>
+    <p>A <strong>Pelimotion Creative Atelier</strong> ("Pelimotion", "nós"), estúdio de direção criativa, motion design, animação 3D e tecnologia audiovisual sediado no Centro, Rio de Janeiro — RJ, Brasil, atua como Controladora dos dados pessoais coletados através do domínio <code>https://pelimotion.art</code>, de nossos formulários interativos de briefing (<code>/bora</code>) e de nossas integrações oficiais com o ecossistema Meta.</p>
+    <div class="spec-box">
+      <strong>Encarregado pelo Tratamento de Dados Pessoais (DPO):</strong> Felipe Conceição<br>
+      <strong>E-mails Oficiais de Contato e Privacidade:</strong> <a href="mailto:pelimotionart@gmail.com">pelimotionart@gmail.com</a> / <a href="mailto:hello@pelimotion.art">hello@pelimotion.art</a><br>
+      <strong>Canal Direto WhatsApp Business:</strong> <a href="https://wa.me/5547999664274">+55 47 99966-4274</a>
+    </div>
+  </section>
+
+  <section class="legal-section">
+    <h2>2. Dados Coletados e Finalidades do Tratamento</h2>
+    <p>Coletamos apenas o mínimo necessário de dados para viabilizar o atendimento comercial B2B, a elaboração de propostas criativas e a operação técnica de nossos canais digitais:</p>
+    <ul>
+      <li><strong>Briefings e Orçamentos Comerciais (<code>/bora</code> e <code>/briefing</code>):</strong> Nome completo, empresa, cargo, endereço de e-mail corporativo, número de telefone/WhatsApp, escopo do projeto audiovisual, prazos e referências criativas fornecidas voluntariamente pelo titular.</li>
+      <li><strong>Comunicação via WhatsApp Business (CTWA — Click-to-WhatsApp):</strong> Número de telefone, nome de perfil público e histórico de mensagens trocadas com o nosso número oficial (<code>+55 47 99966-4274</code>) para qualificação comercial, envio de portfólio e atendimento consultivo.</li>
+      <li><strong>Telemetria e Navegação Web:</strong> Endereço IP anonimizado, tipo de navegador, páginas visitadas, tempo de sessão e parâmetros de campanha (UTMs) para análise agregada de desempenho e segurança contra abusos.</li>
+    </ul>
+  </section>
+
+  <section class="legal-section">
+    <h2>3. Conformidade com a Plataforma Meta (Instagram Graph API &amp; Marketing API)</h2>
+    <p>A Pelimotion desenvolve e opera o aplicativo interno <strong><code>pelimotion-agent</code> (Meta App ID: <code>1460009702939992</code>)</strong> para automação editorial, publicação de conteúdo orgânico, leitura de métricas analíticas (Instagram Insights) e gestão de campanhas publicitárias (Meta Marketing API) vinculadas às contas oficiais da Pelimotion.</p>
+    <ul>
+      <li><strong>Escopo de Dados da Plataforma Meta:</strong> Os dados processados via Instagram Graph API e Meta Marketing API restringem-se a métricas de desempenho de mídia (impressões, alcance, engajamento, taxa de retenção de vídeo), metadados de publicações autorais e interações públicas direcionadas ao perfil comercial da Pelimotion.</li>
+      <li><strong>Proibição de Uso Indevido:</strong> Os dados obtidos por meio das APIs da Meta nunca são vendidos, licenciados, transferidos a corretores de dados ou utilizados para fins de vigilância, perfilamento discriminatório ou qualquer finalidade diversa da operação legítima de comunicação e marketing da Pelimotion.</li>
+      <li><strong>Segurança de Credenciais:</strong> Todos os tokens de acesso OAuth são armazenados de forma criptografada em variáveis de ambiente seguras no servidor e jamais são expostos no código-fonte cliente.</li>
+    </ul>
+  </section>
+
+  <section class="legal-section">
+    <h2>4. Bases Legais (Art. 7º da LGPD — Lei nº 13.709/2018)</h2>
+    <p>Todo tratamento de dados realizado pela Pelimotion fundamenta-se nas hipóteses legais previstas na legislação brasileira:</p>
+    <ul>
+      <li><strong>Execução de Contrato ou Procedimentos Preliminares (Art. 7º, V):</strong> Para análise de briefings enviados em <code>/bora</code>, elaboração de orçamentos e execução de projetos contratados.</li>
+      <li><strong>Legítimo Interesse (Art. 7º, IX):</strong> Para relacionamento B2B, melhoria contínua do portfólio digital, segurança cibernética e mensuração de campanhas de marketing.</li>
+      <li><strong>Consentimento do Titular (Art. 7º, I):</strong> Quando o usuário inicia contato espontâneo via WhatsApp ou autoriza expressamente comunicações institucionais.</li>
+    </ul>
+  </section>
+
+  <section class="legal-section">
+    <h2>5. Compartilhamento com Operadores e Infraestrutura Técnica</h2>
+    <p>Para garantir alta disponibilidade e segurança, utilizamos provedores globais de infraestrutura que atuam como Operadores de Dados sob rigorosos contratos de confidencialidade e conformidade (GDPR/LGPD):</p>
+    <ul>
+      <li><strong>Vercel Inc.:</strong> Hospedagem serverless e entrega global da aplicação web (<code>pelimotion.art</code>).</li>
+      <li><strong>Supabase Inc.:</strong> Banco de dados relacional autenticado com controle de acesso em nível de linha (Row-Level Security).</li>
+      <li><strong>Resend:</strong> Disparo transacional seguro de notificações de briefing para a nossa equipe interna.</li>
+      <li><strong>Bunny.net CDN:</strong> Distribuição de vídeos e ativos de portfólio audiovisual em alta definição.</li>
+      <li><strong>Meta Platforms, Inc.:</strong> Operação das APIs oficiais do Instagram, Facebook e WhatsApp Business.</li>
+    </ul>
+  </section>
+
+  <section class="legal-section">
+    <h2>6. Retenção, Segurança e Direitos do Titular (Art. 18 da LGPD)</h2>
+    <p>Os dados pessoais são mantidos apenas pelo período necessário ao cumprimento das finalidades para as quais foram coletados ou para cumprimento de obrigações legais, fiscais e contratuais. A qualquer momento, você pode exercer seus direitos de confirmação de tratamento, acesso, correção, portabilidade, revogação de consentimento ou eliminação total de seus dados.</p>
+    <p>Para solicitar a exclusão imediata de seus dados pessoais, consulte nossa página dedicada de <a href="/exclusao-de-dados">Instruções de Exclusão de Dados do Usuário</a> ou envie um e-mail para <a href="mailto:pelimotionart@gmail.com">pelimotionart@gmail.com</a>.</p>
+  </section>
+</main>
+
+<footer class="legal-footer">
+  <span>© 2026 Pelimotion Hub — Rio de Janeiro</span>
+  <div class="legal-footer-links">
+    <a href="https://pelimotion.art">Início</a>
+    <a href="/privacidade">Privacidade</a>
+    <a href="/termos">Termos de Uso</a>
+    <a href="/exclusao-de-dados">Exclusão de Dados</a>
+  </div>
+</footer>
+
+</body>
+</html>

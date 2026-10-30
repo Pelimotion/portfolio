@@ -120,6 +120,7 @@ function renderPalette(query) {
     ]);
 
     addGroup('Tools', [
+        {title: 'Pelimotion Signal OS', sub: 'Cockpit v2026.5 • Mídia Paga v5, 9 Vídeos & Radar SINAL', icon: '⚡', tag: 'LIVE', action: () => window.open('/signal', '_blank')},
         {title: 'Conversor de GIF', sub: 'Otimizar GIFs • max 10MB • 1080p', icon: '🎞️', action: showGifConverter}
     ]);
     
@@ -227,8 +228,8 @@ function buildSidebarV4(context = 'main') {
             <div class="dot green"></div>Deploy Hub</div>`;
         html += `<div class="sb-item ${currentSection==='gifConverter'?'active':''}" onclick="showGifConverter()">
             <div class="dot" style="background:var(--blue)"></div>Conversor de GIF</div>`;
-        html += `<a href="/ads" target="_blank" class="sb-item" style="text-decoration:none;">
-            <div class="dot green" style="background:#00f090; box-shadow:0 0 6px #00f090;"></div>Meta Ads Autopilot ↗</a>`;
+        html += `<a href="/signal" target="_blank" class="sb-item" style="text-decoration:none;">
+            <div class="dot green" style="background:#D4FF00; box-shadow:0 0 6px #D4FF00;"></div>⚡ Pelimotion Signal OS ↗</a>`;
             
         html += `<div class="sb-section" style="margin-top:10px">Clients &amp; Projects</div>`;
         

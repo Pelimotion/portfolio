@@ -1,3 +1,7 @@
 User-agent: *
-Allow: /blog
-Allow: /en/blog
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /api/
+
+Sitemap: https://pelimotion.art/sitemap.xml

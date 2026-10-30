@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instruções de Exclusão de Dados (User Data Deletion) | Pelimotion</title>
+<link rel="icon" type="image/x-icon" href="/LOGO.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/logo.ico">
+<meta name="description" content="Instruções oficiais para solicitação de exclusão de dados pessoais (LGPD e Meta Platform User Data Deletion) coletados via Instagram, WhatsApp Business ou pelimotion.art.">
+<link rel="canonical" href="https://pelimotion.art/exclusao-de-dados">
+
+<!-- OpenGraph / Meta Scraper Compliance -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pelimotion.art/exclusao-de-dados">
+<meta property="og:site_name" content="Pelimotion">
+<meta property="og:title" content="Instruções de Exclusão de Dados (User Data Deletion) | Pelimotion">
+<meta property="og:description" content="Procedimento passo a passo para solicitar a exclusão imediata de dados pessoais armazenados pela Pelimotion (Meta App ID 1460009702939992, Instagram, WhatsApp e /bora) com SLA de até 48 horas.">
+<meta property="og:image" content="https://pelimotion.art/PLM_SIMBOLO_BRANCO.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Instruções de Exclusão de Dados | Pelimotion">
+<meta name="twitter:description" content="Procedimento passo a passo para solicitar a exclusão imediata de dados pessoais com SLA de até 48 horas.">
+<meta name="twitter:image" content="https://pelimotion.art/PLM_SIMBOLO_BRANCO.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root {
+  --bg: #08080a;
+  --fg: #f0ede8;
+  --fg2: rgba(240,237,232,.72);
+  --fg3: rgba(240,237,232,.42);
+  --border: rgba(240,237,232,.12);
+  --card-bg: rgba(255,255,255,.025);
+}
+html { background: var(--bg); color: var(--fg); scroll-behavior: smooth; font-size: 16px; }
+body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.65; }
+a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; transition: opacity .2s; }
+a:hover { opacity: 0.75; }
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8, 8, 10, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand-logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand-logo img { height: 22px; width: auto; }
+.brand-logo span { font-size: 11px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: var(--fg); }
+.header-nav { display: flex; align-items: center; gap: 1.5rem; }
+.header-nav a { font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; color: var(--fg2); }
+.header-nav a.btn-back { border: 1px solid var(--border); padding: 7px 14px; color: var(--fg); }
+
+.legal-container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 5rem 2rem 6rem;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 1rem;
+  display: block;
+}
+h1 {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+.bilingual-summary {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 1.75rem 2rem;
+  margin: 2rem 0 3.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.bilingual-col h2 {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 0.65rem;
+}
+.bilingual-col p {
+  font-size: 13px;
+  color: var(--fg2);
+  line-height: 1.6;
+}
+.meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--fg3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.legal-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.legal-section:last-of-type { border-bottom: none; }
+.legal-section h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+  color: var(--fg);
+  text-transform: uppercase;
+}
+.legal-section p, .legal-section li {
+  font-size: 14.5px;
+  color: var(--fg2);
+  margin-bottom: 0.9rem;
+}
+.legal-section ol, .legal-section ul {
+  padding-left: 1.35rem;
+  margin-bottom: 1.25rem;
+}
+.action-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+.btn-action.secondary {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--border);
+}
+.legal-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--fg3);
+}
+.legal-footer-links { display: flex; gap: 1.5rem; }
+.legal-footer-links a { text-decoration: none; color: var(--fg2); }
+@media (max-width: 768px) {
+  .bilingual-summary { grid-template-columns: 1fr; gap: 1.25rem; }
+  .site-header { padding: 0 1.25rem; }
+  .legal-container { padding: 3rem 1.25rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="https://pelimotion.art" class="brand-logo" aria-label="Pelimotion">
+    <img src="/PLM_SIMBOLO_BRANCO.png" alt="Pelimotion">
+    <span>Pelimotion</span>
+  </a>
+  <nav class="header-nav">
+    <a href="/privacidade">Privacidade</a>
+    <a href="/termos">Termos</a>
+    <a href="https://pelimotion.art" class="btn-back">← Voltar ao Site</a>
+  </nav>
+</header>
+
+<main class="legal-container">
+  <span class="eyebrow">03 // Meta Platform Compliance &amp; Direitos LGPD</span>
+  <h1>Instruções para Exclusão<br>de Dados do Usuário</h1>
+
+  <div class="bilingual-summary">
+    <div class="bilingual-col">
+      <h2>Instruções Rápidas (PT-BR)</h2>
+      <p>Em conformidade com o Art. 18, VI da LGPD e com os requisitos de <em>User Data Deletion</em> da Plataforma Meta (App <code>pelimotion-agent</code>, ID <code>1460009702939992</code>), qualquer usuário pode solicitar a exclusão integral e definitiva de seus dados pessoais em até <strong>48 horas</strong>.</p>
+    </div>
+    <div class="bilingual-col">
+      <h2>User Data Deletion Instructions (EN)</h2>
+      <p>In compliance with LGPD Art. 18 and Meta Platform User Data Deletion policies (App <code>pelimotion-agent</code>, ID <code>1460009702939992</code>), any user may request permanent deletion of their personal data collected via Instagram, WhatsApp, or <code>pelimotion.art</code> within a <strong>48-hour SLA</strong>.</p>
+    </div>
+  </div>
+
+  <div class="meta-strip">
+    <span>SLA de Atendimento: Até 48 Horas Úteis</span>
+    <span>Meta App ID: 1460009702939992</span>
+    <span>DPO: pelimotionart@gmail.com</span>
+  </div>
+
+  <section class="legal-section">
+    <h2>1. Passo a Passo para Solicitar a Exclusão de Dados</h2>
+    <p>Caso você tenha interagido com a Pelimotion via Instagram, WhatsApp Business (<code>+55 47 99966-4274</code>), anúncios da Meta ou formulários de briefing em <code>pelimotion.art/bora</code> e deseje excluir permanentemente seus registros de nossos sistemas, siga um dos procedimentos abaixo:</p>
+    <ol>
+      <li><strong>Via E-mail Oficial (Recomendado):</strong> Envie uma mensagem para <a href="mailto:pelimotionart@gmail.com?subject=%5BEXCLUS%C3%83O%20DE%20DADOS%20-%20LGPD%5D">pelimotionart@gmail.com</a> (ou <a href="mailto:hello@pelimotion.art?subject=%5BEXCLUS%C3%83O%20DE%20DADOS%20-%20LGPD%5D">hello@pelimotion.art</a>) com o assunto <code>[EXCLUSÃO DE DADOS - LGPD]</code>, informando o seu nome, endereço de e-mail, @usuario do Instagram ou número de telefone/WhatsApp que deseja remover.</li>
+      <li><strong>Via WhatsApp Business Direto:</strong> Envie uma mensagem para <a href="https://wa.me/5547999664274?text=%5BEXCLUS%C3%83O%20DE%20DADOS%20-%20LGPD%5D%20Solicito%20a%20exclus%C3%A3o%20integral%20dos%20meus%20dados%20dos%20sistemas%20da%20Pelimotion.">+55 47 99966-4274</a> contendo o texto <code>[EXCLUSÃO DE DADOS - LGPD]</code>.</li>
+      <li><strong>Revogação Direta no Facebook / Instagram:</strong> Caso tenha conectado sua conta ao aplicativo <code>pelimotion-agent</code>, você também pode remover o acesso diretamente nas configurações da sua conta Meta em <em>Configurações e Privacidade &gt; Configurações &gt; Aplicativos e Sites</em> e clicar em <strong>Remover</strong> ao lado de <code>pelimotion-agent</code>.</li>
+    </ol>
+
+    <div class="action-cluster">
+      <a href="mailto:pelimotionart@gmail.com?subject=%5BEXCLUS%C3%83O%20DE%20DADOS%20-%20LGPD%5D&body=Ol%C3%A1%2C%20solicito%20a%20exclus%C3%A3o%20imediata%20e%20definitiva%20dos%20meus%20dados%20pessoais%20armazenados%20pela%20Pelimotion.%0A%0ANome%3A%20%0AE-mail%20ou%20WhatsApp%2FInstagram%3A%20" class="btn-action">Solicitar Exclusão por E-mail →</a>
+      <a href="https://wa.me/5547999664274?text=%5BEXCLUS%C3%83O%20DE%20DADOS%20-%20LGPD%5D%20Solicito%20a%20exclus%C3%A3o%20integral%20dos%20meus%20dados%20dos%20sistemas%20da%20Pelimotion." target="_blank" rel="noopener" class="btn-action secondary">Solicitar via WhatsApp (+55 47 99966-4274)</a>
+    </div>
+  </section>
+
+  <section class="legal-section">
+    <h2>2. Escopo da Eliminação e Prazo de Confirmação (SLA de 48h)</h2>
+    <p>Assim que recebermos sua solicitação por qualquer um dos canais oficiais:</p>
+    <ul>
+      <li>Nossa equipe de Governança de Dados removerá permanentemente seus registros de contato, briefings submetidos em <code>/bora</code>, históricos de conversação comercial e eventuais metadados associados no banco de dados Supabase e em nossos sistemas internos.</li>
+      <li>O processamento completo da exclusão e o envio do comprovante formal de eliminação ocorrem no prazo máximo de <strong>48 (quarenta e oito) horas</strong> após a solicitação.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="legal-footer">
+  <span>© 2026 Pelimotion Hub — Rio de Janeiro</span>
+  <div class="legal-footer-links">
+    <a href="https://pelimotion.art">Início</a>
+    <a href="/privacidade">Privacidade</a>
+    <a href="/termos">Termos de Uso</a>
+    <a href="/exclusao-de-dados">Exclusão de Dados</a>
+  </div>
+</footer>
+
+</body>
+</html>

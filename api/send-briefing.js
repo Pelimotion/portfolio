@@ -1,11 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { slug, cliente_nome, respostas } = req.body;
+  const { slug, cliente_nome, respostas } = req.body || {};
+  if (!cliente_nome || !respostas || typeof respostas !== 'object') {
+    return res.status(400).json({ error: 'Dados de briefing inválidos ou incompletos.' });
+  }
+
+  const safeClienteNome = escapeHtml(cliente_nome);
+  const safeSlug = escapeHtml(slug || '');
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'hello@pelimotion.art';
@@ -18,15 +31,15 @@ export default async function handler(req, res) {
     });
   }
 
-  // Formatar o e-mail de forma editorial e bonita (dark mode)
+  // Formatar o e-mail de forma editorial e bonita (dark mode) com sanitização HTML
   let emailHtml = `
     <div style="font-family: 'DM Sans', -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 30px; background-color: #080808; color: #efefef; border-radius: 8px; border: 1px solid #1a1a1a;">
       <header style="margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 20px;">
         <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: #909090; font-weight: 700;">Briefing Recebido</span>
         <h1 style="font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; margin: 5px 0 0 0; letter-spacing: -0.02em;">
-          ${cliente_nome}
+          ${safeClienteNome}
         </h1>
-        <p style="font-size: 13px; color: #909090; margin: 5px 0 0 0;">URL do Briefing: pelimotion.art/briefing/${slug}</p>
+        <p style="font-size: 13px; color: #909090; margin: 5px 0 0 0;">URL do Briefing: pelimotion.art/briefing/${safeSlug}</p>
       </header>
 
       <div style="display: grid; gap: 30px;">
@@ -34,17 +47,18 @@ export default async function handler(req, res) {
 
   for (const [pergunta, resposta] of Object.entries(respostas)) {
     if (resposta !== null && resposta !== undefined && (!Array.isArray(resposta) || resposta.length > 0)) {
+      const safePergunta = escapeHtml(pergunta);
       let formattedResposta = '';
       if (Array.isArray(resposta)) {
-        formattedResposta = resposta.join(', ');
+        formattedResposta = resposta.map(item => escapeHtml(item)).join(', ');
       } else {
-        formattedResposta = String(resposta).replace(/\n/g, '<br/>');
+        formattedResposta = escapeHtml(resposta).replace(/\n/g, '<br/>');
       }
 
       emailHtml += `
         <div style="margin-bottom: 25px;">
           <h3 style="color: #909090; margin: 0 0 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">
-            ${pergunta}
+            ${safePergunta}
           </h3>
           <div style="font-size: 15px; line-height: 1.6; color: #ffffff; background-color: #0f0f0f; padding: 16px 20px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.03); white-space: pre-wrap;">
             ${formattedResposta}
@@ -73,7 +87,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: 'Pelimotion Briefing <onboarding@resend.dev>',
         to: NOTIFICATION_EMAIL,
-        subject: `✦ Novo Briefing: ${cliente_nome}`,
+        subject: `✦ Novo Briefing: ${String(cliente_nome).replace(/[\r\n]+/g, ' ').slice(0, 120)}`,
         html: emailHtml,
       }),
     });
