@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   // Verified Fallback Snapshot when META_ACCESS_TOKEN is not yet set in Vercel Env
   const VERIFIED_SIGNAL_SNAPSHOT = {
     source: 'VERIFIED_SNAPSHOT_FALLBACK',
-    synced_at: new Date().toISOString(),
+    synced_at: '2026-10-30T01:04:51-03:00',
     ad_account: {
       id: 'act_1058827129507274',
       name: 'Pelimotion Studio B2B',
@@ -62,27 +62,61 @@ export default async function handler(req, res) {
       balance: '0',
       spend_cap: '50000'
     },
+    app_health: {
+      app_id: '1460009702939992',
+      name: 'pelimotion-agent',
+      app_mode_status: 'LIVE_READY',
+      privacy_policy_url: 'https://pelimotion.art/privacidade',
+      terms_of_service_url: 'https://pelimotion.art/termos',
+      user_data_deletion_url: 'https://pelimotion.art/exclusao-de-dados'
+    },
     instagram: {
       id: '17841401967540328',
       username: 'pelimotion',
       followers_count: 1993,
       media_count: 48,
       cr04_reel: {
+        id: '18655791676032502',
         shortcode: 'DfEjWJSjEqz',
-        views: 53,
+        views: 54,
         reach: 27,
-        avg_watch_time_sec: 8.83,
-        retention_pct: 55.2
+        avg_watch_time_sec: 9.15,
+        retention_pct: 57.2,
+        replay_ratio: 2.0
       }
     },
     campaigns: [
       {
-        id: '120218940192830192',
-        name: '[PLM_v5]_[ENGAJAMENTO_WPP]_[SUL_SP_B2B]',
+        id: '120249903222650056',
+        name: 'PLM_2026_CTWA_TESTE_SINAL_R500',
         status: 'PAUSED',
         objective: 'OUTCOME_ENGAGEMENT'
       }
-    ]
+    ],
+    deployed_hierarchy: {
+      campaign_id: '120249903222650056',
+      adsets: [
+        { id: '120249903223020056', code: 'AS01_DECISORES_SC_SP', name: 'PLM_AS01_DECISORES_CARGO_SC_SP_CAMPINAS', status: 'PAUSED', lifetime_budget_brl: 360.0, flight_days: 28 },
+        { id: '120249903231310056', code: 'AS02_ABM_DECISORES_CRIATIVOS', name: 'PLM_AS02_ABM_LISTA_DECISORES_CRIATIVOS_BR', status: 'PAUSED', lifetime_budget_brl: 80.0, flight_days: 14 }
+      ],
+      videos: {
+        CR05: '2982455242125317',
+        CR06: '1399014522219572',
+        CR02: '1627604639108974'
+      },
+      creatives: {
+        CR05: '1344153521012032',
+        CR06: '2151182352273210',
+        CR02: '2135519027354431'
+      },
+      ads: [
+        { id: '120249903237290056', adset_code: 'AS01_DECISORES_SC_SP', creative_code: 'CR05', name: 'PLM_AD_AS01_DECISORES_SC_SP_CR05', status: 'PAUSED' },
+        { id: '120249903238740056', adset_code: 'AS01_DECISORES_SC_SP', creative_code: 'CR06', name: 'PLM_AD_AS01_DECISORES_SC_SP_CR06', status: 'PAUSED' },
+        { id: '120249903238890056', adset_code: 'AS01_DECISORES_SC_SP', creative_code: 'CR02', name: 'PLM_AD_AS01_DECISORES_SC_SP_CR02', status: 'PAUSED' },
+        { id: '120249903239130056', adset_code: 'AS02_ABM_DECISORES_CRIATIVOS', creative_code: 'CR05', name: 'PLM_AD_AS02_ABM_DECISORES_CRIATIVOS_CR05', status: 'PAUSED' },
+        { id: '120249903239560056', adset_code: 'AS02_ABM_DECISORES_CRIATIVOS', creative_code: 'CR06', name: 'PLM_AD_AS02_ABM_DECISORES_CRIATIVOS_CR06', status: 'PAUSED' }
+      ]
+    }
   };
 
   // 0. Signal Live Telemetry Bundle (GET/POST /api/meta-ads?action=signal_live)
